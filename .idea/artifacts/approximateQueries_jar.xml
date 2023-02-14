@@ -1,0 +1,12 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="approximateQueries:jar">
+    <output-path>$USER_HOME$/Desktop/rpqs</output-path>
+    <root id="archive" name="approximateQueries.jar">
+      <element id="directory" name="META-INF">
+        <element id="file-copy" path="$PROJECT_DIR$/src/main/resources/META-INF/MANIFEST.MF" />
+      </element>
+      <element id="module-output" name="approximateQueries" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/javatuples/javatuples/1.2/javatuples-1.2.jar" path-in-jar="/" />
+    </root>
+  </artifact>
+</component>

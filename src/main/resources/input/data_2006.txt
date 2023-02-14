@@ -1,0 +1,33 @@
+name: data_2006
+queryGraph:
+nodes:
+s0, true, false
+s1, false, true
+s2, false, false
+edges:
+s0, s2, S
+s2, s1, R
+s0, s1, T
+transducerGraph:
+nodes:
+t0, true, false
+t1, false, false
+t2, false, false
+t3, false, true
+edges:
+t0, t1, R, R, 0
+t1, t2, T, S, 2
+t2, t3, T, R, 0
+t2, t3, T, S, 1
+databaseGraph:
+nodes:
+a
+b
+c
+d
+edges:
+a, b, R
+b, c, S
+c, d, R
+d, a, S
+c, a, T

@@ -1,0 +1,18 @@
+
+o	java:S135¹"YReduce the total number of break and continue statements in this loop to use at most one.(»ñª«
+G
+java:S1135"2Complete the task associated to this TODO comment.(®ÿ‰T
+O	java:S106‘"9Replace this use of System.out or System.err by a logger.(ÍÎÉ 
+T	java:S106’"9Replace this use of System.out or System.err by a logger.(Ûˆª÷ùÿÿÿÿ
+h
+java:S3776["RRefactor this method to reduce its Cognitive Complexity from 25 to the 15 allowed.(êÀŠ
+c	java:S100["NRename this method name to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(êÀŠ
+N	java:S106€"9Replace this use of System.out or System.err by a logger.(Ñûµd
+M	java:S106y"9Replace this use of System.out or System.err by a logger.(ãî«E
+I
+java:S1135³"2Complete the task associated to this TODO comment.(½ıŞ¢
+3
+java:S1643"Use a StringBuilder instead.(¹¡ºµ
+M
+java:S1135"2Complete the task associated to this TODO comment.(İ¼¤èúÿÿÿÿ
+t	java:S120"ZRename this package name to match the regular expression '^[a-z_]+(\.[a-z_][a-z0-9_]*)*$'.(Äñ¾üÿÿÿÿ
