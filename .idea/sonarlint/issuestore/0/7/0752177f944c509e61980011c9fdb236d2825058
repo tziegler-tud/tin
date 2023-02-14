@@ -1,0 +1,8 @@
+
+t	java:S120"ZRename this package name to match the regular expression '^[a-z_]+(\.[a-z_][a-z0-9_]*)*$'.(öÈÊŞûÿÿÿÿ
+h
+java:S1104"RMake choice a static final constant or non-public and provide accessors if needed.(¤Á†ô
+n
+java:S1104"XMake dataProvider a static final constant or non-public and provide accessors if needed.(…Ôˆ
+M
+java:S1135'"2Complete the task associated to this TODO comment.(Èì»Øúÿÿÿÿ

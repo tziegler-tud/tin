@@ -1,0 +1,12 @@
+
+o
+java:S3776U"RRefactor this method to reduce its Cognitive Complexity from 72 to the 15 allowed.(Ó«ÈÂ8İáÅêì.
+o
+java:S1104"RMake choice a static final constant or non-public and provide accessors if needed.(¤Á†ô8‰³æì.
+o	java:S120"ZRename this package name to match the regular expression '^[a-z_]+(\.[a-z_][a-z0-9_]*)*$'.(˜ƒ¹›
+u
+java:S1104"XMake dataProvider a static final constant or non-public and provide accessors if needed.(…Ôˆ8‰³æì.
+T
+java:S1135r"2Complete the task associated to this TODO comment.(È¨Ñéúÿÿÿÿ8Ÿ–Àêí.
+U
+java:S1135™"2Complete the task associated to this TODO comment.(¸½Âéûÿÿÿÿ8Áƒğíí.

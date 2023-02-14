@@ -1,0 +1,26 @@
+
+n
+java:S1104	"XMake initialNodes a static final constant or non-public and provide accessors if needed.(…²ÚÄ
+@
+java:S5411_"*Use the primitive boolean expression here.(‡¬óí
+T
+java:S1135S"2Complete the task associated to this TODO comment.(» óøÿÿÿÿ8†´ôåì.
+l
+java:S1104"QMake nodes a static final constant or non-public and provide accessors if needed.(ğÌŸ“şÿÿÿÿ
+t	java:S120"ZRename this package name to match the regular expression '^[a-z_]+(\.[a-z_][a-z0-9_]*)*$'.(öÈÊŞûÿÿÿÿ
+@
+java:S5411&"*Use the primitive boolean expression here.(Ê›¥
+X	java:S125"<This block of commented-out lines of code should be removed.(„º÷µ8ıÜÈåì.
+N
+java:S1135"2Complete the task associated to this TODO comment.(Œ÷;8ıÜÈåì.
+O
+java:S1135G"2Complete the task associated to this TODO comment.(ì–µ•8ùò¡æì.
+T
+java:S1135\"2Complete the task associated to this TODO comment.(» óøÿÿÿÿ8èìõåì.
+E
+java:S5411V"*Use the primitive boolean expression here.(€Úëşÿÿÿÿ
+q
+java:S1104
+"VMake finalNodes a static final constant or non-public and provide accessors if needed.(ôÏéËúÿÿÿÿ
+@
+java:S5411*"*Use the primitive boolean expression here.(Ğßç©

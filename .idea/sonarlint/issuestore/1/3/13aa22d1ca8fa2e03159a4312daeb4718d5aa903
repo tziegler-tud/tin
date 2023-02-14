@@ -1,0 +1,10 @@
+
+q
+java:S1104	"VMake identifier a static final constant or non-public and provide accessors if needed.(çİ‡±ÿÿÿÿÿ
+‡
+java:S1319
+"qThe type of the "edges" object should be an interface such as "List" rather than the implementation "LinkedList".(üşƒ…
+n	java:S120"ZRename this package name to match the regular expression '^[a-z_]+(\.[a-z_][a-z0-9_]*)*$'.(˜€S
+g
+java:S1104
+"QMake edges a static final constant or non-public and provide accessors if needed.(üşƒ…
