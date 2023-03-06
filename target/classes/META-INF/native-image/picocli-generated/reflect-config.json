@@ -1,0 +1,15 @@
+[
+  {
+    "name" : "application.main",
+    "allDeclaredConstructors" : true,
+    "allPublicConstructors" : true,
+    "allDeclaredMethods" : true,
+    "allPublicMethods" : true,
+    "fields" : [
+      { "name" : "computationMode" },
+      { "name" : "generateTransducer" },
+      { "name" : "inputFile" },
+      { "name" : "outputDirectory" }
+    ]
+  }
+]

@@ -1,0 +1,23 @@
+name: test
+queryGraph:
+nodes:
+q0, true, false,
+q2, false, false,
+q1, false, true
+edges:
+q0, q2, 1
+q2, q1, -1
+q1, q2, 1
+transducerGraph:
+t0, true, true
+edges:
+t0, t0, 1, 1, 0
+t0, t0, -1, -1, 0
+databaseGraph:
+nodes:
+a
+b
+c
+edges:
+a, b, 1
+c, b, 1

@@ -1,0 +1,35 @@
+name: data_2020
+queryGraph:
+nodes:
+s0, true, false
+s1, false, true
+s2, false, false
+edges:
+s0, s1, u1
+s1, s1, u2
+s0, s2, v1
+s2, s1, u1
+transducerGraph:
+nodes:
+t0, true, true
+t1, false, false
+t2, false, false
+t3, false, true
+edges:
+t0, t0, u1, u1, 0
+t0, t1, u1, v2, 3
+t0, t2, v1, v2, 1
+t1, t3, ε, v1, 2
+t1, t3, u2, ε, 1
+t2, t3, u1, u1, 0
+databaseGraph:
+nodes:
+a
+b
+c
+d
+edges:
+a, b, v2
+a, c, v2
+b, d, v1
+c, d, u1
