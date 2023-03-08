@@ -24,10 +24,6 @@ class TransducerGraph {
         source.edges.add(TransducerEdge(source, target, incoming, outgoing, cost))
     }
 
-    fun getNodes(): Set<TransducerNode> {
-        return nodes
-    }
-
     // TODO: print isolated nodes. (same as in the query)
     fun printGraph() {
         for (node in nodes) {

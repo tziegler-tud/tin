@@ -1,38 +1,44 @@
 package tin.model.query
 
+import tin.model.compareEdgeSets
 import java.util.*
 
 class QueryNode(
         val identifier: String,
         val isInitialState: Boolean,
         val isFinalState: Boolean,
-        val edges: LinkedList<QueryEdge>
-) {
+        val edges: LinkedList<QueryEdge>) {
+
+    constructor(identifier: String,
+                isInitialState: Boolean,
+                isFinalState: Boolean
+    ) : this(
+            identifier = identifier,
+            isInitialState = isInitialState,
+            isFinalState = isFinalState,
+            edges = LinkedList())
+
     fun equals(otherNode: QueryNode): Boolean {
         // compare basic parameters
         if (equalsExcludingEdges(otherNode)) {
             // compare edges
-            run {
-                return if (this.edges.size != otherNode.edges.size) {
-                    false
-                } else equalsOtherEdgeSet(otherNode.edges)
+            if ((this.edges.size == 0).xor(otherNode.edges.size == 0)) {
+                // if one has no edges but the other has -> not equals
+                return false
+            } else if (this.edges.size == 0 && otherNode.edges.size == 0) {
+                // if both have no edges -> equals
+                return true
             }
+
+
+            return if (this.edges.size != otherNode.edges.size) {
+                false
+            } else compareEdgeSets(this.edges, otherNode.edges)
+
         }
         return false
     }
 
-    private fun equalsOtherEdgeSet(otherEdgeList: LinkedList<QueryEdge>?): Boolean {
-        var pairsFound = 0
-        for (thisEdge in edges!!) {
-            for (otherEdge in otherEdgeList!!) {
-                if (thisEdge.equals(otherEdge)) {
-                    pairsFound++
-                    break
-                }
-            }
-        }
-        return pairsFound == edges.size
-    }
 
     fun equalsExcludingEdges(otherNode: QueryNode): Boolean {
         return isInitialState == otherNode.isInitialState && isFinalState == otherNode.isFinalState && identifier == otherNode.identifier

@@ -18,16 +18,4 @@ class DatabaseEdge(
         return source.compareToExcludingEdges(otherEdge.source) &&
                 target.compareToExcludingEdges(otherEdge.target) && label == otherEdge.label
     }
-
-    fun getSource(): DatabaseNode {
-        return source
-    }
-
-    fun getTarget(): DatabaseNode {
-        return target
-    }
-
-    fun getLabel(): String {
-        return label
-    }
 }

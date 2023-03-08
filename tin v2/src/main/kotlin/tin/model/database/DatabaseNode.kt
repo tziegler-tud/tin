@@ -9,14 +9,6 @@ class DatabaseNode(
         var edges: LinkedList<DatabaseEdge> = LinkedList()
 ) {
 
-    fun getIdentifier(): String {
-        return identifier
-    }
-
-    fun getEdges(): LinkedList<DatabaseEdge> {
-        return edges
-    }
-
     fun equals(otherNode: DatabaseNode): Boolean {
         // compare basic parameters
         if (compareToExcludingEdges(otherNode)) {

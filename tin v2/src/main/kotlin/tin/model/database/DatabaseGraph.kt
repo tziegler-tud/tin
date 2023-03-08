@@ -25,12 +25,7 @@ class DatabaseGraph {
         source.edges.add(DatabaseEdge(source, target, label))
     }
 
-    // TODO: print isolated nodes. (same as in query/transducer!)
 
-    // TODO: print isolated nodes. (same as in query/transducer!)
-    fun getNodes(): Set<DatabaseNode>? {
-        return nodes
-    }
 
     fun printGraph() {
         for (node in nodes!!) {
