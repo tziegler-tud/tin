@@ -5,16 +5,16 @@ import java.util.*
 
 class DatabaseGraph {
 
-    var nodes: MutableSet<DatabaseNode>? = HashSet()
+    var nodes: MutableSet<DatabaseNode> = HashSet()
     var alphabet: Set<String> = HashSet()
 
     fun addNodes(vararg n: DatabaseNode) {
-        nodes!!.addAll(listOf(*n))
+        nodes.addAll(listOf(*n))
     }
 
     fun addEdge(source: DatabaseNode, target: DatabaseNode, label: String) {
-        nodes!!.add(source)
-        nodes!!.add(target)
+        nodes.add(source)
+        nodes.add(target)
 
         // don't add duplicate edges!
         for (edge in source.edges) {
@@ -28,7 +28,7 @@ class DatabaseGraph {
 
 
     fun printGraph() {
-        for (node in nodes!!) {
+        for (node in nodes) {
             for (edge in node.edges) {
                 edge.print()
             }
@@ -37,12 +37,12 @@ class DatabaseGraph {
 
     // only use this for test purposes!
     fun equals(otherGraph: DatabaseGraph): Boolean {
-        if (nodes == null || otherGraph.nodes == null) {
+        if (nodes.size == 0 || otherGraph.nodes.size == 0) {
             return false
         }
-        return if (nodes!!.size != otherGraph.nodes!!.size) {
+        return if (nodes.size != otherGraph.nodes.size) {
             false
-        } else compareNodeSets(this.nodes!!, otherGraph.nodes!!)
+        } else compareNodeSets(this.nodes, otherGraph.nodes)
     }
 
 
