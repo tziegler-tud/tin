@@ -56,7 +56,7 @@ class QueryReader {
 
                 stringArray = currentLine.split(",").toTypedArray()
 
-                node = QueryNode(stringArray[0], java.lang.Boolean.parseBoolean(stringArray[1]), java.lang.Boolean.parseBoolean(stringArray[2]))
+                node = QueryNode(stringArray[0], stringArray[1].toBoolean(), stringArray[2].toBoolean())
                 queryNodes[stringArray[0]] = node
                 queryGraph.addQueryNodes(node)
 
@@ -67,8 +67,10 @@ class QueryReader {
 
                 stringArray = currentLine.split(",").toTypedArray()
 
+                // nodes have to be present, because they have been defined before reading any edges in the file
                 source = queryNodes[stringArray[0]]!!
                 target = queryNodes[stringArray[1]]!!
+
                 edgeLabel = stringArray[2]
 
                 queryGraph.addQueryEdge(source, target, edgeLabel)
