@@ -27,7 +27,7 @@ class InputReaderService {
             GenerateTransducer.editDistance -> transducerGraph = transducerReader.generateEditDistanceTransducer(alphabet)
         }
 
-        return DataProvider(queryGraph, transducerGraph, databaseGraph)
+        return DataProvider(queryGraph, transducerGraph, databaseGraph, alphabet)
     }
 
 }

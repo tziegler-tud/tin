@@ -50,8 +50,6 @@ class QueryReader {
             // remove whitespace in current line
             currentLine = currentLine.replace("\\s".toRegex(), "")
 
-            println(currentLine)
-
             if (readingNodes) {
                 // add node from this line
 

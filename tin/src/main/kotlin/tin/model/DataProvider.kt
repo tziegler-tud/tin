@@ -10,10 +10,10 @@ import java.util.HashSet
 class DataProvider(
         var queryGraph: QueryGraph,
         var transducerGraph: TransducerGraph,
-        var databaseGraph: DatabaseGraph
+        var databaseGraph: DatabaseGraph,
+        var alphabet: Set<String> = HashSet()
 ) {
 
-    var alphabet: Set<String> = HashSet()
     var dataSetIdentifier: String? = null
 
 }
