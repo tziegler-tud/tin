@@ -11,6 +11,7 @@ class QueryReader {
     fun readRegularPathQueryFile(file: String): QueryGraph {
         val queryGraph = QueryGraph()
         val queryNodes = HashMap<String, QueryNode>() // map containing the QueryNodes
+        val alphabet = HashSet<String>()
 
         var source: QueryNode
         var target: QueryNode
@@ -72,12 +73,14 @@ class QueryReader {
                 target = queryNodes[stringArray[1]]!!
 
                 edgeLabel = stringArray[2]
+                alphabet.add(edgeLabel)
 
                 queryGraph.addQueryEdge(source, target, edgeLabel)
 
             }
         }
 
+        queryGraph.alphabet = alphabet
         return queryGraph
     }
 }

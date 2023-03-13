@@ -6,8 +6,7 @@ import java.util.*
 class DatabaseGraph {
 
     var nodes: MutableSet<DatabaseNode>? = HashSet()
-
-
+    var alphabet: Set<String> = HashSet()
 
     fun addNodes(vararg n: DatabaseNode) {
         nodes!!.addAll(listOf(*n))

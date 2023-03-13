@@ -4,5 +4,11 @@ class FileInputData(
         val queryFile: String,
         val transducerFile: String,
         val databaseFile: String,
-        val generateTransducer: Boolean,
+        val generateTransducer: GenerateTransducer,
 )
+
+enum class GenerateTransducer {
+    classicAnswers,
+    editDistance,
+    noGeneration
+}

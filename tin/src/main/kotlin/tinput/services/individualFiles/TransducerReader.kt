@@ -5,7 +5,6 @@ import tin.model.transducer.TransducerGraph
 import tin.model.transducer.TransducerNode
 import java.io.BufferedReader
 import java.io.File
-import java.util.HashMap
 
 class TransducerReader {
 
@@ -61,7 +60,7 @@ class TransducerReader {
 
                 node = TransducerNode(stringArray[0], stringArray[1].toBoolean(), stringArray[2].toBoolean())
                 transducerNodes[stringArray[0]] = node
-                transducerGraph.addTransducerNodes(node)
+                transducerGraph.addNodes(node)
 
             }
 
@@ -77,7 +76,7 @@ class TransducerReader {
                 incoming = stringArray[2]
                 outgoing = stringArray[3]
                 cost = stringArray[4].toDouble()
-                transducerGraph.addTransducerEdge(source, target, incoming, outgoing, cost)
+                transducerGraph.addEdge(source, target, incoming, outgoing, cost)
 
             }
         }
@@ -85,7 +84,20 @@ class TransducerReader {
         return transducerGraph
     }
 
-    fun autogenerateClassicalAnswerPreservingTransducer() {
+    fun generateClassicAnswersTransducer(alphabet: Set<String>): TransducerGraph {
 
+        val transducerGraph = TransducerGraph()
+        val source = TransducerNode("t0", isInitialState = true, isFinalState = true)
+
+        for (word in alphabet) {
+            // for each word of the alphabet we add the edge (t0, t0, word, word, 0)
+            transducerGraph.addEdge(source, source, word, word, 0.0)
+        }
+
+        return transducerGraph
+    }
+
+    fun generateEditDistanceTransducer(alphabet: Set<String>): TransducerGraph {
+        return TODO()
     }
 }

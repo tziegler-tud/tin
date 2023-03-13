@@ -11,6 +11,7 @@ class DatabaseReader {
     fun readDatabaseFile(file: String): DatabaseGraph {
         val databaseGraph = DatabaseGraph()
         val databaseNodes = HashMap<String, DatabaseNode>() // map containing the QueryNodes
+        val alphabet = HashSet<String>()
 
         var source: DatabaseNode
         var target: DatabaseNode
@@ -72,12 +73,14 @@ class DatabaseReader {
                 target = databaseNodes[stringArray[1]]!!
 
                 edgeLabel = stringArray[2]
+                alphabet.add(edgeLabel)
 
                 databaseGraph.addEdge(source, target, edgeLabel)
 
             }
         }
 
+        databaseGraph.alphabet = alphabet
         return databaseGraph
     }
 }

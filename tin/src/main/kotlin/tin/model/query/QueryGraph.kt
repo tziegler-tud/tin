@@ -1,9 +1,10 @@
 package tin.model.query
 
-import java.util.HashSet
+import kotlin.collections.HashSet
 
 class QueryGraph {
     var nodes: MutableSet<QueryNode> = HashSet()
+    var alphabet: Set<String> = HashSet()
 
     fun addQueryNodes(vararg n: QueryNode) {
         nodes.addAll(listOf(*n))
