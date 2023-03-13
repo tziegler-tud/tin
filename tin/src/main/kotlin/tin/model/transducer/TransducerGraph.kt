@@ -5,11 +5,11 @@ import java.util.*
 class TransducerGraph {
     var nodes: MutableSet<TransducerNode> = HashSet()
 
-    fun addTransducerObjectNode(vararg n: TransducerNode) {
+    fun addTransducerNodes(vararg n: TransducerNode) {
         nodes.addAll(listOf(*n))
     }
 
-    fun addTransducerObjectEdge(source: TransducerNode, target: TransducerNode, incoming: String, outgoing: String, cost: Double) {
+    fun addTransducerEdge(source: TransducerNode, target: TransducerNode, incoming: String, outgoing: String, cost: Double) {
         nodes.add(source)
         nodes.add(target)
 

@@ -10,6 +10,15 @@ class TransducerNode(
         val edges: LinkedList<TransducerEdge>?
 ) {
 
+    constructor(identifier: String,
+                isInitialState: Boolean,
+                isFinalState: Boolean
+    ) : this(
+            identifier = identifier,
+            isInitialState = isInitialState,
+            isFinalState = isFinalState,
+            edges = LinkedList())
+
     fun equals(otherNode: TransducerNode): Boolean {
         // compare basic parameters
         if (compareToExcludingEdges(otherNode)) {
