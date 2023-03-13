@@ -8,11 +8,12 @@ class DatabaseGraph {
     var nodes: MutableSet<DatabaseNode>? = HashSet()
 
 
-    fun addDatabaseObjectNode(vararg n: DatabaseNode) {
+
+    fun addNodes(vararg n: DatabaseNode) {
         nodes!!.addAll(listOf(*n))
     }
 
-    fun addDatabaseObjectEdge(source: DatabaseNode, target: DatabaseNode, label: String) {
+    fun addEdge(source: DatabaseNode, target: DatabaseNode, label: String) {
         nodes!!.add(source)
         nodes!!.add(target)
 

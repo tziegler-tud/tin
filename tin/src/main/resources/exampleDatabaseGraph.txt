@@ -1,0 +1,11 @@
+nodes
+a
+b
+c
+d
+edges
+a, b, R
+b, c, S
+c, d, R
+d, a, S
+c, a, T
