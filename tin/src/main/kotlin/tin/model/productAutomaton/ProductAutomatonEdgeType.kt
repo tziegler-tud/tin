@@ -1,6 +1,6 @@
 package tin.model.productAutomaton
 
-enum class EdgeType {
+enum class ProductAutomatonEdgeType {
     // type 1: incoming epsilon edges
     epsilonIncomingPositiveOutgoing,  // epsilon incoming, positive outgoing
     epsilonIncomingNegativeOutgoing,  // epsilon incoming, negative outgoing
