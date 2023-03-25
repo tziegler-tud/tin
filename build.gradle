@@ -1,0 +1,43 @@
+plugins {
+    id 'org.jetbrains.kotlin.jvm' version '1.6.0'
+}
+
+repositories {
+    mavenCentral()
+}
+
+def kotlinVersion = "1.6.0"
+
+dependencies {
+    implementation 'org.javatuples:javatuples:1.2'
+    implementation 'info.picocli:picocli:4.7.0'
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.9.2'
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
+    testImplementation "org.jetbrains.kotlin:kotlin-test:$kotlinVersion"
+    implementation 'info.picocli:picocli-codegen:4.7.0'
+}
+
+test {
+    useJUnitPlatform()
+}
+
+
+compileKotlin {
+    kotlinOptions.jvmTarget = '11'
+    kotlinOptions.freeCompilerArgs += ["-Xuse-experimental=kotlin.ExperimentalStdlibApi"]
+}
+
+compileTestKotlin {
+    kotlinOptions.jvmTarget = '11'
+    kotlinOptions.freeCompilerArgs += ["-Xuse-experimental=kotlin.ExperimentalStdlibApi"]
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+}
+
+tasks.withType(Test).configureEach {
+    testLogging {
+        events "passed", "skipped", "failed"
+    }
+}

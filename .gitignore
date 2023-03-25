@@ -1,5 +1,18 @@
-# intellij
+# Intellij
 .idea/
+*.iml
+*.iws
+out/
 
-# maven
+# Maven
 target/
+!pom.xml
+
+# Mac
+.DS_Store
+
+.attach_pid*
+application.properties
+build
+
+/.gradle
