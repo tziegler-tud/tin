@@ -10,18 +10,19 @@ import tin.model.query.QueryEdge
 import tin.model.transducer.TransducerEdge
 
 
-class ProductAutomatonService(
-        var dataProvider: DataProvider,
-        var productAutomatonGraph: ProductAutomatonGraph = ProductAutomatonGraph()
+class ProductAutomatonService() {
 
-) {
+    /**
+     * constructs the product automaton accordingly to the Grahne & Thomo paper (2006)
+     */
+    fun constructProductAutomaton(dataProvider: DataProvider): ProductAutomatonGraph {
 
-    fun construct() {
         val temporaryNodes = HashMap<String, ProductAutomatonNode>()
         val fittingTransducerEdges = HashSet<TransducerEdge>()
         var pairOfNodes: Pair<ProductAutomatonNode, ProductAutomatonNode>
         var source: ProductAutomatonNode
         var target: ProductAutomatonNode
+        val productAutomatonGraph = ProductAutomatonGraph()
 
 
         //part (I)
@@ -143,10 +144,10 @@ class ProductAutomatonService(
                 }
             }
         }
-    }
-    //}
 
-    //}
+        return productAutomatonGraph
+    }
+
     /**
      * helper function that builds us the ProductAutomatonNodes needed to create new edges.
      *
