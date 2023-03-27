@@ -14,4 +14,4 @@ class TransducerGraphFile(
 
 }
 
-interface TransducerQueryFileRepository : JpaRepository<TransducerGraphFile, Long>
+interface TransducerGraphFileRepository : JpaRepository<TransducerGraphFile, Long>

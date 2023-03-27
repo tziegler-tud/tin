@@ -14,4 +14,4 @@ class QueryGraphFile(
 
 }
 
-interface GraphQueryFileRepository : JpaRepository<QueryGraphFile, Long>
+interface QueryGraphFileRepository : JpaRepository<QueryGraphFile, Long>

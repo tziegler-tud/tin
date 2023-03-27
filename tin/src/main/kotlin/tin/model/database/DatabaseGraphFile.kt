@@ -14,4 +14,4 @@ class DatabaseGraphFile(
 
 }
 
-interface GraphDatabaseFileRepository : JpaRepository<DatabaseGraphFile, Long> 
+interface DatabaseGraphFileRepository : JpaRepository<DatabaseGraphFile, Long>

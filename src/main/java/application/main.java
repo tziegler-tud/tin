@@ -2,21 +2,20 @@ package application;
 
 import dataProvider.DataProvider;
 import dataProvider.DataReader;
-import picocli.CommandLine;
 
 
 class main implements Runnable {
 
-    @CommandLine.Option(names = {"-o", "--output"}, arity = "0..1", description = "specifies the output directory")
+   // @CommandLine.Option(names = {"-o", "--output"}, arity = "0..1", description = "specifies the output directory")
     private String outputDirectory;
 
-    @CommandLine.Option(names = {"-i", "--input"}, arity = "1", description = "specifies the input file")
+   // @CommandLine.Option(names = {"-i", "--input"}, arity = "1", description = "specifies the input file")
     private String inputFile;
 
-    @CommandLine.Option(names = {"-m", "--mode"}, arity = "1..2", split = " ", description = "specifies the computation mode. split values with space.")
+  //  @CommandLine.Option(names = {"-m", "--mode"}, arity = "1..2", split = " ", description = "specifies the computation mode. split values with space.")
     private String[] computationMode; // possible 2 values: compMode, doubleValue. e.g. "topK 50"
 
-    @CommandLine.Option(names = {"--generateTransducer"}, description = "when set, a trivial transducer is generated.")
+  //  @CommandLine.Option(names = {"--generateTransducer"}, description = "when set, a trivial transducer is generated.")
     private boolean generateTransducer;
 
     DataReader dataReader;
@@ -67,8 +66,8 @@ class main implements Runnable {
     }
 
     /**
-     * Application.main function which is executed.
-     * We then delegate the task further down to the Application.SearchHandler.
+     * Application.Application.main function which is executed.
+     * We then delegate the task further down to the Application.Application.SearchHandler.
      * If the user chooses a top k search, we also ask for the k value.
      *
      * @param args
@@ -76,7 +75,7 @@ class main implements Runnable {
     public static void main(String[] args) throws Exception {
 
         //ascii_art();
-        new CommandLine(new main()).execute(args);
+        //new CommandLine(new main()).execute(args);
 
     }
 

@@ -1,5 +1,8 @@
+import org.springframework.stereotype.Service
 import tin.data.input.FileInputData
 import tin.data.input.GenerateTransducer
+import tin.model.database.DatabaseGraphFile
+import tin.model.database.DatabaseGraphFileRepository
 import tinput.services.InputReaderService
 
 class Main {
