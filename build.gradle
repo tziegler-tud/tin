@@ -1,4 +1,7 @@
 plugins {
+    id 'org.springframework.boot' version '2.6.3'
+    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+    id 'org.jetbrains.kotlin.plugin.spring' version '1.6.0'
     id 'org.jetbrains.kotlin.jvm' version '1.6.0'
     id 'org.jetbrains.kotlin.kapt' version '1.6.0'
 }
@@ -17,10 +20,25 @@ sourceSets {
 
 dependencies {
     implementation 'org.javatuples:javatuples:1.2'
-    testImplementation 'org.junit.jupiter:junit-jupiter:5.9.2'
+
+    // kotlin
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+
+    // spring
+    implementation 'org.springframework.boot:spring-boot-starter'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+
+    // test stuff
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.9.2'
     testImplementation "org.jetbrains.kotlin:kotlin-test:$kotlinVersion"
-    implementation 'info.picocli:picocli-codegen:4.7.0'
+
+    // database
+    runtimeOnly 'com.h2database:h2'
+    runtimeOnly 'mysql:mysql-connector-java'
+
+
 }
 
 kapt {
