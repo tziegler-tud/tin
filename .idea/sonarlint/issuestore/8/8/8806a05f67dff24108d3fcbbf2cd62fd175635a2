@@ -1,16 +1,0 @@
-
-q
-java:S1192"[Define a constant instead of duplicating this literal "--------------------------" 3 times.(ú•€Ë
-t	java:S120"ZRename this package name to match the regular expression '^[a-z_]+(\.[a-z_][a-z0-9_]*)*$'.(—Åõøÿÿÿÿ
-W
-java:S1854"ARemove this useless assignment to local variable "databaseGraph".(ßÀŠ
-^
-java:S1854"CRemove this useless assignment to local variable "transducerGraph".(ë¸§ìûÿÿÿÿ
-Y
-java:S1854">Remove this useless assignment to local variable "queryGraph".(þ÷œÚüÿÿÿÿ
-N	java:S106"9Replace this use of System.out or System.err by a logger.(¤ï—œ
-N	java:S106"9Replace this use of System.out or System.err by a logger.(ú•€Ë
-S	java:S106"9Replace this use of System.out or System.err by a logger.(à³¦¾þÿÿÿÿ
-N	java:S106"9Replace this use of System.out or System.err by a logger.(ú•€Ë
-S	java:S106 "9Replace this use of System.out or System.err by a logger.(Îóú’þÿÿÿÿ
-N	java:S106""9Replace this use of System.out or System.err by a logger.(ú•€Ë

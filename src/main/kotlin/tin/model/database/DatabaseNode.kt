@@ -1,0 +1,30 @@
+package tin.model.database
+
+import tin.utils.compareEdgeSets
+import java.util.*
+
+
+class DatabaseNode(
+        var identifier: String,
+        var edges: LinkedList<DatabaseEdge> = LinkedList()
+) {
+
+    fun equals(otherNode: DatabaseNode): Boolean {
+        // compare basic parameters
+        if (compareToExcludingEdges(otherNode)) {
+            // compare edges
+            run {
+                return if (this.edges.size != otherNode.edges.size) {
+                    false
+                } else compareEdgeSets(this.edges, otherNode.edges)
+            }
+        }
+        return false
+    }
+
+
+    fun compareToExcludingEdges(otherNode: DatabaseNode): Boolean {
+        return identifier == otherNode.identifier
+    }
+
+}

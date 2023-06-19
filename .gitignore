@@ -12,7 +12,7 @@ target/
 .DS_Store
 
 .attach_pid*
-application.properties
+src/main/resources/application.properties
 build
 
 /.gradle

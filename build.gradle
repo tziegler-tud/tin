@@ -1,49 +1,80 @@
-plugins {
+buildscript {
+    ext {
+        kotlinVersion = '1.6.21'
+        springBootVersion = '2.7.0'
+    }
+    repositories {
+        mavenCentral()
+/*        mavenLocal()
+        maven { url "https://plugins.gradle.org/m2/" }
+        maven { url "https://jitpack.io" }
+        maven {
+            url "https://dl.bintray.com/ntrrgc/maven"
+        }*/
+    }
+    configurations.create("tsSourceClasses") {
+        transitive = false
+        resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
+    }
+
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${kotlinVersion}")
+        classpath("org.jetbrains.kotlin:kotlin-allopen:${kotlinVersion}")
+        classpath("org.jetbrains.kotlin:kotlin-noarg:${kotlinVersion}")
+        tsSourceClasses "com.tin:tin:0.0.1-SNAPSHOT"
+    }
+}
+
+apply plugin: 'kotlin'
+apply plugin: 'kotlin-jpa'
+apply plugin: 'kotlin-spring'
+apply plugin: 'org.springframework.boot'
+apply plugin: 'io.spring.dependency-management'
+apply plugin: 'maven-publish'
+apply plugin: 'war'
+
+group = "com.tin"
+version = "0.0.1-SNAPSHOT"
+
+
+/*plugins {
     id 'org.springframework.boot' version '2.6.3'
     id 'io.spring.dependency-management' version '1.0.11.RELEASE'
     id 'org.jetbrains.kotlin.plugin.spring' version '1.6.0'
     id 'org.jetbrains.kotlin.jvm' version '1.6.0'
     id 'org.jetbrains.kotlin.kapt' version '1.6.0'
-}
+    id "net.innospire.typescript-generator" version "1.6.0"
+    id 'maven-publish'
+}*/
 
 repositories {
     mavenCentral()
-}
-
-def kotlinVersion = "1.6.0"
-
-sourceSets {
-    main {
-        kotlin.srcDirs += 'tin/src/main/kotlin'
-    }
+    mavenLocal()
 }
 
 dependencies {
-    implementation 'org.javatuples:javatuples:1.2'
-
     // kotlin
-    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
+    implementation 'com.fasterxml.jackson.module:jackson-module-kotlin'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+    implementation "org.jetbrains.kotlin:kotlin-reflect"
 
     // spring
     implementation 'org.springframework.boot:spring-boot-starter'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-web'
 
-    // test stuff
-    testImplementation 'org.junit.jupiter:junit-jupiter:5.9.2'
-    testImplementation "org.jetbrains.kotlin:kotlin-test:$kotlinVersion"
-
     // database
     runtimeOnly 'com.h2database:h2'
     runtimeOnly 'mysql:mysql-connector-java'
 
+    // other
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+
 
 }
 
-kapt {
-    correctErrorTypes = true
-}
 
 test {
     useJUnitPlatform()
@@ -51,13 +82,17 @@ test {
 
 
 compileKotlin {
-    kotlinOptions.jvmTarget = '11'
-    kotlinOptions.freeCompilerArgs += ["-Xuse-experimental=kotlin.ExperimentalStdlibApi"]
+    kotlinOptions {
+        freeCompilerArgs = ['-Xjsr305=strict']
+        jvmTarget = '1.8'
+    }
 }
 
 compileTestKotlin {
-    kotlinOptions.jvmTarget = '11'
-    kotlinOptions.freeCompilerArgs += ["-Xuse-experimental=kotlin.ExperimentalStdlibApi"]
+    kotlinOptions {
+        freeCompilerArgs = ['-Xjsr305=strict']
+        jvmTarget = '1.8'
+    }
 }
 
 tasks.withType(JavaCompile).configureEach {
@@ -69,3 +104,30 @@ tasks.withType(Test).configureEach {
         events "passed", "skipped", "failed"
     }
 }
+
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            from components.java
+            artifact bootJar
+        }
+    }
+}
+
+/*task extractTsSourceClasses(type: Copy) {
+    delete "$buildDir/tsSourceClasses"
+    from zipTree(buildscript.configurations.tsSourceClasses.singleFile)
+    into "$buildDir/tsSourceClasses" as Object
+}
+
+task generateTsTin(type: net.innospire.tsgen.GenerateTypescriptTask) {
+    nestingLevel = 2
+    dependsOn(extractTsSourceClasses)
+    inputDir = file("$buildDir/tsSourceClasses/")
+    outputDir = file("tin/src/rest-api/generated")
+    controllerClassNamespace = "kotlin.tin.controller"
+    endpoint = "tin"
+    version9 = true
+    dataClassNamespaces = ["tin.data"]
+}*/

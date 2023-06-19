@@ -1,31 +1,0 @@
-
-Q	java:S125'"<This block of commented-out lines of code should be removed.(Ôş¤
-N	java:S1069"9Replace this use of System.out or System.err by a logger.(Å¸Ş
-V	java:S125F"<This block of commented-out lines of code should be removed.(¼«¯˜üÿÿÿÿ
-@
-java:S5411L"*Use the primitive boolean expression here.(‡¬óí
-N	java:S106X"9Replace this use of System.out or System.err by a logger.(Ñ„ßÃ
-S	java:S106Q"9Replace this use of System.out or System.err by a logger.(äÍıÿÿÿÿ
-N	java:S106["9Replace this use of System.out or System.err by a logger.(›‚í¹
-M	java:S106:"9Replace this use of System.out or System.err by a logger.(™šô
-S	java:S106Z"9Replace this use of System.out or System.err by a logger.(â‰ıûÿÿÿÿ
-J
-java:S3740"/Provide the parametrized type for this generic.(‡Û—Âÿÿÿÿÿ
-N	java:S106n"9Replace this use of System.out or System.err by a logger.(À£Ç
-N	java:S1065"9Replace this use of System.out or System.err by a logger.(Å‰ÿû
-S	java:S106Y"9Replace this use of System.out or System.err by a logger.(õËßØüÿÿÿÿ
-j
-java:S1117"ORename "productAutomatonConstructor" which hides the field declared at line 13.(ˆÊÿÕıÿÿÿÿ
-S	java:S106o"9Replace this use of System.out or System.err by a logger.(œŠªùÿÿÿÿ
-t	java:S120"ZRename this package name to match the regular expression '^[a-z_]+(\.[a-z_][a-z0-9_]*)*$'.(öÈÊŞûÿÿÿÿ
-N	java:S106m"9Replace this use of System.out or System.err by a logger.(µÆ»º
-S	java:S106l"9Replace this use of System.out or System.err by a logger.(¯”¶Àüÿÿÿÿ
-3
-java:S1700"Rename field "answerSet"(‡Û—Âÿÿÿÿÿ
-N	java:S106A"9Replace this use of System.out or System.err by a logger.(‡œ£Ñ
-N	java:S106;"9Replace this use of System.out or System.err by a logger.(ƒİòÛ
-S	java:S1064"9Replace this use of System.out or System.err by a logger.(ÛÎÍõÿÿÿÿÿ
-C
-java:S1144i".Remove this unused private "findChild" method.(„øï=
-S	java:S106M"9Replace this use of System.out or System.err by a logger.(‚ªìåÿÿÿÿÿ
-S	java:S106R"9Replace this use of System.out or System.err by a logger.(™ûÕ ÿÿÿÿÿ
