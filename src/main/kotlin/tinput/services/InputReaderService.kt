@@ -2,7 +2,7 @@ package tinput.services
 
 import tin.data.input.QueryData
 import tin.data.input.GenerateTransducer
-import tin.model.DataProvider
+import tin.model.tintheweb.DataProvider
 import tin.model.transducer.TransducerGraph
 import tinput.services.individualFiles.DatabaseReader
 import tinput.services.individualFiles.QueryReader

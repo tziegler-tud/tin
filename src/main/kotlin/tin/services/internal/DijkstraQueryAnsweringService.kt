@@ -6,7 +6,7 @@ import tin.model.utils.ProductAutomatonTuple
 import tin.data.QueryResultsData
 import tin.data.StringPairData
 import tin.data.input.GenerateTransducer
-import tin.model.DataProvider
+import tin.model.tintheweb.DataProvider
 import tin.model.productAutomaton.ProductAutomatonGraph
 import tin.model.transducer.TransducerGraph
 import tin.services.internal.algorithms.Dijkstra

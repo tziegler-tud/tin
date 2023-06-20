@@ -15,4 +15,5 @@ target/
 src/main/resources/application.properties
 build
 
-/.gradle
+.gradle
+/build/

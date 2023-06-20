@@ -1,6 +1,6 @@
 package tin.services.internal
 
-import tin.model.DataProvider
+import tin.model.tintheweb.DataProvider
 import tin.model.database.DatabaseEdge
 import tin.model.productAutomaton.ProductAutomatonEdgeType
 import tin.model.productAutomaton.ProductAutomatonGraph

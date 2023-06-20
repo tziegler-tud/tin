@@ -1,4 +1,4 @@
-package tin.model
+package tin.model.tintheweb
 
 import org.springframework.data.jpa.repository.JpaRepository
 import java.util.*
@@ -9,22 +9,20 @@ import javax.persistence.Id
 @Entity
 class File(
     val filename: String,
-    val filetype: FileType) {
+    val filetype: FileType,
+    val filelength: Long,
+    lastModifiedAt: Date?) {
     @GeneratedValue
     @Id
     val id: Long = 0
 
-    val createdAt: Date = Date()
+    var lastModifiedAt: Date = lastModifiedAt?: Date()
 
-    var lastModifiedAt: Date = Date()
 }
 
-enum class FileType {
-    RegularPathQuery,
-    Database,
-    Transducer,
-}
 
 interface FileRepository : JpaRepository<File, Long>{
     fun findAllByFiletype(fileType: FileType): List<File>
+
+    fun findByFilenameAndFiletype(filename: String, filetype: FileType): File?
 }

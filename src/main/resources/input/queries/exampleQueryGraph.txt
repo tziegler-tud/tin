@@ -1,0 +1,8 @@
+nodes
+s0, true, false
+s1, false, true
+s2, false, false
+edges
+s0, s2, S
+s2, s1, R
+s0, s1, T

@@ -1,4 +1,4 @@
-package tin.model
+package tin.model.tintheweb
 
 
 import tin.model.database.DatabaseGraph

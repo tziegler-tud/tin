@@ -8,8 +8,6 @@ import org.springframework.web.multipart.MultipartFile
 import tin.services.QueryService
 
 @RestController
-@CrossOrigin("*")
-//TODO: delete after QueryService merge
 class FileUploadController(
     private val fileUploadService: QueryService
 ) {
