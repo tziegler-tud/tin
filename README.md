@@ -22,6 +22,7 @@ Setup
 
 </details>
 
+3. Run Ubuntu for Windows, inside the cmd-prompt, run "redis-server"
 3. Run tin, if you didn't change the port it's running on port 8900.
 4. Set up Tintheweb according to its ReadMe for a graphical UI.
 
