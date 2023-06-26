@@ -1,11 +1,11 @@
 package tin.services.internal
 
+import org.springframework.stereotype.Service
 import tin.data.CombinedQueryData
 import tin.data.ComputationMode
 import tin.model.utils.ProductAutomatonTuple
 import tin.data.QueryResultsData
 import tin.data.StringPairData
-import tin.data.input.GenerateTransducer
 import tin.model.tintheweb.DataProvider
 import tin.model.productAutomaton.ProductAutomatonGraph
 import tin.model.transducer.TransducerGraph
@@ -16,7 +16,7 @@ import tinput.services.individualFiles.DatabaseReader
 import tinput.services.individualFiles.QueryReader
 import tinput.services.individualFiles.TransducerReader
 import kotlin.system.measureNanoTime
-
+@Service
 class DijkstraQueryAnsweringService {
 
     fun calculateQuery(data: CombinedQueryData): QueryResultsData {

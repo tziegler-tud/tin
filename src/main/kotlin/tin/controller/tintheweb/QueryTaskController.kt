@@ -3,6 +3,7 @@ package tin.controller.tintheweb
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RestController
 import tin.data.tintheweb.QueryTaskData
 import tin.services.tintheweb.QueryTaskService
@@ -24,7 +25,7 @@ class QueryTaskController(
 
     @PostMapping("query-task/generate")
     @Transactional
-    fun createQueryTask(): QueryTaskData {
-        return TODO()
+    fun createQueryTask(@RequestBody data: QueryTaskData): QueryTaskData {
+        return QueryTaskData(queryTaskService.createQueryTask(data))
     }
 }

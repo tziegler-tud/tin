@@ -25,4 +25,6 @@ interface FileRepository : JpaRepository<File, Long>{
     fun findAllByFiletype(fileType: FileType): List<File>
 
     fun findByFilenameAndFiletype(filename: String, filetype: FileType): File?
+
+    fun findByIdAndFiletype(id: Long, filetype: FileType): File?
 }
