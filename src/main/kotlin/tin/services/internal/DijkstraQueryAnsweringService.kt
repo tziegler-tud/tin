@@ -15,6 +15,7 @@ import tin.model.technical.internal.ComputationProperties
 import tin.model.technical.internal.ComputationStatistics
 import tin.model.tintheweb.FileRepository
 import tin.model.transducer.TransducerGraph
+import tin.model.utils.PairOfStrings
 import tin.services.internal.algorithms.Dijkstra
 import tin.services.internal.algorithms.DijkstraThreshold
 import tin.services.internal.algorithms.DijkstraTopK
@@ -83,10 +84,10 @@ class DijkstraQueryAnsweringService(
                     pairContainingCompStatsAndAnswerSet.first.mainProcessingTimeInMs,
                     pairContainingCompStatsAndAnswerSet.first.postProcessingTimeInMs,
                     null
-
                 ),
                 QueryResult.QueryResultStatus.NoError,
-                pairContainingCompStatsAndAnswerSet.second.answerMap
+                pairContainingCompStatsAndAnswerSet.second.answerMap.mapKeys { (key, _) -> key.toString() }
+                    .toMutableMap().let { HashMap(it) }
             )
         }
     }
@@ -148,7 +149,7 @@ class DijkstraQueryAnsweringService(
             answerMap = dijkstra.processDijkstraOverAllInitialNodes()
         }
 
-        val transformedAnswerMap: HashMap<Pair<String, String>, Double>
+        val transformedAnswerMap: HashMap<PairOfStrings, Double>
         val postProcessingTime = measureNanoTime {
             transformedAnswerMap = makeAnswerMapReadable(answerMap)
         }
@@ -179,7 +180,7 @@ class DijkstraQueryAnsweringService(
             answerMap = dijkstraThreshold.processDijkstraOverAllInitialNodes()
         }
 
-        val transformedAnswerMap: HashMap<Pair<String, String>, Double>
+        val transformedAnswerMap: HashMap<PairOfStrings, Double>
         val postProcessingTime = measureNanoTime {
             transformedAnswerMap = makeAnswerMapReadable(answerMap)
         }
@@ -208,7 +209,7 @@ class DijkstraQueryAnsweringService(
             answerMap = dijkstraTopK.processDijkstraOverAllInitialNodes()
         }
 
-        val transformedAnswerMap: HashMap<Pair<String, String>, Double>
+        val transformedAnswerMap: HashMap<PairOfStrings, Double>
         val postProcessingTime = measureNanoTime {
             transformedAnswerMap = makeAnswerMapReadable(answerMap)
         }
@@ -223,10 +224,10 @@ class DijkstraQueryAnsweringService(
 
     private fun makeAnswerMapReadable(
         answerMap: HashMap<ProductAutomatonTuple, Double>
-    ): HashMap<Pair<String, String>, Double> {
-        return HashMap<Pair<String, String>, Double>().apply {
+    ): HashMap<PairOfStrings, Double> {
+        return HashMap<PairOfStrings, Double>().apply {
             answerMap.map { (key, value) ->
-                val newKey = Pair(
+                val newKey = PairOfStrings(
                     key.sourceProductAutomatonNode!!.identifier.third.identifier,
                     key.targetProductAutomatonNode.identifier.third.identifier
                 )

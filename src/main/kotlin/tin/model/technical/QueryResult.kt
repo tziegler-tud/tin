@@ -21,7 +21,7 @@ class QueryResult(
     val queryResultStatus: QueryResultStatus,
 
     @ElementCollection
-    val answerSet: HashMap<Pair<String, String>, Double>
+    val answerMap: Map<String, Double>
 
 ) {
     @GeneratedValue
@@ -38,6 +38,4 @@ class QueryResult(
     }
 }
 
-interface QueryResultRepository : JpaRepository<QueryResult, Long> {
-
-}
+interface QueryResultRepository : JpaRepository<QueryResult, Long>
