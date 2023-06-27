@@ -35,4 +35,6 @@ class QueryTask(
 
 interface QueryTaskRepository : JpaRepository<QueryTask, Long> {
 
+    fun findFirstByOrderByCreatedAtAsc(): QueryTask?
+
 }

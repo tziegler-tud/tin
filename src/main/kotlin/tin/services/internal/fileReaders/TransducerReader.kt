@@ -1,4 +1,4 @@
-package tinput.services.individualFiles
+package tin.services.internal.fileReaders
 
 
 import tin.model.transducer.TransducerGraph

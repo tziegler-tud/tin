@@ -12,8 +12,8 @@ class ComputationStatistics(
     val preProcessingTimeInMs: Long,
     val mainProcessingTimeInMs: Long,
     val postProcessingTimeInMs: Long,
-    @OneToOne(mappedBy = "computationStatistics")
-    val queryResult: QueryResult,
+    @OneToOne(mappedBy = "computationStatistics", optional = true)
+    val queryResult: QueryResult?,
 ) {
 
     @GeneratedValue

@@ -8,4 +8,6 @@ class SystemConfigurationService {
 
     val uploadPathForQueries = "$projectPath/src/main/resources/input/queries"
     val uploadPathForDatabases = "$projectPath/src/main/resources/input/databases"
+    val uploadPathForTransducers = "$projectPath/src/main/resources/input/transducers"
+
 }

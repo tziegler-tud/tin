@@ -1,60 +1,139 @@
 package tin.services.internal
 
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
-import tin.data.CombinedQueryData
-import tin.data.ComputationMode
+import org.springframework.transaction.annotation.Transactional
 import tin.model.utils.ProductAutomatonTuple
-import tin.data.QueryResultsData
-import tin.data.StringPairData
+import tin.data.internal.AnswerSetData
+import tin.data.internal.ComputationStatisticsData
 import tin.model.tintheweb.DataProvider
 import tin.model.productAutomaton.ProductAutomatonGraph
+import tin.model.technical.QueryResult
+import tin.model.technical.QueryTask
+import tin.model.technical.QueryTaskRepository
+import tin.model.technical.internal.ComputationProperties
+import tin.model.technical.internal.ComputationStatistics
+import tin.model.tintheweb.FileRepository
 import tin.model.transducer.TransducerGraph
 import tin.services.internal.algorithms.Dijkstra
 import tin.services.internal.algorithms.DijkstraThreshold
 import tin.services.internal.algorithms.DijkstraTopK
-import tinput.services.individualFiles.DatabaseReader
-import tinput.services.individualFiles.QueryReader
-import tinput.services.individualFiles.TransducerReader
+import tin.services.technical.SystemConfigurationService
+import tin.utils.findByIdentifier
+import tin.services.internal.fileReaders.DatabaseReader
+import tin.services.internal.fileReaders.QueryReader
+import tin.services.internal.fileReaders.TransducerReader
 import kotlin.system.measureNanoTime
+
 @Service
-class DijkstraQueryAnsweringService {
+class DijkstraQueryAnsweringService(
+    private val fileRepository: FileRepository,
+    private val queryTaskRepository: QueryTaskRepository,
+) {
+    @Autowired
+    lateinit var systemConfigurationService: SystemConfigurationService
 
-    fun calculateQuery(data: CombinedQueryData): QueryResultsData {
+    @Transactional
+    fun calculateQueryTask(queryTask: QueryTask): QueryResult {
+        // set status to calculating
+        queryTask.apply { queryStatus = QueryTask.QueryStatus.Calculating }
+        queryTaskRepository.save(queryTask)
 
-        val queryResultsData: QueryResultsData
-        val dataProvider = buildDataProvider(data)
+        val computationStatistics: ComputationStatistics
+        val dataProvider = buildDataProvider(queryTask)
+        var pairContainingCompStatsAndAnswerSet: Pair<ComputationStatisticsData, AnswerSetData>? = null
 
-        queryResultsData = when (data.computationMode) {
-            ComputationMode.Dijkstra -> calculateDijkstra(dataProvider)
-            ComputationMode.Threshold -> calculateThreshold(data, dataProvider)
-            ComputationMode.TopK -> calculateTopK(data, dataProvider)
+        var queryResultStatus: QueryResult.QueryResultStatus = QueryResult.QueryResultStatus.NoError
+
+
+        when (queryTask.computationMode.computationMode) {
+            tin.model.technical.internal.ComputationMode.ComputationMode.Dijkstra -> pairContainingCompStatsAndAnswerSet =
+                calculateDijkstra(dataProvider)
+
+            tin.model.technical.internal.ComputationMode.ComputationMode.Threshold -> if (queryTask.computationMode.computationProperties.thresholdValue == null) {
+                queryResultStatus = QueryResult.QueryResultStatus.ErrorInComputationMode
+            } else {
+                pairContainingCompStatsAndAnswerSet = calculateThreshold(
+                    dataProvider, queryTask.computationMode.computationProperties.thresholdValue
+                )
+            }
+
+            tin.model.technical.internal.ComputationMode.ComputationMode.TopK -> if (queryTask.computationMode.computationProperties.topKValue == null) {
+                queryResultStatus = QueryResult.QueryResultStatus.ErrorInComputationMode
+            } else {
+                pairContainingCompStatsAndAnswerSet =
+                    calculateTopK(dataProvider, queryTask.computationMode.computationProperties.topKValue)
+            }
         }
 
-        return queryResultsData
+        // return if an error was found
+        return if (queryResultStatus != QueryResult.QueryResultStatus.NoError) {
+            QueryResult(
+                queryTask,
+                null,
+                queryResultStatus,
+                HashMap()
+            )
+        } else {
+            // no error found
+            QueryResult(
+                queryTask,
+                ComputationStatistics(
+                    pairContainingCompStatsAndAnswerSet!!.first.preProcessingTimeInMs,
+                    pairContainingCompStatsAndAnswerSet.first.mainProcessingTimeInMs,
+                    pairContainingCompStatsAndAnswerSet.first.postProcessingTimeInMs,
+                    null
+
+                ),
+                QueryResult.QueryResultStatus.NoError,
+                pairContainingCompStatsAndAnswerSet.second.answerMap
+            )
+        }
     }
 
-    private fun buildDataProvider(data: CombinedQueryData): DataProvider {
+    private fun buildDataProvider(data: QueryTask): DataProvider {
+
+        // find files
+        val queryFileDb = fileRepository.findByIdentifier(data.queryFileIdentifier)
+        val databaseFileDb = fileRepository.findByIdentifier(data.databaseFileIdentifier)
 
         val queryReader = QueryReader()
         val transducerReader = TransducerReader()
         val databaseReader = DatabaseReader()
 
-        val queryGraph = queryReader.readRegularPathQueryFile(data.queryData.queryFile)
-        val databaseGraph = databaseReader.readDatabaseFile(data.queryData.databaseFile)
+        val queryGraph =
+            queryReader.readRegularPathQueryFile(systemConfigurationService.uploadPathForQueries + queryFileDb.filename)
+        val databaseGraph =
+            databaseReader.readDatabaseFile(systemConfigurationService.uploadPathForDatabases + databaseFileDb.filename)
 
         val transducerGraph: TransducerGraph
         val alphabet = queryGraph.alphabet.plus(databaseGraph.alphabet)
 
-        transducerGraph = when (data.queryData.generateTransducer) {
-            GenerateTransducer.NoGeneration -> transducerReader.readTransducerFile(data.queryData.transducerFile)
-            GenerateTransducer.ClassicAnswers -> transducerReader.generateClassicAnswersTransducer(alphabet)
-            GenerateTransducer.EditDistance -> transducerReader.generateEditDistanceTransducer(alphabet)
-        }
 
-        return DataProvider(queryGraph, transducerGraph, databaseGraph)
+        transducerGraph =
+            if (data.computationMode.computationProperties.generateTransducer && data.computationMode.computationProperties.transducerGeneration != null) {
+                // generate transducer
+                when (data.computationMode.computationProperties.transducerGeneration) {
+                    ComputationProperties.TransducerGeneration.ClassicalAnswersPreserving -> transducerReader.generateClassicAnswersTransducer(
+                        alphabet
+                    )
+
+                    ComputationProperties.TransducerGeneration.EditDistance -> transducerReader.generateEditDistanceTransducer(
+                        alphabet
+                    )
+                }
+            } else {
+                // transducer file is provided -> no generation needed
+                val transducerFileDb = fileRepository.findByIdentifier(data.transducerFileIdentifier!!)
+                transducerReader.readTransducerFile(systemConfigurationService.uploadPathForTransducers + transducerFileDb.filename)
+
+            }
+
+        return DataProvider(queryGraph, transducerGraph, databaseGraph, alphabet)
     }
 
-    private fun calculateDijkstra(dataProvider: DataProvider): QueryResultsData {
+    @Transactional
+    fun calculateDijkstra(dataProvider: DataProvider): Pair<ComputationStatisticsData, AnswerSetData> {
 
         val productAutomatonService = ProductAutomatonService()
         val productAutomatonGraph: ProductAutomatonGraph
@@ -69,10 +148,23 @@ class DijkstraQueryAnsweringService {
             answerMap = dijkstra.processDijkstraOverAllInitialNodes()
         }
 
-        return QueryResultsData(preprocessingTime, mainProcessingTime, makeAnswerMapReadable(answerMap))
+        val transformedAnswerMap: HashMap<Pair<String, String>, Double>
+        val postProcessingTime = measureNanoTime {
+            transformedAnswerMap = makeAnswerMapReadable(answerMap)
+        }
+
+        // we store milliseconds instead of nanoseconds, hence we need to 10^-6 all processingTimes
+        return Pair(
+            ComputationStatisticsData(
+                preprocessingTime / 1000000, mainProcessingTime / 1000000, postProcessingTime / 1000000
+            ), AnswerSetData(transformedAnswerMap)
+        )
     }
 
-    private fun calculateThreshold(data: CombinedQueryData, dataProvider: DataProvider): QueryResultsData {
+    @Transactional
+    fun calculateThreshold(
+        dataProvider: DataProvider, threshold: Double
+    ): Pair<ComputationStatisticsData, AnswerSetData> {
 
         val productAutomatonService = ProductAutomatonService()
         val productAutomatonGraph: ProductAutomatonGraph
@@ -83,14 +175,25 @@ class DijkstraQueryAnsweringService {
         }
 
         val mainProcessingTime = measureNanoTime {
-            val dijkstra = DijkstraThreshold(productAutomatonGraph, data.computationProperties.threshold!!)
-            answerMap = dijkstra.processDijkstraOverAllInitialNodes()
+            val dijkstraThreshold = DijkstraThreshold(productAutomatonGraph, threshold)
+            answerMap = dijkstraThreshold.processDijkstraOverAllInitialNodes()
         }
 
-        return QueryResultsData(preprocessingTime, mainProcessingTime, makeAnswerMapReadable(answerMap))
+        val transformedAnswerMap: HashMap<Pair<String, String>, Double>
+        val postProcessingTime = measureNanoTime {
+            transformedAnswerMap = makeAnswerMapReadable(answerMap)
+        }
+
+        // we store milliseconds instead of nanoseconds, hence we need to 10^-6 all processingTimes
+        return Pair(
+            ComputationStatisticsData(
+                preprocessingTime / 1000000, mainProcessingTime / 1000000, postProcessingTime / 1000000
+            ), AnswerSetData(transformedAnswerMap)
+        )
     }
 
-    private fun calculateTopK(data: CombinedQueryData, dataProvider: DataProvider): QueryResultsData {
+    @Transactional
+    fun calculateTopK(dataProvider: DataProvider, kValue: Int): Pair<ComputationStatisticsData, AnswerSetData> {
 
         val productAutomatonService = ProductAutomatonService()
         val productAutomatonGraph: ProductAutomatonGraph
@@ -101,23 +204,33 @@ class DijkstraQueryAnsweringService {
         }
 
         val mainProcessingTime = measureNanoTime {
-            val dijkstra = DijkstraTopK(productAutomatonGraph, data.computationProperties.topK!!)
-            answerMap = dijkstra.processDijkstraOverAllInitialNodes()
+            val dijkstraTopK = DijkstraTopK(productAutomatonGraph, kValue)
+            answerMap = dijkstraTopK.processDijkstraOverAllInitialNodes()
         }
 
-        return QueryResultsData(preprocessingTime, mainProcessingTime, makeAnswerMapReadable(answerMap))
+        val transformedAnswerMap: HashMap<Pair<String, String>, Double>
+        val postProcessingTime = measureNanoTime {
+            transformedAnswerMap = makeAnswerMapReadable(answerMap)
+        }
+
+        // we store milliseconds instead of nanoseconds, hence we need to 10^-6 all processingTimes
+        return Pair(
+            ComputationStatisticsData(
+                preprocessingTime / 1000000, mainProcessingTime / 1000000, postProcessingTime / 1000000
+            ), AnswerSetData(transformedAnswerMap)
+        )
     }
 
     private fun makeAnswerMapReadable(
         answerMap: HashMap<ProductAutomatonTuple, Double>
-    ): HashMap<StringPairData, Double> {
-        return HashMap<StringPairData, Double>().apply {
+    ): HashMap<Pair<String, String>, Double> {
+        return HashMap<Pair<String, String>, Double>().apply {
             answerMap.map { (key, value) ->
-                val newKey = StringPairData(
+                val newKey = Pair(
                     key.sourceProductAutomatonNode!!.identifier.third.identifier,
                     key.targetProductAutomatonNode.identifier.third.identifier
                 )
-                newKey to value
+                put(newKey, value)
             }
         }
     }

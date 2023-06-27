@@ -16,7 +16,7 @@ class QueryResult(
     val queryTask: QueryTask,
 
     @OneToOne
-    val computationStatistics: ComputationStatistics,
+    val computationStatistics: ComputationStatistics?,
 
     val queryResultStatus: QueryResultStatus,
 
