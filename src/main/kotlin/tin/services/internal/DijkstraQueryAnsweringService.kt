@@ -47,11 +47,11 @@ class DijkstraQueryAnsweringService(
         var queryResultStatus: QueryResult.QueryResultStatus = QueryResult.QueryResultStatus.NoError
 
 
-        when (queryTask.computationMode.computationMode) {
-            tin.model.technical.internal.ComputationMode.ComputationMode.Dijkstra -> pairContainingCompStatsAndAnswerSet =
+        when (queryTask.computationMode.computationModeEnum) {
+            tin.model.technical.internal.ComputationMode.ComputationModeEnum.Dijkstra -> pairContainingCompStatsAndAnswerSet =
                 calculateDijkstra(dataProvider)
 
-            tin.model.technical.internal.ComputationMode.ComputationMode.Threshold -> if (queryTask.computationMode.computationProperties.thresholdValue == null) {
+            tin.model.technical.internal.ComputationMode.ComputationModeEnum.Threshold -> if (queryTask.computationMode.computationProperties.thresholdValue == null) {
                 queryResultStatus = QueryResult.QueryResultStatus.ErrorInComputationMode
             } else {
                 pairContainingCompStatsAndAnswerSet = calculateThreshold(
@@ -59,7 +59,7 @@ class DijkstraQueryAnsweringService(
                 )
             }
 
-            tin.model.technical.internal.ComputationMode.ComputationMode.TopK -> if (queryTask.computationMode.computationProperties.topKValue == null) {
+            tin.model.technical.internal.ComputationMode.ComputationModeEnum.TopK -> if (queryTask.computationMode.computationProperties.topKValue == null) {
                 queryResultStatus = QueryResult.QueryResultStatus.ErrorInComputationMode
             } else {
                 pairContainingCompStatsAndAnswerSet =
@@ -83,7 +83,6 @@ class DijkstraQueryAnsweringService(
                     pairContainingCompStatsAndAnswerSet!!.first.preProcessingTimeInMs,
                     pairContainingCompStatsAndAnswerSet.first.mainProcessingTimeInMs,
                     pairContainingCompStatsAndAnswerSet.first.postProcessingTimeInMs,
-                    null
                 ),
                 QueryResult.QueryResultStatus.NoError,
                 pairContainingCompStatsAndAnswerSet.second.answerMap.mapKeys { (key, _) -> key.toString() }

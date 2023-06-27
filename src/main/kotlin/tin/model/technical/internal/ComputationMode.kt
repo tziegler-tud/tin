@@ -9,19 +9,16 @@ import javax.persistence.OneToOne
 
 @Entity
 class ComputationMode(
-    val computationMode: ComputationMode,
+    val computationModeEnum: ComputationModeEnum,
 
     @OneToOne
     val computationProperties: ComputationProperties,
-
-    @OneToOne(mappedBy = "computationMode")
-    val queryTask: QueryTask
 ) {
     @GeneratedValue
     @Id
     val id: Long = 0
 
-    enum class ComputationMode{
+    enum class ComputationModeEnum{
         Dijkstra,
         TopK,
         Threshold,

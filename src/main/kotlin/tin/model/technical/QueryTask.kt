@@ -12,8 +12,8 @@ class QueryTask(
     val databaseFileIdentifier: Long,
     var queryStatus: QueryStatus,
 
-    @OneToMany(mappedBy = "queryTask")
-    val queryResult: Set<QueryResult>?,
+    @OneToOne(mappedBy = "queryTask")
+    val queryResult: QueryResult?,
 
     @OneToOne
     val computationMode: ComputationMode,

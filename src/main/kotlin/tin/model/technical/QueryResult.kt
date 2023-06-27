@@ -6,13 +6,15 @@ import javax.persistence.ElementCollection
 import javax.persistence.Entity
 import javax.persistence.GeneratedValue
 import javax.persistence.Id
+import javax.persistence.JoinColumn
 import javax.persistence.ManyToOne
 import javax.persistence.OneToOne
 
 @Entity
 class QueryResult(
 
-    @ManyToOne
+    @OneToOne
+    @JoinColumn(name = "query_task_id")
     val queryTask: QueryTask,
 
     @OneToOne
