@@ -6,8 +6,8 @@ import org.springframework.stereotype.Service
 class SystemConfigurationService {
     private val projectPath = "C:/dev/tin"
 
-    val uploadPathForQueries = "$projectPath/src/main/resources/input/queries"
-    val uploadPathForDatabases = "$projectPath/src/main/resources/input/databases"
-    val uploadPathForTransducers = "$projectPath/src/main/resources/input/transducers"
+    val uploadPathForQueries = "$projectPath/src/main/resources/input/queries/"
+    val uploadPathForDatabases = "$projectPath/src/main/resources/input/databases/"
+    val uploadPathForTransducers = "$projectPath/src/main/resources/input/transducers/"
 
 }

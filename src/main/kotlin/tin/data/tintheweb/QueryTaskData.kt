@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import tin.model.technical.QueryTask
 
 class QueryTaskData(
-    @JsonProperty("id") val id: Long,
+    @JsonProperty("id") val id: Long?,
     @JsonProperty("computationMode") val computationMode: ComputationModeData,
     @JsonProperty("queryFileIdentifier") val queryFileIdentifier: Long,
     @JsonProperty("transducerFileIdentifier") val transducerFileIdentifier: Long?,

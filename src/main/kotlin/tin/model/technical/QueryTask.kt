@@ -4,6 +4,7 @@ import org.springframework.data.jpa.repository.JpaRepository
 import tin.model.technical.internal.ComputationMode
 import java.util.*
 import javax.persistence.*
+import kotlin.reflect.jvm.internal.impl.descriptors.deserialization.PlatformDependentDeclarationFilter.All
 
 @Entity
 class QueryTask(
@@ -15,7 +16,7 @@ class QueryTask(
     @OneToOne(mappedBy = "queryTask")
     val queryResult: QueryResult?,
 
-    @OneToOne
+    @OneToOne(cascade = arrayOf(CascadeType.ALL))
     val computationMode: ComputationMode,
 
 ) {
@@ -35,6 +36,6 @@ class QueryTask(
 
 interface QueryTaskRepository : JpaRepository<QueryTask, Long> {
 
-    fun findFirstByOrderByCreatedAtAsc(): QueryTask?
+    fun findFirstByQueryStatusOrderByCreatedAtAsc(queryStatus: QueryTask.QueryStatus): QueryTask?
 
 }
