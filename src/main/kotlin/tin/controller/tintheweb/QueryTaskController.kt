@@ -15,7 +15,7 @@ class QueryTaskController(
 
     @GetMapping("query-task/get-all-tasks")
     fun getAllQueryTasks(): List<QueryTaskData> {
-        return TODO()
+        return queryTaskService.getAllQueryTasks().map(::QueryTaskData)
     }
 
     @GetMapping("query-task/get-by-filter")
