@@ -21,12 +21,12 @@ class LocalFileSyncService(
         val folder = File(folderPath)
         var preSyncRepositoryEntities = mutableListOf<tin.model.tintheweb.File>()
 
+        preSyncRepositoryEntities = fileRepository.findAllByFiletype(FileType.RegularPathQuery).toMutableList()
+
         folder.listFiles { file -> file.isFile && file.extension == "txt" }?.forEach { rpqFile ->
             val filename = rpqFile.name
             val filelength = rpqFile.length()
             val fileLastModifiedAt = Date(rpqFile.lastModified())
-
-             preSyncRepositoryEntities = fileRepository.findAllByFiletype(FileType.RegularPathQuery).toMutableList()
 
             // check if file exists in the repo
             val existingRepoFile = fileRepository.findByFilenameAndFiletype(filename, FileType.RegularPathQuery)
@@ -59,12 +59,13 @@ class LocalFileSyncService(
         val folder = File(folderPath)
         var preSyncRepositoryEntities = mutableListOf<tin.model.tintheweb.File>()
 
+        preSyncRepositoryEntities = fileRepository.findAllByFiletype(FileType.Database).toMutableList()
+
         folder.listFiles { file -> file.isFile && file.extension == "txt" }?.forEach { databaseFile ->
             val filename = databaseFile.name
             val filelength = databaseFile.length()
             val fileLastModifiedAt = Date(databaseFile.lastModified())
 
-            preSyncRepositoryEntities = fileRepository.findAllByFiletype(FileType.Database).toMutableList()
 
             // check if file exists in the repo
             val existingRepoFile = fileRepository.findByFilenameAndFiletype(filename, FileType.Database)
@@ -97,12 +98,13 @@ class LocalFileSyncService(
         val folder = File(folderPath)
         var preSyncRepositoryEntities = mutableListOf<tin.model.tintheweb.File>()
 
+        preSyncRepositoryEntities = fileRepository.findAllByFiletype(FileType.Transducer).toMutableList()
+
         folder.listFiles { file -> file.isFile && file.extension == "txt" }?.forEach { transducerFile ->
             val filename = transducerFile.name
             val filelength = transducerFile.length()
             val fileLastModifiedAt = Date(transducerFile.lastModified())
 
-            preSyncRepositoryEntities = fileRepository.findAllByFiletype(FileType.Transducer).toMutableList()
 
             // check if file exists in the repo
             val existingRepoFile = fileRepository.findByFilenameAndFiletype(filename, FileType.Transducer)
