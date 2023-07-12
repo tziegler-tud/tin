@@ -1,8 +1,8 @@
-nodes:
+nodes
 s0, true, false
 s1, false, true
 s2, false, false
-edges:
+edges
 s0, s1, u1
 s1, s1, u2
 s0, s2, v1

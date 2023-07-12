@@ -1,9 +1,9 @@
-nodes:
+nodes
 a
 b
 c
 d
-edges:
+edges
 a, b, v2
 a, c, v2
 b, d, v1
