@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RestController
-import tin.data.tintheweb.QueryTaskData
+import tin.data.tintheweb.queryTask.QueryTaskData
 import tin.services.tintheweb.QueryTaskService
 
 @RestController

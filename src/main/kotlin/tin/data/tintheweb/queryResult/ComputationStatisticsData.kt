@@ -1,10 +1,17 @@
-package tin.data.internal
+package tin.data.tintheweb.queryResult
 
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
+import tin.model.queryResult.ComputationStatistics
 
 data class ComputationStatisticsData @JsonCreator constructor(
     @JsonProperty("preProcessingTimeInMs") val preProcessingTimeInMs: Long,
     @JsonProperty("mainProcessingTimeInMs") val mainProcessingTimeInMs: Long,
     @JsonProperty("postProcessingTimeInMs") val postProcessingTimeInMs: Long,
-)
+) {
+    constructor(model: ComputationStatistics) : this(
+        preProcessingTimeInMs = model.preProcessingTimeInMs,
+        mainProcessingTimeInMs = model.mainProcessingTimeInMs,
+        postProcessingTimeInMs = model.postProcessingTimeInMs
+    )
+}

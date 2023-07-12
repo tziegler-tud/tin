@@ -1,14 +1,9 @@
-package tin.model.technical
+package tin.model.queryResult
 
 import org.springframework.data.jpa.repository.JpaRepository
-import tin.model.technical.internal.ComputationStatistics
-import javax.persistence.ElementCollection
-import javax.persistence.Entity
-import javax.persistence.GeneratedValue
-import javax.persistence.Id
-import javax.persistence.JoinColumn
-import javax.persistence.ManyToOne
-import javax.persistence.OneToOne
+import tin.model.converter.AnswerSetConverter
+import tin.model.queryTask.QueryTask
+import javax.persistence.*
 
 @Entity
 class QueryResult(
@@ -17,13 +12,13 @@ class QueryResult(
     @JoinColumn(name = "query_task_id")
     val queryTask: QueryTask,
 
-    @OneToOne
+    @OneToOne(cascade = [CascadeType.ALL])
     val computationStatistics: ComputationStatistics?,
 
     val queryResultStatus: QueryResultStatus,
 
-    @ElementCollection
-    val answerMap: Map<String, Double>
+    @Convert(converter = AnswerSetConverter::class)
+    val answerSet: Set<AnswerTriplet>
 
 ) {
     @GeneratedValue
@@ -38,6 +33,14 @@ class QueryResult(
         ErrorInComputationMode,
         ErrorInComputationProperties
     }
+    @Embeddable
+    data class AnswerTriplet(
+        val source: String,
+        val target: String,
+        val cost: Double
+
+    )
+
 }
 
 interface QueryResultRepository : JpaRepository<QueryResult, Long>

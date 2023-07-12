@@ -1,10 +1,9 @@
-package tin.model.technical
+package tin.model.queryTask
 
 import org.springframework.data.jpa.repository.JpaRepository
-import tin.model.technical.internal.ComputationMode
+import tin.model.queryResult.QueryResult
 import java.util.*
 import javax.persistence.*
-import kotlin.reflect.jvm.internal.impl.descriptors.deserialization.PlatformDependentDeclarationFilter.All
 
 @Entity
 class QueryTask(
@@ -19,7 +18,7 @@ class QueryTask(
     @OneToOne(cascade = arrayOf(CascadeType.ALL))
     val computationMode: ComputationMode,
 
-) {
+    ) {
     @GeneratedValue
     @Id
     val id: Long = 0

@@ -23,7 +23,7 @@ class ProductAutomatonNode(
         databaseNode: DatabaseNode,
         initialState: Boolean,
         finalState: Boolean,
-        ) {
+        ) : Comparable<ProductAutomatonNode> {
 
     var identifier: Triple<QueryNode, TransducerNode, DatabaseNode>
     var isInitialState: Boolean = initialState
@@ -55,6 +55,22 @@ class ProductAutomatonNode(
 
     val identifierString: String
         get() = String.format("%s|%s|%s", identifier.first.identifier, identifier.second.identifier, identifier.third.identifier)
+
+    override fun compareTo(other: ProductAutomatonNode): Int {
+        if (this.weight == other.weight) {
+            // If weights are equal, compare based on identifier or any other desired criteria
+            // For example:
+            // return this.identifier.compareTo(other.identifier)
+            return 0
+        }
+        if (this.weight == Double.POSITIVE_INFINITY) {
+            return 1 // Only this node has positive infinity weight, consider other node greater
+        }
+        if (other.weight == Double.POSITIVE_INFINITY) {
+            return -1 // Only the other node has positive infinity weight, consider this node greater
+        }
+        return this.weight.compareTo(other.weight)
+    }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

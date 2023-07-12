@@ -1,4 +1,4 @@
-package tin.model.technical.internal
+package tin.model.queryTask
 
 import org.springframework.data.jpa.repository.JpaRepository
 import javax.persistence.Entity
@@ -12,7 +12,7 @@ class ComputationProperties(
     val generateTransducer: Boolean,
     val transducerGeneration: TransducerGeneration?,
 
-) {
+    ) {
     @GeneratedValue
     @Id
     val id: Long = 0

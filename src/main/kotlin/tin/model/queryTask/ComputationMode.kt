@@ -1,14 +1,13 @@
-package tin.model.technical.internal
+package tin.model.queryTask
 
 import org.springframework.data.jpa.repository.JpaRepository
-import tin.model.technical.QueryTask
 import javax.persistence.*
 
 @Entity
 class ComputationMode(
     val computationModeEnum: ComputationModeEnum,
 
-    @OneToOne(cascade = arrayOf(CascadeType.ALL))
+    @OneToOne(cascade = [CascadeType.ALL])
     val computationProperties: ComputationProperties,
 ) {
     @GeneratedValue

@@ -1,4 +1,4 @@
-package tin.model.technical.internal
+package tin.model.queryResult
 
 import org.springframework.data.jpa.repository.JpaRepository
 import javax.persistence.Entity

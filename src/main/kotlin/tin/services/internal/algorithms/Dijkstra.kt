@@ -69,6 +69,7 @@ class Dijkstra(val productAutomatonGraph: ProductAutomatonGraph) {
     }
 
     fun processDijkstraOverAllInitialNodes(): HashMap<ProductAutomatonTuple, Double> {
+        println("hello")
 
 
         // for all initial nodes...

@@ -3,13 +3,13 @@ package tin.services.tintheweb
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.RequestBody
-import tin.data.tintheweb.ComputationModeData
-import tin.data.tintheweb.QueryTaskData
-import tin.model.technical.QueryResult
-import tin.model.technical.QueryTask
-import tin.model.technical.QueryTaskRepository
-import tin.model.technical.internal.ComputationMode
-import tin.model.technical.internal.ComputationProperties
+import tin.data.tintheweb.queryTask.ComputationModeData
+import tin.data.tintheweb.queryTask.QueryTaskData
+import tin.model.queryResult.QueryResult
+import tin.model.queryTask.ComputationMode
+import tin.model.queryTask.ComputationProperties
+import tin.model.queryTask.QueryTask
+import tin.model.queryTask.QueryTaskRepository
 import tin.model.tintheweb.File
 import tin.model.tintheweb.FileRepository
 import tin.model.tintheweb.FileType
@@ -61,7 +61,7 @@ class QueryTaskService(
                 data.databaseFileIdentifier,
                 QueryTask.QueryStatus.Error,
                 null,
-                createComputationModeFromComputationModeData(data.computationMode)
+                transformComputationPropertiesDataToModel(data.computationMode)
             )
         } else {
             // no major error found.
@@ -72,21 +72,21 @@ class QueryTaskService(
                 data.databaseFileIdentifier,
                 QueryTask.QueryStatus.Queued,
                 null,
-                createComputationModeFromComputationModeData(data.computationMode)
+                transformComputationPropertiesDataToModel(data.computationMode)
             )
         }
         return queryTaskRepository.save(queryTask)
     }
 
-    private fun createComputationModeFromComputationModeData(data: ComputationModeData): ComputationMode {
+    private fun transformComputationPropertiesDataToModel(data: ComputationModeData): ComputationMode {
         return ComputationMode(
-            computationModeEnum = data.computationModeEnum,
-            computationProperties = ComputationProperties(
+            data.computationModeEnum,
+            ComputationProperties(
                 data.computationProperties.topKValue,
                 data.computationProperties.thresholdValue,
                 data.computationProperties.generateTransducer,
-                data.computationProperties.transducerGeneration,
-            ),
+                data.computationProperties.transducerGeneration
+            )
         )
     }
 }

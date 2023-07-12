@@ -3,19 +3,20 @@ package tin.services.internal
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import tin.data.tintheweb.queryResult.AnswerTripletData
 import tin.model.utils.ProductAutomatonTuple
-import tin.data.internal.AnswerSetData
-import tin.data.internal.ComputationStatisticsData
-import tin.model.tintheweb.DataProvider
+import tin.data.tintheweb.queryResult.ComputationStatisticsData
+import tin.model.dataProvider.DataProvider
 import tin.model.productAutomaton.ProductAutomatonGraph
-import tin.model.technical.QueryResult
-import tin.model.technical.QueryTask
-import tin.model.technical.QueryTaskRepository
-import tin.model.technical.internal.ComputationProperties
-import tin.model.technical.internal.ComputationStatistics
+import tin.model.queryResult.QueryResult
+import tin.model.queryResult.QueryResultRepository
+import tin.model.queryTask.ComputationMode
+import tin.model.queryTask.QueryTask
+import tin.model.queryTask.QueryTaskRepository
+import tin.model.queryTask.ComputationProperties
+import tin.model.queryResult.ComputationStatistics
 import tin.model.tintheweb.FileRepository
 import tin.model.transducer.TransducerGraph
-import tin.model.utils.PairOfStrings
 import tin.services.internal.algorithms.Dijkstra
 import tin.services.internal.algorithms.DijkstraThreshold
 import tin.services.internal.algorithms.DijkstraTopK
@@ -30,6 +31,7 @@ import kotlin.system.measureNanoTime
 class DijkstraQueryAnsweringService(
     private val fileRepository: FileRepository,
     private val queryTaskRepository: QueryTaskRepository,
+    private val queryResultRepository: QueryResultRepository,
 ) {
     @Autowired
     lateinit var systemConfigurationService: SystemConfigurationService
@@ -40,18 +42,17 @@ class DijkstraQueryAnsweringService(
         queryTask.apply { queryStatus = QueryTask.QueryStatus.Calculating }
         queryTaskRepository.save(queryTask)
 
-        val computationStatistics: ComputationStatistics
         val dataProvider = buildDataProvider(queryTask)
-        var pairContainingCompStatsAndAnswerSet: Pair<ComputationStatisticsData, AnswerSetData>? = null
+        var pairContainingCompStatsAndAnswerSet: Pair<ComputationStatistics, Set<QueryResult.AnswerTriplet>>? = null
 
         var queryResultStatus: QueryResult.QueryResultStatus = QueryResult.QueryResultStatus.NoError
 
 
         when (queryTask.computationMode.computationModeEnum) {
-            tin.model.technical.internal.ComputationMode.ComputationModeEnum.Dijkstra -> pairContainingCompStatsAndAnswerSet =
+            ComputationMode.ComputationModeEnum.Dijkstra -> pairContainingCompStatsAndAnswerSet =
                 calculateDijkstra(dataProvider)
 
-            tin.model.technical.internal.ComputationMode.ComputationModeEnum.Threshold -> if (queryTask.computationMode.computationProperties.thresholdValue == null) {
+            ComputationMode.ComputationModeEnum.Threshold -> if (queryTask.computationMode.computationProperties.thresholdValue == null) {
                 queryResultStatus = QueryResult.QueryResultStatus.ErrorInComputationMode
             } else {
                 pairContainingCompStatsAndAnswerSet = calculateThreshold(
@@ -59,7 +60,7 @@ class DijkstraQueryAnsweringService(
                 )
             }
 
-            tin.model.technical.internal.ComputationMode.ComputationModeEnum.TopK -> if (queryTask.computationMode.computationProperties.topKValue == null) {
+            ComputationMode.ComputationModeEnum.TopK -> if (queryTask.computationMode.computationProperties.topKValue == null) {
                 queryResultStatus = QueryResult.QueryResultStatus.ErrorInComputationMode
             } else {
                 pairContainingCompStatsAndAnswerSet =
@@ -67,28 +68,38 @@ class DijkstraQueryAnsweringService(
             }
         }
 
-        // return if an error was found
-        return if (queryResultStatus != QueryResult.QueryResultStatus.NoError) {
-            QueryResult(
-                queryTask,
-                null,
-                queryResultStatus,
-                HashMap()
-            )
-        } else {
-            // no error found
-            QueryResult(
-                queryTask,
-                ComputationStatistics(
-                    pairContainingCompStatsAndAnswerSet!!.first.preProcessingTimeInMs,
-                    pairContainingCompStatsAndAnswerSet.first.mainProcessingTimeInMs,
-                    pairContainingCompStatsAndAnswerSet.first.postProcessingTimeInMs,
-                ),
-                QueryResult.QueryResultStatus.NoError,
-                pairContainingCompStatsAndAnswerSet.second.answerMap.mapKeys { (key, _) -> key.toString() }
-                    .toMutableMap().let { HashMap(it) }
-            )
-        }
+        val queryResult =
+
+            // return if an error was found
+            if (queryResultStatus != QueryResult.QueryResultStatus.NoError) {
+                QueryResult(
+                    queryTask,
+                    null,
+                    queryResultStatus,
+                    HashSet()
+                )
+            } else {
+                // no error found
+                QueryResult(
+                    queryTask,
+                    ComputationStatistics(
+                        pairContainingCompStatsAndAnswerSet!!.first.preProcessingTimeInMs,
+                        pairContainingCompStatsAndAnswerSet.first.mainProcessingTimeInMs,
+                        pairContainingCompStatsAndAnswerSet.first.postProcessingTimeInMs,
+                    ),
+                    QueryResult.QueryResultStatus.NoError,
+                    pairContainingCompStatsAndAnswerSet.second
+                )
+            }
+
+        // set status to finished
+        queryTask.apply { queryStatus = QueryTask.QueryStatus.Finished }
+        queryTaskRepository.save(queryTask)
+
+        // save the queryResult
+        queryResultRepository.save(queryResult)
+
+        return queryResult
     }
 
     private fun buildDataProvider(data: QueryTask): DataProvider {
@@ -133,7 +144,7 @@ class DijkstraQueryAnsweringService(
     }
 
     @Transactional
-    fun calculateDijkstra(dataProvider: DataProvider): Pair<ComputationStatisticsData, AnswerSetData> {
+    fun calculateDijkstra(dataProvider: DataProvider): Pair<ComputationStatistics, Set<QueryResult.AnswerTriplet>> {
 
         val productAutomatonService = ProductAutomatonService()
         val productAutomatonGraph: ProductAutomatonGraph
@@ -148,23 +159,23 @@ class DijkstraQueryAnsweringService(
             answerMap = dijkstra.processDijkstraOverAllInitialNodes()
         }
 
-        val transformedAnswerMap: HashMap<PairOfStrings, Double>
+        val transformedAnswerSet: Set<QueryResult.AnswerTriplet>
         val postProcessingTime = measureNanoTime {
-            transformedAnswerMap = makeAnswerMapReadable(answerMap)
+            transformedAnswerSet = makeAnswerMapReadable(answerMap)
         }
 
         // we store milliseconds instead of nanoseconds, hence we need to 10^-6 all processingTimes
         return Pair(
-            ComputationStatisticsData(
+            ComputationStatistics(
                 preprocessingTime / 1000000, mainProcessingTime / 1000000, postProcessingTime / 1000000
-            ), AnswerSetData(transformedAnswerMap)
+            ), transformedAnswerSet
         )
     }
 
     @Transactional
     fun calculateThreshold(
         dataProvider: DataProvider, threshold: Double
-    ): Pair<ComputationStatisticsData, AnswerSetData> {
+    ): Pair<ComputationStatistics, Set<QueryResult.AnswerTriplet>> {
 
         val productAutomatonService = ProductAutomatonService()
         val productAutomatonGraph: ProductAutomatonGraph
@@ -179,21 +190,24 @@ class DijkstraQueryAnsweringService(
             answerMap = dijkstraThreshold.processDijkstraOverAllInitialNodes()
         }
 
-        val transformedAnswerMap: HashMap<PairOfStrings, Double>
+        val transformedAnswerSet: Set<QueryResult.AnswerTriplet>
         val postProcessingTime = measureNanoTime {
-            transformedAnswerMap = makeAnswerMapReadable(answerMap)
+            transformedAnswerSet = makeAnswerMapReadable(answerMap)
         }
 
         // we store milliseconds instead of nanoseconds, hence we need to 10^-6 all processingTimes
         return Pair(
-            ComputationStatisticsData(
+            ComputationStatistics(
                 preprocessingTime / 1000000, mainProcessingTime / 1000000, postProcessingTime / 1000000
-            ), AnswerSetData(transformedAnswerMap)
+            ), transformedAnswerSet
         )
     }
 
     @Transactional
-    fun calculateTopK(dataProvider: DataProvider, kValue: Int): Pair<ComputationStatisticsData, AnswerSetData> {
+    fun calculateTopK(
+        dataProvider: DataProvider,
+        kValue: Int
+    ): Pair<ComputationStatistics, Set<QueryResult.AnswerTriplet>> {
 
         val productAutomatonService = ProductAutomatonService()
         val productAutomatonGraph: ProductAutomatonGraph
@@ -208,29 +222,32 @@ class DijkstraQueryAnsweringService(
             answerMap = dijkstraTopK.processDijkstraOverAllInitialNodes()
         }
 
-        val transformedAnswerMap: HashMap<PairOfStrings, Double>
+        val transformedAnswerSet: Set<QueryResult.AnswerTriplet>
         val postProcessingTime = measureNanoTime {
-            transformedAnswerMap = makeAnswerMapReadable(answerMap)
+            transformedAnswerSet = makeAnswerMapReadable(answerMap)
         }
 
         // we store milliseconds instead of nanoseconds, hence we need to 10^-6 all processingTimes
         return Pair(
-            ComputationStatisticsData(
+            ComputationStatistics(
                 preprocessingTime / 1000000, mainProcessingTime / 1000000, postProcessingTime / 1000000
-            ), AnswerSetData(transformedAnswerMap)
+            ), transformedAnswerSet
         )
     }
 
+    /**
+     * transforms internal answerMap containing a (source, target) ProductAutomatonTuple as key, and a Double as value (cost of reaching target from source)
+     * into a set of AnswerTriplets (source.name, target.name, double); omitting the technical ProductAutomatonNodes
+     * after finishing the query we do not care about technical details, we simply want the (human-readable) results.
+     */
     private fun makeAnswerMapReadable(
         answerMap: HashMap<ProductAutomatonTuple, Double>
-    ): HashMap<PairOfStrings, Double> {
-        return HashMap<PairOfStrings, Double>().apply {
-            answerMap.map { (key, value) ->
-                val newKey = PairOfStrings(
-                    key.sourceProductAutomatonNode!!.identifier.third.identifier,
-                    key.targetProductAutomatonNode.identifier.third.identifier
-                )
-                put(newKey, value)
+    ): Set<QueryResult.AnswerTriplet> {
+        return HashSet<QueryResult.AnswerTriplet>().apply {
+            answerMap.forEach { (key, value) ->
+                val source = key.sourceProductAutomatonNode!!.identifier.third.identifier
+                val target = key.targetProductAutomatonNode.identifier.third.identifier
+                add(QueryResult.AnswerTriplet(source, target, value))
             }
         }
     }
