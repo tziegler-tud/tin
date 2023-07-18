@@ -3,14 +3,11 @@ package tin.services.internal
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import tin.data.tintheweb.queryResult.AnswerTripletData
 import tin.model.utils.ProductAutomatonTuple
-import tin.data.tintheweb.queryResult.ComputationStatisticsData
 import tin.model.dataProvider.DataProvider
 import tin.model.productAutomaton.ProductAutomatonGraph
 import tin.model.queryResult.QueryResult
 import tin.model.queryResult.QueryResultRepository
-import tin.model.queryTask.ComputationMode
 import tin.model.queryTask.QueryTask
 import tin.model.queryTask.QueryTaskRepository
 import tin.model.queryTask.ComputationProperties
@@ -48,23 +45,23 @@ class DijkstraQueryAnsweringService(
         var queryResultStatus: QueryResult.QueryResultStatus = QueryResult.QueryResultStatus.NoError
 
 
-        when (queryTask.computationMode.computationModeEnum) {
-            ComputationMode.ComputationModeEnum.Dijkstra -> pairContainingCompStatsAndAnswerSet =
+        when (queryTask.computationProperties.computationModeEnum) {
+            ComputationProperties.ComputationModeEnum.Dijkstra -> pairContainingCompStatsAndAnswerSet =
                 calculateDijkstra(dataProvider)
 
-            ComputationMode.ComputationModeEnum.Threshold -> if (queryTask.computationMode.computationProperties.thresholdValue == null) {
+            ComputationProperties.ComputationModeEnum.Threshold -> if (queryTask.computationProperties.thresholdValue == null) {
                 queryResultStatus = QueryResult.QueryResultStatus.ErrorInComputationMode
             } else {
                 pairContainingCompStatsAndAnswerSet = calculateThreshold(
-                    dataProvider, queryTask.computationMode.computationProperties.thresholdValue
+                    dataProvider, queryTask.computationProperties.thresholdValue
                 )
             }
 
-            ComputationMode.ComputationModeEnum.TopK -> if (queryTask.computationMode.computationProperties.topKValue == null) {
+            ComputationProperties.ComputationModeEnum.TopK -> if (queryTask.computationProperties.topKValue == null) {
                 queryResultStatus = QueryResult.QueryResultStatus.ErrorInComputationMode
             } else {
                 pairContainingCompStatsAndAnswerSet =
-                    calculateTopK(dataProvider, queryTask.computationMode.computationProperties.topKValue)
+                    calculateTopK(dataProvider, queryTask.computationProperties.topKValue)
             }
         }
 
@@ -122,9 +119,9 @@ class DijkstraQueryAnsweringService(
 
 
         transducerGraph =
-            if (data.computationMode.computationProperties.generateTransducer && data.computationMode.computationProperties.transducerGeneration != null) {
+            if (data.computationProperties.generateTransducer && data.computationProperties.transducerGeneration != null) {
                 // generate transducer
-                when (data.computationMode.computationProperties.transducerGeneration) {
+                when (data.computationProperties.transducerGeneration) {
                     ComputationProperties.TransducerGeneration.ClassicalAnswersPreserving -> transducerReader.generateClassicAnswersTransducer(
                         alphabet
                     )
@@ -251,6 +248,4 @@ class DijkstraQueryAnsweringService(
             }
         }
     }
-
-
 }

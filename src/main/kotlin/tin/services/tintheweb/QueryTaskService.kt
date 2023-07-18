@@ -3,10 +3,8 @@ package tin.services.tintheweb
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.RequestBody
-import tin.data.tintheweb.queryTask.ComputationModeData
 import tin.data.tintheweb.queryTask.QueryTaskData
 import tin.model.queryResult.QueryResult
-import tin.model.queryTask.ComputationMode
 import tin.model.queryTask.ComputationProperties
 import tin.model.queryTask.QueryTask
 import tin.model.queryTask.QueryTaskRepository
@@ -27,7 +25,6 @@ class QueryTaskService(
 
     @Transactional
     fun createQueryTask(@RequestBody data: QueryTaskData): QueryTask {
-        val queryTask: QueryTask
 
         // check for potential errors before we queue the task.
         // first: check, if the files are present.
@@ -36,7 +33,7 @@ class QueryTaskService(
             fileRepository.findByIdAndFiletype(data.queryFileIdentifier, FileType.RegularPathQuery)
         val tempDatabaseFile: File? = fileRepository.findByIdAndFiletype(data.databaseFileIdentifier, FileType.Database)
 
-        if (data.transducerFileIdentifier != null && !data.computationMode.computationProperties.generateTransducer) {
+        if (data.transducerFileIdentifier != null && !data.computationProperties.generateTransducer) {
             // transducerFile is present AND it should be used as well
             val tempTransducerFile: File? =
                 fileRepository.findByIdAndFiletype(data.transducerFileIdentifier, FileType.Transducer)
@@ -48,6 +45,22 @@ class QueryTaskService(
         if (tempQueryFile == null) errorWhileReadingFiles = QueryResult.QueryResultStatus.QueryFileNotFound
         if (tempDatabaseFile == null) errorWhileReadingFiles = QueryResult.QueryResultStatus.DatabaseFileNotFound
 
+        val queryTask = QueryTask(
+            data.queryFileIdentifier,
+            data.transducerFileIdentifier,
+            data.databaseFileIdentifier,
+            QueryTask.QueryStatus.Error,
+            null,
+            ComputationProperties(
+                topKValue = data.computationProperties.topKValue,
+                thresholdValue = data.computationProperties.thresholdValue,
+                generateTransducer = data.computationProperties.generateTransducer,
+                transducerGeneration = data.computationProperties.transducerGeneration,
+                name = data.computationProperties.name,
+                computationModeEnum = data.computationProperties.computationModeEnum
+            )
+        )
+
         // if an error is found, we don't queue the task
         if (errorWhileReadingFiles in listOf(
                 QueryResult.QueryResultStatus.QueryFileNotFound,
@@ -55,39 +68,14 @@ class QueryTaskService(
                 QueryResult.QueryResultStatus.DatabaseFileNotFound
             )
         ) {
-            queryTask = QueryTask(
-                data.queryFileIdentifier,
-                data.transducerFileIdentifier,
-                data.databaseFileIdentifier,
-                QueryTask.QueryStatus.Error,
-                null,
-                transformComputationPropertiesDataToModel(data.computationMode)
-            )
+            queryTask.queryStatus = QueryTask.QueryStatus.Error
         } else {
+
             // no major error found.
-
-            queryTask = QueryTask(
-                data.queryFileIdentifier,
-                data.transducerFileIdentifier,
-                data.databaseFileIdentifier,
-                QueryTask.QueryStatus.Queued,
-                null,
-                transformComputationPropertiesDataToModel(data.computationMode)
-            )
+            queryTask.queryStatus = QueryTask.QueryStatus.Queued
         }
-        return queryTaskRepository.save(queryTask)
-    }
 
-    private fun transformComputationPropertiesDataToModel(data: ComputationModeData): ComputationMode {
-        return ComputationMode(
-            data.computationModeEnum,
-            ComputationProperties(
-                data.computationProperties.topKValue,
-                data.computationProperties.thresholdValue,
-                data.computationProperties.generateTransducer,
-                data.computationProperties.transducerGeneration
-            )
-        )
+        return queryTaskRepository.save(queryTask)
     }
 }
 

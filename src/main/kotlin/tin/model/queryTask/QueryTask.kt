@@ -15,8 +15,8 @@ class QueryTask(
     @OneToOne(mappedBy = "queryTask")
     val queryResult: QueryResult?,
 
-    @OneToOne(cascade = arrayOf(CascadeType.ALL))
-    val computationMode: ComputationMode,
+    @ManyToOne(cascade = [CascadeType.ALL])
+    val computationProperties: ComputationProperties
 
     ) {
     @GeneratedValue
