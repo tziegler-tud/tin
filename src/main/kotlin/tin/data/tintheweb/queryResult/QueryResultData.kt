@@ -11,7 +11,7 @@ class QueryResultData(
 ) {
     constructor(model: QueryResult) : this(
         id = model.id,
-        computationStatistics = model.computationStatistics?.let { ComputationStatisticsData(it.preProcessingTimeInMs, it.mainProcessingTimeInMs, it.postProcessingTimeInMs ) },
+        computationStatistics = model.computationStatistics?.let { ComputationStatisticsData(it) },
         queryResultStatus = model.queryResultStatus,
         answerSet = model.answerSet.map { AnswerTripletData(it) }.toSet()
     )

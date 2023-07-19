@@ -10,6 +10,7 @@ class ComputationStatistics(
     val preProcessingTimeInMs: Long,
     val mainProcessingTimeInMs: Long,
     val postProcessingTimeInMs: Long,
+    val combinedTimeInMs: Long,
 ) {
 
     @GeneratedValue

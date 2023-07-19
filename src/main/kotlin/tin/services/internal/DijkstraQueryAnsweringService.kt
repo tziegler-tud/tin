@@ -79,11 +79,7 @@ class DijkstraQueryAnsweringService(
                 // no error found
                 QueryResult(
                     queryTask,
-                    ComputationStatistics(
-                        pairContainingCompStatsAndAnswerSet!!.first.preProcessingTimeInMs,
-                        pairContainingCompStatsAndAnswerSet.first.mainProcessingTimeInMs,
-                        pairContainingCompStatsAndAnswerSet.first.postProcessingTimeInMs,
-                    ),
+                    pairContainingCompStatsAndAnswerSet!!.first,
                     QueryResult.QueryResultStatus.NoError,
                     pairContainingCompStatsAndAnswerSet.second
                 )
@@ -161,10 +157,12 @@ class DijkstraQueryAnsweringService(
             transformedAnswerSet = makeAnswerMapReadable(answerMap)
         }
 
+        val combinedTime = preprocessingTime + mainProcessingTime + postProcessingTime
+
         // we store milliseconds instead of nanoseconds, hence we need to 10^-6 all processingTimes
         return Pair(
             ComputationStatistics(
-                preprocessingTime / 1000000, mainProcessingTime / 1000000, postProcessingTime / 1000000
+                preprocessingTime / 1000000, mainProcessingTime / 1000000, postProcessingTime / 1000000, combinedTime / 1000000
             ), transformedAnswerSet
         )
     }
@@ -192,10 +190,12 @@ class DijkstraQueryAnsweringService(
             transformedAnswerSet = makeAnswerMapReadable(answerMap)
         }
 
+        val combinedTime = preprocessingTime + mainProcessingTime + postProcessingTime
+
         // we store milliseconds instead of nanoseconds, hence we need to 10^-6 all processingTimes
         return Pair(
             ComputationStatistics(
-                preprocessingTime / 1000000, mainProcessingTime / 1000000, postProcessingTime / 1000000
+                preprocessingTime / 1000000, mainProcessingTime / 1000000, postProcessingTime / 1000000, combinedTime / 1000000
             ), transformedAnswerSet
         )
     }
@@ -224,10 +224,12 @@ class DijkstraQueryAnsweringService(
             transformedAnswerSet = makeAnswerMapReadable(answerMap)
         }
 
+        val combinedTime = preprocessingTime + mainProcessingTime + postProcessingTime
+
         // we store milliseconds instead of nanoseconds, hence we need to 10^-6 all processingTimes
         return Pair(
             ComputationStatistics(
-                preprocessingTime / 1000000, mainProcessingTime / 1000000, postProcessingTime / 1000000
+                preprocessingTime / 1000000, mainProcessingTime / 1000000, postProcessingTime / 1000000, combinedTime / 1000000
             ), transformedAnswerSet
         )
     }
