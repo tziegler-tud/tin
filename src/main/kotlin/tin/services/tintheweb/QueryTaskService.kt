@@ -3,7 +3,7 @@ package tin.services.tintheweb
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.RequestBody
-import tin.data.tintheweb.queryTask.QueryTaskData
+import tin.data.tintheweb.queryTask.QueryTaskCreateData
 import tin.model.queryResult.QueryResult
 import tin.model.queryTask.ComputationProperties
 import tin.model.queryTask.QueryTask
@@ -24,7 +24,7 @@ class QueryTaskService(
     }
 
     @Transactional
-    fun createQueryTask(@RequestBody data: QueryTaskData): QueryTask {
+    fun createQueryTask(@RequestBody data: QueryTaskCreateData): QueryTask {
 
         // check for potential errors before we queue the task.
         // first: check, if the files are present.
