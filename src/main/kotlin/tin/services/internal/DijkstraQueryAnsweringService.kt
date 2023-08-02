@@ -106,7 +106,7 @@ class DijkstraQueryAnsweringService(
         val databaseReader = DatabaseReader()
 
         val queryGraph =
-            queryReader.readRegularPathQueryFile(systemConfigurationService.uploadPathForQueries + "/" + queryFileDb.filename)
+            queryReader.readRegularPathQueryFile(systemConfigurationService.uploadPathForQueries + queryFileDb.filename)
         val databaseGraph =
             databaseReader.readDatabaseFile(systemConfigurationService.uploadPathForDatabases + databaseFileDb.filename)
 
