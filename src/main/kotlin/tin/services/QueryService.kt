@@ -10,6 +10,7 @@ import tin.services.technical.SystemConfigurationService
 import java.io.File
 
 @Service
+@Deprecated("Deprecated as we do not allow for File Uploads yet.")
 class QueryService(
     // Repositories
     private val fileRepository: FileRepository
