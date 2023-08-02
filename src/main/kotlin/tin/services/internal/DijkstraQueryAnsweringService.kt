@@ -19,9 +19,9 @@ import tin.services.internal.algorithms.DijkstraThreshold
 import tin.services.internal.algorithms.DijkstraTopK
 import tin.services.technical.SystemConfigurationService
 import tin.utils.findByIdentifier
-import tin.services.internal.fileReaders.DatabaseReader
-import tin.services.internal.fileReaders.QueryReader
-import tin.services.internal.fileReaders.TransducerReader
+import tin.services.internal.fileReaders.DatabaseReaderService
+import tin.services.internal.fileReaders.QueryReaderService
+import tin.services.internal.fileReaders.TransducerReaderService
 import kotlin.system.measureNanoTime
 
 @Service
@@ -101,14 +101,14 @@ class DijkstraQueryAnsweringService(
         val queryFileDb = fileRepository.findByIdentifier(data.queryFileIdentifier)
         val databaseFileDb = fileRepository.findByIdentifier(data.databaseFileIdentifier)
 
-        val queryReader = QueryReader()
-        val transducerReader = TransducerReader()
-        val databaseReader = DatabaseReader()
+        val queryReaderService = QueryReaderService()
+        val transducerReaderService = TransducerReaderService()
+        val databaseReaderService = DatabaseReaderService()
 
         val queryGraph =
-            queryReader.readRegularPathQueryFile(systemConfigurationService.uploadPathForQueries + queryFileDb.filename)
+            queryReaderService.readRegularPathQueryFile(systemConfigurationService.uploadPathForQueries + queryFileDb.filename)
         val databaseGraph =
-            databaseReader.readDatabaseFile(systemConfigurationService.uploadPathForDatabases + databaseFileDb.filename)
+            databaseReaderService.readDatabaseFile(systemConfigurationService.uploadPathForDatabases + databaseFileDb.filename)
 
         val transducerGraph: TransducerGraph
         val alphabet = queryGraph.alphabet.plus(databaseGraph.alphabet)
@@ -118,18 +118,18 @@ class DijkstraQueryAnsweringService(
             if (data.computationProperties.generateTransducer && data.computationProperties.transducerGeneration != null) {
                 // generate transducer
                 when (data.computationProperties.transducerGeneration) {
-                    ComputationProperties.TransducerGeneration.ClassicalAnswersPreserving -> transducerReader.generateClassicAnswersTransducer(
+                    ComputationProperties.TransducerGeneration.ClassicalAnswersPreserving -> transducerReaderService.generateClassicAnswersTransducer(
                         alphabet
                     )
 
-                    ComputationProperties.TransducerGeneration.EditDistance -> transducerReader.generateEditDistanceTransducer(
+                    ComputationProperties.TransducerGeneration.EditDistance -> transducerReaderService.generateEditDistanceTransducer(
                         alphabet
                     )
                 }
             } else {
                 // transducer file is provided -> no generation needed
                 val transducerFileDb = fileRepository.findByIdentifier(data.transducerFileIdentifier!!)
-                transducerReader.readTransducerFile(systemConfigurationService.uploadPathForTransducers + transducerFileDb.filename)
+                transducerReaderService.readTransducerFile(systemConfigurationService.uploadPathForTransducers + transducerFileDb.filename)
 
             }
 

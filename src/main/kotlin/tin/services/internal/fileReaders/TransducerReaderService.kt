@@ -1,12 +1,13 @@
 package tin.services.internal.fileReaders
 
 
+import org.springframework.stereotype.Service
 import tin.model.transducer.TransducerGraph
 import tin.model.transducer.TransducerNode
 import java.io.BufferedReader
 import java.io.File
-
-class TransducerReader {
+@Service
+class TransducerReaderService {
 
     fun readTransducerFile(file: String): TransducerGraph {
         val transducerGraph = TransducerGraph()

@@ -1,21 +1,22 @@
 package tin.services.internal.fileReaders
 
-import tin.model.database.DatabaseGraph
-import tin.model.database.DatabaseNode
+import org.springframework.stereotype.Service
+import tin.model.query.QueryGraph
+import tin.model.query.QueryNode
 import java.io.BufferedReader
 import java.io.File
 import java.util.HashMap
+@Service
+class QueryReaderService {
 
-class DatabaseReader {
-
-    fun readDatabaseFile(file: String): DatabaseGraph {
-        val databaseGraph = DatabaseGraph()
-        val databaseNodes = HashMap<String, DatabaseNode>() // map containing the QueryNodes
+    fun readRegularPathQueryFile(file: String): QueryGraph {
+        val queryGraph = QueryGraph()
+        val queryNodes = HashMap<String, QueryNode>() // map containing the QueryNodes
         val alphabet = HashSet<String>()
 
-        var source: DatabaseNode
-        var target: DatabaseNode
-        var node: DatabaseNode
+        var source: QueryNode
+        var target: QueryNode
+        var node: QueryNode
         var edgeLabel: String
         var stringArray: Array<String>
 
@@ -55,9 +56,9 @@ class DatabaseReader {
 
                 stringArray = currentLine.split(",").toTypedArray()
 
-                node = DatabaseNode(stringArray[0])
-                databaseNodes[stringArray[0]] = node
-                databaseGraph.addNodes(node)
+                node = QueryNode(stringArray[0], stringArray[1].toBoolean(), stringArray[2].toBoolean())
+                queryNodes[stringArray[0]] = node
+                queryGraph.addQueryNodes(node)
 
             }
 
@@ -67,18 +68,18 @@ class DatabaseReader {
                 stringArray = currentLine.split(",").toTypedArray()
 
                 // nodes have to be present, because they have been defined before reading any edges in the file
-                source = databaseNodes[stringArray[0]]!!
-                target = databaseNodes[stringArray[1]]!!
+                source = queryNodes[stringArray[0]]!!
+                target = queryNodes[stringArray[1]]!!
 
                 edgeLabel = stringArray[2]
                 alphabet.add(edgeLabel)
 
-                databaseGraph.addEdge(source, target, edgeLabel)
+                queryGraph.addQueryEdge(source, target, edgeLabel)
 
             }
         }
 
-        databaseGraph.alphabet = alphabet
-        return databaseGraph
+        queryGraph.alphabet = alphabet
+        return queryGraph
     }
 }
