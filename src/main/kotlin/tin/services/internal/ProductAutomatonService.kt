@@ -1,5 +1,6 @@
 package tin.services.internal
 
+import org.springframework.stereotype.Service
 import tin.model.dataProvider.DataProvider
 import tin.model.database.DatabaseEdge
 import tin.model.productAutomaton.ProductAutomatonEdgeType
@@ -8,7 +9,7 @@ import tin.model.productAutomaton.ProductAutomatonNode
 import tin.model.query.QueryEdge
 import tin.model.transducer.TransducerEdge
 
-
+@Service
 class ProductAutomatonService() {
 
     /**
