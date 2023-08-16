@@ -1,30 +1,40 @@
 package tin.model.database
 
-import tin.utils.compareEdgeSets
-import java.util.*
+import kotlin.collections.HashSet
 
 
 class DatabaseNode(
-        var identifier: String,
-        var edges: LinkedList<DatabaseEdge> = LinkedList()
+    var identifier: String,
+    var edges: HashSet<DatabaseEdge> = hashSetOf()
 ) {
+    /**
+     * plain DatabaseNode.equals() and DatabaseEdge.equals() methods will cause a circular dependency and stack overflows.
+     * It is more important to check here if edges set is equal since we have to trim the equals() method in the Edge class.
+     * That will resolve the circular dependency.
+     */
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is DatabaseNode) return false
 
-    fun equals(otherNode: DatabaseNode): Boolean {
-        // compare basic parameters
-        if (compareToExcludingEdges(otherNode)) {
-            // compare edges
-            run {
-                return if (this.edges.size != otherNode.edges.size) {
-                    false
-                } else compareEdgeSets(this.edges, otherNode.edges)
-            }
-        }
-        return false
+        return this.equalsWithoutEdges(other) &&
+                edges == other.edges
     }
 
+    /**
+     * we need all properties to be checked because we use this as an equals() method
+     * We must not check for edges == other.edges but we can check their size to prevent at least some false positives.
+     */
+    fun equalsWithoutEdges(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is DatabaseNode) return false
 
-    fun compareToExcludingEdges(otherNode: DatabaseNode): Boolean {
-        return identifier == otherNode.identifier
+        return identifier == other.identifier &&
+                edges.size == other.edges.size
     }
 
+    override fun hashCode(): Int {
+        var result = identifier.hashCode()
+        result = 31 * result + edges.hashCode()
+        return result
+    }
 }

@@ -2,45 +2,58 @@ package tin.model.query
 
 import tin.utils.compareEdgeSets
 import java.util.*
+import kotlin.collections.HashSet
 
 class QueryNode(
-        val identifier: String,
-        val isInitialState: Boolean,
-        val isFinalState: Boolean,
-        val edges: LinkedList<QueryEdge>) {
+    val identifier: String,
+    val isInitialState: Boolean,
+    val isFinalState: Boolean,
+    val edges: HashSet<QueryEdge>
+) {
 
-    constructor(identifier: String,
-                isInitialState: Boolean,
-                isFinalState: Boolean
+    constructor(
+        identifier: String,
+        isInitialState: Boolean,
+        isFinalState: Boolean
     ) : this(
-            identifier = identifier,
-            isInitialState = isInitialState,
-            isFinalState = isFinalState,
-            edges = LinkedList())
+        identifier = identifier,
+        isInitialState = isInitialState,
+        isFinalState = isFinalState,
+        edges = hashSetOf()
+    )
 
-    fun equals(otherNode: QueryNode): Boolean {
-        // compare basic parameters
-        if (equalsExcludingEdges(otherNode)) {
-            // compare edges
-            if ((this.edges.size == 0).xor(otherNode.edges.size == 0)) {
-                // if one has no edges but the other has -> not equals
-                return false
-            } else if (this.edges.size == 0 && otherNode.edges.size == 0) {
-                // if both have no edges -> equals
-                return true
-            }
+    /**
+     * plain QueryNode.equals() and QueryEdge.equals() methods will cause a circular dependency and stack overflows.
+     * It is more important to check here if edges set is equal since we have to trim the equals() method in the Edge class.
+     * That will resolve the circular dependency.
+     */
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is QueryNode) return false
 
-
-            return if (this.edges.size != otherNode.edges.size) {
-                false
-            } else compareEdgeSets(this.edges, otherNode.edges)
-
-        }
-        return false
+        return this.equalsWithoutEdges(other) &&
+                edges == other.edges
     }
 
+    /**
+     * we need all properties to be checked because we use this as an equals() method
+     * We must not check for edges == other.edges but we can check their size to prevent at least some false positives.
+     */
+    fun equalsWithoutEdges(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is QueryNode) return false
 
-    fun equalsExcludingEdges(otherNode: QueryNode): Boolean {
-        return isInitialState == otherNode.isInitialState && isFinalState == otherNode.isFinalState && identifier == otherNode.identifier
+        return identifier == other.identifier &&
+                isInitialState == other.isInitialState &&
+                isFinalState == other.isFinalState &&
+                edges.size == other.edges.size
+    }
+
+    override fun hashCode(): Int {
+        var result = identifier.hashCode()
+        result = 31 * result + isInitialState.hashCode()
+        result = 31 * result + isFinalState.hashCode()
+        result = 31 * result + edges.hashCode()
+        return result
     }
 }

@@ -1,5 +1,6 @@
 package tin.model.query
 
+import tin.model.transducer.TransducerNode
 import kotlin.collections.HashSet
 
 class QueryGraph {
@@ -10,19 +11,46 @@ class QueryGraph {
         nodes.addAll(listOf(*n))
     }
 
+    /**
+     * Note that we cannot use "nodes.add()" or similar functions that use "equals()" here.
+     * This is because we call this function to populate the graph;
+     * i.e. when calling this function several times after another
+     * even the same node differs now from the last iteration because one edge was added.
+     * We thus have to treat the comparison of nodes differently for the sake of keeping it unique outside the graph population.
+     */
     fun addQueryEdge(source: QueryNode, target: QueryNode, label: String) {
+        /** check for existing source and target */
+        val existingSource = findNodeWithoutEdgeComparison(source)
+        val existingTarget = findNodeWithoutEdgeComparison(target)
 
-        // .add on a hashSet does not add an element that is already present! We don't need to check whether the node is already created.
-        nodes.add(source)
-        nodes.add(target)
+        /** if it wasn't found: we add the new nodes.*/
+        if (existingSource == null) {
+            nodes.add(source)
+        }
 
-        // if this edge is already present -> don't add it.
-        for (edge in source.edges) {
-            if ((edge.source == source) && (edge.target == target) && edge.label.equals(label, ignoreCase = true)) {
+        if (existingTarget == null) {
+            nodes.add(target)
+        }
+
+        val newEdge = QueryEdge(source, target, label)
+
+        // don't add duplicate edges!
+        for (existingEdge in source.edges) {
+            if (existingEdge == newEdge) {
                 return
             }
         }
-        source.edges.add(QueryEdge(source, target, label))
+        source.edges.add(newEdge)
+    }
+
+    /** helper function to use in the context of populating the graph only.
+     * Note that since we cannot have different nodes with the same identifier,
+     * we just have to check the identifier property and no other properties.
+     */
+    private fun findNodeWithoutEdgeComparison(queryNode: QueryNode): QueryNode? {
+        return nodes.find {
+            it.identifier == queryNode.identifier
+        }
     }
 
     fun printGraph() {
@@ -34,24 +62,18 @@ class QueryGraph {
     }
 
 
-    // only use this for test purposes!
-    fun equals(otherGraph: QueryGraph): Boolean {
-        return if (nodes.size != otherGraph.nodes.size) {
-            false
-        } else equalsOtherNodeSet(otherGraph.nodes)
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is QueryGraph) return false
+
+        return nodes == other.nodes &&
+                alphabet == other.alphabet
     }
 
-    private fun equalsOtherNodeSet(otherNodeSet: Set<QueryNode>): Boolean {
-        var pairsFound = 0
-        for (thisNode in nodes) {
-            for (otherNode in otherNodeSet) {
-                if (thisNode.equals(otherNode)) {
-                    pairsFound++
-                    break
-                }
-            }
-        }
-        return pairsFound == nodes.size
+    override fun hashCode(): Int {
+        var result = nodes.hashCode()
+        result = 31 * result + alphabet.hashCode()
+        return result
     }
 
 

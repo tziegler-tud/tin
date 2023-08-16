@@ -1,30 +1,58 @@
 package tin.model.transducer
 
 class TransducerEdge(
-        val source: TransducerNode,
-        val target: TransducerNode,
-        val incomingString: String,
-        val outgoingString: String,
-        val cost: Double
+    val source: TransducerNode,
+    val target: TransducerNode,
+    val incomingString: String,
+    val outgoingString: String,
+    val cost: Double
 ) {
 
     override fun toString(): String {
-        val eps = "ε"
+        val eps = "epsilon"
         val incoming: String = if (incomingString.isEmpty()) {
             eps
         } else incomingString
         val outgoing: String = if (outgoingString.isEmpty()) {
             eps
         } else outgoingString
-        return String.format("(%s) -[%3s|%3s|%3s]-> (%s)", source.identifier, incoming, outgoing, cost, target.identifier)
+        return String.format(
+            "(%s) -[%3s|%3s|%3s]-> (%s)",
+            source.identifier,
+            incoming,
+            outgoing,
+            cost,
+            target.identifier
+        )
     }
 
     fun print() {
         println(this)
     }
 
-    fun equals(otherEdge: TransducerEdge): Boolean {
-        return source.compareToExcludingEdges(otherEdge.source) &&
-                target.compareToExcludingEdges(otherEdge.target) && incomingString == otherEdge.incomingString && outgoingString == otherEdge.outgoingString && cost == otherEdge.cost
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is TransducerEdge) return false
+
+        return checkForNodesEquality(other) &&
+                incomingString == other.incomingString &&
+                outgoingString == other.outgoingString &&
+                cost == other.cost
+    }
+    /**
+     * call the trimmed TransducerNode.equals() method in order to prevent a circular dependency.
+     */
+    private fun checkForNodesEquality(other: TransducerEdge): Boolean {
+        return source.equalsWithoutEdges(other.source) &&
+                target.equalsWithoutEdges(other.target)
+    }
+
+    override fun hashCode(): Int {
+        var result = source.identifier.hashCode()
+        result = 31 * result + target.identifier.hashCode()
+        result = 31 * result + incomingString.hashCode()
+        result = 31 * result + outgoingString.hashCode()
+        result = 31 * result + cost.hashCode()
+        return result
     }
 }
