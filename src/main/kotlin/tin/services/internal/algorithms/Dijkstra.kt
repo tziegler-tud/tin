@@ -69,9 +69,6 @@ class Dijkstra(val productAutomatonGraph: ProductAutomatonGraph) {
     }
 
     fun processDijkstraOverAllInitialNodes(): HashMap<ProductAutomatonTuple, Double> {
-        println("hello")
-
-
         // for all initial nodes...
         for ((initialNodeCounter, initialNode) in productAutomatonGraph.initialNodes.withIndex()) {
             println("number of initial nodes: " + productAutomatonGraph.initialNodes.size + " already visited: " + initialNodeCounter)

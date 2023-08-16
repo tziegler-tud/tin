@@ -15,13 +15,14 @@ class SchedulerService(
     @Autowired
     private lateinit var dijkstraQueryAnsweringService: DijkstraQueryAnsweringService
 
-    // every 5sec, check for a scheduled queryTask to process
-    //@Scheduled(cron = "0/5 * * * * *")
 
     // for debugging - delay further executions by one year
-    @Scheduled(initialDelay = 1000L, fixedDelay = 31536000000L)
+    //@Scheduled(initialDelay = 1000L, fixedDelay = 31536000000L)
+
+
+    // every 5sec, check for a scheduled queryTask to process
+    @Scheduled(cron = "0/5 * * * * *")
     fun checkForQueryTask() {
-        println("check for query task")
         // get the oldest queryTask
         val nextQueryTask = queryTaskRepository.findFirstByQueryStatusOrderByCreatedAtAsc(QueryTask.QueryStatus.Queued)
         // delegate it to the queryAnsweringService
