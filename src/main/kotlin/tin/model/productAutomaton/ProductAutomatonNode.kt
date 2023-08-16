@@ -5,31 +5,52 @@ import tin.model.query.QueryNode
 import tin.model.transducer.TransducerNode
 import java.lang.Double.POSITIVE_INFINITY
 import java.util.*
+import kotlin.collections.HashSet
 
 /**
  * constructor for a productAutomatonNode. it has the form
  * (queryNode, transducerNode, databaseNode) and has booleans for being an initial or final state
  *
- * @param qNode        the corresponding queryNode
- * @param tNode        the corresponding transducerNode
- * @param dNode        the corresponding databaseNode
+ * @param queryNode        the corresponding queryNode
+ * @param transducerNode   the corresponding transducerNode
+ * @param databaseNode     the corresponding databaseNode
  * @param initialState boolean for being an initial state
  * @param finalState   boolean for being a final state
  */
 
 class ProductAutomatonNode(
-        queryNode: QueryNode,
-        transducerNode: TransducerNode,
-        databaseNode: DatabaseNode,
-        initialState: Boolean,
-        finalState: Boolean,
-        ) : Comparable<ProductAutomatonNode> {
+    val queryNode: QueryNode,
+    val transducerNode: TransducerNode,
+    val databaseNode: DatabaseNode,
+    val initialState: Boolean,
+    val finalState: Boolean,
+) {
 
-    var identifier: Triple<QueryNode, TransducerNode, DatabaseNode>
+    var identifier: Triple<QueryNode, TransducerNode, DatabaseNode> = Triple(queryNode, transducerNode, databaseNode)
     var isInitialState: Boolean = initialState
     var isFinalState: Boolean = finalState
-    var weight: Double
-    var edges: LinkedList<ProductAutomatonEdge>
+    var weight: Double = Double.POSITIVE_INFINITY
+    var edges: HashSet<ProductAutomatonEdge> = hashSetOf()
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is ProductAutomatonNode) return false
+
+        return queryNode == other.queryNode &&
+                transducerNode == other.transducerNode &&
+                databaseNode == other.databaseNode &&
+                initialState == other.initialState &&
+                finalState == other.finalState
+    }
+
+    override fun hashCode(): Int {
+        var result = queryNode.hashCode()
+        result = 31 * result + transducerNode.hashCode()
+        result = 31 * result + databaseNode.hashCode()
+        result = 31 * result + initialState.hashCode()
+        result = 31 * result + finalState.hashCode()
+        return result
+    }
 
 
     /**
@@ -44,76 +65,37 @@ class ProductAutomatonNode(
     }
 
     override fun toString(): String {
-        return String.format("(%s, %s, %s)", identifier.first.identifier, identifier.second.identifier, identifier.third.identifier)
+        return String.format(
+            "(%s, %s, %s)",
+            identifier.first.identifier,
+            identifier.second.identifier,
+            identifier.third.identifier
+        )
     }
 
-    fun toStringWithWeight(): String {
+    private fun toStringWithWeight(): String {
         return if (weight == POSITIVE_INFINITY) {
-            String.format("(%s, %s, %s)[INF]", identifier.first.identifier, identifier.second.identifier, identifier.third.identifier)
-        } else String.format("(%s, %s, %s)[%s]", identifier.first.identifier, identifier.second.identifier, identifier.third.identifier, weight)
+            String.format(
+                "(%s, %s, %s)[INF]",
+                identifier.first.identifier,
+                identifier.second.identifier,
+                identifier.third.identifier
+            )
+        } else String.format(
+            "(%s, %s, %s)[%s]",
+            identifier.first.identifier,
+            identifier.second.identifier,
+            identifier.third.identifier,
+            weight
+        )
     }
 
     val identifierString: String
-        get() = String.format("%s|%s|%s", identifier.first.identifier, identifier.second.identifier, identifier.third.identifier)
+        get() = String.format(
+            "%s|%s|%s",
+            identifier.first.identifier,
+            identifier.second.identifier,
+            identifier.third.identifier
+        )
 
-    override fun compareTo(other: ProductAutomatonNode): Int {
-        if (this.weight == other.weight) {
-            // If weights are equal, compare based on identifier or any other desired criteria
-            // For example:
-            // return this.identifier.compareTo(other.identifier)
-            return 0
-        }
-        if (this.weight == Double.POSITIVE_INFINITY) {
-            return 1 // Only this node has positive infinity weight, consider other node greater
-        }
-        if (other.weight == Double.POSITIVE_INFINITY) {
-            return -1 // Only the other node has positive infinity weight, consider this node greater
-        }
-        return this.weight.compareTo(other.weight)
-    }
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (other !is ProductAutomatonNode) return false
-
-        return equalsExcludingEdges(other) && edges.size == other.edges.size && equalsOtherEdgeSet(other.edges)
-    }
-
-    private fun equalsOtherEdgeSet(otherEdgeList: LinkedList<ProductAutomatonEdge>?): Boolean {
-        var pairsFound = 0
-        for (thisEdge in edges) {
-            for (otherEdge in otherEdgeList!!) {
-                if (thisEdge.equals(otherEdge)) {
-                    pairsFound++
-                    break
-                }
-            }
-        }
-        return pairsFound == edges.size
-    }
-
-    fun equalsExcludingEdges(otherNode: ProductAutomatonNode): Boolean {
-        return isInitialState == otherNode.isInitialState && isFinalState == otherNode.isFinalState && weight == otherNode.weight && checkIdentifierEquality(otherNode)
-    }
-
-    private fun checkIdentifierEquality(otherNode: ProductAutomatonNode): Boolean {
-        return identifier.first.equals(otherNode.identifier.first) &&
-                identifier.second.equals(otherNode.identifier.second) &&
-                identifier.third.equals(otherNode.identifier.third)
-    }
-
-    override fun hashCode(): Int {
-        var result = identifier.hashCode()
-        result = 31 * result + isInitialState.hashCode()
-        result = 31 * result + isFinalState.hashCode()
-        result = 31 * result + weight.hashCode()
-        result = 31 * result + edges.hashCode()
-        return result
-    }
-
-    init {
-        this.identifier = Triple(queryNode, transducerNode, databaseNode)
-        this.weight = Double.NaN
-        this.edges = LinkedList()
-    }
 }

@@ -1,5 +1,6 @@
 package tin.model.productAutomaton
 
+import tin.model.transducer.TransducerNode
 import java.util.*
 
 class ProductAutomatonGraph {
@@ -15,9 +16,19 @@ class ProductAutomatonGraph {
      */
     fun addProductAutomatonNode(productAutomatonNode: ProductAutomatonNode) {
         for (node in nodes) {
-            if (node.identifier.first.identifier.equals(productAutomatonNode.identifier.first.identifier, ignoreCase = true) &&
-                    node.identifier.second.identifier.equals(productAutomatonNode.identifier.second.identifier, ignoreCase = true) &&
-                    node.identifier.third.identifier.equals(productAutomatonNode.identifier.third.identifier, ignoreCase = true)) return
+            if (node.identifier.first.identifier.equals(
+                    productAutomatonNode.identifier.first.identifier,
+                    ignoreCase = true
+                ) &&
+                node.identifier.second.identifier.equals(
+                    productAutomatonNode.identifier.second.identifier,
+                    ignoreCase = true
+                ) &&
+                node.identifier.third.identifier.equals(
+                    productAutomatonNode.identifier.third.identifier,
+                    ignoreCase = true
+                )
+            ) return
         }
         nodes.add(productAutomatonNode)
         if (productAutomatonNode.isInitialState) {
@@ -36,23 +47,57 @@ class ProductAutomatonGraph {
      * @param incoming the incoming string
      * @param outgoing the replacement of the incoming string
      * @param cost     the cost of the replacement operation
+     *
+     *
+     * Note that we cannot use "nodes.add()" or similar functions that use "equals()" here.
+     * This is because we call this function to populate the graph;
+     * i.e. when calling this function several times after another
+     * even the same node differs now from the last iteration because one edge was added.
+     * We thus have to treat the comparison of nodes differently for the sake of keeping it unique outside the graph population.
+     *
      */
-    fun addProductAutomatonEdge(source: ProductAutomatonNode, target: ProductAutomatonNode, incoming: String, outgoing: String, cost: Double) {
+    fun addProductAutomatonEdge(
+        source: ProductAutomatonNode,
+        target: ProductAutomatonNode,
+        incoming: String,
+        outgoing: String,
+        cost: Double
+    ) {
 
-        // add the nodes of the edge first
-        addProductAutomatonNode(source)
-        addProductAutomatonNode(target)
+        /** check for existing source and target */
+        val existingSource = findNodeWithoutEdgeComparison(source)
+        val existingTarget = findNodeWithoutEdgeComparison(target)
 
-        // check whether the edge is already there
-        for (edge in source.edges) {
-            if ((edge.source.equals(source)) && (edge.target.equals(target)) && edge.incomingString.equals(incoming, ignoreCase = true)
-                    && edge.outgoingString.equals(outgoing, ignoreCase = true) && (edge.cost == cost)) {
+        /** if it wasn't found: we add the new nodes.*/
+        if (existingSource == null) {
+            addProductAutomatonNode(source)
+        }
+
+        if (existingTarget == null) {
+            addProductAutomatonNode(target)
+        }
+
+        val newEdge = ProductAutomatonEdge(source, target, incoming, outgoing, cost)
+
+        // don't add duplicate edges!
+        for (existingEdge in source.edges) {
+            if (existingEdge == newEdge) {
                 return
             }
         }
-        // if the edge is new -> add it.
-        source.edges.add(ProductAutomatonEdge(source, target, incoming, outgoing, cost))
+        source.edges.add(newEdge)
     }
+
+    /** helper function to use in the context of populating the graph only.
+     * Note that since we cannot have different nodes with the same identifier,
+     * we just have to check the identifier property and no other properties.
+     */
+    private fun findNodeWithoutEdgeComparison(productAutomatonNode: ProductAutomatonNode): ProductAutomatonNode? {
+        return nodes.find {
+            it.identifier == productAutomatonNode.identifier
+        }
+    }
+
 
     /**
      * TODO: refactor print methods into proper .txt file output.
@@ -67,24 +112,20 @@ class ProductAutomatonGraph {
         }
     }
 
-    // only use this for test purposes!
-    // contains flaws in the first condition, do not use!
-    fun equals(otherGraph: ProductAutomatonGraph): Boolean {
-        return if (nodes.size != otherGraph.nodes.size) {
-            false
-        } else equalsOtherNodeSet(otherGraph.nodes)
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is ProductAutomatonGraph) return false
+
+        return nodes == other.nodes &&
+                initialNodes == other.initialNodes &&
+                finalNodes == other.finalNodes
     }
 
-    private fun equalsOtherNodeSet(otherNodeSet: Set<ProductAutomatonNode>?): Boolean {
-        var pairsFound = 0
-        for (thisNode in nodes) {
-            for (otherNode in otherNodeSet!!) {
-                if (thisNode.equals(otherNode)) {
-                    pairsFound++
-                    break
-                }
-            }
-        }
-        return pairsFound == nodes.size
+    override fun hashCode(): Int {
+        var result = nodes.hashCode()
+        result = 31 * result + initialNodes.hashCode()
+        result = 31 * result + finalNodes.hashCode()
+        return result
     }
+
 }
