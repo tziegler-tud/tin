@@ -24,13 +24,29 @@ class ProductAutomatonNode(
     val databaseNode: DatabaseNode,
     val initialState: Boolean,
     val finalState: Boolean,
-) {
+): Comparable<ProductAutomatonNode> {
 
     var identifier: Triple<QueryNode, TransducerNode, DatabaseNode> = Triple(queryNode, transducerNode, databaseNode)
     var isInitialState: Boolean = initialState
     var isFinalState: Boolean = finalState
     var weight: Double = Double.POSITIVE_INFINITY
     var edges: HashSet<ProductAutomatonEdge> = hashSetOf()
+
+    override fun compareTo(other: ProductAutomatonNode): Int {
+        if (this.weight == other.weight) {
+            // If weights are equal, compare based on identifier or any other desired criteria
+            // For example:
+            // return this.identifier.compareTo(other.identifier)
+            return 0
+        }
+        if (this.weight == Double.POSITIVE_INFINITY) {
+            return 1 // Only this node has positive infinity weight, consider other node greater
+        }
+        if (other.weight == Double.POSITIVE_INFINITY) {
+            return -1 // Only the other node has positive infinity weight, consider this node greater
+        }
+        return this.weight.compareTo(other.weight)
+    }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
