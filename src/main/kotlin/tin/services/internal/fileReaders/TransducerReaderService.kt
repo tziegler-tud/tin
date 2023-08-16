@@ -6,6 +6,7 @@ import tin.model.transducer.TransducerGraph
 import tin.model.transducer.TransducerNode
 import java.io.BufferedReader
 import java.io.File
+
 @Service
 class TransducerReaderService {
 
@@ -73,7 +74,13 @@ class TransducerReaderService {
                 target = transducerNodes[stringArray[1]]!!
 
                 incoming = stringArray[2]
+                if (incoming.isEmpty()) {
+                    incoming = replaceEmptyStringWithInternalEpsilon()
+                }
                 outgoing = stringArray[3]
+                if (outgoing.isEmpty()) {
+                    outgoing = replaceEmptyStringWithInternalEpsilon()
+                }
                 cost = stringArray[4].toDouble()
                 transducerGraph.addEdge(source, target, incoming, outgoing, cost)
 
@@ -86,7 +93,7 @@ class TransducerReaderService {
     fun generateClassicAnswersTransducer(alphabet: Set<String>): TransducerGraph {
 
         val transducerGraph = TransducerGraph()
-        val source = TransducerNode("t0", isInitialState = true, isFinalState = true)
+        val source = TransducerNode("t0", initialState = true, finalState = true)
 
         for (word in alphabet) {
             // for each word of the alphabet we add the edge (t0, t0, word, word, 0)
@@ -98,5 +105,14 @@ class TransducerReaderService {
 
     fun generateEditDistanceTransducer(alphabet: Set<String>): TransducerGraph {
         return TODO()
+    }
+
+    /**
+     * todo
+     *  consider making the internal epsilon identifier a property the user can change in the frontend.
+     *  (duplicate with ProductAutomatonService)
+     */
+    private fun replaceEmptyStringWithInternalEpsilon(): String {
+        return "epsilon"
     }
 }
