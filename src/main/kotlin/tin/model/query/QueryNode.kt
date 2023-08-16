@@ -1,7 +1,5 @@
 package tin.model.query
 
-import tin.utils.compareEdgeSets
-import java.util.*
 import kotlin.collections.HashSet
 
 class QueryNode(
