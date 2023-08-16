@@ -6,6 +6,7 @@ import tin.model.query.QueryNode
 import java.io.BufferedReader
 import java.io.File
 import java.util.HashMap
+
 @Service
 class QueryReaderService {
 
@@ -44,7 +45,7 @@ class QueryReaderService {
                 readingEdges = true
 
                 // after setting the flags, we skip into the next line
-                currentLine = bufferedReader.readLine()
+                currentLine = bufferedReader.readLine() ?: break
             }
 
 
