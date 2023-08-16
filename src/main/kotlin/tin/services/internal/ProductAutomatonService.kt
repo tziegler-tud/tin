@@ -24,6 +24,19 @@ class ProductAutomatonService() {
         var target: ProductAutomatonNode
         val productAutomatonGraph = ProductAutomatonGraph()
 
+        // find all incoming epsilon edges
+        // bandaid fix to insert incoming epsilon edges to fitting transducer edge every iteration.
+
+        val incomingEpsilonEdges = HashSet<TransducerEdge>()
+
+        dataProvider.transducerGraph.nodes.forEach {transducerNode ->
+            transducerNode.edges?.forEach { transducerEdge ->
+                if (isEpsilonString(transducerEdge.incomingString)) {
+                    incomingEpsilonEdges.add(transducerEdge)
+                }
+            }
+        }
+
 
         //part (I)
         for (queryNode in dataProvider.queryGraph.nodes) {
@@ -33,15 +46,18 @@ class ProductAutomatonService() {
                 // part (II)
                 // NOTE: here we also add edges of the form (IV | 2) "outgoing epsilon edges"
                 fittingTransducerEdges.clear()
+                fittingTransducerEdges.addAll(incomingEpsilonEdges)
                 for (transducerNode in dataProvider.transducerGraph.nodes) {
                     for (transducerEdge in transducerNode.edges!!) {
                         if (localQueryLabel == transducerEdge.incomingString) {
                             fittingTransducerEdges.add(transducerEdge)
                         }
 
+                        // todo: this needs to be lifted outside of the forEach queryEdge loop.
+                        //  this is because incoming epsilon edges must not require a queryEdge.
                         // add incoming epsilon edges where they can be applied
                         if (queryNode.isFinalState) {
-                            if (transducerEdge.incomingString.isBlank()) {
+                            if (isEpsilonString(transducerEdge.incomingString)) {
                                 fittingTransducerEdges.add(transducerEdge)
                             }
                         }
@@ -57,86 +73,194 @@ class ProductAutomatonService() {
                         // for all transducer edges that were found in part (II):
                         //      check whether
                         for (transducerEdge in fittingTransducerEdges) {
-                            if (transducerEdge.incomingString.isBlank()) {
+                            if (isEpsilonString(transducerEdge.incomingString)) {
                                 // type 1:  incoming epsilon edges.
-                                if (transducerEdge.outgoingString.isBlank()) {
+                                if (isEpsilonString(transducerEdge.outgoingString)) {
                                     // epsilon incoming, epsilon outgoing
-                                    pairOfNodes = constructAutomatonNode(queryEdge, transducerEdge, databaseEdge, ProductAutomatonEdgeType.EpsilonIncomingEpsilonOutgoing)
+                                    pairOfNodes = constructAutomatonNode(
+                                        queryEdge,
+                                        transducerEdge,
+                                        databaseEdge,
+                                        ProductAutomatonEdgeType.EpsilonIncomingEpsilonOutgoing
+                                    )
                                     source = pairOfNodes.first
                                     target = pairOfNodes.second
                                     source = getInstance(temporaryNodes, source) // duplicate check
                                     target = getInstance(temporaryNodes, target) // duplicate check
-                                    productAutomatonGraph.addProductAutomatonEdge(source, target, "", "", transducerEdge.cost)
-                                } else if (isNegated(transducerEdge.outgoingString) && localDatabaseLabel == unNegateString(transducerEdge.outgoingString)) {
+                                    productAutomatonGraph.addProductAutomatonEdge(
+                                        source,
+                                        target,
+                                        incoming = replaceEmptyStringWithInternalEpsilon(),
+                                        outgoing = replaceEmptyStringWithInternalEpsilon(),
+                                        transducerEdge.cost
+                                    )
+                                } else if (isNegated(transducerEdge.outgoingString) && localDatabaseLabel == unNegateString(
+                                        transducerEdge.outgoingString
+                                    )
+                                ) {
                                     // epsilon incoming, negative outgoing
-                                    pairOfNodes = constructAutomatonNode(queryEdge, transducerEdge, databaseEdge, ProductAutomatonEdgeType.EpsilonIncomingNegativeOutgoing)
+                                    pairOfNodes = constructAutomatonNode(
+                                        queryEdge,
+                                        transducerEdge,
+                                        databaseEdge,
+                                        ProductAutomatonEdgeType.EpsilonIncomingNegativeOutgoing
+                                    )
                                     source = pairOfNodes.first
                                     target = pairOfNodes.second
                                     source = getInstance(temporaryNodes, source) // duplicate check
                                     target = getInstance(temporaryNodes, target) // duplicate check
-                                    productAutomatonGraph.addProductAutomatonEdge(source, target, "", transducerEdge.outgoingString, transducerEdge.cost)
+                                    productAutomatonGraph.addProductAutomatonEdge(
+                                        source,
+                                        target,
+                                        incoming = replaceEmptyStringWithInternalEpsilon(),
+                                        transducerEdge.outgoingString,
+                                        transducerEdge.cost
+                                    )
                                 } else if (!isNegated(transducerEdge.outgoingString) && localDatabaseLabel == transducerEdge.outgoingString) {
                                     // epsilon incoming, positive outgoing
-                                    pairOfNodes = constructAutomatonNode(queryEdge, transducerEdge, databaseEdge, ProductAutomatonEdgeType.EpsilonIncomingPositiveOutgoing)
+                                    pairOfNodes = constructAutomatonNode(
+                                        queryEdge,
+                                        transducerEdge,
+                                        databaseEdge,
+                                        ProductAutomatonEdgeType.EpsilonIncomingPositiveOutgoing
+                                    )
                                     source = pairOfNodes.first
                                     target = pairOfNodes.second
                                     source = getInstance(temporaryNodes, source) // duplicate check
                                     target = getInstance(temporaryNodes, target) // duplicate check
-                                    productAutomatonGraph.addProductAutomatonEdge(source, target, "", transducerEdge.outgoingString, transducerEdge.cost)
+                                    productAutomatonGraph.addProductAutomatonEdge(
+                                        source,
+                                        target,
+                                        incoming = replaceEmptyStringWithInternalEpsilon(),
+                                        transducerEdge.outgoingString,
+                                        transducerEdge.cost
+                                    )
                                 }
                             } else if (!isNegated(transducerEdge.incomingString)) {
                                 // type 2: incoming positive edges
-                                if (transducerEdge.outgoingString.isBlank()) {
+                                if (isEpsilonString(transducerEdge.outgoingString)) {
                                     // positive incoming, epsilon outgoing
-                                    pairOfNodes = constructAutomatonNode(queryEdge, transducerEdge, databaseEdge, ProductAutomatonEdgeType.PositiveIncomingEpsilonOutgoing)
+                                    pairOfNodes = constructAutomatonNode(
+                                        queryEdge,
+                                        transducerEdge,
+                                        databaseEdge,
+                                        ProductAutomatonEdgeType.PositiveIncomingEpsilonOutgoing
+                                    )
                                     source = pairOfNodes.first
                                     target = pairOfNodes.second
                                     source = getInstance(temporaryNodes, source) // duplicate check
                                     target = getInstance(temporaryNodes, target) // duplicate check
-                                    productAutomatonGraph.addProductAutomatonEdge(source, target, transducerEdge.incomingString, "", transducerEdge.cost)
+                                    productAutomatonGraph.addProductAutomatonEdge(
+                                        source,
+                                        target,
+                                        transducerEdge.incomingString,
+                                        outgoing = replaceEmptyStringWithInternalEpsilon(),
+                                        transducerEdge.cost
+                                    )
                                 } else if (!isNegated(transducerEdge.outgoingString) && localDatabaseLabel == transducerEdge.outgoingString) {
                                     // positive incoming, positive outgoing
-                                    pairOfNodes = constructAutomatonNode(queryEdge, transducerEdge, databaseEdge, ProductAutomatonEdgeType.PositiveIncomingPositiveOutgoing)
+                                    pairOfNodes = constructAutomatonNode(
+                                        queryEdge,
+                                        transducerEdge,
+                                        databaseEdge,
+                                        ProductAutomatonEdgeType.PositiveIncomingPositiveOutgoing
+                                    )
                                     source = pairOfNodes.first
                                     target = pairOfNodes.second
                                     source = getInstance(temporaryNodes, source) // duplicate check
                                     target = getInstance(temporaryNodes, target) // duplicate check
-                                    productAutomatonGraph.addProductAutomatonEdge(source, target, transducerEdge.incomingString, transducerEdge.outgoingString, transducerEdge.cost)
-                                } else if (isNegated(transducerEdge.outgoingString) && localDatabaseLabel == unNegateString(transducerEdge.outgoingString)) {
+                                    productAutomatonGraph.addProductAutomatonEdge(
+                                        source,
+                                        target,
+                                        transducerEdge.incomingString,
+                                        transducerEdge.outgoingString,
+                                        transducerEdge.cost
+                                    )
+                                } else if (isNegated(transducerEdge.outgoingString) && localDatabaseLabel == unNegateString(
+                                        transducerEdge.outgoingString
+                                    )
+                                ) {
                                     // positive incoming, negative outgoing
-                                    pairOfNodes = constructAutomatonNode(queryEdge, transducerEdge, databaseEdge, ProductAutomatonEdgeType.PositiveIncomingNegativeOutgoing)
+                                    pairOfNodes = constructAutomatonNode(
+                                        queryEdge,
+                                        transducerEdge,
+                                        databaseEdge,
+                                        ProductAutomatonEdgeType.PositiveIncomingNegativeOutgoing
+                                    )
                                     source = pairOfNodes.first
                                     target = pairOfNodes.second
                                     source = getInstance(temporaryNodes, source) // duplicate check
                                     target = getInstance(temporaryNodes, target) // duplicate check
-                                    productAutomatonGraph.addProductAutomatonEdge(source, target, transducerEdge.incomingString, transducerEdge.outgoingString, transducerEdge.cost)
+                                    productAutomatonGraph.addProductAutomatonEdge(
+                                        source,
+                                        target,
+                                        transducerEdge.incomingString,
+                                        transducerEdge.outgoingString,
+                                        transducerEdge.cost
+                                    )
                                 }
                             } else if (isNegated(transducerEdge.incomingString)) {
                                 // type 3: incoming negative edges
-                                if (transducerEdge.outgoingString.isBlank()) {
+                                if (isEpsilonString(transducerEdge.outgoingString)) {
                                     // negative incoming, epsilon outgoing
-                                    pairOfNodes = constructAutomatonNode(queryEdge, transducerEdge, databaseEdge, ProductAutomatonEdgeType.NegativeIncomingEpsilonOutgoing)
+                                    pairOfNodes = constructAutomatonNode(
+                                        queryEdge,
+                                        transducerEdge,
+                                        databaseEdge,
+                                        ProductAutomatonEdgeType.NegativeIncomingEpsilonOutgoing
+                                    )
                                     source = pairOfNodes.first
                                     target = pairOfNodes.second
                                     source = getInstance(temporaryNodes, source) // duplicate check
                                     target = getInstance(temporaryNodes, target) // duplicate check
-                                    productAutomatonGraph.addProductAutomatonEdge(source, target, transducerEdge.incomingString, "", transducerEdge.cost)
+                                    productAutomatonGraph.addProductAutomatonEdge(
+                                        source,
+                                        target,
+                                        transducerEdge.incomingString,
+                                        outgoing = replaceEmptyStringWithInternalEpsilon(),
+                                        transducerEdge.cost
+                                    )
                                 } else if (!isNegated(transducerEdge.outgoingString) && localDatabaseLabel == transducerEdge.outgoingString) {
                                     // negative incoming, positive outgoing
-                                    pairOfNodes = constructAutomatonNode(queryEdge, transducerEdge, databaseEdge, ProductAutomatonEdgeType.NegativeIncomingPositiveOutgoing)
+                                    pairOfNodes = constructAutomatonNode(
+                                        queryEdge,
+                                        transducerEdge,
+                                        databaseEdge,
+                                        ProductAutomatonEdgeType.NegativeIncomingPositiveOutgoing
+                                    )
                                     source = pairOfNodes.first
                                     target = pairOfNodes.second
                                     source = getInstance(temporaryNodes, source) // duplicate check
                                     target = getInstance(temporaryNodes, target) // duplicate check
-                                    productAutomatonGraph.addProductAutomatonEdge(source, target, transducerEdge.incomingString, transducerEdge.outgoingString, transducerEdge.cost)
-                                } else if (isNegated(transducerEdge.outgoingString) && localDatabaseLabel == unNegateString(transducerEdge.outgoingString)) {
+                                    productAutomatonGraph.addProductAutomatonEdge(
+                                        source,
+                                        target,
+                                        transducerEdge.incomingString,
+                                        transducerEdge.outgoingString,
+                                        transducerEdge.cost
+                                    )
+                                } else if (isNegated(transducerEdge.outgoingString) && localDatabaseLabel == unNegateString(
+                                        transducerEdge.outgoingString
+                                    )
+                                ) {
                                     // negative incoming, negative outgoing
-                                    pairOfNodes = constructAutomatonNode(queryEdge, transducerEdge, databaseEdge, ProductAutomatonEdgeType.NegativeIncomingNegativeOutgoing)
+                                    pairOfNodes = constructAutomatonNode(
+                                        queryEdge,
+                                        transducerEdge,
+                                        databaseEdge,
+                                        ProductAutomatonEdgeType.NegativeIncomingNegativeOutgoing
+                                    )
                                     source = pairOfNodes.first
                                     target = pairOfNodes.second
                                     source = getInstance(temporaryNodes, source) // duplicate check
                                     target = getInstance(temporaryNodes, target) // duplicate check
-                                    productAutomatonGraph.addProductAutomatonEdge(source, target, transducerEdge.incomingString, transducerEdge.outgoingString, transducerEdge.cost)
+                                    productAutomatonGraph.addProductAutomatonEdge(
+                                        source,
+                                        target,
+                                        transducerEdge.incomingString,
+                                        transducerEdge.outgoingString,
+                                        transducerEdge.cost
+                                    )
                                 }
                             }
                         }
@@ -157,7 +281,12 @@ class ProductAutomatonService() {
      * @param edgeType       the edgeType that needs to be created.
      * @return a Pair of ProductAutomatonNodes, containing the source node (value_0) and the target node (value_1)
      */
-    private fun constructAutomatonNode(queryEdge: QueryEdge, transducerEdge: TransducerEdge, databaseEdge: DatabaseEdge, edgeType: ProductAutomatonEdgeType): Pair<ProductAutomatonNode, ProductAutomatonNode> {
+    private fun constructAutomatonNode(
+        queryEdge: QueryEdge,
+        transducerEdge: TransducerEdge,
+        databaseEdge: DatabaseEdge,
+        edgeType: ProductAutomatonEdgeType
+    ): Pair<ProductAutomatonNode, ProductAutomatonNode> {
         val sourceInitialState: Boolean
         val sourceFinalState: Boolean
         val targetInitialState: Boolean
@@ -169,21 +298,33 @@ class ProductAutomatonService() {
             ProductAutomatonEdgeType.EpsilonIncomingPositiveOutgoing -> {
                 // epsilon incoming, positive outgoing
                 // q pause, t move, db move
-                sourceInitialState = queryEdge.source.isInitialState && transducerEdge.source.isInitialState
-                sourceFinalState = queryEdge.source.isFinalState && transducerEdge.source.isFinalState
-                targetInitialState = queryEdge.source.isInitialState && transducerEdge.target.isInitialState
-                targetFinalState = queryEdge.source.isFinalState && transducerEdge.target.isFinalState
-                sourceNode = ProductAutomatonNode(queryEdge.source, transducerEdge.source, databaseEdge.source, sourceInitialState, sourceFinalState)
-                targetNode = ProductAutomatonNode(queryEdge.source, transducerEdge.target, databaseEdge.target, targetInitialState, targetFinalState)
+                sourceInitialState = queryEdge.source.isInitialState && transducerEdge.source.initialState
+                sourceFinalState = queryEdge.source.isFinalState && transducerEdge.source.finalState
+                targetInitialState = queryEdge.source.isInitialState && transducerEdge.target.initialState
+                targetFinalState = queryEdge.source.isFinalState && transducerEdge.target.finalState
+                sourceNode = ProductAutomatonNode(
+                    queryEdge.source,
+                    transducerEdge.source,
+                    databaseEdge.source,
+                    sourceInitialState,
+                    sourceFinalState
+                )
+                targetNode = ProductAutomatonNode(
+                    queryEdge.source,
+                    transducerEdge.target,
+                    databaseEdge.target,
+                    targetInitialState,
+                    targetFinalState
+                )
             }
 
             ProductAutomatonEdgeType.EpsilonIncomingNegativeOutgoing -> {
                 // epsilon incoming, negative outgoing
                 // q pause, t move, db move backwards
-                sourceInitialState = queryEdge.source.isInitialState && transducerEdge.source.isInitialState
-                sourceFinalState = queryEdge.source.isFinalState && transducerEdge.source.isFinalState
-                targetInitialState = queryEdge.source.isInitialState && transducerEdge.target.isInitialState
-                targetFinalState = queryEdge.source.isFinalState && transducerEdge.target.isFinalState
+                sourceInitialState = queryEdge.source.isInitialState && transducerEdge.source.initialState
+                sourceFinalState = queryEdge.source.isFinalState && transducerEdge.source.finalState
+                targetInitialState = queryEdge.source.isInitialState && transducerEdge.target.initialState
+                targetFinalState = queryEdge.source.isFinalState && transducerEdge.target.finalState
                 sourceNode = ProductAutomatonNode(queryEdge.source, transducerEdge.source, databaseEdge.target, sourceInitialState, sourceFinalState)
                 targetNode = ProductAutomatonNode(queryEdge.source, transducerEdge.target, databaseEdge.source, targetInitialState, targetFinalState)
             }
@@ -191,78 +332,162 @@ class ProductAutomatonService() {
             ProductAutomatonEdgeType.EpsilonIncomingEpsilonOutgoing -> {
                 // epsilon incoming, epsilon outgoing
                 // q pause, t move, db pause
-                sourceInitialState = queryEdge.source.isInitialState && transducerEdge.source.isInitialState
-                sourceFinalState = queryEdge.source.isFinalState && transducerEdge.source.isFinalState
-                targetInitialState = queryEdge.source.isInitialState && transducerEdge.target.isInitialState
-                targetFinalState = queryEdge.source.isFinalState && transducerEdge.target.isFinalState
-                sourceNode = ProductAutomatonNode(queryEdge.source, transducerEdge.source, databaseEdge.source, sourceInitialState, sourceFinalState)
-                targetNode = ProductAutomatonNode(queryEdge.source, transducerEdge.target, databaseEdge.source, targetInitialState, targetFinalState)
+                sourceInitialState = queryEdge.source.isInitialState && transducerEdge.source.initialState
+                sourceFinalState = queryEdge.source.isFinalState && transducerEdge.source.finalState
+                targetInitialState = queryEdge.source.isInitialState && transducerEdge.target.initialState
+                targetFinalState = queryEdge.source.isFinalState && transducerEdge.target.finalState
+                sourceNode = ProductAutomatonNode(
+                    queryEdge.source,
+                    transducerEdge.source,
+                    databaseEdge.source,
+                    sourceInitialState,
+                    sourceFinalState
+                )
+                targetNode = ProductAutomatonNode(
+                    queryEdge.source,
+                    transducerEdge.target,
+                    databaseEdge.source,
+                    targetInitialState,
+                    targetFinalState
+                )
             }
 
             ProductAutomatonEdgeType.PositiveIncomingPositiveOutgoing -> {
                 // positive incoming, positive outgoing
                 // q move, t move, db move
-                sourceInitialState = queryEdge.source.isInitialState && transducerEdge.source.isInitialState
-                sourceFinalState = queryEdge.source.isFinalState && transducerEdge.source.isFinalState
-                targetInitialState = queryEdge.target.isInitialState && transducerEdge.target.isInitialState
-                targetFinalState = queryEdge.target.isFinalState && transducerEdge.target.isFinalState
-                sourceNode = ProductAutomatonNode(queryEdge.source, transducerEdge.source, databaseEdge.source, sourceInitialState, sourceFinalState)
-                targetNode = ProductAutomatonNode(queryEdge.target, transducerEdge.target, databaseEdge.target, targetInitialState, targetFinalState)
+                sourceInitialState = queryEdge.source.isInitialState && transducerEdge.source.initialState
+                sourceFinalState = queryEdge.source.isFinalState && transducerEdge.source.finalState
+                targetInitialState = queryEdge.target.isInitialState && transducerEdge.target.initialState
+                targetFinalState = queryEdge.target.isFinalState && transducerEdge.target.finalState
+                sourceNode = ProductAutomatonNode(
+                    queryEdge.source,
+                    transducerEdge.source,
+                    databaseEdge.source,
+                    sourceInitialState,
+                    sourceFinalState
+                )
+                targetNode = ProductAutomatonNode(
+                    queryEdge.target,
+                    transducerEdge.target,
+                    databaseEdge.target,
+                    targetInitialState,
+                    targetFinalState
+                )
             }
 
             ProductAutomatonEdgeType.PositiveIncomingNegativeOutgoing -> {
                 // positive incoming, negative outgoing
                 // q move, t move, db move backwards
-                sourceInitialState = queryEdge.source.isInitialState && transducerEdge.source.isInitialState
-                sourceFinalState = queryEdge.source.isFinalState && transducerEdge.source.isFinalState
-                targetInitialState = queryEdge.target.isInitialState && transducerEdge.target.isInitialState
-                targetFinalState = queryEdge.target.isFinalState && transducerEdge.target.isFinalState
-                sourceNode = ProductAutomatonNode(queryEdge.source, transducerEdge.source, databaseEdge.target, sourceInitialState, sourceFinalState)
-                targetNode = ProductAutomatonNode(queryEdge.target, transducerEdge.target, databaseEdge.source, targetInitialState, targetFinalState)
+                sourceInitialState = queryEdge.source.isInitialState && transducerEdge.source.initialState
+                sourceFinalState = queryEdge.source.isFinalState && transducerEdge.source.finalState
+                targetInitialState = queryEdge.target.isInitialState && transducerEdge.target.initialState
+                targetFinalState = queryEdge.target.isFinalState && transducerEdge.target.finalState
+                sourceNode = ProductAutomatonNode(
+                    queryEdge.source,
+                    transducerEdge.source,
+                    databaseEdge.target,
+                    sourceInitialState,
+                    sourceFinalState
+                )
+                targetNode = ProductAutomatonNode(
+                    queryEdge.target,
+                    transducerEdge.target,
+                    databaseEdge.source,
+                    targetInitialState,
+                    targetFinalState
+                )
             }
 
             ProductAutomatonEdgeType.PositiveIncomingEpsilonOutgoing -> {
                 // positive incoming, epsilon outgoing
                 // q move, t move, db pause
-                sourceInitialState = queryEdge.source.isInitialState && transducerEdge.source.isInitialState
-                sourceFinalState = queryEdge.source.isFinalState && transducerEdge.source.isFinalState
-                targetInitialState = queryEdge.target.isInitialState && transducerEdge.target.isInitialState
-                targetFinalState = queryEdge.target.isFinalState && transducerEdge.target.isFinalState
-                sourceNode = ProductAutomatonNode(queryEdge.source, transducerEdge.source, databaseEdge.source, sourceInitialState, sourceFinalState)
-                targetNode = ProductAutomatonNode(queryEdge.target, transducerEdge.target, databaseEdge.source, targetInitialState, targetFinalState)
+                sourceInitialState = queryEdge.source.isInitialState && transducerEdge.source.initialState
+                sourceFinalState = queryEdge.source.isFinalState && transducerEdge.source.finalState
+                targetInitialState = queryEdge.target.isInitialState && transducerEdge.target.initialState
+                targetFinalState = queryEdge.target.isFinalState && transducerEdge.target.finalState
+                sourceNode = ProductAutomatonNode(
+                    queryEdge.source,
+                    transducerEdge.source,
+                    databaseEdge.source,
+                    sourceInitialState,
+                    sourceFinalState
+                )
+                targetNode = ProductAutomatonNode(
+                    queryEdge.target,
+                    transducerEdge.target,
+                    databaseEdge.source,
+                    targetInitialState,
+                    targetFinalState
+                )
             }
 
             ProductAutomatonEdgeType.NegativeIncomingPositiveOutgoing -> {
                 // negative incoming, positive outgoing
                 // q move, t move, db move
-                sourceInitialState = queryEdge.source.isInitialState && transducerEdge.source.isInitialState
-                sourceFinalState = queryEdge.source.isFinalState && transducerEdge.source.isFinalState
-                targetInitialState = queryEdge.target.isInitialState && transducerEdge.target.isInitialState
-                targetFinalState = queryEdge.target.isFinalState && transducerEdge.target.isFinalState
-                sourceNode = ProductAutomatonNode(queryEdge.source, transducerEdge.source, databaseEdge.source, sourceInitialState, sourceFinalState)
-                targetNode = ProductAutomatonNode(queryEdge.target, transducerEdge.target, databaseEdge.target, targetInitialState, targetFinalState)
+                sourceInitialState = queryEdge.source.isInitialState && transducerEdge.source.initialState
+                sourceFinalState = queryEdge.source.isFinalState && transducerEdge.source.finalState
+                targetInitialState = queryEdge.target.isInitialState && transducerEdge.target.initialState
+                targetFinalState = queryEdge.target.isFinalState && transducerEdge.target.finalState
+                sourceNode = ProductAutomatonNode(
+                    queryEdge.source,
+                    transducerEdge.source,
+                    databaseEdge.source,
+                    sourceInitialState,
+                    sourceFinalState
+                )
+                targetNode = ProductAutomatonNode(
+                    queryEdge.target,
+                    transducerEdge.target,
+                    databaseEdge.target,
+                    targetInitialState,
+                    targetFinalState
+                )
             }
 
             ProductAutomatonEdgeType.NegativeIncomingNegativeOutgoing -> {
                 // negative incoming, negative outgoing
                 // q move, t move, db move backwards
-                sourceInitialState = queryEdge.source.isInitialState && transducerEdge.source.isInitialState
-                sourceFinalState = queryEdge.source.isFinalState && transducerEdge.source.isFinalState
-                targetInitialState = queryEdge.target.isInitialState && transducerEdge.target.isInitialState
-                targetFinalState = queryEdge.target.isFinalState && transducerEdge.target.isFinalState
-                sourceNode = ProductAutomatonNode(queryEdge.source, transducerEdge.source, databaseEdge.target, sourceInitialState, sourceFinalState)
-                targetNode = ProductAutomatonNode(queryEdge.target, transducerEdge.target, databaseEdge.source, targetInitialState, targetFinalState)
+                sourceInitialState = queryEdge.source.isInitialState && transducerEdge.source.initialState
+                sourceFinalState = queryEdge.source.isFinalState && transducerEdge.source.finalState
+                targetInitialState = queryEdge.target.isInitialState && transducerEdge.target.initialState
+                targetFinalState = queryEdge.target.isFinalState && transducerEdge.target.finalState
+                sourceNode = ProductAutomatonNode(
+                    queryEdge.source,
+                    transducerEdge.source,
+                    databaseEdge.target,
+                    sourceInitialState,
+                    sourceFinalState
+                )
+                targetNode = ProductAutomatonNode(
+                    queryEdge.target,
+                    transducerEdge.target,
+                    databaseEdge.source,
+                    targetInitialState,
+                    targetFinalState
+                )
             }
 
             ProductAutomatonEdgeType.NegativeIncomingEpsilonOutgoing -> {
                 // negative incoming, epsilon outgoing
                 // q move, t move, db pause
-                sourceInitialState = queryEdge.source.isInitialState && transducerEdge.source.isInitialState
-                sourceFinalState = queryEdge.source.isFinalState && transducerEdge.source.isFinalState
-                targetInitialState = queryEdge.target.isInitialState && transducerEdge.target.isInitialState
-                targetFinalState = queryEdge.target.isFinalState && transducerEdge.target.isFinalState
-                sourceNode = ProductAutomatonNode(queryEdge.source, transducerEdge.source, databaseEdge.source, sourceInitialState, sourceFinalState)
-                targetNode = ProductAutomatonNode(queryEdge.target, transducerEdge.target, databaseEdge.source, targetInitialState, targetFinalState)
+                sourceInitialState = queryEdge.source.isInitialState && transducerEdge.source.initialState
+                sourceFinalState = queryEdge.source.isFinalState && transducerEdge.source.finalState
+                targetInitialState = queryEdge.target.isInitialState && transducerEdge.target.initialState
+                targetFinalState = queryEdge.target.isFinalState && transducerEdge.target.finalState
+                sourceNode = ProductAutomatonNode(
+                    queryEdge.source,
+                    transducerEdge.source,
+                    databaseEdge.source,
+                    sourceInitialState,
+                    sourceFinalState
+                )
+                targetNode = ProductAutomatonNode(
+                    queryEdge.target,
+                    transducerEdge.target,
+                    databaseEdge.source,
+                    targetInitialState,
+                    targetFinalState
+                )
             }
 
         }
@@ -279,11 +504,11 @@ class ProductAutomatonService() {
      * @return node, part of the nodeMap. (either retrieved from there or newly created and added)
      */
     private fun getInstance(nodeMap: HashMap<String, ProductAutomatonNode>, node: ProductAutomatonNode): ProductAutomatonNode {
-        var node: ProductAutomatonNode = node
+        var otherNode: ProductAutomatonNode = node
         if (nodeMap.containsKey(node.identifierString)) {
-            node = nodeMap[node.identifierString]!!
+            otherNode = nodeMap[node.identifierString]!!
         } else nodeMap[node.identifierString] = node
-        return node
+        return otherNode
     }
 
     // returns if the string starts with a negation
@@ -306,5 +531,19 @@ class ProductAutomatonService() {
             string.substring(1)
         } else string
         return result
+    }
+
+    private fun isEpsilonString(string: String): Boolean {
+        val listOfEpsilonEquivalents = arrayListOf("ε", "epsilon")
+        return listOfEpsilonEquivalents.contains(string)
+    }
+
+    /**
+     * todo
+     *  consider making the internal epsilon identifier a property the user can change in the frontend.
+     *  (duplicate with TransducerReaderService)
+     */
+    private fun replaceEmptyStringWithInternalEpsilon(): String {
+        return "epsilon"
     }
 }
