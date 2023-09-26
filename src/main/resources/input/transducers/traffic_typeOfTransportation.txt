@@ -1,0 +1,15 @@
+nodes
+t0, true, true,
+edges
+t0, t0, Tram_8, Tram_8, 0
+t0, t0, Tram_3, Tram_3, 0
+t0, t0, Tram_11, Tram_11, 0
+t0, t0, Bus_66, Bus_66, 0
+t0, t0, Bus_61, Bus_61, 0
+t0, t0, Bus_85, Bus_85, 0
+t0, t0, Tram, Tram_8, 1
+t0, t0, Tram, Tram_3, 1
+t0, t0, Tram, Tram_11, 1
+t0, t0, Bus, Bus_61, 1
+t0, t0, Bus, Bus_66, 1
+t0, t0, Bus, Bus_85, 1
