@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.RequestBody
 import tin.data.tintheweb.queryTask.QueryTaskCreateData
 import tin.model.queryResult.QueryResult
 import tin.model.queryTask.ComputationProperties
+import tin.model.queryTask.ComputationPropertiesRepository
 import tin.model.queryTask.QueryTask
 import tin.model.queryTask.QueryTaskRepository
 import tin.model.tintheweb.File
@@ -17,6 +18,7 @@ class QueryTaskService(
     // Repositories
     private val queryTaskRepository: QueryTaskRepository,
     private val fileRepository: FileRepository,
+    private val computationPropertiesRepository: ComputationPropertiesRepository,
 ) {
 
     fun getAllQueryTasks(): List<QueryTask> {
@@ -45,20 +47,30 @@ class QueryTaskService(
         if (tempQueryFile == null) errorWhileReadingFiles = QueryResult.QueryResultStatus.QueryFileNotFound
         if (tempDatabaseFile == null) errorWhileReadingFiles = QueryResult.QueryResultStatus.DatabaseFileNotFound
 
-        val queryTask = QueryTask(
-            data.queryFileIdentifier,
-            data.transducerFileIdentifier,
-            data.databaseFileIdentifier,
-            QueryTask.QueryStatus.Error,
-            null,
+        // compProperties.id should really not fail but if it somehow does, we still have the fallback option.
+        // Note: If you change the dataClass, you can simply throw away the catch block.
+        // it should not be needed in the first place, since the compProperties object should be created by the user.
+        val computationProperties: ComputationProperties = try {
+            computationPropertiesRepository.findById(data.computationProperties.id).get()
+        } catch (e: Exception) {
+            // e: NoSuchElementException but we don't use it anyway
             ComputationProperties(
                 topKValue = data.computationProperties.topKValue,
                 thresholdValue = data.computationProperties.thresholdValue,
                 generateTransducer = data.computationProperties.generateTransducer,
                 transducerGeneration = data.computationProperties.transducerGeneration,
                 name = data.computationProperties.name,
-                computationModeEnum = data.computationProperties.computationModeEnum
+                computationModeEnum = data.computationProperties.computationModeEnum,
             )
+        }
+
+        val queryTask = QueryTask(
+            data.queryFileIdentifier,
+            data.transducerFileIdentifier,
+            data.databaseFileIdentifier,
+            QueryTask.QueryStatus.Error,
+            null,
+            computationProperties
         )
 
         // if an error is found, we don't queue the task

@@ -24,19 +24,20 @@ class ProductAutomatonService() {
         var target: ProductAutomatonNode
         val productAutomatonGraph = ProductAutomatonGraph()
 
-        // find all incoming epsilon edges
-        // bandaid fix to insert incoming epsilon edges to fitting transducer edge every iteration.
-
         val incomingEpsilonEdges = HashSet<TransducerEdge>()
+        if (dataProvider.queryGraph.nodes.isEmpty()) {
 
-        dataProvider.transducerGraph.nodes.forEach {transducerNode ->
-            transducerNode.edges?.forEach { transducerEdge ->
-                if (isEpsilonString(transducerEdge.incomingString)) {
-                    incomingEpsilonEdges.add(transducerEdge)
+            // find all incoming epsilon edges
+            // bandaid fix to insert incoming epsilon edges to fitting transducer edge every iteration.
+
+            dataProvider.transducerGraph.nodes.forEach { transducerNode ->
+                transducerNode.edges?.forEach { transducerEdge ->
+                    if (isEpsilonString(transducerEdge.incomingString)) {
+                        incomingEpsilonEdges.add(transducerEdge)
+                    }
                 }
             }
         }
-
 
         //part (I)
         for (queryNode in dataProvider.queryGraph.nodes) {

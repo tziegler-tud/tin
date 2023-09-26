@@ -174,7 +174,7 @@ class DijkstraQueryAnsweringService(
 
         val productAutomatonService = ProductAutomatonService()
         val productAutomatonGraph: ProductAutomatonGraph
-        val answerMap: HashMap<ProductAutomatonTuple, Double>
+        var answerMap: HashMap<ProductAutomatonTuple, Double>
 
         val preprocessingTime = measureNanoTime {
             productAutomatonGraph = productAutomatonService.constructProductAutomaton(dataProvider)
@@ -187,6 +187,7 @@ class DijkstraQueryAnsweringService(
 
         val transformedAnswerSet: Set<QueryResult.AnswerTriplet>
         val postProcessingTime = measureNanoTime {
+            answerMap = trimAnswerMapToThreshold(answerMap, threshold)
             transformedAnswerSet = makeAnswerMapReadable(answerMap)
         }
 
@@ -208,7 +209,7 @@ class DijkstraQueryAnsweringService(
 
         val productAutomatonService = ProductAutomatonService()
         val productAutomatonGraph: ProductAutomatonGraph
-        val answerMap: HashMap<ProductAutomatonTuple, Double>
+        var answerMap: HashMap<ProductAutomatonTuple, Double>
 
         val preprocessingTime = measureNanoTime {
             productAutomatonGraph = productAutomatonService.constructProductAutomaton(dataProvider)
@@ -221,6 +222,7 @@ class DijkstraQueryAnsweringService(
 
         val transformedAnswerSet: Set<QueryResult.AnswerTriplet>
         val postProcessingTime = measureNanoTime {
+            answerMap = trimAnswerMapToTopK(answerMap, kValue)
             transformedAnswerSet = makeAnswerMapReadable(answerMap)
         }
 
@@ -249,5 +251,20 @@ class DijkstraQueryAnsweringService(
                 add(QueryResult.AnswerTriplet(source, target, value))
             }
         }
+    }
+    private fun trimAnswerMapToTopK(
+        answerMap: HashMap<ProductAutomatonTuple, Double>,
+        topK: Int
+    ): HashMap<ProductAutomatonTuple, Double> {
+        // sort the answerMap ascending by the Double value, then take the first topK elements, and return them as a new HashMap
+        return HashMap(answerMap.toList().sortedBy { (_, value) -> value }.take(topK).toMap())
+    }
+
+    private fun trimAnswerMapToThreshold(
+        answerMap: HashMap<ProductAutomatonTuple, Double>,
+        threshold: Double
+    ): HashMap<ProductAutomatonTuple, Double> {
+        // remove all elements whose value is larger than the threshold, then return the remaining HashMap
+        return HashMap(answerMap.filter { (_, value) -> value <= threshold })
     }
 }

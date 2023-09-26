@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import tin.model.queryTask.ComputationProperties
 
 class ComputationPropertiesData(
-    @JsonProperty("id") val id: Long?,
+    @JsonProperty("id") val id: Long,
     @JsonProperty("name") val name: String,
     @JsonProperty("computationModeEnum") val computationModeEnum: ComputationProperties.ComputationModeEnum,
     @JsonProperty("topKValue") val topKValue: Int?,

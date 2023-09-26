@@ -34,4 +34,6 @@ class ComputationProperties(
     }
 }
 
-interface ComputationPropertiesRepository : JpaRepository<ComputationProperties, Long>
+interface ComputationPropertiesRepository : JpaRepository<ComputationProperties, Long> {
+
+}
