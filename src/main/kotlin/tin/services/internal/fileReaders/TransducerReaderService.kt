@@ -2,15 +2,23 @@ package tin.services.internal.fileReaders
 
 
 import org.springframework.stereotype.Service
+import tin.model.database.DatabaseGraph
 import tin.model.transducer.TransducerGraph
 import tin.model.transducer.TransducerNode
+import tin.services.technical.SystemConfigurationService
 import java.io.BufferedReader
 import java.io.File
 
 @Service
-class TransducerReaderService {
+class TransducerReaderService (
+        systemConfigurationService: SystemConfigurationService
+) : FileReaderService<TransducerGraph>(
+        systemConfigurationService
+) {
 
-    fun readTransducerFile(file: String): TransducerGraph {
+    override var filePath = systemConfigurationService.getTransducerPath();
+
+    override fun processFile(file: File): TransducerGraph {
         val transducerGraph = TransducerGraph()
         val transducerNodes = HashMap<String, TransducerNode>() // map containing the TransducerNodes
 
@@ -27,7 +35,7 @@ class TransducerReaderService {
         var currentLine: String
 
 
-        val bufferedReader: BufferedReader = File(file).bufferedReader()
+        val bufferedReader: BufferedReader = file.bufferedReader()
 
         while (true) {
             // read current line; exit loop when at the end of the file
@@ -93,7 +101,7 @@ class TransducerReaderService {
     fun generateClassicAnswersTransducer(alphabet: Set<String>): TransducerGraph {
 
         val transducerGraph = TransducerGraph()
-        val source = TransducerNode("t0", initialState = true, finalState = true)
+        val source = TransducerNode("t0", isInitialState = true, isFinalState = true)
 
         for (word in alphabet) {
             // for each word of the alphabet we add the edge (t0, t0, word, word, 0)
