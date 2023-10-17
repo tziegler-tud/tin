@@ -27,7 +27,7 @@ class QueryService(
 
         // store the file locally
         val filename = metaDataFile.id.toString()
-        val storedFile = File("${systemConfigurationService.uploadPathForQueries}/$filename")
+        val storedFile = File("${systemConfigurationService.getQueryPath()}/$filename")
         file.transferTo(storedFile)
     }
 }

@@ -25,7 +25,7 @@ class DatabaseService(
 
         // store the file locally
         val filename = metaDataFile.id.toString()
-        val storedFile = File("${systemConfigurationService.uploadPathForDatabases}/$filename")
+        val storedFile = File("${systemConfigurationService.getDatabasePath()}/$filename")
         file.transferTo(storedFile)
     }
 
