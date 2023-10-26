@@ -24,9 +24,23 @@ class SystemConfigurationService {
 //    private var uploadPathForDatabases = "$projectRoot/src/main/resources/input/databases/"
 //    private var uploadPathForTransducers = "$projectRoot/src/main/resources/input/transducers/"
 
-
     public fun getProjectRoot():String? {
         return this.projectRoot;
+    }
+
+    /**
+     * returns the current project root as defined in application.properties
+     * returns empty string if project root is not set.
+     */
+    public fun getProjectRootSave():String {
+        var ret: String;
+        ret = try {
+            this.projectRoot!!
+        }
+        catch(e: Error){
+            "";
+        }
+        return ret;
     }
 
     fun setProjectRoot(string: String) {
