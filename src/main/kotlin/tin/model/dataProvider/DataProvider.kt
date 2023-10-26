@@ -1,6 +1,7 @@
 package tin.model.dataProvider
 
 
+import tin.model.alphabet.Alphabet
 import tin.model.database.DatabaseGraph
 import tin.model.query.QueryGraph
 import tin.model.transducer.TransducerGraph
@@ -11,7 +12,7 @@ class DataProvider(
         var queryGraph: QueryGraph,
         var transducerGraph: TransducerGraph,
         var databaseGraph: DatabaseGraph,
-        var alphabet: Set<String> = HashSet()
+        var alphabet: Alphabet = Alphabet()
 ) {
 
     var dataSetIdentifier: String? = null

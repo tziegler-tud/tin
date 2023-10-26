@@ -3,6 +3,7 @@ package tin.services.internal
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import tin.model.alphabet.Alphabet
 import tin.model.utils.ProductAutomatonTuple
 import tin.model.dataProvider.DataProvider
 import tin.model.productAutomaton.ProductAutomatonGraph
@@ -113,8 +114,8 @@ class DijkstraQueryAnsweringService(
             databaseReaderService.read(systemConfigurationService.getDatabasePath(), databaseFileDb.filename)
 
         val transducerGraph: TransducerGraph
-        val alphabet = queryGraph.alphabet.plus(databaseGraph.alphabet)
-
+        val alphabet = Alphabet(queryGraph.alphabet);
+        alphabet.addAlphabet(databaseGraph.alphabet);
 
         transducerGraph =
             if (data.computationProperties.generateTransducer && data.computationProperties.transducerGeneration != null) {
