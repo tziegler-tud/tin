@@ -32,6 +32,12 @@ class DijkstraQueryAnsweringService(
 ) {
     @Autowired
     lateinit var systemConfigurationService: SystemConfigurationService
+    @Autowired
+    lateinit var queryReaderService: QueryReaderService;
+    @Autowired
+    lateinit var databaseReaderService: DatabaseReaderService;
+    @Autowired
+    lateinit var transducerReaderService: TransducerReaderService;
 
     @Transactional
     fun calculateQueryTask(queryTask: QueryTask): QueryResult {
@@ -101,14 +107,10 @@ class DijkstraQueryAnsweringService(
         val queryFileDb = fileRepository.findByIdentifier(data.queryFileIdentifier)
         val databaseFileDb = fileRepository.findByIdentifier(data.databaseFileIdentifier)
 
-        val queryReaderService = QueryReaderService()
-        val transducerReaderService = TransducerReaderService()
-        val databaseReaderService = DatabaseReaderService()
-
         val queryGraph =
-            queryReaderService.readRegularPathQueryFile(systemConfigurationService.uploadPathForQueries + queryFileDb.filename)
+            queryReaderService.read(systemConfigurationService.getQueryPath(), queryFileDb.filename)
         val databaseGraph =
-            databaseReaderService.readDatabaseFile(systemConfigurationService.uploadPathForDatabases + databaseFileDb.filename)
+            databaseReaderService.read(systemConfigurationService.getDatabasePath(), databaseFileDb.filename)
 
         val transducerGraph: TransducerGraph
         val alphabet = queryGraph.alphabet.plus(databaseGraph.alphabet)
@@ -129,8 +131,7 @@ class DijkstraQueryAnsweringService(
             } else {
                 // transducer file is provided -> no generation needed
                 val transducerFileDb = fileRepository.findByIdentifier(data.transducerFileIdentifier!!)
-                transducerReaderService.readTransducerFile(systemConfigurationService.uploadPathForTransducers + transducerFileDb.filename)
-
+                transducerReaderService.read(systemConfigurationService.getTransducerPath(), transducerFileDb.filename)
             }
 
         return DataProvider(queryGraph, transducerGraph, databaseGraph, alphabet)

@@ -1,11 +1,14 @@
 package tin.model.database
 
+import tin.model.graph.Graph
+import tin.model.graph.NodeSet
+import tin.model.transducer.TransducerNode
 import java.util.*
 
-class DatabaseGraph {
+class DatabaseGraph : Graph() {
 
-    var nodes: MutableSet<DatabaseNode> = HashSet()
-    var alphabet: Set<String> = HashSet()
+    override val nodes: NodeSet<DatabaseNode> = NodeSet()
+
 
     fun addNodes(vararg n: DatabaseNode) {
         nodes.addAll(listOf(*n))
@@ -35,7 +38,7 @@ class DatabaseGraph {
         val newEdge = DatabaseEdge(source, target, label)
         // don't add duplicate edges!
         for (existingEdge in source.edges) {
-            if (existingEdge == newEdge) {
+            if (existingEdge.equals(newEdge)) {
                 return
             }
         }
@@ -52,29 +55,16 @@ class DatabaseGraph {
     }
 
 
-
-
-    fun printGraph() {
-        for (node in nodes) {
-            for (edge in node.edges) {
-                edge.print()
-            }
-        }
-    }
-
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other !is DatabaseGraph) return false
 
-        return nodes == other.nodes &&
-                alphabet == other.alphabet
+        return super.equals(other);
+//        return nodes == other.nodes &&
+//                alphabet == other.alphabet
     }
 
     override fun hashCode(): Int {
-        var result = nodes.hashCode()
-        result = 31 * result + alphabet.hashCode()
-        return result
+        return super.hashCode();
     }
-
-
 }

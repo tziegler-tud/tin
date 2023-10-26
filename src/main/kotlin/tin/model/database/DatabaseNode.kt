@@ -1,12 +1,23 @@
 package tin.model.database
 
-import kotlin.collections.HashSet
+import tin.model.graph.Edge
+import tin.model.graph.EdgeSet
+import tin.model.graph.Node
+import tin.model.query.QueryEdge
 
 
 class DatabaseNode(
-    var identifier: String,
-    var edges: HashSet<DatabaseEdge> = hashSetOf()
-) {
+    identifier: String,
+    edges: EdgeSet<DatabaseEdge> = EdgeSet()
+) : Node(
+        identifier, false, false, edges
+){
+
+    override var edges: EdgeSet<DatabaseEdge> = EdgeSet();
+
+    fun addEdge(edge: DatabaseEdge) {
+        edges.add(edge);
+    }
     /**
      * plain DatabaseNode.equals() and DatabaseEdge.equals() methods will cause a circular dependency and stack overflows.
      * It is more important to check here if edges set is equal since we have to trim the equals() method in the Edge class.
@@ -24,7 +35,7 @@ class DatabaseNode(
      * we need all properties to be checked because we use this as an equals() method
      * We must not check for edges == other.edges but we can check their size to prevent at least some false positives.
      */
-    fun equalsWithoutEdges(other: Any?): Boolean {
+    override fun equalsWithoutEdges(other: Any?): Boolean {
         if (this === other) return true
         if (other !is DatabaseNode) return false
 

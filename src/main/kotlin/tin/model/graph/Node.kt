@@ -1,18 +1,16 @@
-package tin.model.query
+package tin.model.graph
 
-import tin.model.graph.Edge
-import tin.model.graph.EdgeSet
-import tin.model.graph.Node
 import kotlin.collections.HashSet
+import tin.model.graph.EdgeSet
+import tin.model.query.QueryEdge
+import tin.model.query.QueryNode
 
-class QueryNode(
-    identifier: String,
-    isInitialState: Boolean,
-    isFinalState: Boolean,
-    edges: EdgeSet<QueryEdge>
-) : Node(
-        identifier, isInitialState, isFinalState, edges
-){
+abstract class Node(
+        var identifier: String,
+        var isInitialState : Boolean = false,
+        var isFinalState : Boolean = false,
+        open val edges : EdgeSet<out Edge>
+) {
 
     constructor(
         identifier: String,
@@ -25,12 +23,6 @@ class QueryNode(
         edges = EdgeSet()
     )
 
-    override var edges: EdgeSet<QueryEdge> = EdgeSet();
-
-    fun addEdge(edge: QueryEdge) {
-        edges.add(edge);
-    }
-
     /**
      * plain QueryNode.equals() and QueryEdge.equals() methods will cause a circular dependency and stack overflows.
      * It is more important to check here if edges set is equal since we have to trim the equals() method in the Edge class.
@@ -38,30 +30,31 @@ class QueryNode(
      */
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
-        if (other !is QueryNode) return false
+        if (other !is Node) return false
 
-        return super.equals(other);
-//        return this.equalsWithoutEdges(other) &&
-//                edges == other.edges
+        return this.equalsWithoutEdges(other) &&
+                edges == other.edges
     }
 
     /**
      * we need all properties to be checked because we use this as an equals() method
      * We must not check for edges == other.edges but we can check their size to prevent at least some false positives.
      */
-    override fun equalsWithoutEdges(other: Any?): Boolean {
+    open fun equalsWithoutEdges(other: Any?): Boolean {
         if (this === other) return true
-        if (other !is QueryNode) return false
+        if (other !is Node) return false
 
-        return super.equalsWithoutEdges(other);
-
-//        return identifier == other.identifier &&
-//                isInitialState == other.isInitialState &&
-//                isFinalState == other.isFinalState &&
-//                edges.size == other.edges.size
+        return identifier == other.identifier &&
+                isInitialState == other.isInitialState &&
+                isFinalState == other.isFinalState &&
+                edges.size == other.edges.size
     }
 
     override fun hashCode(): Int {
-        return super.hashCode();
+        var result = identifier.hashCode()
+        result = 31 * result + isInitialState.hashCode()
+        result = 31 * result + isFinalState.hashCode()
+        result = 31 * result + edges.hashCode()
+        return result
     }
 }

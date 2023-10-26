@@ -1,6 +1,7 @@
 package tin.services.internal
 
 import org.junit.jupiter.api.Test
+import org.springframework.stereotype.Service
 import tin.model.dataProvider.DataProvider
 import tin.model.database.DatabaseGraph
 import tin.model.database.DatabaseNode
@@ -14,11 +15,13 @@ import tin.model.transducer.TransducerNode
 import tin.services.internal.fileReaders.DatabaseReaderService
 import tin.services.internal.fileReaders.QueryReaderService
 import tin.services.internal.fileReaders.TransducerReaderService
-import tin.services.technical.SystemConfigurationServiceTest
+import tin.services.technical.SystemConfigurationService
+import java.nio.file.Path
 
+@Service
 class ProductAutomatonServiceTest {
 
-    private var systemConfigurationService: SystemConfigurationServiceTest = SystemConfigurationServiceTest()
+    private var systemConfigurationService: SystemConfigurationService = SystemConfigurationService()
 
     private var productAutomatonService: ProductAutomatonService = ProductAutomatonService()
 
@@ -52,13 +55,13 @@ class ProductAutomatonServiceTest {
             ProductAutomatonEdgeType.EpsilonIncomingPositiveOutgoing -> {
                 /** init query data */
                 val queryGraph = QueryGraph()
-                queryGraph.addQueryNodes(QueryNode("q0", isInitialState = true, isFinalState = true))
+                queryGraph.addNodes(QueryNode("q0", isInitialState = true, isFinalState = true))
                 val q0 = queryGraph.nodes.find { it.identifier == "q0" }!!
-                queryGraph.addQueryEdge(q0,q0,"epsilon")
+                queryGraph.addEdge(q0,q0,"epsilon")
 
                 /** init transducer data */
                 val transducerGraph = TransducerGraph()
-                transducerGraph.addNodes(TransducerNode("t0", initialState = true, finalState = true))
+                transducerGraph.addNodes(TransducerNode("t0", isInitialState = true, isFinalState = true))
                 val t0 = transducerGraph.nodes.find { it.identifier == "t0" }!!
                 transducerGraph.addEdge(t0, t0, "epsilon", "l1", 0.0)
                 transducerGraph.addEdge(t0, t0, "epsilon", "l2", 3.0)
@@ -222,15 +225,19 @@ class ProductAutomatonServiceTest {
 
     private fun buildDataProvider(edgeTestCase: ProductAutomatonEdgeType): DataProvider {
 
-        val queryFilename: String
-        val transducerFilename: String
-        val databaseFilename: String
+        val testFilesDir = "/src/test/resources/input"
+        val testQueryFilePath = Path.of(systemConfigurationService.getProjectRootSave(), testFilesDir, "/queries").toString();
+        val testTransducerFilePath = Path.of(systemConfigurationService.getProjectRootSave(), testFilesDir, "/transducers").toString();
+        val testDatabaseFilePath = Path.of(systemConfigurationService.getProjectRootSave(), testFilesDir, "/databases").toString();
+        val testQueryFilename: String
+        val testTransducerFilename: String
+        val testDatabaseFilename: String
 
         when (edgeTestCase) {
             ProductAutomatonEdgeType.EpsilonIncomingPositiveOutgoing -> {
-                queryFilename = "epsilonIncomingPositiveOutgoingQuery.txt"
-                transducerFilename = "epsilonIncomingPositiveOutgoingTransducer.txt"
-                databaseFilename = "test_db.txt"
+                testQueryFilename = "epsilonIncomingPositiveOutgoingQuery.txt"
+                testTransducerFilename = "epsilonIncomingPositiveOutgoingTransducer.txt"
+                testDatabaseFilename = "test_db.txt"
             }
 
             ProductAutomatonEdgeType.EpsilonIncomingNegativeOutgoing -> {
@@ -266,16 +273,16 @@ class ProductAutomatonServiceTest {
             }
         }
 
-        val queryReaderService = QueryReaderService()
-        val transducerReaderService = TransducerReaderService()
-        val databaseReaderService = DatabaseReaderService()
+        val queryReaderService = QueryReaderService(systemConfigurationService)
+        val transducerReaderService = TransducerReaderService(systemConfigurationService)
+        val databaseReaderService = DatabaseReaderService(systemConfigurationService)
 
         val queryGraph =
-            queryReaderService.readRegularPathQueryFile(systemConfigurationService.uploadPathForQueries + queryFilename)
+            queryReaderService.read(testQueryFilePath, testQueryFilename)
         val databaseGraph =
-            databaseReaderService.readDatabaseFile(systemConfigurationService.uploadPathForDatabases + databaseFilename)
+            databaseReaderService.read(testDatabaseFilePath, testDatabaseFilename)
         val transducerGraph =
-            transducerReaderService.readTransducerFile(systemConfigurationService.uploadPathForTransducers + transducerFilename)
+            transducerReaderService.read(testTransducerFilePath, testTransducerFilename)
 
         val alphabet = queryGraph.alphabet.plus(databaseGraph.alphabet)
 

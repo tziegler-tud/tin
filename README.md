@@ -11,8 +11,9 @@ Preliminaries for Windows
 ---
 Setup 
 
-1. Clone Tin and Tintheweb Repos into one parent folder, e.g. /dev
-2. Set up configurations similar to this: 
+1. Clone Tin and TinTheWeb Repos into one parent folder, e.g. /dev
+2. Copy application.default.properties to application.properties and change settings according to your setup
+3. Set up configurations similar to this: 
 
 <details>
 <summary>Click to expand</summary>
@@ -22,7 +23,7 @@ Setup
 
 </details>
 
-3. Run Ubuntu for Windows, inside the cmd-prompt, run "redis-server"
-3. Run tin, if you didn't change the port it's running on port 8900.
-4. Set up Tintheweb according to its ReadMe for a graphical UI.
+4. Run Ubuntu for Windows, inside the cmd-prompt, run "redis-server"
+5. Run tin, if you didn't change the port it's running on port 8900.
+6. Set up Tintheweb according to its ReadMe for a graphical UI.
 

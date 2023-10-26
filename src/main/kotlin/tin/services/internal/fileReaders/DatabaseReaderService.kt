@@ -3,13 +3,22 @@ package tin.services.internal.fileReaders
 import org.springframework.stereotype.Service
 import tin.model.database.DatabaseGraph
 import tin.model.database.DatabaseNode
+import tin.model.query.QueryGraph
+import tin.services.technical.SystemConfigurationService
 import java.io.BufferedReader
 import java.io.File
+import java.nio.file.Path
 import java.util.HashMap
 @Service
-class DatabaseReaderService {
+class DatabaseReaderService(
+        systemConfigurationService: SystemConfigurationService
+) : FileReaderService<DatabaseGraph>(
+        systemConfigurationService
+) {
 
-    fun readDatabaseFile(file: String): DatabaseGraph {
+    override var filePath = systemConfigurationService.getDatabasePath();
+
+    override fun processFile(file: File): DatabaseGraph {
         val databaseGraph = DatabaseGraph()
         val databaseNodes = HashMap<String, DatabaseNode>() // map containing the QueryNodes
         val alphabet = HashSet<String>()
@@ -25,7 +34,7 @@ class DatabaseReaderService {
         var currentLine: String
 
 
-        val bufferedReader: BufferedReader = File(file).bufferedReader()
+        val bufferedReader: BufferedReader = file.bufferedReader()
 
         while (true) {
             // read current line; exit loop when at the end of the file
@@ -44,7 +53,7 @@ class DatabaseReaderService {
                 readingEdges = true
 
                 // after setting the flags, we skip into the next line
-                currentLine = bufferedReader.readLine()
+                currentLine = bufferedReader.readLine() ?: break;
             }
 
 

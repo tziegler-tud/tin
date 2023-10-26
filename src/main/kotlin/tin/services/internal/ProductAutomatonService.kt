@@ -299,10 +299,10 @@ class ProductAutomatonService() {
             ProductAutomatonEdgeType.EpsilonIncomingPositiveOutgoing -> {
                 // epsilon incoming, positive outgoing
                 // q pause, t move, db move
-                sourceInitialState = queryEdge.source.isInitialState && transducerEdge.source.initialState
-                sourceFinalState = queryEdge.source.isFinalState && transducerEdge.source.finalState
-                targetInitialState = queryEdge.source.isInitialState && transducerEdge.target.initialState
-                targetFinalState = queryEdge.source.isFinalState && transducerEdge.target.finalState
+                sourceInitialState = queryEdge.source.isInitialState && transducerEdge.source.isInitialState
+                sourceFinalState = queryEdge.source.isFinalState && transducerEdge.source.isFinalState
+                targetInitialState = queryEdge.source.isInitialState && transducerEdge.target.isInitialState
+                targetFinalState = queryEdge.source.isFinalState && transducerEdge.target.isFinalState
                 sourceNode = ProductAutomatonNode(
                     queryEdge.source,
                     transducerEdge.source,
@@ -322,10 +322,10 @@ class ProductAutomatonService() {
             ProductAutomatonEdgeType.EpsilonIncomingNegativeOutgoing -> {
                 // epsilon incoming, negative outgoing
                 // q pause, t move, db move backwards
-                sourceInitialState = queryEdge.source.isInitialState && transducerEdge.source.initialState
-                sourceFinalState = queryEdge.source.isFinalState && transducerEdge.source.finalState
-                targetInitialState = queryEdge.source.isInitialState && transducerEdge.target.initialState
-                targetFinalState = queryEdge.source.isFinalState && transducerEdge.target.finalState
+                sourceInitialState = queryEdge.source.isInitialState && transducerEdge.source.isInitialState
+                sourceFinalState = queryEdge.source.isFinalState && transducerEdge.source.isFinalState
+                targetInitialState = queryEdge.source.isInitialState && transducerEdge.target.isInitialState
+                targetFinalState = queryEdge.source.isFinalState && transducerEdge.target.isFinalState
                 sourceNode = ProductAutomatonNode(queryEdge.source, transducerEdge.source, databaseEdge.target, sourceInitialState, sourceFinalState)
                 targetNode = ProductAutomatonNode(queryEdge.source, transducerEdge.target, databaseEdge.source, targetInitialState, targetFinalState)
             }
@@ -333,10 +333,10 @@ class ProductAutomatonService() {
             ProductAutomatonEdgeType.EpsilonIncomingEpsilonOutgoing -> {
                 // epsilon incoming, epsilon outgoing
                 // q pause, t move, db pause
-                sourceInitialState = queryEdge.source.isInitialState && transducerEdge.source.initialState
-                sourceFinalState = queryEdge.source.isFinalState && transducerEdge.source.finalState
-                targetInitialState = queryEdge.source.isInitialState && transducerEdge.target.initialState
-                targetFinalState = queryEdge.source.isFinalState && transducerEdge.target.finalState
+                sourceInitialState = queryEdge.source.isInitialState && transducerEdge.source.isInitialState
+                sourceFinalState = queryEdge.source.isFinalState && transducerEdge.source.isFinalState
+                targetInitialState = queryEdge.source.isInitialState && transducerEdge.target.isInitialState
+                targetFinalState = queryEdge.source.isFinalState && transducerEdge.target.isFinalState
                 sourceNode = ProductAutomatonNode(
                     queryEdge.source,
                     transducerEdge.source,
@@ -356,10 +356,10 @@ class ProductAutomatonService() {
             ProductAutomatonEdgeType.PositiveIncomingPositiveOutgoing -> {
                 // positive incoming, positive outgoing
                 // q move, t move, db move
-                sourceInitialState = queryEdge.source.isInitialState && transducerEdge.source.initialState
-                sourceFinalState = queryEdge.source.isFinalState && transducerEdge.source.finalState
-                targetInitialState = queryEdge.target.isInitialState && transducerEdge.target.initialState
-                targetFinalState = queryEdge.target.isFinalState && transducerEdge.target.finalState
+                sourceInitialState = queryEdge.source.isInitialState && transducerEdge.source.isInitialState
+                sourceFinalState = queryEdge.source.isFinalState && transducerEdge.source.isFinalState
+                targetInitialState = queryEdge.target.isInitialState && transducerEdge.target.isInitialState
+                targetFinalState = queryEdge.target.isFinalState && transducerEdge.target.isFinalState
                 sourceNode = ProductAutomatonNode(
                     queryEdge.source,
                     transducerEdge.source,
@@ -379,10 +379,10 @@ class ProductAutomatonService() {
             ProductAutomatonEdgeType.PositiveIncomingNegativeOutgoing -> {
                 // positive incoming, negative outgoing
                 // q move, t move, db move backwards
-                sourceInitialState = queryEdge.source.isInitialState && transducerEdge.source.initialState
-                sourceFinalState = queryEdge.source.isFinalState && transducerEdge.source.finalState
-                targetInitialState = queryEdge.target.isInitialState && transducerEdge.target.initialState
-                targetFinalState = queryEdge.target.isFinalState && transducerEdge.target.finalState
+                sourceInitialState = queryEdge.source.isInitialState && transducerEdge.source.isInitialState
+                sourceFinalState = queryEdge.source.isFinalState && transducerEdge.source.isFinalState
+                targetInitialState = queryEdge.target.isInitialState && transducerEdge.target.isInitialState
+                targetFinalState = queryEdge.target.isFinalState && transducerEdge.target.isFinalState
                 sourceNode = ProductAutomatonNode(
                     queryEdge.source,
                     transducerEdge.source,
@@ -402,10 +402,10 @@ class ProductAutomatonService() {
             ProductAutomatonEdgeType.PositiveIncomingEpsilonOutgoing -> {
                 // positive incoming, epsilon outgoing
                 // q move, t move, db pause
-                sourceInitialState = queryEdge.source.isInitialState && transducerEdge.source.initialState
-                sourceFinalState = queryEdge.source.isFinalState && transducerEdge.source.finalState
-                targetInitialState = queryEdge.target.isInitialState && transducerEdge.target.initialState
-                targetFinalState = queryEdge.target.isFinalState && transducerEdge.target.finalState
+                sourceInitialState = queryEdge.source.isInitialState && transducerEdge.source.isInitialState
+                sourceFinalState = queryEdge.source.isFinalState && transducerEdge.source.isFinalState
+                targetInitialState = queryEdge.target.isInitialState && transducerEdge.target.isInitialState
+                targetFinalState = queryEdge.target.isFinalState && transducerEdge.target.isFinalState
                 sourceNode = ProductAutomatonNode(
                     queryEdge.source,
                     transducerEdge.source,
@@ -425,10 +425,10 @@ class ProductAutomatonService() {
             ProductAutomatonEdgeType.NegativeIncomingPositiveOutgoing -> {
                 // negative incoming, positive outgoing
                 // q move, t move, db move
-                sourceInitialState = queryEdge.source.isInitialState && transducerEdge.source.initialState
-                sourceFinalState = queryEdge.source.isFinalState && transducerEdge.source.finalState
-                targetInitialState = queryEdge.target.isInitialState && transducerEdge.target.initialState
-                targetFinalState = queryEdge.target.isFinalState && transducerEdge.target.finalState
+                sourceInitialState = queryEdge.source.isInitialState && transducerEdge.source.isInitialState
+                sourceFinalState = queryEdge.source.isFinalState && transducerEdge.source.isFinalState
+                targetInitialState = queryEdge.target.isInitialState && transducerEdge.target.isInitialState
+                targetFinalState = queryEdge.target.isFinalState && transducerEdge.target.isFinalState
                 sourceNode = ProductAutomatonNode(
                     queryEdge.source,
                     transducerEdge.source,
@@ -448,10 +448,10 @@ class ProductAutomatonService() {
             ProductAutomatonEdgeType.NegativeIncomingNegativeOutgoing -> {
                 // negative incoming, negative outgoing
                 // q move, t move, db move backwards
-                sourceInitialState = queryEdge.source.isInitialState && transducerEdge.source.initialState
-                sourceFinalState = queryEdge.source.isFinalState && transducerEdge.source.finalState
-                targetInitialState = queryEdge.target.isInitialState && transducerEdge.target.initialState
-                targetFinalState = queryEdge.target.isFinalState && transducerEdge.target.finalState
+                sourceInitialState = queryEdge.source.isInitialState && transducerEdge.source.isInitialState
+                sourceFinalState = queryEdge.source.isFinalState && transducerEdge.source.isFinalState
+                targetInitialState = queryEdge.target.isInitialState && transducerEdge.target.isInitialState
+                targetFinalState = queryEdge.target.isFinalState && transducerEdge.target.isFinalState
                 sourceNode = ProductAutomatonNode(
                     queryEdge.source,
                     transducerEdge.source,
@@ -471,10 +471,10 @@ class ProductAutomatonService() {
             ProductAutomatonEdgeType.NegativeIncomingEpsilonOutgoing -> {
                 // negative incoming, epsilon outgoing
                 // q move, t move, db pause
-                sourceInitialState = queryEdge.source.isInitialState && transducerEdge.source.initialState
-                sourceFinalState = queryEdge.source.isFinalState && transducerEdge.source.finalState
-                targetInitialState = queryEdge.target.isInitialState && transducerEdge.target.initialState
-                targetFinalState = queryEdge.target.isFinalState && transducerEdge.target.finalState
+                sourceInitialState = queryEdge.source.isInitialState && transducerEdge.source.isInitialState
+                sourceFinalState = queryEdge.source.isFinalState && transducerEdge.source.isFinalState
+                targetInitialState = queryEdge.target.isInitialState && transducerEdge.target.isInitialState
+                targetFinalState = queryEdge.target.isFinalState && transducerEdge.target.isFinalState
                 sourceNode = ProductAutomatonNode(
                     queryEdge.source,
                     transducerEdge.source,
