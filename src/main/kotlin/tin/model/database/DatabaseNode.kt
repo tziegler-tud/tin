@@ -8,7 +8,8 @@ import tin.model.query.QueryEdge
 
 class DatabaseNode(
     identifier: String,
-    edges: EdgeSet<DatabaseEdge> = EdgeSet()
+    edges: EdgeSet<DatabaseEdge> = EdgeSet(),
+    var properties: HashSet<String> = HashSet()
 ) : Node(
         identifier, false, false, edges
 ){
@@ -18,6 +19,21 @@ class DatabaseNode(
     fun addEdge(edge: DatabaseEdge) {
         edges.add(edge);
     }
+
+    fun addProperty(property: String) {
+        properties.add(property);
+    }
+
+    fun addProperties(vararg properties: String) {
+        properties.forEach{
+            addProperty(it);
+        }
+    }
+
+    fun hasProperty(property: String) : Boolean {
+        return properties.contains(property);
+    }
+
     /**
      * plain DatabaseNode.equals() and DatabaseEdge.equals() methods will cause a circular dependency and stack overflows.
      * It is more important to check here if edges set is equal since we have to trim the equals() method in the Edge class.
@@ -40,7 +56,8 @@ class DatabaseNode(
         if (other !is DatabaseNode) return false
 
         return identifier == other.identifier &&
-                edges.size == other.edges.size
+                edges.size == other.edges.size &&
+                properties == other.properties
     }
 
     override fun hashCode(): Int {

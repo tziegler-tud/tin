@@ -1,7 +1,9 @@
 package tin.services.internal.fileReaders
 
 import org.springframework.stereotype.Service
+import tin.model.alphabet.Alphabet
 import tin.model.database.DatabaseGraph
+import tin.model.database.DatabaseNode
 import tin.model.query.QueryGraph
 import tin.model.query.QueryNode
 import tin.services.technical.SystemConfigurationService
@@ -22,7 +24,7 @@ class QueryReaderService (
     override fun processFile(file: File): QueryGraph {
         val queryGraph = QueryGraph()
         val queryNodes = HashMap<String, QueryNode>() // map containing the QueryNodes
-        val alphabet = HashSet<String>()
+        val alphabet = Alphabet()
 
         var source: QueryNode
         var target: QueryNode
@@ -30,8 +32,7 @@ class QueryReaderService (
         var edgeLabel: String
         var stringArray: Array<String>
 
-        var readingNodes = false
-        var readingEdges = false
+        var currentlyReading = InputTypeEnum.UNDEFINED
         var currentLine: String
 
 
@@ -43,49 +44,47 @@ class QueryReaderService (
 
             // when we see "nodes", we will read nodes starting from the next line
             if (currentLine == "nodes") {
-                readingNodes = true
-                readingEdges = false
+                currentlyReading = InputTypeEnum.NODES
                 // after setting the flags, we skip into the next line
-                currentLine = bufferedReader.readLine()
+                currentLine = bufferedReader.readLine() ?: break;
             }
 
             if (currentLine == "edges") {
-                readingNodes = false
-                readingEdges = true
+                currentlyReading = InputTypeEnum.EDGES
 
                 // after setting the flags, we skip into the next line
-                currentLine = bufferedReader.readLine() ?: break
+                currentLine = bufferedReader.readLine() ?: break;
             }
 
 
             // remove whitespace in current line
             currentLine = currentLine.replace("\\s".toRegex(), "")
 
-            if (readingNodes) {
-                // add node from this line
+            when(currentlyReading){
+                InputTypeEnum.NODES -> {
+                    stringArray = currentLine.split(",").toTypedArray()
 
-                stringArray = currentLine.split(",").toTypedArray()
+                    node = QueryNode(stringArray[0], stringArray[1].toBoolean(), stringArray[2].toBoolean())
+                    queryNodes[stringArray[0]] = node
+                    queryGraph.addNodes(node)
+                }
 
-                node = QueryNode(stringArray[0], stringArray[1].toBoolean(), stringArray[2].toBoolean())
-                queryNodes[stringArray[0]] = node
-                queryGraph.addNodes(node)
+                InputTypeEnum.EDGES -> {
+                    stringArray = currentLine.split(",").toTypedArray()
 
-            }
+                    // nodes have to be present, because they have been defined before reading any edges in the file
+                    source = queryNodes[stringArray[0]]!!
+                    target = queryNodes[stringArray[1]]!!
 
-            if (readingEdges) {
-                // add edge from this line
+                    edgeLabel = stringArray[2]
+                    alphabet.addRoleName(edgeLabel)
 
-                stringArray = currentLine.split(",").toTypedArray()
+                    queryGraph.addEdge(source, target, edgeLabel)
+                }
 
-                // nodes have to be present, because they have been defined before reading any edges in the file
-                source = queryNodes[stringArray[0]]!!
-                target = queryNodes[stringArray[1]]!!
+                else -> {
 
-                edgeLabel = stringArray[2]
-                alphabet.add(edgeLabel)
-
-                queryGraph.addEdge(source, target, edgeLabel)
-
+                }
             }
         }
 

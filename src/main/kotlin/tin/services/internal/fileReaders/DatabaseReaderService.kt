@@ -1,6 +1,7 @@
 package tin.services.internal.fileReaders
 
 import org.springframework.stereotype.Service
+import tin.model.alphabet.Alphabet
 import tin.model.database.DatabaseGraph
 import tin.model.database.DatabaseNode
 import tin.model.query.QueryGraph
@@ -21,16 +22,18 @@ class DatabaseReaderService(
     override fun processFile(file: File): DatabaseGraph {
         val databaseGraph = DatabaseGraph()
         val databaseNodes = HashMap<String, DatabaseNode>() // map containing the QueryNodes
-        val alphabet = HashSet<String>()
+        val alphabet = Alphabet();
 
         var source: DatabaseNode
         var target: DatabaseNode
         var node: DatabaseNode
         var edgeLabel: String
+        var property: String
         var stringArray: Array<String>
 
         var readingNodes = false
         var readingEdges = false
+        var currentlyReading = InputTypeEnum.UNDEFINED
         var currentLine: String
 
 
@@ -42,15 +45,20 @@ class DatabaseReaderService(
 
             // when we see "nodes", we will read nodes starting from the next line
             if (currentLine == "nodes") {
-                readingNodes = true
-                readingEdges = false
+                currentlyReading = InputTypeEnum.NODES
                 // after setting the flags, we skip into the next line
-                currentLine = bufferedReader.readLine()
+                currentLine = bufferedReader.readLine() ?: break;
             }
 
             if (currentLine == "edges") {
-                readingNodes = false
-                readingEdges = true
+                currentlyReading = InputTypeEnum.EDGES
+
+                // after setting the flags, we skip into the next line
+                currentLine = bufferedReader.readLine() ?: break;
+            }
+
+            if (currentLine == "properties") {
+                currentlyReading = InputTypeEnum.PROPERTIES
 
                 // after setting the flags, we skip into the next line
                 currentLine = bufferedReader.readLine() ?: break;
@@ -60,35 +68,61 @@ class DatabaseReaderService(
             // remove whitespace in current line
             currentLine = currentLine.replace("\\s".toRegex(), "")
 
-            if (readingNodes) {
-                // add node from this line
+            when(currentlyReading){
+                InputTypeEnum.NODES -> {
+                    stringArray = currentLine.split(",").toTypedArray()
 
-                stringArray = currentLine.split(",").toTypedArray()
+                    node = DatabaseNode(stringArray[0])
+                    databaseNodes[stringArray[0]] = node
+                    databaseGraph.addNodes(node)
+                }
 
-                node = DatabaseNode(stringArray[0])
-                databaseNodes[stringArray[0]] = node
-                databaseGraph.addNodes(node)
+                InputTypeEnum.EDGES -> {
+                    stringArray = currentLine.split(",").toTypedArray()
 
-            }
+                    // nodes have to be present, because they have been defined before reading any edges in the file
+                    source = databaseNodes[stringArray[0]]!!
+                    target = databaseNodes[stringArray[1]]!!
 
-            if (readingEdges) {
-                // add edge from this line
+                    edgeLabel = stringArray[2]
+                    alphabet.addRoleName(edgeLabel)
 
-                stringArray = currentLine.split(",").toTypedArray()
+                    databaseGraph.addEdge(source, target, edgeLabel)
+                }
 
-                // nodes have to be present, because they have been defined before reading any edges in the file
-                source = databaseNodes[stringArray[0]]!!
-                target = databaseNodes[stringArray[1]]!!
+                InputTypeEnum.PROPERTIES -> {
+                    stringArray = currentLine.split(",").toTypedArray()
 
-                edgeLabel = stringArray[2]
-                alphabet.add(edgeLabel)
+                    val properties = stringArray.copyOf().drop(1);
 
-                databaseGraph.addEdge(source, target, edgeLabel)
+                    // nodes have to be present, because they have been defined before reading any edges in the file
+                    try {
+                        node = databaseNodes[stringArray[0]]!!
+                    }
+                    catch(e: Error){
+                        val msg = "Invalid input line: Trying to add properties to Node with identifier '" + stringArray[0] + "'. Reason: Node is not present in database graph!";
+                        throw Error(msg); //TODO: set specific error type
+                    }
 
+                    properties.forEach{
+                        databaseGraph.addNodeProperty(node, it);
+                        alphabet.addConceptName(it)
+                    }
+                }
+
+                else -> {
+                    //trying to read line without knowing in which part of the input file we are.
+                    // Perhaps we encountered a blank line at the start of the document. Still, this is bad and should not happen.
+                    println("WARNING: DatabaseReaderService: Expected a section identifier, but none was found. This is likely due to a malformed input file. Skipping this line..." );
+                    break;
+                }
             }
         }
 
         databaseGraph.alphabet = alphabet
+        //debug output
+        databaseGraph.printGraph();
+
         return databaseGraph
     }
 }

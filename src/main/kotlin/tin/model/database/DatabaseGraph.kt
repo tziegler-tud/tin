@@ -14,6 +14,28 @@ class DatabaseGraph : Graph() {
         nodes.addAll(listOf(*n))
     }
 
+    override fun getNode(identifier: String) : DatabaseNode? {
+        return nodes.find {
+            it.identifier == identifier
+        }
+    }
+
+    override fun printGraph() {
+        println("Printing DatabaseGraph:\n")
+        //print nodes
+        println("Nodes:\n");
+        for (node:DatabaseNode in nodes) {
+            println("( " + node.identifier + " ) : " + node.properties.toString())
+        }
+        println("\n");
+        println("edges:")
+        for (node in nodes) {
+            for (edge in node.edges) {
+                edge.print()
+            }
+        }
+    }
+
     /**
      * Note that we cannot use "nodes.add()" or similar functions that use "equals()" here.
      * This is because we call this function to populate the graph;
@@ -44,6 +66,17 @@ class DatabaseGraph : Graph() {
         }
         source.edges.add(newEdge)
     }
+
+    fun addNodeProperty(node: DatabaseNode, property: String){
+        val existingNode = findNodeWithoutEdgeComparison(node);
+        if(existingNode != null) {
+            existingNode.addProperty(property);
+        }
+        else {
+            //this should never happen.
+        }
+    }
+
     /** helper function to use in the context of populating the graph only.
      * Note that since we cannot have different nodes with the same identifier,
      * we just have to check the identifier property and no other properties.

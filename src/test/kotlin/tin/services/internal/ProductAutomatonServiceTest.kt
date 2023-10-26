@@ -2,6 +2,7 @@ package tin.services.internal
 
 import org.junit.jupiter.api.Test
 import org.springframework.stereotype.Service
+import tin.model.alphabet.Alphabet
 import tin.model.dataProvider.DataProvider
 import tin.model.database.DatabaseGraph
 import tin.model.database.DatabaseNode
@@ -284,7 +285,8 @@ class ProductAutomatonServiceTest {
         val transducerGraph =
             transducerReaderService.read(testTransducerFilePath, testTransducerFilename)
 
-        val alphabet = queryGraph.alphabet.plus(databaseGraph.alphabet)
+        val alphabet = Alphabet(queryGraph.alphabet)
+        alphabet.addAlphabet(databaseGraph.alphabet)
 
         return DataProvider(queryGraph, transducerGraph, databaseGraph, alphabet)
     }

@@ -2,7 +2,9 @@ package tin.services.internal.fileReaders
 
 
 import org.springframework.stereotype.Service
+import tin.model.alphabet.Alphabet
 import tin.model.database.DatabaseGraph
+import tin.model.query.QueryNode
 import tin.model.transducer.TransducerGraph
 import tin.model.transducer.TransducerNode
 import tin.services.technical.SystemConfigurationService
@@ -30,8 +32,7 @@ class TransducerReaderService (
         var cost: Double
         var stringArray: Array<String>
 
-        var readingNodes = false
-        var readingEdges = false
+        var currentlyReading = InputTypeEnum.UNDEFINED
         var currentLine: String
 
 
@@ -43,67 +44,65 @@ class TransducerReaderService (
 
             // when we see "nodes", we will read nodes starting from the next line
             if (currentLine == "nodes") {
-                readingNodes = true
-                readingEdges = false
+                currentlyReading = InputTypeEnum.NODES
                 // after setting the flags, we skip into the next line
-                currentLine = bufferedReader.readLine()
+                currentLine = bufferedReader.readLine() ?: break;
             }
 
             if (currentLine == "edges") {
-                readingNodes = false
-                readingEdges = true
+                currentlyReading = InputTypeEnum.EDGES
 
                 // after setting the flags, we skip into the next line
-                currentLine = bufferedReader.readLine()
+                currentLine = bufferedReader.readLine() ?: break;
             }
 
 
             // remove whitespace in current line
             currentLine = currentLine.replace("\\s".toRegex(), "")
 
-            if (readingNodes) {
-                // add node from this line
+            when(currentlyReading){
+                InputTypeEnum.NODES -> {
+                    stringArray = currentLine.split(",").toTypedArray()
 
-                stringArray = currentLine.split(",").toTypedArray()
-
-                node = TransducerNode(stringArray[0], stringArray[1].toBoolean(), stringArray[2].toBoolean())
-                transducerNodes[stringArray[0]] = node
-                transducerGraph.addNodes(node)
-
-            }
-
-            if (readingEdges) {
-                // add edge from this line
-
-                stringArray = currentLine.split(",").toTypedArray()
-
-                // nodes have to be present, because they have been defined before reading any edges in the file
-                source = transducerNodes[stringArray[0]]!!
-                target = transducerNodes[stringArray[1]]!!
-
-                incoming = stringArray[2]
-                if (incoming.isEmpty()) {
-                    incoming = replaceEmptyStringWithInternalEpsilon()
+                    node = TransducerNode(stringArray[0], stringArray[1].toBoolean(), stringArray[2].toBoolean())
+                    transducerNodes[stringArray[0]] = node
+                    transducerGraph.addNodes(node)
                 }
-                outgoing = stringArray[3]
-                if (outgoing.isEmpty()) {
-                    outgoing = replaceEmptyStringWithInternalEpsilon()
-                }
-                cost = stringArray[4].toDouble()
-                transducerGraph.addEdge(source, target, incoming, outgoing, cost)
 
+                InputTypeEnum.EDGES -> {
+                    stringArray = currentLine.split(",").toTypedArray()
+
+                    // nodes have to be present, because they have been defined before reading any edges in the file
+                    source = transducerNodes[stringArray[0]]!!
+                    target = transducerNodes[stringArray[1]]!!
+
+                    incoming = stringArray[2]
+                    if (incoming.isEmpty()) {
+                        incoming = replaceEmptyStringWithInternalEpsilon()
+                    }
+                    outgoing = stringArray[3]
+                    if (outgoing.isEmpty()) {
+                        outgoing = replaceEmptyStringWithInternalEpsilon()
+                    }
+                    cost = stringArray[4].toDouble()
+                    transducerGraph.addEdge(source, target, incoming, outgoing, cost)
+                }
+
+                else -> {
+
+                }
             }
         }
 
         return transducerGraph
     }
 
-    fun generateClassicAnswersTransducer(alphabet: Set<String>): TransducerGraph {
+    fun generateClassicAnswersTransducer(alphabet: Alphabet): TransducerGraph {
 
         val transducerGraph = TransducerGraph()
         val source = TransducerNode("t0", isInitialState = true, isFinalState = true)
 
-        for (word in alphabet) {
+        for (word in alphabet.getAlphabet()) {
             // for each word of the alphabet we add the edge (t0, t0, word, word, 0)
             transducerGraph.addEdge(source, source, word, word, 0.0)
         }
@@ -111,7 +110,7 @@ class TransducerReaderService (
         return transducerGraph
     }
 
-    fun generateEditDistanceTransducer(alphabet: Set<String>): TransducerGraph {
+    fun generateEditDistanceTransducer(alphabet: Alphabet): TransducerGraph {
         return TODO()
     }
 

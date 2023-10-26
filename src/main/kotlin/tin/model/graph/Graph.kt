@@ -1,26 +1,31 @@
 package tin.model.graph
 
+import tin.model.alphabet.Alphabet
 import kotlin.collections.HashSet
 
 abstract class Graph {
     abstract val nodes: NodeSet<out Node>;
-    var alphabet: Set<String> = HashSet()
+    var alphabet: Alphabet = Alphabet();
 
     /** helper function to use in the context of populating the graph only.
      * Note that since we cannot have different nodes with the same identifier,
      * we just have to check the identifier property and no other properties.
      */
     protected fun findNodeWithoutEdgeComparison(node: Node): Node? {
-        return nodes.find {
-            it.identifier == node.identifier
-        }
+        return getNode(node.identifier);
     }
 
-    fun printGraph() {
+    open fun printGraph() {
         for (node in nodes) {
             for (edge in node.edges) {
                 edge.print()
             }
+        }
+    }
+
+    open fun getNode(identifier: String) : Node? {
+        return nodes.find {
+            it.identifier == identifier
         }
     }
 
@@ -30,7 +35,7 @@ abstract class Graph {
         if (other !is Graph) return false
 
         return nodes == other.nodes &&
-                alphabet == other.alphabet
+                alphabet.equals(other.alphabet)
     }
 
     override fun hashCode(): Int {
