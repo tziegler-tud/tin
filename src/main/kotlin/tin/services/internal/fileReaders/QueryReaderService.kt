@@ -62,7 +62,7 @@ class QueryReaderService (
 
             when(currentlyReading){
                 InputTypeEnum.NODES -> {
-                    //val regexp = Regex(\w.*,\s*((true)|(false)),\s*((true)|(false))) -> for node definitions
+                    //val regexp = Regex(\w.*,((true)|(false)),((true)|(false))) -> for node definitions
                     stringArray = currentLine.split(",").toTypedArray()
 
                     node = QueryNode(stringArray[0], stringArray[1].toBoolean(), stringArray[2].toBoolean())
@@ -73,8 +73,10 @@ class QueryReaderService (
                 InputTypeEnum.EDGES -> {
                     //regexp to validate and sanitize edge input
                     //\w.*,\s*\w.*,\s*\w.*\?
-                    //val regexp = Regex(\w.*,\s*\w.*,\s*\w.*\?) for concept assertions --> concept name should be in alphabet
-                    //val regexp = Regex(\w.*,\s*\w.*,\s*\b\w[\w^/?]*\b) for roles --> roles name should be in alphabet
+                    val conceptReg = Regex("\\w+,\\w+,\\b\\w+\\?\\b") //for concept assertions --> concept name should be in alphabet
+                    val roleRegexp = Regex("\\w.*,\\w.*,\\b\\w+\\b") // for roles --> roles name should be in alphabet
+
+
 
                     //Throw warnings if:
                     // - Query uses roles names not in alphabet
