@@ -19,7 +19,7 @@ class DatabaseReaderService(
 
     override var filePath = systemConfigurationService.getDatabasePath();
 
-    override fun processFile(file: File): DatabaseGraph {
+    override fun processFile(file: File): FileReaderResult<DatabaseGraph> {
         val databaseGraph = DatabaseGraph()
         val databaseNodes = HashMap<String, DatabaseNode>() // map containing the QueryNodes
         val alphabet = Alphabet();
@@ -122,7 +122,7 @@ class DatabaseReaderService(
         databaseGraph.alphabet = alphabet
         //debug output
         databaseGraph.printGraph();
+        return FileReaderResult<DatabaseGraph>(databaseGraph, this.warnings, this.errors);
 
-        return databaseGraph
     }
 }

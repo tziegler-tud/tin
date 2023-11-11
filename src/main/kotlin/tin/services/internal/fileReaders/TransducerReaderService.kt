@@ -20,7 +20,7 @@ class TransducerReaderService (
 
     override var filePath = systemConfigurationService.getTransducerPath();
 
-    override fun processFile(file: File): TransducerGraph {
+    override fun processFile(file: File): FileReaderResult<TransducerGraph> {
         val transducerGraph = TransducerGraph()
         val transducerNodes = HashMap<String, TransducerNode>() // map containing the TransducerNodes
 
@@ -94,7 +94,8 @@ class TransducerReaderService (
             }
         }
 
-        return transducerGraph
+        return FileReaderResult<TransducerGraph>(transducerGraph, this.warnings, this.errors);
+
     }
 
     fun generateClassicAnswersTransducer(alphabet: Alphabet): TransducerGraph {

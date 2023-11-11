@@ -18,6 +18,18 @@ class Alphabet {
         fun transformConceptNames(conceptNames: HashSet<String>) : HashSet<String> {
             return conceptNames.mapTo(HashSet<String>()){transformConceptName(it)}
         }
+
+        /**
+         * transforms a concept Assertion into a concept name, by removing the trailing ?
+         * this should only be used by input file readers, no time optimality required here.
+         * @throws IllegalArgumentException
+         */
+        fun conceptNameFromAssertion(conceptAssertion: String): String {
+            val length = conceptAssertion.length;
+            val conceptLabel = conceptAssertion.replace("?", "");
+            if(conceptLabel.length != conceptAssertion.length - 1) throw IllegalArgumentException("Failed to transform concept Assertion: Contains invalid characters.");
+            else return conceptLabel;
+        }
     }
 
     private var roleNames: HashSet<String>

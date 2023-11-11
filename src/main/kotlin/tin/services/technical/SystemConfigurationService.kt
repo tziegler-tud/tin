@@ -19,6 +19,11 @@ class SystemConfigurationService {
     private var queryFilesDirName: String = "/queries";
     private var transducerFilesDirName: String = "/transducers";
 
+    private var databaseSizeLimit: Int = 1024000
+    private var querySizeLimit: Int = 128000
+    private var transducerSizeLimit: Int = 128000
+
+
 //
 //    private var uploadPathForQueries = "$projectRoot/src/main/resources/input/queries/"
 //    private var uploadPathForDatabases = "$projectRoot/src/main/resources/input/databases/"
@@ -65,5 +70,31 @@ class SystemConfigurationService {
     fun getTransducerPath():String {
         return Path.of(this.projectRoot + this.fileDir + this.transducerFilesDirName).toString();
     }
+
+    fun getDatabaseSizeLimit():Int {
+        return this.databaseSizeLimit;
+    }
+
+    fun setDatabaseSizeLimit(limit: Int) {
+        this.databaseSizeLimit = limit;
+    }
+
+    fun getQuerySizeLimit():Int {
+        return this.querySizeLimit;
+    }
+
+    fun setQuerySizeLimit(limit: Int) {
+        this.querySizeLimit = limit;
+    }
+
+    fun getTransducerSizeLimit():Int {
+        return this.transducerSizeLimit;
+    }
+
+    fun setTransducerSizeLimit(limit: Int) {
+        this.transducerSizeLimit = limit;
+    }
+
+
 
 }
