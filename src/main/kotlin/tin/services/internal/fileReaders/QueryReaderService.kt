@@ -20,7 +20,7 @@ class QueryReaderService (
 ) {
 
     override var filePath = systemConfigurationService.getQueryPath();
-    var inputFileMaxLines : Int = systemConfigurationService.getQuerySizeLimit()
+    override var inputFileMaxLines : Int = systemConfigurationService.getQuerySizeLimit()
 
     override fun processFile(file: File): FileReaderResult<QueryGraph> {
         val queryGraph = QueryGraph()
@@ -81,7 +81,9 @@ class QueryReaderService (
 
                         node = QueryNode(stringArray[0], stringArray[1].toBoolean(), stringArray[2].toBoolean())
                         queryNodes[stringArray[0]] = node
-                        queryGraph.addNodes(node)
+                        queryGraph.addNodes(node);
+
+                        //TODO: Check semantically, e.g. if there is at least one initial state and at least one reachable final state.
                     }
                     else {
                         this.error("Failed to read line as node: Invalid input format.", currentLineIndex, currentLine);
@@ -131,6 +133,10 @@ class QueryReaderService (
                     this.warn("Unhandled line.", currentLineIndex, currentLine)
                 }
             }
+        }
+
+        if(currentLineIndex == inputFileMaxLines && bufferedReader.readLine() !== null){
+            this.warn("Max input file size reached. Reader stopped before entire file was processed!", currentLineIndex, "");
         }
 
         queryGraph.alphabet = alphabet

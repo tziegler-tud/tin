@@ -12,6 +12,7 @@ import java.util.HashMap
 @Service
 abstract class FileReaderService<T> (systemConfigurationService: SystemConfigurationService) {
     abstract var filePath: String;
+    abstract var inputFileMaxLines: Int;
     var readingNodes = false;
     var readingEdges = false;
     var warnings: MutableList<FileReaderWarning> = mutableListOf();

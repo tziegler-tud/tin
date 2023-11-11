@@ -19,6 +19,7 @@ class TransducerReaderService (
 ) {
 
     override var filePath = systemConfigurationService.getTransducerPath();
+    override var inputFileMaxLines : Int = systemConfigurationService.getTransducerSizeLimit();
 
     override fun processFile(file: File): FileReaderResult<TransducerGraph> {
         val transducerGraph = TransducerGraph()
@@ -38,7 +39,19 @@ class TransducerReaderService (
 
         val bufferedReader: BufferedReader = file.bufferedReader()
 
-        while (true) {
+
+        //regexp to validate and sanitize edge input
+        // Hint: \\w(\\w|-\\w)* matches words that start with a character or underscore, and every - is followed by another character or underscore
+
+        //node line
+        val anyNodeRegex = Regex("\\w(\\w|-\\w)*,((true)|(false)),((true)|(false))");
+
+        // edge lines node, node, edgeLabel, edgeLabel, cost
+        val anyEdgeRegex = Regex("\\w(\\w|-\\w)*,\\w(\\w|-\\w)*,\\w(\\w|-\\w)*\\??,\\w(\\w|-\\w)*\\??,\\d")
+
+        var currentLineIndex: Int = 0;
+        while (currentLineIndex < inputFileMaxLines) {
+            currentLineIndex++;
             // read current line; exit loop when at the end of the file
             currentLine = bufferedReader.readLine() ?: break
 
@@ -62,38 +75,56 @@ class TransducerReaderService (
 
             when(currentlyReading){
                 InputTypeEnum.NODES -> {
-                    stringArray = currentLine.split(",").toTypedArray()
 
-                    node = TransducerNode(stringArray[0], stringArray[1].toBoolean(), stringArray[2].toBoolean())
-                    transducerNodes[stringArray[0]] = node
-                    transducerGraph.addNodes(node)
+                    if(anyNodeRegex.matchEntire(currentLine)!== null) {
+                        stringArray = currentLine.split(",").toTypedArray()
+
+                        node = TransducerNode(stringArray[0], stringArray[1].toBoolean(), stringArray[2].toBoolean())
+                        transducerNodes[stringArray[0]] = node
+                        transducerGraph.addNodes(node)
+
+                        //TODO: Check semantically, e.g. if there is at least one initial state and at least one reachable final state.
+                    }
+                    else {
+                        this.error("Failed to read line as node: Invalid input format.", currentLineIndex, currentLine);
+                        break;
+                    }
                 }
 
                 InputTypeEnum.EDGES -> {
-                    stringArray = currentLine.split(",").toTypedArray()
+                    if(anyEdgeRegex.matchEntire(currentLine)!== null) {
+                        stringArray = currentLine.split(",").toTypedArray()
 
-                    // nodes have to be present, because they have been defined before reading any edges in the file
-                    source = transducerNodes[stringArray[0]]!!
-                    target = transducerNodes[stringArray[1]]!!
+                        // nodes have to be present, because they have been defined before reading any edges in the file
+                        source = transducerNodes[stringArray[0]]!!
+                        target = transducerNodes[stringArray[1]]!!
 
-                    incoming = stringArray[2]
-                    if (incoming.isEmpty()) {
-                        incoming = replaceEmptyStringWithInternalEpsilon()
+                        incoming = stringArray[2]
+                        if (incoming.isEmpty()) {
+                            incoming = replaceEmptyStringWithInternalEpsilon()
+                        }
+                        outgoing = stringArray[3]
+                        if (outgoing.isEmpty()) {
+                            outgoing = replaceEmptyStringWithInternalEpsilon()
+                        }
+                        cost = stringArray[4].toDouble()
+                        transducerGraph.addEdge(source, target, incoming, outgoing, cost)
                     }
-                    outgoing = stringArray[3]
-                    if (outgoing.isEmpty()) {
-                        outgoing = replaceEmptyStringWithInternalEpsilon()
+                    else {
+                        this.error("Failed to read line as edge: Invalid input format.", currentLineIndex, currentLine);
+                        break;
                     }
-                    cost = stringArray[4].toDouble()
-                    transducerGraph.addEdge(source, target, incoming, outgoing, cost)
                 }
 
                 else -> {
-
+                    this.warn("Unhandled line.", currentLineIndex, currentLine)
                 }
             }
         }
 
+        if(currentLineIndex == inputFileMaxLines && bufferedReader.readLine() !== null){
+            this.warn("Max input file size reached. Reader stopped before entire file was processed!", currentLineIndex, "");
+        }
         return FileReaderResult<TransducerGraph>(transducerGraph, this.warnings, this.errors);
 
     }
