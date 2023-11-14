@@ -9,3 +9,9 @@ b, c, S
 c, d, R
 d, a, S
 c, a, T
+properties
+a, prop1
+a, prop2
+b, prop2
+c, prop1
+d, prop3, prop1, prop4

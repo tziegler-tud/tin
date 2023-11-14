@@ -27,3 +27,8 @@ b, c, T
 c, a, R                                     < summary: >
 c, b, E                                     < lines 1, 2, 3, 7, 10, 13, 18, 19 and 23 have to be exactly (excluding the comments on the right) as stated here. >
 c, c, R                                     < every other line has to fulfill the syntax of the corresponding definition block.>
+properties:
+a, p1                                       < syntax: node, property> exactly one property per line!
+a, p2
+b, p2
+c, p3
