@@ -25,10 +25,16 @@ class Alphabet {
          * @throws IllegalArgumentException
          */
         fun conceptNameFromAssertion(conceptAssertion: String): String {
+            if(!isConceptAssertions(conceptAssertion)) throw IllegalArgumentException("Failed to transform concept Assertion: Not a concept assertion.")
             val length = conceptAssertion.length;
             val conceptLabel = conceptAssertion.replace("?", "");
             if(conceptLabel.length != conceptAssertion.length - 1) throw IllegalArgumentException("Failed to transform concept Assertion: Contains invalid characters.");
             else return conceptLabel;
+        }
+
+        fun isConceptAssertions(string: String): Boolean {
+            val reg = Regex("\\w(\\w|-\\w)*\\?");
+            return reg.matchEntire(string) === null
         }
     }
 
