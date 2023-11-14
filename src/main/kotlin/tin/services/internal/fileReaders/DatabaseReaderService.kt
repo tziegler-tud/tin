@@ -18,8 +18,10 @@ class DatabaseReaderService(
 ) {
 
     override var filePath = systemConfigurationService.getDatabasePath();
+    override var inputFileMaxLines : Int = systemConfigurationService.getDatabaseSizeLimit()
 
-    override fun processFile(file: File): DatabaseGraph {
+
+    override fun processFile(file: File): FileReaderResult<DatabaseGraph> {
         val databaseGraph = DatabaseGraph()
         val databaseNodes = HashMap<String, DatabaseNode>() // map containing the QueryNodes
         val alphabet = Alphabet();
@@ -36,10 +38,23 @@ class DatabaseReaderService(
         var currentlyReading = InputTypeEnum.UNDEFINED
         var currentLine: String
 
-
         val bufferedReader: BufferedReader = file.bufferedReader()
 
-        while (true) {
+        //regexp to validate and sanitize edge input
+        // Hint: \\w(\\w|-\\w)* matches words that start with a character or underscore, and every - is followed by another character or underscore
+
+        //node line
+        val anyNodeRegex = Regex("\\w(\\w|-\\w)*");
+
+        // edge lines
+        val anyEdgeRegex = Regex("\\w(\\w|-\\w)*,\\w(\\w|-\\w)*,\\w(\\w|-\\w)*") // Important: no ? allowed
+
+        // propertie lines
+        val anyPropertyRegex = Regex("\\w(\\w|-\\w)*,\\w(\\w|-\\w)*(,\\w(\\w|-\\w)*)+") // At least one prop
+
+        var currentLineIndex: Int = 0;
+        while (currentLineIndex < inputFileMaxLines) {
+            currentLineIndex++;
             // read current line; exit loop when at the end of the file
             currentLine = bufferedReader.readLine() ?: break
 
@@ -70,59 +85,78 @@ class DatabaseReaderService(
 
             when(currentlyReading){
                 InputTypeEnum.NODES -> {
-                    stringArray = currentLine.split(",").toTypedArray()
 
-                    node = DatabaseNode(stringArray[0])
-                    databaseNodes[stringArray[0]] = node
-                    databaseGraph.addNodes(node)
+                    if(anyNodeRegex.matchEntire(currentLine)!== null){
+                        stringArray = currentLine.split(",").toTypedArray()
+
+                        node = DatabaseNode(stringArray[0])
+                        databaseNodes[stringArray[0]] = node
+                        databaseGraph.addNodes(node)
+                    }
+                    else {
+                        this.error("Failed to read line as node: Invalid input format.", currentLineIndex, currentLine);
+                        break;
+                    }
                 }
 
                 InputTypeEnum.EDGES -> {
-                    stringArray = currentLine.split(",").toTypedArray()
+                    if(anyEdgeRegex.matchEntire(currentLine)!== null) {
+                        stringArray = currentLine.split(",").toTypedArray()
 
-                    // nodes have to be present, because they have been defined before reading any edges in the file
-                    source = databaseNodes[stringArray[0]]!!
-                    target = databaseNodes[stringArray[1]]!!
+                        // nodes have to be present, because they have been defined before reading any edges in the file
+                        source = databaseNodes[stringArray[0]]!!
+                        target = databaseNodes[stringArray[1]]!!
 
-                    edgeLabel = stringArray[2]
-                    alphabet.addRoleName(edgeLabel)
+                        edgeLabel = stringArray[2]
+                        alphabet.addRoleName(edgeLabel)
 
-                    databaseGraph.addEdge(source, target, edgeLabel)
+                        databaseGraph.addEdge(source, target, edgeLabel)
+                    }
+                    else {
+                        this.error("Failed to read line as edge: Invalid input format.", currentLineIndex, currentLine);
+                        break;
+                    }
                 }
 
                 InputTypeEnum.PROPERTIES -> {
-                    stringArray = currentLine.split(",").toTypedArray()
+                    if(anyPropertyRegex.matchEntire(currentLine)!== null) {
+                        stringArray = currentLine.split(",").toTypedArray()
 
-                    val properties = stringArray.copyOf().drop(1);
+                        val properties = stringArray.copyOf().drop(1);
 
-                    // nodes have to be present, because they have been defined before reading any edges in the file
-                    try {
-                        node = databaseNodes[stringArray[0]]!!
+                        // nodes have to be present, because they have been defined before reading any edges in the file
+                        try {
+                            node = databaseNodes[stringArray[0]]!!
+                        } catch (e: Error) {
+                            val msg = "Invalid input line: Trying to add properties to Node with identifier '" + stringArray[0] + "'. Reason: Node is not present in database graph!";
+                            throw Error(msg); //TODO: set specific error type
+                        }
+
+                        properties.forEach {
+                            databaseGraph.addNodeProperty(node, it);
+                            alphabet.addConceptName(it)
+                        }
                     }
-                    catch(e: Error){
-                        val msg = "Invalid input line: Trying to add properties to Node with identifier '" + stringArray[0] + "'. Reason: Node is not present in database graph!";
-                        throw Error(msg); //TODO: set specific error type
-                    }
-
-                    properties.forEach{
-                        databaseGraph.addNodeProperty(node, it);
-                        alphabet.addConceptName(it)
+                    else {
+                        this.error("Failed to read line as property: Invalid input format.", currentLineIndex, currentLine);
+                        break;
                     }
                 }
 
                 else -> {
-                    //trying to read line without knowing in which part of the input file we are.
-                    // Perhaps we encountered a blank line at the start of the document. Still, this is bad and should not happen.
-                    println("WARNING: DatabaseReaderService: Expected a section identifier, but none was found. This is likely due to a malformed input file. Skipping this line..." );
-                    break;
+                    this.warn("Unhandled line.", currentLineIndex, currentLine)
                 }
             }
+        }
+
+        if(currentLineIndex == inputFileMaxLines && bufferedReader.readLine() !== null){
+            this.warn("Max input file size reached. Reader stopped before entire file was processed!", currentLineIndex, "");
         }
 
         databaseGraph.alphabet = alphabet
         //debug output
         databaseGraph.printGraph();
+        return FileReaderResult<DatabaseGraph>(databaseGraph, this.warnings, this.errors);
 
-        return databaseGraph
     }
 }

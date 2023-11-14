@@ -20,8 +20,9 @@ class QueryReaderService (
 ) {
 
     override var filePath = systemConfigurationService.getQueryPath();
+    override var inputFileMaxLines : Int = systemConfigurationService.getQuerySizeLimit()
 
-    override fun processFile(file: File): QueryGraph {
+    override fun processFile(file: File): FileReaderResult<QueryGraph> {
         val queryGraph = QueryGraph()
         val queryNodes = HashMap<String, QueryNode>() // map containing the QueryNodes
         val alphabet = Alphabet()
@@ -38,7 +39,19 @@ class QueryReaderService (
 
         val bufferedReader: BufferedReader = file.bufferedReader()
 
-        while (true) {
+        //regexp to validate and sanitize edge input
+        // Hint: \\w(\\w|-\\w)* matches words that start with a character or underscore, and every - is followed by another character or underscore
+
+        //node line
+        val anyNodeRegex = Regex("\\w(\\w|-\\w)*,((true)|(false)),((true)|(false))");
+
+        // edge lines
+        val edgeWithConceptAssertionRegex = Regex("\\w(\\w|-\\w)*,\\w(\\w|-\\w)*,\\w(\\w|-\\w)*\\?") //for concept assertions
+        val anyEdgeRegex = Regex("\\w(\\w|-\\w)*,\\w(\\w|-\\w)*,\\w(\\w|-\\w)*\\??") // for roles
+
+        var currentLineIndex=0;
+        while (currentLineIndex <= inputFileMaxLines) {
+            currentLineIndex++;
             // read current line; exit loop when at the end of the file
             currentLine = bufferedReader.readLine() ?: break
 
@@ -62,33 +75,71 @@ class QueryReaderService (
 
             when(currentlyReading){
                 InputTypeEnum.NODES -> {
-                    stringArray = currentLine.split(",").toTypedArray()
+                    val nodeMatchResult = anyNodeRegex.matchEntire(currentLine);
+                    if(nodeMatchResult !== null) {
+                        stringArray = currentLine.split(",").toTypedArray()
 
-                    node = QueryNode(stringArray[0], stringArray[1].toBoolean(), stringArray[2].toBoolean())
-                    queryNodes[stringArray[0]] = node
-                    queryGraph.addNodes(node)
+                        node = QueryNode(stringArray[0], stringArray[1].toBoolean(), stringArray[2].toBoolean())
+                        queryNodes[stringArray[0]] = node
+                        queryGraph.addNodes(node);
+
+                        //TODO: Check semantically, e.g. if there is at least one initial state and at least one reachable final state.
+                    }
+                    else {
+                        this.error("Failed to read line as node: Invalid input format.", currentLineIndex, currentLine);
+                        break;
+                    }
                 }
-
                 InputTypeEnum.EDGES -> {
-                    stringArray = currentLine.split(",").toTypedArray()
+                    //check line against Regexp to check for valid input format.
+                    val anyEdgeMatchResult = anyEdgeRegex.matchEntire(currentLine);
+                    if(anyEdgeMatchResult !== null){
+                        //line is valid
 
-                    // nodes have to be present, because they have been defined before reading any edges in the file
-                    source = queryNodes[stringArray[0]]!!
-                    target = queryNodes[stringArray[1]]!!
+                        stringArray = currentLine.split(",").toTypedArray()
 
-                    edgeLabel = stringArray[2]
-                    alphabet.addRoleName(edgeLabel)
+                        // nodes have to be present, because they have been defined before reading any edges in the file
+                        source = queryNodes[stringArray[0]]!!
+                        target = queryNodes[stringArray[1]]!!
 
-                    queryGraph.addEdge(source, target, edgeLabel)
+                        edgeLabel = stringArray[2]
+                        queryGraph.addEdge(source, target, edgeLabel)
+
+
+                        val conceptEdgeResult = edgeWithConceptAssertionRegex.matchEntire(currentLine);
+                        if(conceptEdgeResult === null){
+                            //not a concept assertions
+                            alphabet.addRoleName(edgeLabel)
+                        }
+                        else {
+                            //concept assertion read, extract concept name
+                            try{
+                                val conceptLabel = Alphabet.conceptNameFromAssertion(edgeLabel);
+                                alphabet.addConceptName(edgeLabel)
+                            }
+                            catch (e: IllegalArgumentException){
+                                this.warn("Failed to read property name from edge label", currentLineIndex, currentLine)
+                            }
+                        }
+                    }
+                    else {
+                        //invalid line
+                        this.error("Failed to read line as edge: Invalid input format.", currentLineIndex, currentLine);
+                        break;
+                    }
                 }
 
                 else -> {
-
+                    this.warn("Unhandled line.", currentLineIndex, currentLine)
                 }
             }
         }
 
+        if(currentLineIndex == inputFileMaxLines && bufferedReader.readLine() !== null){
+            this.warn("Max input file size reached. Reader stopped before entire file was processed!", currentLineIndex, "");
+        }
+
         queryGraph.alphabet = alphabet
-        return queryGraph
+        return FileReaderResult<QueryGraph>(queryGraph, this.warnings, this.errors);
     }
 }
