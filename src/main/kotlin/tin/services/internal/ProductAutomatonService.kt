@@ -1,6 +1,7 @@
 package tin.services.internal
 
 import org.springframework.stereotype.Service
+import tin.model.alphabet.Alphabet
 import tin.model.dataProvider.DataProvider
 import tin.model.database.DatabaseEdge
 import tin.model.productAutomaton.ProductAutomatonEdgeType
@@ -25,6 +26,7 @@ class ProductAutomatonService() {
         val productAutomatonGraph = ProductAutomatonGraph()
 
         val incomingEpsilonEdges = HashSet<TransducerEdge>()
+        val propertyTransducerEdges = HashSet<TransducerEdge>()
         if (dataProvider.queryGraph.nodes.isEmpty()) {
 
             // find all incoming epsilon edges
@@ -48,6 +50,7 @@ class ProductAutomatonService() {
                 // NOTE: here we also add edges of the form (IV | 2) "outgoing epsilon edges"
                 fittingTransducerEdges.clear()
                 fittingTransducerEdges.addAll(incomingEpsilonEdges)
+                propertyTransducerEdges.addAll(incomingEpsilonEdges)
                 for (transducerNode in dataProvider.transducerGraph.nodes) {
                     for (transducerEdge in transducerNode.edges!!) {
                         if (localQueryLabel == transducerEdge.incomingString) {
@@ -67,6 +70,7 @@ class ProductAutomatonService() {
 
                 // part (III)
                 for (databaseNode in dataProvider.databaseGraph.nodes) {
+                    // PA Graph construction Steps 1-9 + 14 + 15
                     for (databaseEdge in databaseNode.edges) {
                         val localDatabaseLabel = databaseEdge.label
 
@@ -263,6 +267,140 @@ class ProductAutomatonService() {
                                         transducerEdge.cost
                                     )
                                 }
+                            }
+                        }
+                    }
+                    // PA Graph construction 10-16
+                    val databaseLoop = DatabaseEdge(
+                            source = databaseNode,
+                            target = databaseNode,
+                            label = replaceEmptyStringWithInternalEpsilon()
+                    )
+                    for (transducerEdge in fittingTransducerEdges) {
+                        if (isEpsilonString(transducerEdge.incomingString)) {
+                            // type 1:  incoming epsilon edges.
+                            if (isPropertyAssertion(transducerEdge.outgoingString) && databaseNode.hasProperty(Alphabet.conceptNameFromAssertion(transducerEdge.outgoingString))) {
+                                // epsilon incoming, outgoing property assertions
+                                // PA construction step 10
+                                //create a virtual edge on-the-fly to use in function. Label can be ignored here.
+
+                                pairOfNodes = constructAutomatonNode(
+                                        queryEdge,
+                                        transducerEdge,
+                                        databaseLoop,
+                                        ProductAutomatonEdgeType.EpsilonIncomingPropertyOutgoing
+                                )
+                                source = pairOfNodes.first
+                                target = pairOfNodes.second
+                                source = getInstance(temporaryNodes, source) // duplicate check
+                                target = getInstance(temporaryNodes, target) // duplicate check
+                                productAutomatonGraph.addProductAutomatonEdge(
+                                        source,
+                                        target,
+                                        incoming = replaceEmptyStringWithInternalEpsilon(),
+                                        outgoing = transducerEdge.outgoingString,
+                                        transducerEdge.cost
+                                )
+                            }
+                        }
+                        else if (isPropertyAssertion(transducerEdge.incomingString)) {
+                            // type 1:  incoming property edge
+                            if (isEpsilonString(transducerEdge.outgoingString)) {
+                                // property incoming, epsilon outgoing
+                                // PA construction step 13
+                                //databaseNode can be ignored here!
+                                //create a virtual edge on-the-fly to use in function
+
+                                pairOfNodes = constructAutomatonNode(
+                                        queryEdge,
+                                        transducerEdge,
+                                        databaseLoop,
+                                        ProductAutomatonEdgeType.PropertyIncomingEpsilonOutgoing
+                                )
+                                source = pairOfNodes.first
+                                target = pairOfNodes.second
+                                source = getInstance(temporaryNodes, source) // duplicate check
+                                target = getInstance(temporaryNodes, target) // duplicate check
+                                productAutomatonGraph.addProductAutomatonEdge(
+                                        source,
+                                        target,
+                                        incoming = transducerEdge.incomingString,
+                                        outgoing = replaceEmptyStringWithInternalEpsilon(),
+                                        transducerEdge.cost
+                                )
+                            }
+                            else if (isPropertyAssertion(transducerEdge.outgoingString) && databaseNode.hasProperty(Alphabet.conceptNameFromAssertion(transducerEdge.outgoingString))) {
+                                // property incoming, property outgoing
+                                // PA construction step 16
+                                //create a virtual edge on-the-fly to use in function
+
+                                pairOfNodes = constructAutomatonNode(
+                                        queryEdge,
+                                        transducerEdge,
+                                        databaseLoop,
+                                        ProductAutomatonEdgeType.PropertyIncomingPropertyOutgoing
+                                )
+                                source = pairOfNodes.first
+                                target = pairOfNodes.second
+                                source = getInstance(temporaryNodes, source) // duplicate check
+                                target = getInstance(temporaryNodes, target) // duplicate check
+                                productAutomatonGraph.addProductAutomatonEdge(
+                                        source,
+                                        target,
+                                        incoming = transducerEdge.incomingString,
+                                        outgoing = transducerEdge.outgoingString,
+                                        transducerEdge.cost
+                                )
+                            }
+                        }
+                        else if ((!isNegated(transducerEdge.incomingString)) && !isPropertyAssertion(transducerEdge.incomingString)) {
+                            //positive role incoming
+                            if(isPropertyAssertion(transducerEdge.outgoingString) && databaseNode.hasProperty(Alphabet.conceptNameFromAssertion(transducerEdge.outgoingString))) {
+                                // positive incoming, Property outgoing
+                                // PA construction step 11
+
+                                pairOfNodes = constructAutomatonNode(
+                                        queryEdge,
+                                        transducerEdge,
+                                        databaseLoop,
+                                        ProductAutomatonEdgeType.PositiveIncomingPropertyOutgoing
+                                )
+                                source = pairOfNodes.first
+                                target = pairOfNodes.second
+                                source = getInstance(temporaryNodes, source) // duplicate check
+                                target = getInstance(temporaryNodes, target) // duplicate check
+                                productAutomatonGraph.addProductAutomatonEdge(
+                                        source,
+                                        target,
+                                        incoming = transducerEdge.incomingString,
+                                        outgoing = transducerEdge.outgoingString,
+                                        transducerEdge.cost
+                                )
+
+                            }
+                        }
+                        else if (isNegated(transducerEdge.incomingString) && !isPropertyAssertion(transducerEdge.incomingString)) {
+                            //negative role incoming
+                            if(isPropertyAssertion(transducerEdge.outgoingString) && databaseNode.hasProperty(Alphabet.conceptNameFromAssertion(transducerEdge.outgoingString))) {
+                                // negative incoming, Property outgoing
+                                // PA construction step 12
+                                pairOfNodes = constructAutomatonNode(
+                                        queryEdge,
+                                        transducerEdge,
+                                        databaseLoop,
+                                        ProductAutomatonEdgeType.NegativeIncomingPropertyOutgoing
+                                )
+                                source = pairOfNodes.first
+                                target = pairOfNodes.second
+                                source = getInstance(temporaryNodes, source) // duplicate check
+                                target = getInstance(temporaryNodes, target) // duplicate check
+                                productAutomatonGraph.addProductAutomatonEdge(
+                                        source,
+                                        target,
+                                        incoming = transducerEdge.incomingString,
+                                        outgoing = transducerEdge.outgoingString,
+                                        transducerEdge.cost
+                                )
                             }
                         }
                     }
@@ -491,6 +629,180 @@ class ProductAutomatonService() {
                 )
             }
 
+            ProductAutomatonEdgeType.EpsilonIncomingPropertyOutgoing -> {
+                // epsilon incoming, property outgoing
+                // q pause, t move, db pause (we do the property check ..)
+
+                sourceInitialState = queryEdge.source.isInitialState && transducerEdge.source.isInitialState
+                sourceFinalState = queryEdge.source.isFinalState && transducerEdge.source.isFinalState
+                targetInitialState = queryEdge.source.isInitialState && transducerEdge.target.isInitialState
+                targetFinalState = queryEdge.source.isFinalState && transducerEdge.target.isFinalState
+                sourceNode = ProductAutomatonNode(
+                        queryEdge.source,
+                        transducerEdge.source,
+                        databaseEdge.source,
+                        sourceInitialState,
+                        sourceFinalState
+                )
+                targetNode = ProductAutomatonNode(
+                        queryEdge.source,
+                        transducerEdge.target,
+                        databaseEdge.source,
+                        targetInitialState,
+                        targetFinalState
+                )
+            }
+
+            ProductAutomatonEdgeType.PositiveIncomingPropertyOutgoing -> {
+                // positive incoming, property outgoing
+                // q move, t move, db pause (we do the property check ..)
+
+                sourceInitialState = queryEdge.source.isInitialState && transducerEdge.source.isInitialState
+                sourceFinalState = queryEdge.source.isFinalState && transducerEdge.source.isFinalState
+                targetInitialState = queryEdge.target.isInitialState && transducerEdge.target.isInitialState
+                targetFinalState = queryEdge.target.isFinalState && transducerEdge.target.isFinalState
+                sourceNode = ProductAutomatonNode(
+                        queryEdge.source,
+                        transducerEdge.source,
+                        databaseEdge.source,
+                        sourceInitialState,
+                        sourceFinalState
+                )
+                targetNode = ProductAutomatonNode(
+                        queryEdge.target,
+                        transducerEdge.target,
+                        databaseEdge.source,
+                        targetInitialState,
+                        targetFinalState
+                )
+            }
+
+            ProductAutomatonEdgeType.NegativeIncomingPropertyOutgoing -> {
+                // negative incoming, property outgoing
+                // q move, t move, db pause (we do the property check ..)
+
+                sourceInitialState = queryEdge.source.isInitialState && transducerEdge.source.isInitialState
+                sourceFinalState = queryEdge.source.isFinalState && transducerEdge.source.isFinalState
+                targetInitialState = queryEdge.target.isInitialState && transducerEdge.target.isInitialState
+                targetFinalState = queryEdge.target.isFinalState && transducerEdge.target.isFinalState
+                sourceNode = ProductAutomatonNode(
+                        queryEdge.source,
+                        transducerEdge.source,
+                        databaseEdge.source,
+                        sourceInitialState,
+                        sourceFinalState
+                )
+                targetNode = ProductAutomatonNode(
+                        queryEdge.target,
+                        transducerEdge.target,
+                        databaseEdge.source,
+                        targetInitialState,
+                        targetFinalState
+                )
+            }
+            ProductAutomatonEdgeType.PropertyIncomingEpsilonOutgoing -> {
+                //property incoming, epsilon outgoing
+                // q move, t move, db pause
+
+                sourceInitialState = queryEdge.source.isInitialState && transducerEdge.source.isInitialState
+                sourceFinalState = queryEdge.source.isFinalState && transducerEdge.source.isFinalState
+                targetInitialState = queryEdge.target.isInitialState && transducerEdge.target.isInitialState
+                targetFinalState = queryEdge.target.isFinalState && transducerEdge.target.isFinalState
+                sourceNode = ProductAutomatonNode(
+                        queryEdge.source,
+                        transducerEdge.source,
+                        databaseEdge.source,
+                        sourceInitialState,
+                        sourceFinalState
+                )
+                targetNode = ProductAutomatonNode(
+                        queryEdge.target,
+                        transducerEdge.target,
+                        databaseEdge.source,
+                        targetInitialState,
+                        targetFinalState
+                )
+
+            }
+            ProductAutomatonEdgeType.PropertyIncomingPositiveOutgoing -> {
+                // this case is redundant, since the case PositiveIncomingPositiveOutgoing handles this already
+                //  (it doesn't distinguish between positive incoming and property incoming)
+                //  this block is never called
+
+                // property incoming, positive outgoing
+                // q move, t move, db move
+
+                sourceInitialState = queryEdge.source.isInitialState && transducerEdge.source.isInitialState
+                sourceFinalState = queryEdge.source.isFinalState && transducerEdge.source.isFinalState
+                targetInitialState = queryEdge.target.isInitialState && transducerEdge.target.isInitialState
+                targetFinalState = queryEdge.target.isFinalState && transducerEdge.target.isFinalState
+                sourceNode = ProductAutomatonNode(
+                        queryEdge.source,
+                        transducerEdge.source,
+                        databaseEdge.source,
+                        sourceInitialState,
+                        sourceFinalState
+                )
+                targetNode = ProductAutomatonNode(
+                        queryEdge.target,
+                        transducerEdge.target,
+                        databaseEdge.target,
+                        targetInitialState,
+                        targetFinalState
+                )
+            }
+            ProductAutomatonEdgeType.PropertyIncomingNegativeOutgoing -> {
+                // this case is redundant, since the case PositiveIncomingNegativeOutgoing handles this already
+                //  (it doesn't distinguish between positive incoming and property incoming)
+                //  this block is never called
+
+                // property incoming, negative outgoing
+                // q move, t move, db move backwards
+
+                sourceInitialState = queryEdge.source.isInitialState && transducerEdge.source.isInitialState
+                sourceFinalState = queryEdge.source.isFinalState && transducerEdge.source.isFinalState
+                targetInitialState = queryEdge.target.isInitialState && transducerEdge.target.isInitialState
+                targetFinalState = queryEdge.target.isFinalState && transducerEdge.target.isFinalState
+                sourceNode = ProductAutomatonNode(
+                        queryEdge.source,
+                        transducerEdge.source,
+                        databaseEdge.target,
+                        sourceInitialState,
+                        sourceFinalState
+                )
+                targetNode = ProductAutomatonNode(
+                        queryEdge.target,
+                        transducerEdge.target,
+                        databaseEdge.source,
+                        targetInitialState,
+                        targetFinalState
+                )
+
+
+            }
+            ProductAutomatonEdgeType.PropertyIncomingPropertyOutgoing -> {
+                // property incoming, property outgoing
+                // q move, t move, db pause
+
+                sourceInitialState = queryEdge.source.isInitialState && transducerEdge.source.isInitialState
+                sourceFinalState = queryEdge.source.isFinalState && transducerEdge.source.isFinalState
+                targetInitialState = queryEdge.target.isInitialState && transducerEdge.target.isInitialState
+                targetFinalState = queryEdge.target.isFinalState && transducerEdge.target.isFinalState
+                sourceNode = ProductAutomatonNode(
+                        queryEdge.source,
+                        transducerEdge.source,
+                        databaseEdge.source,
+                        sourceInitialState,
+                        sourceFinalState
+                )
+                targetNode = ProductAutomatonNode(
+                        queryEdge.target,
+                        transducerEdge.target,
+                        databaseEdge.source,
+                        targetInitialState,
+                        targetFinalState
+                )
+            }
         }
         resultPairOfNodes = Pair(sourceNode, targetNode)
         return resultPairOfNodes
@@ -537,6 +849,10 @@ class ProductAutomatonService() {
     private fun isEpsilonString(string: String): Boolean {
         val listOfEpsilonEquivalents = arrayListOf("ε", "epsilon")
         return listOfEpsilonEquivalents.contains(string)
+    }
+
+    private fun isPropertyAssertion(string: String): Boolean {
+        return Alphabet.isConceptAssertions(string);
     }
 
     /**
