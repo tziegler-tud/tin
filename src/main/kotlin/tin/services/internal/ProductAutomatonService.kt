@@ -852,7 +852,7 @@ class ProductAutomatonService() {
     }
 
     private fun isPropertyAssertion(string: String): Boolean {
-        return Alphabet.isConceptAssertions(string);
+        return Alphabet.isConceptAssertion(string);
     }
 
     /**

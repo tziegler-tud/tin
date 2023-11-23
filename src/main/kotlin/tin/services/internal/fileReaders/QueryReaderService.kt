@@ -22,7 +22,7 @@ class QueryReaderService (
     override var filePath = systemConfigurationService.getQueryPath();
     override var inputFileMaxLines : Int = systemConfigurationService.getQuerySizeLimit()
 
-    override fun processFile(file: File): FileReaderResult<QueryGraph> {
+    override fun processFile(file: File, breakOnError: Boolean): FileReaderResult<QueryGraph> {
         val queryGraph = QueryGraph()
         val queryNodes = HashMap<String, QueryNode>() // map containing the QueryNodes
         val alphabet = Alphabet()
@@ -42,12 +42,13 @@ class QueryReaderService (
         //regexp to validate and sanitize edge input
         // Hint: \\w(\\w|-\\w)* matches words that start with a character or underscore, and every - is followed by another character or underscore
 
+        //trailing and leading whitespaces and tab characters are removed before processing!
         //node line
-        val anyNodeRegex = Regex("\\w(\\w|-\\w)*,((true)|(false)),((true)|(false))");
+        val anyNodeRegex = Regex("\\w(\\w|-\\w)*\\s*,\\s*((true)|(false))\\s*,\\s*((true)|(false))");
 
         // edge lines
-        val edgeWithConceptAssertionRegex = Regex("\\w(\\w|-\\w)*,\\w(\\w|-\\w)*,\\w(\\w|-\\w)*\\?") //for concept assertions
-        val anyEdgeRegex = Regex("\\w(\\w|-\\w)*,\\w(\\w|-\\w)*,\\w(\\w|-\\w)*\\??") // for roles
+        val edgeWithConceptAssertionRegex = Regex("\\w(\\w|-\\w)*\\s*,\\s*\\w(\\w|-\\w)*\\s*,\\s*\\w(\\w|-\\w)*\\?") //for concept assertions
+        val anyEdgeRegex = Regex("\\w(\\w|-\\w)*\\s*,\\s*\\w(\\w|-\\w)*\\s*,\\s*\\w(\\w|-\\w)*\\??") // for roles
 
         var currentLineIndex=0;
         while (currentLineIndex <= inputFileMaxLines) {
@@ -55,31 +56,53 @@ class QueryReaderService (
             // read current line; exit loop when at the end of the file
             currentLine = bufferedReader.readLine() ?: break
 
+            //remove leading and trailing whitespaces and tab characters
+            currentLine = currentLine.replace(Regex("^\\s*"), "")
+            currentLine = currentLine.replace(Regex("\\s*$"), "")
+
+            //lines starting with // are ignored
+            if(commentLineRegex.matchEntire(currentLine) !== null){
+                continue;
+            }
             // when we see "nodes", we will read nodes starting from the next line
             if (currentLine == "nodes") {
                 currentlyReading = InputTypeEnum.NODES
                 // after setting the flags, we skip into the next line
-                currentLine = bufferedReader.readLine() ?: break;
+                continue;
             }
 
             if (currentLine == "edges") {
                 currentlyReading = InputTypeEnum.EDGES
 
                 // after setting the flags, we skip into the next line
-                currentLine = bufferedReader.readLine() ?: break;
+                continue;
             }
 
-
-            // remove whitespace in current line
-            currentLine = currentLine.replace("\\s".toRegex(), "")
+            //save og line for debugging
+            val originalLine = currentLine;
 
             when(currentlyReading){
                 InputTypeEnum.NODES -> {
                     val nodeMatchResult = anyNodeRegex.matchEntire(currentLine);
                     if(nodeMatchResult !== null) {
+                        currentLine = currentLine.replace("\\s".toRegex(), "")
                         stringArray = currentLine.split(",").toTypedArray()
 
                         node = QueryNode(stringArray[0], stringArray[1].toBoolean(), stringArray[2].toBoolean())
+
+                        val existingNode = queryNodes[stringArray[0]];
+                        if(existingNode != null){
+                            //node identifier already taken. Check similarity.
+                            if(node.equalsWithoutEdges(existingNode)) {
+                                this.warn("Duplicated node identifier.", currentLineIndex, originalLine)
+                                continue;
+                            }
+                            else {
+                                //identifier taken, but initialState or finalState differs. This is an error.
+                                this.error("Failed to read line as node: Non-repairable duplicated node identifier.", currentLineIndex, originalLine)
+                                continue;
+                            }
+                        }
                         queryNodes[stringArray[0]] = node
                         queryGraph.addNodes(node);
 
@@ -87,7 +110,7 @@ class QueryReaderService (
                     }
                     else {
                         this.error("Failed to read line as node: Invalid input format.", currentLineIndex, currentLine);
-                        break;
+                        if(breakOnError) break;
                     }
                 }
                 InputTypeEnum.EDGES -> {
@@ -95,7 +118,7 @@ class QueryReaderService (
                     val anyEdgeMatchResult = anyEdgeRegex.matchEntire(currentLine);
                     if(anyEdgeMatchResult !== null){
                         //line is valid
-
+                        currentLine = currentLine.replace("\\s".toRegex(), "")
                         stringArray = currentLine.split(",").toTypedArray()
 
                         // nodes have to be present, because they have been defined before reading any edges in the file
@@ -105,27 +128,26 @@ class QueryReaderService (
                         edgeLabel = stringArray[2]
                         queryGraph.addEdge(source, target, edgeLabel)
 
-
-                        val conceptEdgeResult = edgeWithConceptAssertionRegex.matchEntire(currentLine);
-                        if(conceptEdgeResult === null){
-                            //not a concept assertions
-                            alphabet.addRoleName(edgeLabel)
-                        }
-                        else {
+                        if(Alphabet.isConceptAssertion(edgeLabel)){
                             //concept assertion read, extract concept name
                             try{
                                 val conceptLabel = Alphabet.conceptNameFromAssertion(edgeLabel);
-                                alphabet.addConceptName(edgeLabel)
+                                if(!alphabet.includes(conceptLabel)) alphabet.addConceptName(conceptLabel)
                             }
                             catch (e: IllegalArgumentException){
-                                this.warn("Failed to read property name from edge label", currentLineIndex, currentLine)
+                                this.error("Failed to read property name from edge label", currentLineIndex, currentLine)
+                                if(breakOnError) break;
                             }
+                        }
+                        else {
+                            //not a concept assertions
+                            if(!alphabet.includes(edgeLabel)) alphabet.addRoleName(edgeLabel)
                         }
                     }
                     else {
                         //invalid line
                         this.error("Failed to read line as edge: Invalid input format.", currentLineIndex, currentLine);
-                        break;
+                        if(breakOnError) break;
                     }
                 }
 

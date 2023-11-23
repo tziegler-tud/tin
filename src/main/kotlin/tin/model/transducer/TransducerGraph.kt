@@ -65,7 +65,9 @@ class TransducerGraph : Graph() {
         if (this === other) return true
         if (other !is TransducerGraph) return false
 
-        return nodes == other.nodes
+        return super.equals(other);
+
+//        return nodes == other.nodes
     }
 
     override fun hashCode(): Int {

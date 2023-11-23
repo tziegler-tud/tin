@@ -12,7 +12,6 @@ import java.nio.file.Path
 @Configuration("tin")
 class SystemConfigurationService {
 
-
     private var projectRoot: String?= null;
     private var fileDir: String?= null;
     private var databaseFilesDirName: String = "/databases";
@@ -38,14 +37,7 @@ class SystemConfigurationService {
      * returns empty string if project root is not set.
      */
     public fun getProjectRootSave():String {
-        var ret: String;
-        ret = try {
-            this.projectRoot!!
-        }
-        catch(e: Error){
-            "";
-        }
-        return ret;
+        return this.projectRoot ?: ""
     }
 
     fun setProjectRoot(string: String) {
