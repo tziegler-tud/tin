@@ -178,6 +178,14 @@ class ProductAutomatonServiceTest {
             ProductAutomatonEdgeType.NegativeIncomingEpsilonOutgoing -> {
                 TODO()
             }
+
+            ProductAutomatonEdgeType.EpsilonIncomingPropertyOutgoing -> TODO()
+            ProductAutomatonEdgeType.PositiveIncomingPropertyOutgoing -> TODO()
+            ProductAutomatonEdgeType.NegativeIncomingPropertyOutgoing -> TODO()
+            ProductAutomatonEdgeType.PropertyIncomingEpsilonOutgoing -> TODO()
+            ProductAutomatonEdgeType.PropertyIncomingPositiveOutgoing -> TODO()
+            ProductAutomatonEdgeType.PropertyIncomingNegativeOutgoing -> TODO()
+            ProductAutomatonEdgeType.PropertyIncomingPropertyOutgoing -> TODO()
         }
 
         return graph
@@ -221,6 +229,14 @@ class ProductAutomatonServiceTest {
             ProductAutomatonEdgeType.NegativeIncomingEpsilonOutgoing -> {
                 buildDataProvider(ProductAutomatonEdgeType.NegativeIncomingEpsilonOutgoing)
             }
+
+            ProductAutomatonEdgeType.EpsilonIncomingPropertyOutgoing -> TODO()
+            ProductAutomatonEdgeType.PositiveIncomingPropertyOutgoing -> TODO()
+            ProductAutomatonEdgeType.NegativeIncomingPropertyOutgoing -> TODO()
+            ProductAutomatonEdgeType.PropertyIncomingEpsilonOutgoing -> TODO()
+            ProductAutomatonEdgeType.PropertyIncomingPositiveOutgoing -> TODO()
+            ProductAutomatonEdgeType.PropertyIncomingNegativeOutgoing -> TODO()
+            ProductAutomatonEdgeType.PropertyIncomingPropertyOutgoing -> TODO()
         }
     }
 
@@ -230,9 +246,9 @@ class ProductAutomatonServiceTest {
         val testQueryFilePath = Path.of(systemConfigurationService.getProjectRootSave(), testFilesDir, "/queries").toString();
         val testTransducerFilePath = Path.of(systemConfigurationService.getProjectRootSave(), testFilesDir, "/transducers").toString();
         val testDatabaseFilePath = Path.of(systemConfigurationService.getProjectRootSave(), testFilesDir, "/databases").toString();
-        val testQueryFilename: String
-        val testTransducerFilename: String
-        val testDatabaseFilename: String
+        var testQueryFilename: String = "epsilonIncomingPositiveOutgoingQuery.txt";
+        var testTransducerFilename: String = "epsilonIncomingPositiveOutgoingTransducer.txt"
+        var testDatabaseFilename: String = "test_db.txt";
 
         when (edgeTestCase) {
             ProductAutomatonEdgeType.EpsilonIncomingPositiveOutgoing -> {
@@ -242,52 +258,68 @@ class ProductAutomatonServiceTest {
             }
 
             ProductAutomatonEdgeType.EpsilonIncomingNegativeOutgoing -> {
-                TODO()
-            }
+                testQueryFilename = "epsilonIncomingPositiveOutgoingQuery.txt"
+                testTransducerFilename = "epsilonIncomingPositiveOutgoingTransducer.txt"
+                testDatabaseFilename = "test_db.txt"            }
 
             ProductAutomatonEdgeType.EpsilonIncomingEpsilonOutgoing -> {
-                TODO()
-            }
+                testQueryFilename = "epsilonIncomingPositiveOutgoingQuery.txt"
+                testTransducerFilename = "epsilonIncomingPositiveOutgoingTransducer.txt"
+                testDatabaseFilename = "test_db.txt"            }
 
             ProductAutomatonEdgeType.PositiveIncomingPositiveOutgoing -> {
-                TODO()
-            }
+                testQueryFilename = "epsilonIncomingPositiveOutgoingQuery.txt"
+                testTransducerFilename = "epsilonIncomingPositiveOutgoingTransducer.txt"
+                testDatabaseFilename = "test_db.txt"            }
 
             ProductAutomatonEdgeType.PositiveIncomingNegativeOutgoing -> {
-                TODO()
-            }
+                testQueryFilename = "epsilonIncomingPositiveOutgoingQuery.txt"
+                testTransducerFilename = "epsilonIncomingPositiveOutgoingTransducer.txt"
+                testDatabaseFilename = "test_db.txt"            }
 
             ProductAutomatonEdgeType.PositiveIncomingEpsilonOutgoing -> {
-                TODO()
-            }
+                testQueryFilename = "epsilonIncomingPositiveOutgoingQuery.txt"
+                testTransducerFilename = "epsilonIncomingPositiveOutgoingTransducer.txt"
+                testDatabaseFilename = "test_db.txt"            }
 
             ProductAutomatonEdgeType.NegativeIncomingPositiveOutgoing -> {
-                TODO()
-            }
+                testQueryFilename = "epsilonIncomingPositiveOutgoingQuery.txt"
+                testTransducerFilename = "epsilonIncomingPositiveOutgoingTransducer.txt"
+                testDatabaseFilename = "test_db.txt"            }
 
             ProductAutomatonEdgeType.NegativeIncomingNegativeOutgoing -> {
-                TODO()
-            }
+                testQueryFilename = "epsilonIncomingPositiveOutgoingQuery.txt"
+                testTransducerFilename = "epsilonIncomingPositiveOutgoingTransducer.txt"
+                testDatabaseFilename = "test_db.txt"            }
 
             ProductAutomatonEdgeType.NegativeIncomingEpsilonOutgoing -> {
-                TODO()
-            }
+                testQueryFilename = "epsilonIncomingPositiveOutgoingQuery.txt"
+                testTransducerFilename = "epsilonIncomingPositiveOutgoingTransducer.txt"
+                testDatabaseFilename = "test_db.txt"            }
+
+            ProductAutomatonEdgeType.EpsilonIncomingPropertyOutgoing -> TODO()
+            ProductAutomatonEdgeType.PositiveIncomingPropertyOutgoing -> TODO()
+            ProductAutomatonEdgeType.NegativeIncomingPropertyOutgoing -> TODO()
+            ProductAutomatonEdgeType.PropertyIncomingEpsilonOutgoing -> TODO()
+            ProductAutomatonEdgeType.PropertyIncomingPositiveOutgoing -> TODO()
+            ProductAutomatonEdgeType.PropertyIncomingNegativeOutgoing -> TODO()
+            ProductAutomatonEdgeType.PropertyIncomingPropertyOutgoing -> TODO()
         }
 
         val queryReaderService = QueryReaderService(systemConfigurationService)
         val transducerReaderService = TransducerReaderService(systemConfigurationService)
         val databaseReaderService = DatabaseReaderService(systemConfigurationService)
 
-        val queryGraph =
+        val queryReaderResult =
             queryReaderService.read(testQueryFilePath, testQueryFilename)
-        val databaseGraph =
+        val databaseReaderResult =
             databaseReaderService.read(testDatabaseFilePath, testDatabaseFilename)
-        val transducerGraph =
+        val transducerReaderResult =
             transducerReaderService.read(testTransducerFilePath, testTransducerFilename)
 
-        val alphabet = Alphabet(queryGraph.alphabet)
-        alphabet.addAlphabet(databaseGraph.alphabet)
+        val alphabet = Alphabet(queryReaderResult.get().alphabet)
+        alphabet.addAlphabet(databaseReaderResult.get().alphabet)
 
-        return DataProvider(queryGraph, transducerGraph, databaseGraph, alphabet)
+        return DataProvider(queryReaderResult.get(), transducerReaderResult.get(), databaseReaderResult.get(), alphabet)
     }
 }
