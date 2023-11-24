@@ -1,0 +1,19 @@
+//unhandled lines hint to smt not yet implemented. Creates a warning.
+unhandled line
+nodes
+d0
+ d1
+    d2
+d3
+//duplicated node identifiers generate a warning
+d3
+edges
+ d0, d1, l1
+    d1, d2, l2
+d2, d3, l3
+properties
+d0,prop1
+    d1, prop2
+ d2, prop1, prop2
+//duplicated property assignments generate a warning
+d2, prop1

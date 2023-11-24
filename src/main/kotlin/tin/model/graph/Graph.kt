@@ -34,8 +34,14 @@ abstract class Graph {
         if (this === other) return true
         if (other !is Graph) return false
 
-        return nodes == other.nodes &&
-                alphabet.equals(other.alphabet)
+        nodes.forEach {
+            val node = other.getNode(it.identifier);
+            if (node !== null) {
+                if (it != node) return false;
+            } else return false;
+        }
+        return alphabet == other.alphabet;
+
     }
 
     override fun hashCode(): Int {

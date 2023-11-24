@@ -8,9 +8,6 @@ import tin.model.database.DatabaseGraph
 import tin.model.database.DatabaseNode
 import tin.services.internal.DijkstraQueryAnsweringServiceTest
 import tin.services.internal.ProductAutomatonServiceTest
-import tin.services.internal.fileReaders.DatabaseReaderServiceTest
-import tin.services.internal.fileReaders.QueryReaderServiceTest
-import tin.services.internal.fileReaders.TransducerReaderServiceTest
 
 @Service
 class TinTest {
@@ -21,25 +18,13 @@ class TinTest {
     @Autowired
     lateinit var dijkstraQueryAnsweringServiceTest: DijkstraQueryAnsweringServiceTest
 
-    @Autowired
-    lateinit var databaseReaderServiceTest: DatabaseReaderServiceTest
-
-    @Autowired
-    lateinit var queryReaderServiceTest: QueryReaderServiceTest
-
-    @Autowired
-    lateinit var transducerReaderServiceTest: TransducerReaderServiceTest
-
-
     @Test
-    fun testFileReaders() {
-        // test 3 file readers
+    fun testFileReaders(){
 
     }
 
     @Test
     fun testProductAutomatonBuilder() {
-        // test 9 edge types
 
     }
 
@@ -105,5 +90,4 @@ class TinTest {
         assert(graph.getNode(n1.identifier)!!.hasProperty("A"));
         assert(!graph.getNode(n1.identifier)!!.hasProperty("B"));
     }
-
 }

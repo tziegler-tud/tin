@@ -1,0 +1,22 @@
+//comments are ignored
+nodes
+t0, true, false
+t1, false, false
+t2, false, true
+//next line raises error because of duplicated ambigious node configuration (initial states don't match)
+t2, true, true
+//error because of whitespace in identifier
+t 3, false, false
+//error because wrong term for initial state
+t4, yes, false
+//error because of ? in identifier
+t5?, false, false
+edges
+t0, t1, R, R, 0
+ t1, t2, T, S, 2
+t0,t2,prop1?,prop2?,2
+t2, t2, R, prop1?, 4
+//error because of whitespace in identifier
+t 1 , t2, prop1?, prop2?, 1
+//error because of ? in identifier
+t1, t2?, R, S, 3
