@@ -1,0 +1,10 @@
+//comments are ignored
+nodes
+t0, true, false
+t1, false, false
+t2, false, true
+edges
+t0, t1, R, R, 0
+ t1, t2, T, S, 2
+t0,t2,prop1?,prop2?,2
+t2, t2, R, prop1?, 4

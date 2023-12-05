@@ -1,14 +1,14 @@
 package tin.model.transducer
 
-import kotlin.collections.HashSet
+import tin.model.graph.Graph
+import tin.model.graph.NodeSet
 
-class TransducerGraph {
-    var nodes: HashSet<TransducerNode> = HashSet()
+class TransducerGraph : Graph() {
+    override val nodes: NodeSet<TransducerNode> = NodeSet()
 
-    fun addNodes(vararg n: TransducerNode) {
+    fun addNodes(vararg n: TransducerNode){
         nodes.addAll(listOf(*n))
     }
-
     /**
      * Note that we cannot use "nodes.add()" or similar functions that use "equals()" here.
      * This is because we call this function to populate the graph;
@@ -43,13 +43,13 @@ class TransducerGraph {
     }
 
     // TODO: print isolated nodes. (same as in the query)
-    fun printGraph() {
-        for (node in nodes) {
-            for (edge in node.edges!!) {
-                edge.print()
-            }
-        }
-    }
+//    override fun printGraph() {
+//        for (node in nodes) {
+//            for (edge in node.edges!!) {
+//                edge.print()
+//            }
+//        }
+//    }
 
     /** helper function to use in the context of populating the graph only.
      * Note that since we cannot have different nodes with the same identifier,
@@ -61,11 +61,19 @@ class TransducerGraph {
         }
     }
 
+    override fun getNode(identifier: String) : TransducerNode? {
+        return nodes.find {
+            it.identifier == identifier
+        }
+    }
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other !is TransducerGraph) return false
 
-        return nodes == other.nodes
+        return super.equals(other);
+
+//        return nodes == other.nodes
     }
 
     override fun hashCode(): Int {

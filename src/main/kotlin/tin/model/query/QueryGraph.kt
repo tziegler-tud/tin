@@ -1,15 +1,17 @@
 package tin.model.query
 
+import tin.model.graph.Graph
+import tin.model.graph.Node
+import tin.model.graph.NodeSet
 import tin.model.transducer.TransducerNode
-import kotlin.collections.HashSet
 
-class QueryGraph {
-    var nodes: MutableSet<QueryNode> = HashSet()
-    var alphabet: Set<String> = HashSet()
+class QueryGraph : Graph() {
+    override var nodes: NodeSet<QueryNode> = NodeSet()
 
-    fun addQueryNodes(vararg n: QueryNode) {
+    fun addNodes(vararg n: QueryNode){
         nodes.addAll(listOf(*n))
     }
+
 
     /**
      * Note that we cannot use "nodes.add()" or similar functions that use "equals()" here.
@@ -18,7 +20,7 @@ class QueryGraph {
      * even the same node differs now from the last iteration because one edge was added.
      * We thus have to treat the comparison of nodes differently for the sake of keeping it unique outside the graph population.
      */
-    fun addQueryEdge(source: QueryNode, target: QueryNode, label: String) {
+    fun addEdge(source: QueryNode, target: QueryNode, label: String) {
         /** check for existing source and target */
         val existingSource = findNodeWithoutEdgeComparison(source)
         val existingTarget = findNodeWithoutEdgeComparison(target)
@@ -43,21 +45,9 @@ class QueryGraph {
         source.edges.add(newEdge)
     }
 
-    /** helper function to use in the context of populating the graph only.
-     * Note that since we cannot have different nodes with the same identifier,
-     * we just have to check the identifier property and no other properties.
-     */
-    private fun findNodeWithoutEdgeComparison(queryNode: QueryNode): QueryNode? {
+    override fun getNode(identifier: String) : QueryNode? {
         return nodes.find {
-            it.identifier == queryNode.identifier
-        }
-    }
-
-    fun printGraph() {
-        for (node in nodes) {
-            for (edge in node.edges) {
-                edge.print()
-            }
+            it.identifier == identifier
         }
     }
 
@@ -66,8 +56,10 @@ class QueryGraph {
         if (this === other) return true
         if (other !is QueryGraph) return false
 
-        return nodes == other.nodes &&
-                alphabet == other.alphabet
+        return super.equals(other);
+
+//        return nodes == other.nodes &&
+//                alphabet == other.alphabet
     }
 
     override fun hashCode(): Int {

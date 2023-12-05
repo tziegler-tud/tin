@@ -1,14 +1,37 @@
 package tin.model.database
 
-import java.util.*
+import tin.model.graph.Graph
+import tin.model.graph.NodeSet
 
-class DatabaseGraph {
+class DatabaseGraph : Graph() {
 
-    var nodes: MutableSet<DatabaseNode> = HashSet()
-    var alphabet: Set<String> = HashSet()
+    override val nodes: NodeSet<DatabaseNode> = NodeSet()
+
 
     fun addNodes(vararg n: DatabaseNode) {
         nodes.addAll(listOf(*n))
+    }
+
+    override fun getNode(identifier: String) : DatabaseNode? {
+        return nodes.find {
+            it.identifier == identifier
+        }
+    }
+
+    override fun printGraph() {
+        println("Printing DatabaseGraph:\n")
+        //print nodes
+        println("Nodes:\n");
+        for (node:DatabaseNode in nodes) {
+            println("( " + node.identifier + " ) : " + node.properties.toString())
+        }
+        println("\n");
+        println("edges:")
+        for (node in nodes) {
+            for (edge in node.edges) {
+                edge.print()
+            }
+        }
     }
 
     /**
@@ -35,12 +58,23 @@ class DatabaseGraph {
         val newEdge = DatabaseEdge(source, target, label)
         // don't add duplicate edges!
         for (existingEdge in source.edges) {
-            if (existingEdge == newEdge) {
+            if (existingEdge.equals(newEdge)) {
                 return
             }
         }
         source.edges.add(newEdge)
     }
+
+    fun addNodeProperty(node: DatabaseNode, property: String){
+        val existingNode = findNodeWithoutEdgeComparison(node);
+        if(existingNode != null) {
+            existingNode.addProperty(property);
+        }
+        else {
+            //this should never happen.
+        }
+    }
+
     /** helper function to use in the context of populating the graph only.
      * Note that since we cannot have different nodes with the same identifier,
      * we just have to check the identifier property and no other properties.
@@ -52,29 +86,16 @@ class DatabaseGraph {
     }
 
 
-
-
-    fun printGraph() {
-        for (node in nodes) {
-            for (edge in node.edges) {
-                edge.print()
-            }
-        }
-    }
-
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other !is DatabaseGraph) return false
 
-        return nodes == other.nodes &&
-                alphabet == other.alphabet
+        return super.equals(other);
+//        return nodes == other.nodes &&
+//                alphabet == other.alphabet
     }
 
     override fun hashCode(): Int {
-        var result = nodes.hashCode()
-        result = 31 * result + alphabet.hashCode()
-        return result
+        return super.hashCode();
     }
-
-
 }

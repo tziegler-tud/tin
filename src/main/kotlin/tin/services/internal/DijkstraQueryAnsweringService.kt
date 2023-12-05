@@ -3,9 +3,11 @@ package tin.services.internal
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import tin.model.alphabet.Alphabet
 import tin.model.utils.ProductAutomatonTuple
 import tin.model.dataProvider.DataProvider
 import tin.model.productAutomaton.ProductAutomatonGraph
+import tin.model.query.QueryGraph
 import tin.model.queryResult.QueryResult
 import tin.model.queryResult.QueryResultRepository
 import tin.model.queryTask.QueryTask
@@ -22,6 +24,7 @@ import tin.utils.findByIdentifier
 import tin.services.internal.fileReaders.DatabaseReaderService
 import tin.services.internal.fileReaders.QueryReaderService
 import tin.services.internal.fileReaders.TransducerReaderService
+import tin.services.internal.fileReaders.FileReaderResult
 import kotlin.system.measureNanoTime
 
 @Service
@@ -32,6 +35,12 @@ class DijkstraQueryAnsweringService(
 ) {
     @Autowired
     lateinit var systemConfigurationService: SystemConfigurationService
+    @Autowired
+    lateinit var queryReaderService: QueryReaderService;
+    @Autowired
+    lateinit var databaseReaderService: DatabaseReaderService;
+    @Autowired
+    lateinit var transducerReaderService: TransducerReaderService;
 
     @Transactional
     fun calculateQueryTask(queryTask: QueryTask): QueryResult {
@@ -101,37 +110,33 @@ class DijkstraQueryAnsweringService(
         val queryFileDb = fileRepository.findByIdentifier(data.queryFileIdentifier)
         val databaseFileDb = fileRepository.findByIdentifier(data.databaseFileIdentifier)
 
-        val queryReaderService = QueryReaderService()
-        val transducerReaderService = TransducerReaderService()
-        val databaseReaderService = DatabaseReaderService()
+        val queryReaderResult: FileReaderResult<QueryGraph> = queryReaderService.read(systemConfigurationService.getQueryPath(), queryFileDb.filename);
+        val queryGraph = queryReaderResult.get();
 
-        val queryGraph =
-            queryReaderService.readRegularPathQueryFile(systemConfigurationService.uploadPathForQueries + queryFileDb.filename)
-        val databaseGraph =
-            databaseReaderService.readDatabaseFile(systemConfigurationService.uploadPathForDatabases + databaseFileDb.filename)
+        val databaseReaderResult = databaseReaderService.read(systemConfigurationService.getDatabasePath(), databaseFileDb.filename)
+        val databaseGraph = databaseReaderResult.get();
 
         val transducerGraph: TransducerGraph
-        val alphabet = queryGraph.alphabet.plus(databaseGraph.alphabet)
+        val alphabet = Alphabet(queryGraph.alphabet);
+        alphabet.addAlphabet(databaseGraph.alphabet);
 
-
-        transducerGraph =
-            if (data.computationProperties.generateTransducer && data.computationProperties.transducerGeneration != null) {
-                // generate transducer
-                when (data.computationProperties.transducerGeneration) {
-                    ComputationProperties.TransducerGeneration.ClassicalAnswersPreserving -> transducerReaderService.generateClassicAnswersTransducer(
+        if (data.computationProperties.generateTransducer && data.computationProperties.transducerGeneration != null) {
+            // generate transducer
+            transducerGraph = when (data.computationProperties.transducerGeneration) {
+                ComputationProperties.TransducerGeneration.ClassicalAnswersPreserving -> transducerReaderService.generateClassicAnswersTransducer(
                         alphabet
-                    )
+                )
 
-                    ComputationProperties.TransducerGeneration.EditDistance -> transducerReaderService.generateEditDistanceTransducer(
+                ComputationProperties.TransducerGeneration.EditDistance -> transducerReaderService.generateEditDistanceTransducer(
                         alphabet
-                    )
-                }
-            } else {
-                // transducer file is provided -> no generation needed
-                val transducerFileDb = fileRepository.findByIdentifier(data.transducerFileIdentifier!!)
-                transducerReaderService.readTransducerFile(systemConfigurationService.uploadPathForTransducers + transducerFileDb.filename)
-
+                )
             }
+        } else {
+            // transducer file is provided -> no generation needed
+            val transducerFileDb = fileRepository.findByIdentifier(data.transducerFileIdentifier!!)
+            val transducerReaderResult = transducerReaderService.read(systemConfigurationService.getTransducerPath(), transducerFileDb.filename);
+            transducerGraph = transducerReaderResult.get();
+        }
 
         return DataProvider(queryGraph, transducerGraph, databaseGraph, alphabet)
     }

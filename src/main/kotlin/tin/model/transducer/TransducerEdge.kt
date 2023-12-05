@@ -1,12 +1,17 @@
 package tin.model.transducer
 
+import tin.model.graph.Edge
+import tin.model.query.QueryNode
+
 class TransducerEdge(
-    val source: TransducerNode,
-    val target: TransducerNode,
-    val incomingString: String,
-    val outgoingString: String,
-    val cost: Double
-) {
+        override var source: TransducerNode,
+        override var target: TransducerNode,
+        var incomingString: String,
+        var outgoingString: String,
+        var cost: Double
+) : Edge(
+        source, target, "$incomingString, $outgoingString, $cost"
+){
 
     override fun toString(): String {
         val eps = "epsilon"
@@ -24,10 +29,6 @@ class TransducerEdge(
             cost,
             target.identifier
         )
-    }
-
-    fun print() {
-        println(this)
     }
 
     override fun equals(other: Any?): Boolean {
