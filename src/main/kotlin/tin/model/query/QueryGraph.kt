@@ -45,6 +45,12 @@ class QueryGraph : Graph() {
         source.edges.add(newEdge)
     }
 
+    override fun getNode(identifier: String) : QueryNode? {
+        return nodes.find {
+            it.identifier == identifier
+        }
+    }
+
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

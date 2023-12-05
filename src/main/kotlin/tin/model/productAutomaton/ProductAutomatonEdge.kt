@@ -43,8 +43,8 @@ class ProductAutomatonEdge(
         if (this === other) return true
         if (other !is ProductAutomatonEdge) return false
 
-        return source == other.source &&
-                target == other.target &&
+        return source.equalsWithoutEdges(other.source) &&
+                target.equalsWithoutEdges(other.target) &&
                 incomingString == other.incomingString &&
                 outgoingString == other.outgoingString &&
                 cost == other.cost

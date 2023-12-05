@@ -2,8 +2,6 @@ package tin.model.database
 
 import tin.model.graph.Graph
 import tin.model.graph.NodeSet
-import tin.model.transducer.TransducerNode
-import java.util.*
 
 class DatabaseGraph : Graph() {
 

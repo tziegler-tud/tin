@@ -48,6 +48,17 @@ class ProductAutomatonNode(
         return this.weight.compareTo(other.weight)
     }
 
+    fun equalsWithoutEdges(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is ProductAutomatonNode) return false
+
+        return queryNode == other.queryNode &&
+                transducerNode == other.transducerNode &&
+                databaseNode == other.databaseNode &&
+                initialState == other.initialState &&
+                finalState == other.finalState;
+    }
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other !is ProductAutomatonNode) return false
@@ -56,7 +67,8 @@ class ProductAutomatonNode(
                 transducerNode == other.transducerNode &&
                 databaseNode == other.databaseNode &&
                 initialState == other.initialState &&
-                finalState == other.finalState
+                finalState == other.finalState &&
+                edges == other.edges;
     }
 
     override fun hashCode(): Int {
