@@ -13,6 +13,7 @@ target/
 
 .attach_pid*
 src/main/resources/application.properties
+src/test/resources/application.properties
 build
 
 .gradle

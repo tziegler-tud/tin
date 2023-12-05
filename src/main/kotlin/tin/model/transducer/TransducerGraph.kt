@@ -61,6 +61,12 @@ class TransducerGraph : Graph() {
         }
     }
 
+    override fun getNode(identifier: String) : TransducerNode? {
+        return nodes.find {
+            it.identifier == identifier
+        }
+    }
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other !is TransducerGraph) return false
