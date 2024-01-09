@@ -4,16 +4,15 @@ import org.springframework.stereotype.Service
 import tin.model.alphabet.Alphabet
 import tin.model.database.DatabaseGraph
 import tin.model.database.DatabaseNode
-import tin.model.query.QueryGraph
+import tin.services.internal.fileReaders.fileReaderResult.FileReaderResult
 import tin.services.technical.SystemConfigurationService
 import java.io.BufferedReader
 import java.io.File
-import java.nio.file.Path
 import java.util.HashMap
 @Service
 class DatabaseReaderService(
         systemConfigurationService: SystemConfigurationService
-) : FileReaderService<DatabaseGraph>(
+) : FileReaderService<FileReaderResult<DatabaseGraph>>(
         systemConfigurationService
 ) {
 

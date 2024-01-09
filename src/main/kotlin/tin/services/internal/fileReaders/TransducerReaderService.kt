@@ -3,10 +3,9 @@ package tin.services.internal.fileReaders
 
 import org.springframework.stereotype.Service
 import tin.model.alphabet.Alphabet
-import tin.model.database.DatabaseGraph
-import tin.model.query.QueryNode
 import tin.model.transducer.TransducerGraph
 import tin.model.transducer.TransducerNode
+import tin.services.internal.fileReaders.fileReaderResult.FileReaderResult
 import tin.services.technical.SystemConfigurationService
 import java.io.BufferedReader
 import java.io.File
@@ -14,7 +13,7 @@ import java.io.File
 @Service
 class TransducerReaderService (
         systemConfigurationService: SystemConfigurationService
-) : FileReaderService<TransducerGraph>(
+) : FileReaderService<FileReaderResult<TransducerGraph>>(
         systemConfigurationService
 ) {
 

@@ -4,15 +4,11 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.context.TestConfiguration
-import org.springframework.stereotype.Service
-import tin.model.query.QueryEdge
-import tin.model.query.QueryGraph
-import tin.model.query.QueryNode
 import tin.model.transducer.TransducerEdge
 import tin.model.transducer.TransducerGraph
 import tin.model.transducer.TransducerNode
+import tin.services.internal.fileReaders.fileReaderResult.FileReaderResult
 import tin.services.technical.SystemConfigurationService
-import java.nio.file.Path
 
 @SpringBootTest
 @TestConfiguration

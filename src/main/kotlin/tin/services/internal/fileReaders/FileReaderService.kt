@@ -1,13 +1,9 @@
 package tin.services.internal.fileReaders
 
 import org.springframework.stereotype.Service
-import tin.model.graph.Graph
-import tin.model.query.QueryNode
 import tin.services.technical.SystemConfigurationService
-import java.io.BufferedReader
 import java.io.File
 import java.nio.file.Path
-import java.util.HashMap
 
 @Service
 abstract class FileReaderService<T> (systemConfigurationService: SystemConfigurationService) {
@@ -20,22 +16,22 @@ abstract class FileReaderService<T> (systemConfigurationService: SystemConfigura
 
     val commentLineRegex = Regex("\\s*//.*");
 
-    fun read(fileName: String, breakOnError: Boolean = false) : FileReaderResult<T> {
+    fun read(fileName: String, breakOnError: Boolean = false) : T {
         var absPath = Path.of(filePath).resolve(fileName);
         var file = this.readFileFromAbsolutePath(absPath);
         return this.processFile(file, breakOnError);
     }
-    fun read(path: Path, breakOnError: Boolean = false) : FileReaderResult<T> {
+    fun read(path: Path, breakOnError: Boolean = false) : T {
         var file = this.readFileFromAbsolutePath(path);
         return this.processFile(file, breakOnError);
     }
-    fun read(dir: Path, filename: String, breakOnError: Boolean = false) : FileReaderResult<T> {
+    fun read(dir: Path, filename: String, breakOnError: Boolean = false) : T {
         var absPath = dir.resolve(filename);
         var file = this.readFileFromAbsolutePath(absPath);
         return this.processFile(file, breakOnError);
     }
 
-    fun read(dir: String, filename: String, breakOnError: Boolean = false) : FileReaderResult<T>{
+    fun read(dir: String, filename: String, breakOnError: Boolean = false) : T {
         var absPath = Path.of(dir).resolve(filename);
         var file = this.readFileFromAbsolutePath(absPath);
         return this.processFile(file, breakOnError);
@@ -45,7 +41,7 @@ abstract class FileReaderService<T> (systemConfigurationService: SystemConfigura
         return path.toFile();
     }
 
-    abstract fun processFile(file: File, breakOnError: Boolean = false): FileReaderResult<T>
+    abstract fun processFile(file: File, breakOnError: Boolean = false): T
 
     protected fun warn(message: String, index: Int, line: String){
         this.warnings.add(FileReaderWarning(message, index, line))

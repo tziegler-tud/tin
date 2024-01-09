@@ -7,6 +7,7 @@ import org.springframework.boot.test.context.TestConfiguration
 import tin.model.database.DatabaseEdge
 import tin.model.database.DatabaseGraph
 import tin.model.database.DatabaseNode
+import tin.services.internal.fileReaders.fileReaderResult.FileReaderResult
 import tin.services.technical.SystemConfigurationService
 
 

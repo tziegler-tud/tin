@@ -24,7 +24,7 @@ import tin.utils.findByIdentifier
 import tin.services.internal.fileReaders.DatabaseReaderService
 import tin.services.internal.fileReaders.QueryReaderService
 import tin.services.internal.fileReaders.TransducerReaderService
-import tin.services.internal.fileReaders.FileReaderResult
+import tin.services.internal.fileReaders.fileReaderResult.FileReaderResult
 import kotlin.system.measureNanoTime
 
 @Service
