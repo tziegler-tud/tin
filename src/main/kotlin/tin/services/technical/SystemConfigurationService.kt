@@ -16,10 +16,11 @@ class SystemConfigurationService {
     private var fileDir: String?= null;
     private var databaseFilesDirName: String = "/databases";
     private var queryFilesDirName: String = "/queries";
+    private var conjunctiveQueryFilesDirName: String = "/conjunctiveQueries";
     private var transducerFilesDirName: String = "/transducers";
 
     private var databaseSizeLimit: Int = 1024000
-    private var querySizeLimit: Int = 128000
+    private var querySizeLimit: Int = 12800024
     private var transducerSizeLimit: Int = 128000
 
 
@@ -58,6 +59,10 @@ class SystemConfigurationService {
 
     fun getQueryPath():String{
         return Path.of(this.projectRoot + this.fileDir + this.queryFilesDirName).toString();
+    }
+
+    fun getConjunctiveQueryPath():String{
+        return Path.of(this.projectRoot + this.fileDir + this.conjunctiveQueryFilesDirName).toString();
     }
     fun getTransducerPath():String {
         return Path.of(this.projectRoot + this.fileDir + this.transducerFilesDirName).toString();
