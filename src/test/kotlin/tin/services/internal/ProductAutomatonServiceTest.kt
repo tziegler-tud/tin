@@ -18,6 +18,7 @@ import tin.services.internal.fileReaders.QueryReaderService
 import tin.services.internal.fileReaders.TransducerReaderService
 import tin.services.technical.SystemConfigurationService
 import java.nio.file.Path
+import java.nio.file.Paths
 
 @Service
 class ProductAutomatonServiceTest {
@@ -242,7 +243,7 @@ class ProductAutomatonServiceTest {
 
     private fun buildDataProvider(edgeTestCase: ProductAutomatonEdgeType): DataProvider {
 
-        val testFilesDir = "/src/test/resources/input"
+        val testFilesDir = Paths.get("src", "test", "resources", "input").toString()
         val testQueryFilePath = Path.of(systemConfigurationService.getProjectRootSave(), testFilesDir, "/queries").toString();
         val testTransducerFilePath = Path.of(systemConfigurationService.getProjectRootSave(), testFilesDir, "/transducers").toString();
         val testDatabaseFilePath = Path.of(systemConfigurationService.getProjectRootSave(), testFilesDir, "/databases").toString();
