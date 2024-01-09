@@ -1,0 +1,19 @@
+exists(x,y).phi(R1(x,z) and R2(y,z) and R3(z,z))
+graph R1
+nodes
+s0, true, false,
+s1, false, true
+edges
+s0,s1,has-part
+s1,s1,has-part
+graph R2
+nodes
+s0, true, true
+edges
+s0, so, has-part
+graph R3
+nodes
+s0, true, false,
+s1, false, true
+edges
+s0, s1, Motor?

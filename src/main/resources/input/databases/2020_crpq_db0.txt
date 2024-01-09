@@ -1,0 +1,15 @@
+nodes
+a
+b, Car
+c
+d, CarFleet
+e
+f
+g, Car
+l, Motor
+edges
+a, b, has-component
+c, d, is-part-of
+e, d, has-part
+f, g, has-part
+g, l, has-component
