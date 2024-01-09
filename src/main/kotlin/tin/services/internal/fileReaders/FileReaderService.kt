@@ -16,22 +16,22 @@ abstract class FileReaderService<T> (systemConfigurationService: SystemConfigura
 
     val commentLineRegex = Regex("\\s*//.*");
 
-    fun read(fileName: String, breakOnError: Boolean = false) : T {
+    final fun read(fileName: String, breakOnError: Boolean = false) : T {
         var absPath = Path.of(filePath).resolve(fileName);
         var file = this.readFileFromAbsolutePath(absPath);
         return this.processFile(file, breakOnError);
     }
-    fun read(path: Path, breakOnError: Boolean = false) : T {
+    final fun read(path: Path, breakOnError: Boolean = false) : T {
         var file = this.readFileFromAbsolutePath(path);
         return this.processFile(file, breakOnError);
     }
-    fun read(dir: Path, filename: String, breakOnError: Boolean = false) : T {
+    final fun read(dir: Path, filename: String, breakOnError: Boolean = false) : T {
         var absPath = dir.resolve(filename);
         var file = this.readFileFromAbsolutePath(absPath);
         return this.processFile(file, breakOnError);
     }
 
-    fun read(dir: String, filename: String, breakOnError: Boolean = false) : T {
+    final fun read(dir: String, filename: String, breakOnError: Boolean = false) : T {
         var absPath = Path.of(dir).resolve(filename);
         var file = this.readFileFromAbsolutePath(absPath);
         return this.processFile(file, breakOnError);
