@@ -1,3 +1,4 @@
+formula
 exists(x,y).phi(R1(x,z) and R2(y,z) and R3(z,z))
 graph R1
 nodes

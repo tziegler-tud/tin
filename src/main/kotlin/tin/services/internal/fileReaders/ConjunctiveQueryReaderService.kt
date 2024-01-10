@@ -3,6 +3,7 @@ package tin.services.internal.fileReaders
 import org.springframework.stereotype.Service
 import tin.model.ConjunctiveFormula
 import tin.model.alphabet.Alphabet
+import tin.model.graph.Graph
 import tin.model.query.QueryGraph
 import tin.model.query.QueryNode
 import tin.model.ConjunctiveQueryGraphMap
@@ -50,6 +51,9 @@ class ConjunctiveQueryReaderService(
         // edge lines
         val anyEdgeRegex = Regex("\\w(\\w|-\\w)*\\s*,\\s*\\w(\\w|-\\w)*\\s*,\\s*\\w(\\w|-\\w)*\\??") // for roles
 
+        // regex for graph identifier
+        val graphIdentifierRegex = Regex("^[g|G]raph\\s(\\w+)")
+
         var currentLineIndex = 0;
         while (currentLineIndex <= inputFileMaxLines) {
             currentLineIndex++;
@@ -64,22 +68,30 @@ class ConjunctiveQueryReaderService(
             if (commentLineRegex.matchEntire(currentLine) !== null) {
                 continue;
             }
+
+            if (graphIdentifierRegex.matchEntire(currentLine) !== null) {
+                currentlyReading = InputTypeEnum.GRAPH_IDENTIFIER
+            }
+
             // when we see "nodes", we will read nodes starting from the next line
             if (currentLine == "nodes") {
+                //only valid if we are currently reading a graph, i.e. there has been a line "graph R1" before
                 currentlyReading = InputTypeEnum.NODES
                 // after setting the flags, we skip into the next line
                 continue;
             }
 
             if (currentLine == "edges") {
+                //only valid if we are currently reading a graph, i.e. there has been a line "graph R1" before
                 currentlyReading = InputTypeEnum.EDGES
 
                 // after setting the flags, we skip into the next line
                 continue;
             }
 
-            if (currentLine.contains("exists")) {
+            if (currentLine == "formula") {
                 currentlyReading = InputTypeEnum.CONJUNCTIVE_FORMULA
+                continue
             }
 
             if (currentLine.contains("graph")) {
@@ -91,6 +103,7 @@ class ConjunctiveQueryReaderService(
 
             when (currentlyReading) {
                 InputTypeEnum.NODES -> {
+                    //insert into currently reading Graph --> this.currentlyReadingGraph
                     val nodeMatchResult = anyNodeRegex.matchEntire(currentLine);
                     if (nodeMatchResult !== null) {
                         currentLine = currentLine.replace("\\s".toRegex(), "")
@@ -167,13 +180,42 @@ class ConjunctiveQueryReaderService(
                     // first, check for previous graph identifier.
                     // if there is one, we have successfully read a graph and can add it to the list.
                     if (graphIdentifier != null) {
-                        conjunctiveQueryGraphMap.addGraphToMap(graphIdentifier, queryGraph)
-                        // reset the queryGraph to a new one
-                        queryGraph = QueryGraph()
+                        //zu viele Checks
+                        //if (!queryGraph.isEmpty() && queryGraph.hasInitialNode() && queryGraph.hasFinalNode()) {
+                        if (queryGraph.isValidGraph()) {
+                            // graph is nonempty and graphIdentifier is not null -> we've read a populated graph
+                            addGraphToMap(
+                                conjunctiveQueryGraphMap,
+                                graphIdentifier,
+                                queryGraph,
+                                currentLineIndex,
+                                currentLine
+                            )
+                            // reset the queryGraph to a new one
+                            queryGraph = QueryGraph()
+                        } else if (queryGraph.isEmpty()) {
+                            this.error(
+                                "Failed to read graph: 'Graph ${graphIdentifier}' is empty.",
+                                currentLineIndex,
+                                currentLine
+                            )
+                        } else if (!queryGraph.hasFinalNode()) {
+                            this.error(
+                                "Failed to read graph: 'Graph ${graphIdentifier}' has no final node.",
+                                currentLineIndex,
+                                currentLine
+                            )
+                        } else if (!queryGraph.hasInitialNode()) {
+                            this.error(
+                                "Failed to read graph: 'Graph ${graphIdentifier}' has no initial node.",
+                                currentLineIndex,
+                                currentLine
+                            )
+                        }
                     }
 
-                    // hacky tracky ignoring if the "G" in graph is upper or lower case"
-                    graphIdentifier = currentLine.split("raph")[1].trim()
+                    // set the graphIdentifier to the new read identifier
+                    graphIdentifier = graphIdentifierRegex.matchEntire(currentLine)?.groups?.get(1)?.value
 
                 }
 
@@ -188,6 +230,25 @@ class ConjunctiveQueryReaderService(
             }
         }
 
-        return ConjunctiveQueryFileReaderResult(conjunctiveQueryGraphMap, formula,  warnings, errors)
+        if (queryGraph.isValidGraph() && graphIdentifier !== null) {
+            //save remaining graph
+            addGraphToMap(conjunctiveQueryGraphMap, graphIdentifier, queryGraph, currentLineIndex, "EOF")
+        }
+
+        return ConjunctiveQueryFileReaderResult(conjunctiveQueryGraphMap, formula, warnings, errors)
+    }
+
+    private fun addGraphToMap(
+        conjunctiveQueryGraphMap: ConjunctiveQueryGraphMap,
+        graphIdentifier: String,
+        queryGraph: QueryGraph,
+        currentLineIndex: Int,
+        currentLine: String
+    ) {
+        val overriddenKey = conjunctiveQueryGraphMap.addGraphToMap(graphIdentifier, queryGraph)
+        if (overriddenKey) {
+            this.warn("Graph ${graphIdentifier} has been overriden.", currentLineIndex, currentLine)
+        }
+
     }
 }
