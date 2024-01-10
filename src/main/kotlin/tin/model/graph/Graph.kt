@@ -4,6 +4,18 @@ import tin.model.alphabet.Alphabet
 import kotlin.collections.HashSet
 
 abstract class Graph {
+
+    companion object {
+        fun isValidGraph(graphLikeObject: Any?): Boolean {
+            //must be a Graph
+            if (graphLikeObject !is Graph){
+                return false;
+            }
+            //at least one initial node and one final node
+            return graphLikeObject.hasInitialNode() && graphLikeObject.hasFinalNode();
+        }
+    }
+
     abstract val nodes: NodeSet<out Node>;
     var alphabet: Alphabet = Alphabet();
 
@@ -15,19 +27,9 @@ abstract class Graph {
         return getNode(node.identifier);
     }
 
-    open fun printGraph() {
-        for (node in nodes) {
-            for (edge in node.edges) {
-                edge.print()
-            }
-        }
-    }
+    abstract fun printGraph()
 
-    open fun getNode(identifier: String) : Node? {
-        return nodes.find {
-            it.identifier == identifier
-        }
-    }
+    abstract fun getNode(identifier: String) : Node?
 
 
     override fun equals(other: Any?): Boolean {
@@ -48,6 +50,21 @@ abstract class Graph {
         var result = nodes.hashCode()
         result = 31 * result + alphabet.hashCode()
         return result
+    }
+
+    final fun isEmpty(): Boolean {
+        return nodes.isEmpty()
+    }
+
+    final fun isValidGraph(): Boolean {
+        return hasInitialNode() && hasFinalNode()
+    }
+
+    final fun hasInitialNode(): Boolean{
+        return nodes.any{it.isInitialState}
+    }
+    final fun hasFinalNode(): Boolean{
+        return nodes.any{it.isFinalState}
     }
 
 

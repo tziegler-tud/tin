@@ -1,5 +1,6 @@
 package tin.model.transducer
 
+import tin.model.database.DatabaseNode
 import tin.model.graph.Graph
 import tin.model.graph.NodeSet
 
@@ -9,6 +10,13 @@ class TransducerGraph : Graph() {
     fun addNodes(vararg n: TransducerNode){
         nodes.addAll(listOf(*n))
     }
+
+    override fun getNode(identifier: String) : TransducerNode? {
+        return nodes.find {
+            it.identifier == identifier
+        }
+    }
+
     /**
      * Note that we cannot use "nodes.add()" or similar functions that use "equals()" here.
      * This is because we call this function to populate the graph;
@@ -43,13 +51,13 @@ class TransducerGraph : Graph() {
     }
 
     // TODO: print isolated nodes. (same as in the query)
-//    override fun printGraph() {
-//        for (node in nodes) {
-//            for (edge in node.edges!!) {
-//                edge.print()
-//            }
-//        }
-//    }
+    override fun printGraph() {
+        for (node in nodes) {
+            for (edge in node.edges) {
+                edge.print()
+            }
+        }
+    }
 
     /** helper function to use in the context of populating the graph only.
      * Note that since we cannot have different nodes with the same identifier,

@@ -1,5 +1,6 @@
 package tin.model.query
 
+import tin.model.database.DatabaseNode
 import tin.model.graph.Graph
 import tin.model.graph.Node
 import tin.model.graph.NodeSet
@@ -10,6 +11,12 @@ class QueryGraph : Graph() {
 
     fun addNodes(vararg n: QueryNode){
         nodes.addAll(listOf(*n))
+    }
+
+    override fun getNode(identifier: String) : QueryNode? {
+        return nodes.find {
+            it.identifier == identifier
+        }
     }
 
 
@@ -45,6 +52,14 @@ class QueryGraph : Graph() {
         source.edges.add(newEdge)
     }
 
+    override fun printGraph() {
+        for (node in nodes) {
+            for (edge in node.edges) {
+                edge.print()
+            }
+        }
+    }
+
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -55,6 +70,8 @@ class QueryGraph : Graph() {
 //        return nodes == other.nodes &&
 //                alphabet == other.alphabet
     }
+    
+
 
     override fun hashCode(): Int {
         var result = nodes.hashCode()
