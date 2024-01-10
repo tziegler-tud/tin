@@ -1,11 +1,29 @@
 package tin.model
 
 class ConjunctiveFormula(
-    existentialQuantifiedVariables: MutableSet<String>,
-    helperVariables: MutableSet<String>,
-    regularPathQuerySourceVariableAssignment: MutableMap<String, String>, // {(z, {(r1.target, r2.target, r3.source, r3.target)})}
-    regularPathQueryTargetVariableAssignment: MutableMap<String, String>
-)
+    val existentiallyQuantifiedVariables: MutableSet<String>,
+    val helperVariables: MutableSet<String>,
+    val greekLetter: String,
+    val regularPathQuerySourceVariableAssignment: MutableMap<String, String>, // {(z, {(r1.target, r2.target, r3.source, r3.target)})}
+    val regularPathQueryTargetVariableAssignment: MutableMap<String, String>
+) {
+    override fun equals(other: Any?): Boolean {
+        return this.existentiallyQuantifiedVariables == (other as ConjunctiveFormula).existentiallyQuantifiedVariables &&
+                this.helperVariables == other.helperVariables &&
+                this.greekLetter == other.greekLetter &&
+                this.regularPathQuerySourceVariableAssignment == other.regularPathQuerySourceVariableAssignment &&
+                this.regularPathQueryTargetVariableAssignment == other.regularPathQueryTargetVariableAssignment
+    }
+
+    override fun hashCode(): Int {
+        var result = existentiallyQuantifiedVariables.hashCode()
+        result = 31 * result + helperVariables.hashCode()
+        result = 31 * result + greekLetter.hashCode()
+        result = 31 * result + regularPathQuerySourceVariableAssignment.hashCode()
+        result = 31 * result + regularPathQueryTargetVariableAssignment.hashCode()
+        return result
+    }
+}
 
 /**
  * exists(x,y).phi(R1(x,z) and R2(y,z) and R3(z,z))

@@ -12,6 +12,7 @@ import tin.services.internal.fileReaders.fileReaderResult.FileReaderResult
 import tin.services.technical.SystemConfigurationService
 import java.io.BufferedReader
 import java.io.File
+import java.lang.Exception
 import java.util.HashMap
 
 @Service
@@ -26,9 +27,9 @@ class ConjunctiveQueryReaderService(
         val conjunctiveQueryGraphMap = ConjunctiveQueryGraphMap(mutableMapOf())
         var queryGraph = QueryGraph()
         val queryNodes = HashMap<String, QueryNode>() // map containing the QueryNodes
-        val alphabet = Alphabet()
+        var alphabet = Alphabet()
         var graphIdentifier: String? = null
-        val formula: ConjunctiveFormula? = null
+        var formula: ConjunctiveFormula? = null
 
         var source: QueryNode
         var target: QueryNode
@@ -54,7 +55,7 @@ class ConjunctiveQueryReaderService(
         // regex for graph identifier
         val graphIdentifierRegex = Regex("^[g|G]raph\\s(\\w+)")
 
-        var currentLineIndex = 0;
+        var currentLineIndex = 0
         while (currentLineIndex <= inputFileMaxLines) {
             currentLineIndex++;
             // read current line; exit loop when at the end of the file
@@ -66,7 +67,7 @@ class ConjunctiveQueryReaderService(
 
             //lines starting with // are ignored
             if (commentLineRegex.matchEntire(currentLine) !== null) {
-                continue;
+                continue
             }
 
             if (graphIdentifierRegex.matchEntire(currentLine) !== null) {
@@ -78,7 +79,7 @@ class ConjunctiveQueryReaderService(
                 //only valid if we are currently reading a graph, i.e. there has been a line "graph R1" before
                 currentlyReading = InputTypeEnum.NODES
                 // after setting the flags, we skip into the next line
-                continue;
+                continue
             }
 
             if (currentLine == "edges") {
@@ -86,7 +87,7 @@ class ConjunctiveQueryReaderService(
                 currentlyReading = InputTypeEnum.EDGES
 
                 // after setting the flags, we skip into the next line
-                continue;
+                continue
             }
 
             if (currentLine == "formula") {
@@ -128,7 +129,7 @@ class ConjunctiveQueryReaderService(
                             }
                         }
                         queryNodes[stringArray[0]] = node
-                        queryGraph.addNodes(node);
+                        queryGraph.addNodes(node)
 
                         //TODO: Check semantically, e.g. if there is at least one initial state and at least one reachable final state.
                     } else {
@@ -184,6 +185,7 @@ class ConjunctiveQueryReaderService(
                         //if (!queryGraph.isEmpty() && queryGraph.hasInitialNode() && queryGraph.hasFinalNode()) {
                         if (queryGraph.isValidGraph()) {
                             // graph is nonempty and graphIdentifier is not null -> we've read a populated graph
+                            queryGraph.alphabet = alphabet
                             addGraphToMap(
                                 conjunctiveQueryGraphMap,
                                 graphIdentifier,
@@ -191,8 +193,12 @@ class ConjunctiveQueryReaderService(
                                 currentLineIndex,
                                 currentLine
                             )
-                            // reset the queryGraph to a new one
+                            /**
+                             * here we do the big resets, since we've just added one whole queryGraph to the map.
+                             */
                             queryGraph = QueryGraph()
+                            queryNodes.clear()
+                            alphabet = Alphabet()
                         } else if (queryGraph.isEmpty()) {
                             this.error(
                                 "Failed to read graph: 'Graph ${graphIdentifier}' is empty.",
@@ -220,7 +226,115 @@ class ConjunctiveQueryReaderService(
                 }
 
                 InputTypeEnum.CONJUNCTIVE_FORMULA -> {
-                    formula = TODO()
+                    /**
+                     * this pattern splits the formula into its parts
+                     * e.g. for the formula 'exists(x,y).phi(R1(x,z) and R2(y,z) and R3(z,z))'
+                     * the regex matches are 'exists(x,y)', 'phi(R1(x,z)', 'R2(y,z)', 'R3(z,z))'
+                     */
+                    val formulaSplitPattern = Regex("""(?:\b[a-zA-Z]+(?:\d+)?\([^)]+\))""")
+                    val patternMatches = formulaSplitPattern.findAll(currentLine)
+
+                    // storing the results in these variables
+                    var existentiallyQuantifiedVariables: MutableSet<String> = mutableSetOf()
+                    var helperVariables: MutableSet<String> = mutableSetOf()
+                    var greekLetter: String = ""
+                    val alphabetOfAllMentionedVariables: MutableSet<String> = mutableSetOf()
+                    val regularPathQuerySourceVariableAssignment: MutableMap<String, String> = mutableMapOf()
+                    val regularPathQueryTargetVariableAssignment: MutableMap<String, String> = mutableMapOf()
+
+                    // iterate through each match and handle it accordingly
+                    patternMatches.forEach {
+                        // check for existential quantifier
+                        if (it.value.contains("exists")) {
+
+                            val existsRegex = Regex("exists\\(([^),]+(?:,[^),]+)*)\\)")
+                            val match = existsRegex.matchEntire(it.value)
+
+                            if (match?.groups?.size != 2) {
+                                // group size has to be 2, else the format was violated
+                                this.error(
+                                    "Failed to read line as formula: Invalid input format (existentially quantified variables).",
+                                    currentLineIndex,
+                                    currentLine
+                                )
+                            } else {
+                                // extract the variables
+                                val variables = match.groups[1]?.value?.split(",")?.toMutableSet()
+                                if (variables == null) {
+                                    this.error(
+                                        "Failed to read line as formula: No existentially quantified variables found.",
+                                        currentLineIndex,
+                                        currentLine
+                                    )
+                                } else {
+                                    existentiallyQuantifiedVariables = variables
+                                }
+                            }
+
+                        } else {
+                            /**
+                             * it could be of two other valid types now.
+                             * 1. phi(R1(x,z) or 2. R1(x,z)
+                             * in the first case we have to extract the greek letter and the variables
+                             * in the second case we only have to extract the variables
+                             *
+                             * we split after the first bracket -> if the variables contain a bracket, we have type 1
+                             * else we have type 2
+                             */
+                            var identifier = it.value.substringBefore('(')
+                            var variables = it.value.substringAfter('(').dropLast(1)
+
+                            if (variables.contains('(')) {
+                                // type 1 found
+                                greekLetter = identifier
+                                identifier = variables.substringBefore('(')
+                                variables = variables.substringAfter('(')
+                            }
+
+                            val sourceVariable = variables.substringBefore(',')
+                            val targetVariable = variables.substringAfter(',')
+
+                            regularPathQuerySourceVariableAssignment[identifier] = sourceVariable
+                            regularPathQueryTargetVariableAssignment[identifier] = targetVariable
+
+                            alphabetOfAllMentionedVariables.add(sourceVariable)
+                            alphabetOfAllMentionedVariables.add(targetVariable)
+
+                        }
+                    }
+
+                    helperVariables =
+                        (alphabetOfAllMentionedVariables - existentiallyQuantifiedVariables) as MutableSet<String>
+
+                    /**
+                     * check for errors
+                     * TODO: this section is not complete
+                     */
+
+                    if (existentiallyQuantifiedVariables.isEmpty()) {
+                        this.error(
+                            "Failed to read line as formula: No existentially quantified variables found.",
+                            currentLineIndex,
+                            currentLine
+                        )
+                    }
+
+                    if (greekLetter.isEmpty()) {
+                        this.error(
+                            "Failed to read line as formula: No greek letter found.",
+                            currentLineIndex,
+                            currentLine
+                        )
+                    }
+
+
+                    formula = ConjunctiveFormula(
+                        existentiallyQuantifiedVariables,
+                        helperVariables,
+                        greekLetter,
+                        regularPathQuerySourceVariableAssignment,
+                        regularPathQueryTargetVariableAssignment
+                    )
 
                 }
 
@@ -232,10 +346,16 @@ class ConjunctiveQueryReaderService(
 
         if (queryGraph.isValidGraph() && graphIdentifier !== null) {
             //save remaining graph
+            queryGraph.alphabet = alphabet
             addGraphToMap(conjunctiveQueryGraphMap, graphIdentifier, queryGraph, currentLineIndex, "EOF")
         }
 
-        return ConjunctiveQueryFileReaderResult(conjunctiveQueryGraphMap, formula, warnings, errors)
+        if (formula == null) {
+            throw Exception("conjunctive formula could not be parsed.")
+        } else {
+
+            return ConjunctiveQueryFileReaderResult(conjunctiveQueryGraphMap, formula!!, warnings, errors)
+        }
     }
 
     private fun addGraphToMap(

@@ -18,4 +18,12 @@ class ConjunctiveQueryGraphMap(
         return graphs[graphIdentifier];
     }
 
+    override fun equals(other: Any?): Boolean {
+        return this.graphs == (other as ConjunctiveQueryGraphMap).graphs
+    }
+
+    override fun hashCode(): Int {
+        return graphs.hashCode()
+    }
+
 }

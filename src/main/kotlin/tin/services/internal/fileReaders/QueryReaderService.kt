@@ -17,7 +17,7 @@ class QueryReaderService (
         systemConfigurationService
 ) {
 
-    override var filePath = systemConfigurationService.getQueryPath();
+    override var filePath = systemConfigurationService.getQueryPath()
     override var inputFileMaxLines : Int = systemConfigurationService.getQuerySizeLimit()
 
     override fun processFile(file: File, breakOnError: Boolean): FileReaderResult<QueryGraph> {
@@ -42,15 +42,15 @@ class QueryReaderService (
 
         //trailing and leading whitespaces and tab characters are removed before processing!
         //node line
-        val anyNodeRegex = Regex("\\w(\\w|-\\w)*\\s*,\\s*((true)|(false))\\s*,\\s*((true)|(false))");
+        val anyNodeRegex = Regex("\\w(\\w|-\\w)*\\s*,\\s*((true)|(false))\\s*,\\s*((true)|(false))")
 
         // edge lines
         val edgeWithConceptAssertionRegex = Regex("\\w(\\w|-\\w)*\\s*,\\s*\\w(\\w|-\\w)*\\s*,\\s*\\w(\\w|-\\w)*\\?") //for concept assertions
         val anyEdgeRegex = Regex("\\w(\\w|-\\w)*\\s*,\\s*\\w(\\w|-\\w)*\\s*,\\s*\\w(\\w|-\\w)*\\??") // for roles
 
-        var currentLineIndex=0;
+        var currentLineIndex=0
         while (currentLineIndex <= inputFileMaxLines) {
-            currentLineIndex++;
+            currentLineIndex++
             // read current line; exit loop when at the end of the file
             currentLine = bufferedReader.readLine() ?: break
 
@@ -60,60 +60,60 @@ class QueryReaderService (
 
             //lines starting with // are ignored
             if(commentLineRegex.matchEntire(currentLine) !== null){
-                continue;
+                continue
             }
             // when we see "nodes", we will read nodes starting from the next line
             if (currentLine == "nodes") {
                 currentlyReading = InputTypeEnum.NODES
                 // after setting the flags, we skip into the next line
-                continue;
+                continue
             }
 
             if (currentLine == "edges") {
                 currentlyReading = InputTypeEnum.EDGES
 
                 // after setting the flags, we skip into the next line
-                continue;
+                continue
             }
 
             //save og line for debugging
-            val originalLine = currentLine;
+            val originalLine = currentLine
 
             when(currentlyReading){
                 InputTypeEnum.NODES -> {
-                    val nodeMatchResult = anyNodeRegex.matchEntire(currentLine);
+                    val nodeMatchResult = anyNodeRegex.matchEntire(currentLine)
                     if(nodeMatchResult !== null) {
                         currentLine = currentLine.replace("\\s".toRegex(), "")
                         stringArray = currentLine.split(",").toTypedArray()
 
                         node = QueryNode(stringArray[0], stringArray[1].toBoolean(), stringArray[2].toBoolean())
 
-                        val existingNode = queryNodes[stringArray[0]];
+                        val existingNode = queryNodes[stringArray[0]]
                         if(existingNode != null){
                             //node identifier already taken. Check similarity.
                             if(node.equalsWithoutEdges(existingNode)) {
                                 this.warn("Duplicated node identifier.", currentLineIndex, originalLine)
-                                continue;
+                                continue
                             }
                             else {
                                 //identifier taken, but initialState or finalState differs. This is an error.
                                 this.error("Failed to read line as node: Non-repairable duplicated node identifier.", currentLineIndex, originalLine)
-                                continue;
+                                continue
                             }
                         }
                         queryNodes[stringArray[0]] = node
-                        queryGraph.addNodes(node);
+                        queryGraph.addNodes(node)
 
                         //TODO: Check semantically, e.g. if there is at least one initial state and at least one reachable final state.
                     }
                     else {
-                        this.error("Failed to read line as node: Invalid input format.", currentLineIndex, currentLine);
-                        if(breakOnError) break;
+                        this.error("Failed to read line as node: Invalid input format.", currentLineIndex, currentLine)
+                        if(breakOnError) break
                     }
                 }
                 InputTypeEnum.EDGES -> {
                     //check line against Regexp to check for valid input format.
-                    val anyEdgeMatchResult = anyEdgeRegex.matchEntire(currentLine);
+                    val anyEdgeMatchResult = anyEdgeRegex.matchEntire(currentLine)
                     if(anyEdgeMatchResult !== null){
                         //line is valid
                         currentLine = currentLine.replace("\\s".toRegex(), "")
@@ -129,12 +129,12 @@ class QueryReaderService (
                         if(Alphabet.isConceptAssertion(edgeLabel)){
                             //concept assertion read, extract concept name
                             try{
-                                val conceptLabel = Alphabet.conceptNameFromAssertion(edgeLabel);
+                                val conceptLabel = Alphabet.conceptNameFromAssertion(edgeLabel)
                                 if(!alphabet.includes(conceptLabel)) alphabet.addConceptName(conceptLabel)
                             }
                             catch (e: IllegalArgumentException){
                                 this.error("Failed to read property name from edge label", currentLineIndex, currentLine)
-                                if(breakOnError) break;
+                                if(breakOnError) break
                             }
                         }
                         else {
@@ -144,8 +144,8 @@ class QueryReaderService (
                     }
                     else {
                         //invalid line
-                        this.error("Failed to read line as edge: Invalid input format.", currentLineIndex, currentLine);
-                        if(breakOnError) break;
+                        this.error("Failed to read line as edge: Invalid input format.", currentLineIndex, currentLine)
+                        if(breakOnError) break
                     }
                 }
 
@@ -156,10 +156,10 @@ class QueryReaderService (
         }
 
         if(currentLineIndex == inputFileMaxLines && bufferedReader.readLine() !== null){
-            this.warn("Max input file size reached. Reader stopped before entire file was processed!", currentLineIndex, "");
+            this.warn("Max input file size reached. Reader stopped before entire file was processed!", currentLineIndex, "")
         }
 
         queryGraph.alphabet = alphabet
-        return FileReaderResult<QueryGraph>(queryGraph, this.warnings, this.errors);
+        return FileReaderResult<QueryGraph>(queryGraph, this.warnings, this.errors)
     }
 }
