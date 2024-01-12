@@ -1,4 +1,4 @@
-package tin.services.internal.algorithms
+package tin.services.internal.dijkstra.algorithms
 
 import tin.model.utils.ProductAutomatonTuple
 import tin.model.productAutomaton.ProductAutomatonGraph
