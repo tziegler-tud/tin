@@ -26,6 +26,13 @@ class TransducerFactory {
         }
 
         fun generateEditDistanceTransducer(queryAlphabet: Alphabet, databaseAlphabet: Alphabet): TransducerGraph {
+
+            /**
+             * Dummy config, can later be extended to run different scenarios
+             */
+            val allowRoleToConceptAssertion = false; //adds edges that transform query roles names to concept assertions (PA construction step 11 + 12)
+            val allowConceptAssertionToRole = false; //adds edges that transform query concept assertions to role names (PA construction step 14 + 15)
+
             val t = TransducerGraph();
             val node = TransducerNode("t0", true, true)
             t.addNodes(node)
@@ -38,20 +45,26 @@ class TransducerFactory {
             val dbRoles = databaseAlphabet.getRoleNames();
 
 
-            var conceptCache = hashMapOf<Pair<String, String>, Int>();
-            var roleCache = hashMapOf<Pair<String, String>, Int>();
+            var cache = hashMapOf<Pair<String, String>, Int>();
 
-            //create m:n table
+            /**
+             * return cached value if present, else calculate and add to cache.
+             */
+            fun cacheOrCredit(a: String, b: String) : Int {
+                var dist = cache[Pair(a,b)]
+                if (dist === null) {
+                    //calculate edit distance between concept names
+                    dist = calculateEditDistance(a, b);
+                    //add to cache and mirror.
+                    cache[Pair(a, b)] = dist;
+                    cache[Pair(b, a)] = dist;
+                }
+                return dist;
+            };
+
             for (concept in queryConcepts) {
                 for (databaseProperty in dbConcepts) {
-                    var dist = conceptCache[Pair(concept, databaseProperty)]
-                    if (dist === null) {
-                        //calculate edit distance between concept names
-                        dist = calculateEditDistance(concept, databaseProperty);
-                        //add to cache and mirror.
-                        conceptCache[Pair(concept, databaseProperty)] = dist;
-                        conceptCache[Pair(databaseProperty, concept)] = dist;
-                    }
+                    var dist = cacheOrCredit(concept, databaseProperty);
                     //add transducer edge
                     t.addEdge(node, node, concept, databaseProperty, dist.toDouble())
                 }
@@ -59,19 +72,30 @@ class TransducerFactory {
 
             for (queryRole in queryRoles) {
                 for (databaseRole in dbRoles) {
-                    var dist = roleCache[Pair(queryRole, databaseRole)]
-                    if (dist === null) {
-                        //calculate edit distance between concept names
-                        dist = calculateEditDistance(queryRole, databaseRole);
-                        //add to cache and mirror.
-                        roleCache[Pair(queryRole, databaseRole)] = dist;
-                        roleCache[Pair(databaseRole, queryRole)] = dist;
-                    }
+                    var dist = cacheOrCredit(queryRole, databaseRole)
                     //add transducer edge
                     t.addEdge(node, node, queryRole, databaseRole, dist.toDouble())
                 }
+
+                if(allowRoleToConceptAssertion) {
+                    for (conceptAssertion in queryAlphabet.getTransformedConceptNames()) {
+                        var dist = cacheOrCredit(queryRole, conceptAssertion);
+                        //add transducer edge
+                        t.addEdge(node, node, queryRole, conceptAssertion, dist.toDouble())
+                    }
+                }
             }
 
+            if(allowConceptAssertionToRole) {
+                for (conceptAssertion in queryAlphabet.getTransformedConceptNames()) {
+                    for (databaseRole in dbRoles) {
+                        val dist = cacheOrCredit(conceptAssertion, databaseRole)
+                        //add transducer edge
+                        t.addEdge(node, node, conceptAssertion, databaseRole, dist.toDouble())
+                    }
+                }
+
+            }
             return t;
         };
 
