@@ -19,6 +19,7 @@ import tin.model.transducer.TransducerGraph
 import tin.services.internal.algorithms.Dijkstra
 import tin.services.internal.algorithms.DijkstraThreshold
 import tin.services.internal.algorithms.DijkstraTopK
+import tin.services.internal.utils.TransducerFactory
 import tin.services.technical.SystemConfigurationService
 import tin.utils.findByIdentifier
 import tin.services.internal.fileReaders.DatabaseReaderService
@@ -123,12 +124,12 @@ class DijkstraQueryAnsweringService(
         if (data.computationProperties.generateTransducer && data.computationProperties.transducerGeneration != null) {
             // generate transducer
             transducerGraph = when (data.computationProperties.transducerGeneration) {
-                ComputationProperties.TransducerGeneration.ClassicalAnswersPreserving -> transducerReaderService.generateClassicAnswersTransducer(
+                ComputationProperties.TransducerGeneration.ClassicalAnswersPreserving -> TransducerFactory.generateClassicAnswersTransducer(
                         alphabet
                 )
 
-                ComputationProperties.TransducerGeneration.EditDistance -> transducerReaderService.generateEditDistanceTransducer(
-                        alphabet
+                ComputationProperties.TransducerGeneration.EditDistance -> TransducerFactory.generateEditDistanceTransducer(
+                        queryGraph.alphabet, databaseGraph.alphabet
                 )
             }
         } else {

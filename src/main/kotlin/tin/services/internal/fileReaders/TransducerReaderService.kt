@@ -180,23 +180,6 @@ class TransducerReaderService (
 
     }
 
-    fun generateClassicAnswersTransducer(alphabet: Alphabet): TransducerGraph {
-
-        val transducerGraph = TransducerGraph()
-        val source = TransducerNode("t0", isInitialState = true, isFinalState = true)
-
-        for (word in alphabet.getAlphabet()) {
-            // for each word of the alphabet we add the edge (t0, t0, word, word, 0)
-            transducerGraph.addEdge(source, source, word, word, 0.0)
-        }
-
-        return transducerGraph
-    }
-
-    fun generateEditDistanceTransducer(alphabet: Alphabet): TransducerGraph {
-        return TODO()
-    }
-
     /**
      * todo
      *  consider making the internal epsilon identifier a property the user can change in the frontend.
