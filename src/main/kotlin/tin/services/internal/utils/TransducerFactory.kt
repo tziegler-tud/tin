@@ -76,9 +76,15 @@ class TransducerFactory {
         };
 
         private fun calculateEditDistance(lhs: String, rhs: String): Int {
+            //implements wagner-fischer algorithm
+            if(lhs == rhs) { return 0 }
+            if(lhs.isEmpty()) { return rhs.length }
+            if(rhs.isEmpty()) { return lhs.length }
+
             val lhsLength = lhs.length + 1
             val rhsLength = rhs.length + 1
 
+            //initialize cost array with [0,1,2,..,lhsLength]
             var cost = Array(lhsLength) { it }
             var newCost = Array(lhsLength) { 0 }
 
