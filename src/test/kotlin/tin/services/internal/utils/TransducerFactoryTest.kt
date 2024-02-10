@@ -46,23 +46,23 @@ class TransducerFactoryTest {
         var transducer = TransducerGraph();
         transducer.addNodes(t0);
 
-        transducer.addEdge(TransducerEdge(t0, t0, "test1", "toast1", "2".toDouble()))
-        transducer.addEdge(TransducerEdge(t0, t0, "test1", "test9", "1".toDouble()))
-        transducer.addEdge(TransducerEdge(t0, t0, "test1", "chair", "5".toDouble()))
+        transducer.addEdge(TransducerEdge(t0, t0, "test1", "toast1", 2.0))
+        transducer.addEdge(TransducerEdge(t0, t0, "test1", "test9", 1.0))
+        transducer.addEdge(TransducerEdge(t0, t0, "test1", "chair", 5.0))
 
-        transducer.addEdge(TransducerEdge(t0, t0, "test9", "toast1", "3".toDouble()))
-        transducer.addEdge(TransducerEdge(t0, t0, "test9", "test9", "0".toDouble()))
-        transducer.addEdge(TransducerEdge(t0, t0, "test9", "chair", "5".toDouble()))
+        transducer.addEdge(TransducerEdge(t0, t0, "test9", "toast1", 3.0))
+        transducer.addEdge(TransducerEdge(t0, t0, "test9", "test9", 0.0))
+        transducer.addEdge(TransducerEdge(t0, t0, "test9", "chair", 5.0))
 
-        transducer.addEdge(TransducerEdge(t0, t0, "chain", "toast1", "5".toDouble()))
-        transducer.addEdge(TransducerEdge(t0, t0, "chain", "test9", "5".toDouble()))
-        transducer.addEdge(TransducerEdge(t0, t0, "chain", "chair", "1".toDouble()))
+        transducer.addEdge(TransducerEdge(t0, t0, "chain", "toast1", 5.0))
+        transducer.addEdge(TransducerEdge(t0, t0, "chain", "test9", 5.0))
+        transducer.addEdge(TransducerEdge(t0, t0, "chain", "chair", 1.0))
 
-        transducer.addEdge(TransducerEdge(t0,t0,"haveStudent", "hasStudent", "2".toDouble()))
-        transducer.addEdge(TransducerEdge(t0,t0,"haveStudent", "hasEmployee", "9".toDouble()))
+        transducer.addEdge(TransducerEdge(t0,t0,"haveStudent", "hasStudent", 2.0))
+        transducer.addEdge(TransducerEdge(t0,t0,"haveStudent", "hasEmployee", 9.0))
 
-        transducer.addEdge(TransducerEdge(t0,t0,"hasEmployer", "hasStudent", "8".toDouble()))
-        transducer.addEdge(TransducerEdge(t0,t0,"hasEmployer", "hasEmployee", "1".toDouble()))
+        transducer.addEdge(TransducerEdge(t0,t0,"hasEmployer", "hasStudent", 8.0))
+        transducer.addEdge(TransducerEdge(t0,t0,"hasEmployer", "hasEmployee", 1.0))
 
         return transducer;
     }
