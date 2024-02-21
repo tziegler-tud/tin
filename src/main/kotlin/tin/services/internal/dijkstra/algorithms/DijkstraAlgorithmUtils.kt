@@ -6,7 +6,7 @@ import tin.model.productAutomaton.ProductAutomatonGraph
 import tin.model.productAutomaton.ProductAutomatonNode
 
 
-object DijkstraUtils {
+object DijkstraAlgorithmUtils {
     fun retrieveResultForOneInitialNode(
         initialNode: ProductAutomatonNode,
         setOfNodes: Set<ProductAutomatonNode>

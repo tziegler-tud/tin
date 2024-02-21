@@ -15,6 +15,10 @@ class FileOverviewService(
         return fileRepository.findAllByFiletype(FileType.RegularPathQuery)
     }
 
+    fun getAllConjunctivePathQueryFiles(): List<File> {
+        return fileRepository.findAllByFiletype(FileType.ConjunctivePathQuery)
+    }
+
     fun getAllDatabaseFiles(): List<File> {
         return fileRepository.findAllByFiletype(FileType.Database)
     }

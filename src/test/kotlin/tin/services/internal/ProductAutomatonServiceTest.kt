@@ -3,7 +3,7 @@ package tin.services.internal
 import org.junit.jupiter.api.Test
 import org.springframework.stereotype.Service
 import tin.model.alphabet.Alphabet
-import tin.model.dataProvider.DataProvider
+import tin.model.dataProvider.RegularPathQueryDataProvider
 import tin.model.database.DatabaseGraph
 import tin.model.database.DatabaseNode
 import tin.model.productAutomaton.ProductAutomatonEdgeType
@@ -193,7 +193,7 @@ class ProductAutomatonServiceTest {
 
     }
 
-    private fun createDataProvider(edgeTestCase: ProductAutomatonEdgeType): DataProvider {
+    private fun createDataProvider(edgeTestCase: ProductAutomatonEdgeType): RegularPathQueryDataProvider {
         return when (edgeTestCase) {
             ProductAutomatonEdgeType.EpsilonIncomingPositiveOutgoing -> {
                 buildDataProvider(ProductAutomatonEdgeType.EpsilonIncomingPositiveOutgoing)
@@ -241,15 +241,15 @@ class ProductAutomatonServiceTest {
         }
     }
 
-    private fun buildDataProvider(edgeTestCase: ProductAutomatonEdgeType): DataProvider {
+    private fun buildDataProvider(edgeTestCase: ProductAutomatonEdgeType): RegularPathQueryDataProvider {
 
         val testFilesDir = Paths.get("src", "test", "resources", "input").toString()
-        val testQueryFilePath = Path.of(systemConfigurationService.getProjectRootSave(), testFilesDir, "/queries").toString();
-        val testTransducerFilePath = Path.of(systemConfigurationService.getProjectRootSave(), testFilesDir, "/transducers").toString();
-        val testDatabaseFilePath = Path.of(systemConfigurationService.getProjectRootSave(), testFilesDir, "/databases").toString();
-        var testQueryFilename: String = "epsilonIncomingPositiveOutgoingQuery.txt";
+        val testQueryFilePath = Path.of(systemConfigurationService.getProjectRootSave(), testFilesDir, "/queries").toString()
+        val testTransducerFilePath = Path.of(systemConfigurationService.getProjectRootSave(), testFilesDir, "/transducers").toString()
+        val testDatabaseFilePath = Path.of(systemConfigurationService.getProjectRootSave(), testFilesDir, "/databases").toString()
+        var testQueryFilename: String = "epsilonIncomingPositiveOutgoingQuery.txt"
         var testTransducerFilename: String = "epsilonIncomingPositiveOutgoingTransducer.txt"
-        var testDatabaseFilename: String = "test_db.txt";
+        var testDatabaseFilename: String = "test_db.txt"
 
         when (edgeTestCase) {
             ProductAutomatonEdgeType.EpsilonIncomingPositiveOutgoing -> {
@@ -321,6 +321,6 @@ class ProductAutomatonServiceTest {
         val alphabet = Alphabet(queryReaderResult.get().alphabet)
         alphabet.addAlphabet(databaseReaderResult.get().alphabet)
 
-        return DataProvider(queryReaderResult.get(), transducerReaderResult.get(), databaseReaderResult.get(), alphabet)
+        return RegularPathQueryDataProvider(queryReaderResult.get(), transducerReaderResult.get(), databaseReaderResult.get(), alphabet)
     }
 }

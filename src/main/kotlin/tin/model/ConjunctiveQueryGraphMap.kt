@@ -15,7 +15,11 @@ class ConjunctiveQueryGraphMap(
     }
 
     fun get(graphIdentifier: String): QueryGraph? {
-        return graphs[graphIdentifier];
+        return graphs[graphIdentifier]
+    }
+
+    fun getMap(): MutableMap<String, QueryGraph> {
+        return graphs
     }
 
     override fun equals(other: Any?): Boolean {

@@ -1,18 +1,19 @@
 package tin.data.tintheweb.queryTask
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import tin.data.tintheweb.queryResult.QueryResultData
+import tin.data.tintheweb.queryResult.RegularPathQueryResultData
+import tin.model.queryResult.RegularPathQueryResult
 import tin.model.queryTask.QueryTask
 import java.util.*
 
-class QueryTaskCompleteData (
+class RegularPathQueryTaskCompleteData(
     @JsonProperty("id") val id: Long?,
     @JsonProperty("computationProperties") val computationProperties: ComputationPropertiesData,
     @JsonProperty("queryFileIdentifier") val queryFileIdentifier: Long,
     @JsonProperty("transducerFileIdentifier") val transducerFileIdentifier: Long?,
     @JsonProperty("databaseFileIdentifier") val databaseFileIdentifier: Long,
     @JsonProperty("queryStatus") val queryStatus: QueryTask.QueryStatus,
-    @JsonProperty("queryResult") val queryResult: QueryResultData?,
+    @JsonProperty("queryResult") val queryResult: RegularPathQueryResultData?,
     @JsonProperty("createdAt") val createdAt: Date
 ) {
     constructor(model: QueryTask) : this(
@@ -22,7 +23,7 @@ class QueryTaskCompleteData (
         transducerFileIdentifier = model.transducerFileIdentifier,
         databaseFileIdentifier = model.databaseFileIdentifier,
         queryStatus = model.queryStatus,
-        queryResult = model.queryResult?.let { QueryResultData(it) },
+        queryResult = model.queryResult?.let { RegularPathQueryResultData(it.first() as RegularPathQueryResult) },
         createdAt = model.createdAt
     )
 

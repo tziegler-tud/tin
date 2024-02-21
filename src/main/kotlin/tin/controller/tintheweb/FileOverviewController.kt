@@ -15,6 +15,11 @@ class FileOverviewController(
         return fileOverviewService.getAllRegularPathQueryFiles().map(::FileData)
     }
 
+    @GetMapping("file-overview/conjunctive-path-queries")
+    fun getAllConjunctivePathQueryFiles(): List<FileData> {
+        return fileOverviewService.getAllConjunctivePathQueryFiles().map(::FileData)
+    }
+
     @GetMapping("file-overview/databases")
     fun getAllDatabaseFiles(): List<FileData> {
         return fileOverviewService.getAllDatabaseFiles().map(::FileData)

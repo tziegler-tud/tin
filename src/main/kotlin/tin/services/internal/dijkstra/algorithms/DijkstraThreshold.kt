@@ -29,7 +29,7 @@ class DijkstraThreshold(
 
 
         // line 1
-        DijkstraUtils.initialiseSingleSource(productAutomatonGraph, sourceNode, predecessor)
+        DijkstraAlgorithmUtils.initialiseSingleSource(productAutomatonGraph, sourceNode, predecessor)
         // line 2
         setOfNodes.clear()
         // line 3
@@ -51,7 +51,7 @@ class DijkstraThreshold(
                 if (!(p.weight + edge.cost >= threshold)) {
                     setOfNodes.add(edge.target)
                     // line 8
-                    DijkstraUtils.relax(p, edge.target, edge, predecessor)
+                    DijkstraAlgorithmUtils.relax(p, edge.target, edge, predecessor)
                 }
             }
         }
@@ -69,7 +69,7 @@ class DijkstraThreshold(
             // run single-source dijkstra
             singleSourceDijkstra(initialNode)
             // put the new shortest-paths into the answer set
-            answerMap.putAll(DijkstraUtils.retrieveResultForOneInitialNode(initialNode, setOfNodes))
+            answerMap.putAll(DijkstraAlgorithmUtils.retrieveResultForOneInitialNode(initialNode, setOfNodes))
 
 
         }

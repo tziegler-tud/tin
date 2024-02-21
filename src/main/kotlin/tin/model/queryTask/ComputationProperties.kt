@@ -30,7 +30,7 @@ class ComputationProperties(
     enum class ComputationModeEnum {
         Dijkstra,
         TopK,
-        Threshold,
+        Threshold
     }
 }
 

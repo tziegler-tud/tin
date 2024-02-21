@@ -29,7 +29,7 @@ class DijkstraTopK(val productAutomatonGraph: ProductAutomatonGraph, private val
         var finalNodesFound = 0
 
         // line 1
-        DijkstraUtils.initialiseSingleSource(productAutomatonGraph, sourceNode, predecessor)
+        DijkstraAlgorithmUtils.initialiseSingleSource(productAutomatonGraph, sourceNode, predecessor)
         // line 2
         setOfNodes.clear()
         // line 3
@@ -56,7 +56,7 @@ class DijkstraTopK(val productAutomatonGraph: ProductAutomatonGraph, private val
                 }
 
                 // line 8
-                DijkstraUtils.relax(p, edge.target, edge, predecessor)
+                DijkstraAlgorithmUtils.relax(p, edge.target, edge, predecessor)
             }
         }
     }
@@ -73,7 +73,7 @@ class DijkstraTopK(val productAutomatonGraph: ProductAutomatonGraph, private val
             // run single-source dijkstra
             singleSourceDijkstra(initialNode)
             // put the new shortest-paths into the answer set
-            answerMap.putAll(DijkstraUtils.retrieveResultForOneInitialNode(initialNode, setOfNodes))
+            answerMap.putAll(DijkstraAlgorithmUtils.retrieveResultForOneInitialNode(initialNode, setOfNodes))
 
         }
         return answerMap

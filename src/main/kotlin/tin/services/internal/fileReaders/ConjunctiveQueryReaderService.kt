@@ -1,14 +1,13 @@
 package tin.services.internal.fileReaders
 
 import org.springframework.stereotype.Service
+import tin.model.ConjunctTriplet
 import tin.model.ConjunctiveFormula
 import tin.model.alphabet.Alphabet
-import tin.model.graph.Graph
 import tin.model.query.QueryGraph
 import tin.model.query.QueryNode
 import tin.model.ConjunctiveQueryGraphMap
 import tin.services.internal.fileReaders.fileReaderResult.ConjunctiveQueryFileReaderResult
-import tin.services.internal.fileReaders.fileReaderResult.FileReaderResult
 import tin.services.technical.SystemConfigurationService
 import java.io.BufferedReader
 import java.io.File
@@ -47,7 +46,7 @@ class ConjunctiveQueryReaderService(
 
         //trailing and leading whitespaces and tab characters are removed before processing!
         //node line
-        val anyNodeRegex = Regex("\\w(\\w|-\\w)*\\s*,\\s*((true)|(false))\\s*,\\s*((true)|(false))");
+        val anyNodeRegex = Regex("\\w(\\w|-\\w)*\\s*,\\s*((true)|(false))\\s*,\\s*((true)|(false))")
 
         // edge lines
         val anyEdgeRegex = Regex("\\w(\\w|-\\w)*\\s*,\\s*\\w(\\w|-\\w)*\\s*,\\s*\\w(\\w|-\\w)*\\??") // for roles
@@ -57,7 +56,7 @@ class ConjunctiveQueryReaderService(
 
         var currentLineIndex = 0
         while (currentLineIndex <= inputFileMaxLines) {
-            currentLineIndex++;
+            currentLineIndex++
             // read current line; exit loop when at the end of the file
             currentLine = bufferedReader.readLine() ?: break
 
@@ -100,24 +99,24 @@ class ConjunctiveQueryReaderService(
             }
 
             //save og line for debugging
-            val originalLine = currentLine;
+            val originalLine = currentLine
 
             when (currentlyReading) {
                 InputTypeEnum.NODES -> {
                     //insert into currently reading Graph --> this.currentlyReadingGraph
-                    val nodeMatchResult = anyNodeRegex.matchEntire(currentLine);
+                    val nodeMatchResult = anyNodeRegex.matchEntire(currentLine)
                     if (nodeMatchResult !== null) {
                         currentLine = currentLine.replace("\\s".toRegex(), "")
                         stringArray = currentLine.split(",").toTypedArray()
 
                         node = QueryNode(stringArray[0], stringArray[1].toBoolean(), stringArray[2].toBoolean())
 
-                        val existingNode = queryNodes[stringArray[0]];
+                        val existingNode = queryNodes[stringArray[0]]
                         if (existingNode != null) {
                             //node identifier already taken. Check similarity.
                             if (node.equalsWithoutEdges(existingNode)) {
                                 this.warn("Duplicated node identifier.", currentLineIndex, originalLine)
-                                continue;
+                                continue
                             } else {
                                 //identifier taken, but initialState or finalState differs. This is an error.
                                 this.error(
@@ -125,7 +124,7 @@ class ConjunctiveQueryReaderService(
                                     currentLineIndex,
                                     originalLine
                                 )
-                                continue;
+                                continue
                             }
                         }
                         queryNodes[stringArray[0]] = node
@@ -133,14 +132,14 @@ class ConjunctiveQueryReaderService(
 
                         //TODO: Check semantically, e.g. if there is at least one initial state and at least one reachable final state.
                     } else {
-                        this.error("Failed to read line as node: Invalid input format.", currentLineIndex, currentLine);
-                        if (breakOnError) break;
+                        this.error("Failed to read line as node: Invalid input format.", currentLineIndex, currentLine)
+                        if (breakOnError) break
                     }
                 }
 
                 InputTypeEnum.EDGES -> {
                     //check line against Regexp to check for valid input format.
-                    val anyEdgeMatchResult = anyEdgeRegex.matchEntire(currentLine);
+                    val anyEdgeMatchResult = anyEdgeRegex.matchEntire(currentLine)
                     if (anyEdgeMatchResult !== null) {
                         //line is valid
                         currentLine = currentLine.replace("\\s".toRegex(), "")
@@ -156,7 +155,7 @@ class ConjunctiveQueryReaderService(
                         if (Alphabet.isConceptAssertion(edgeLabel)) {
                             //concept assertion read, extract concept name
                             try {
-                                val conceptLabel = Alphabet.conceptNameFromAssertion(edgeLabel);
+                                val conceptLabel = Alphabet.conceptNameFromAssertion(edgeLabel)
                                 if (!alphabet.includes(conceptLabel)) alphabet.addConceptName(conceptLabel)
                             } catch (e: IllegalArgumentException) {
                                 this.error(
@@ -164,7 +163,7 @@ class ConjunctiveQueryReaderService(
                                     currentLineIndex,
                                     currentLine
                                 )
-                                if (breakOnError) break;
+                                if (breakOnError) break
                             }
                         } else {
                             //not a concept assertions
@@ -172,8 +171,8 @@ class ConjunctiveQueryReaderService(
                         }
                     } else {
                         //invalid line
-                        this.error("Failed to read line as edge: Invalid input format.", currentLineIndex, currentLine);
-                        if (breakOnError) break;
+                        this.error("Failed to read line as edge: Invalid input format.", currentLineIndex, currentLine)
+                        if (breakOnError) break
                     }
                 }
 
@@ -241,6 +240,7 @@ class ConjunctiveQueryReaderService(
                     val alphabetOfAllMentionedVariables: MutableSet<String> = mutableSetOf()
                     val regularPathQuerySourceVariableAssignment: MutableMap<String, String> = mutableMapOf()
                     val regularPathQueryTargetVariableAssignment: MutableMap<String, String> = mutableMapOf()
+                    var conjunctsTripletSet: Set<ConjunctTriplet> = mutableSetOf()
 
                     // iterate through each match and handle it accordingly
                     patternMatches.forEach {
@@ -300,6 +300,8 @@ class ConjunctiveQueryReaderService(
                             alphabetOfAllMentionedVariables.add(sourceVariable)
                             alphabetOfAllMentionedVariables.add(targetVariable)
 
+                            conjunctsTripletSet = conjunctsTripletSet + ConjunctTriplet(identifier, sourceVariable, targetVariable)
+
                         }
                     }
 
@@ -333,7 +335,8 @@ class ConjunctiveQueryReaderService(
                         helperVariables,
                         greekLetter,
                         regularPathQuerySourceVariableAssignment,
-                        regularPathQueryTargetVariableAssignment
+                        regularPathQueryTargetVariableAssignment,
+                        conjunctsTripletSet
                     )
 
                 }
@@ -354,7 +357,7 @@ class ConjunctiveQueryReaderService(
             throw Exception("conjunctive formula could not be parsed.")
         } else {
 
-            return ConjunctiveQueryFileReaderResult(conjunctiveQueryGraphMap, formula!!, warnings, errors)
+            return ConjunctiveQueryFileReaderResult(conjunctiveQueryGraphMap, formula, warnings, errors)
         }
     }
 

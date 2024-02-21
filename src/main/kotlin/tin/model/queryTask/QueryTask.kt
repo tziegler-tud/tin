@@ -11,9 +11,10 @@ class QueryTask(
     val transducerFileIdentifier: Long?,
     val databaseFileIdentifier: Long,
     var queryStatus: QueryStatus,
+    val queryType: QueryType,
 
-    @OneToOne(mappedBy = "queryTask")
-    val queryResult: QueryResult?,
+    @OneToMany(mappedBy = "queryTask")
+    val queryResult: List<QueryResult>? = listOf(),
 
     @ManyToOne(cascade = [CascadeType.ALL])
     val computationProperties: ComputationProperties
@@ -30,6 +31,11 @@ class QueryTask(
         Calculating,
         Finished,
         Error
+    }
+
+    enum class QueryType {
+        regularPathQuery,
+        conjunctiveQuery,
     }
 }
 

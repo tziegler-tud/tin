@@ -16,14 +16,14 @@ class DatabaseReaderService(
         systemConfigurationService
 ) {
 
-    override var filePath = systemConfigurationService.getDatabasePath();
+    override var filePath = systemConfigurationService.getDatabasePath()
     override var inputFileMaxLines : Int = systemConfigurationService.getDatabaseSizeLimit()
 
 
     override fun processFile(file: File, breakOnError: Boolean): FileReaderResult<DatabaseGraph> {
         val databaseGraph = DatabaseGraph()
         val databaseNodes = HashMap<String, DatabaseNode>() // map containing the QueryNodes
-        val alphabet = Alphabet();
+        val alphabet = Alphabet()
 
         var source: DatabaseNode
         var target: DatabaseNode
@@ -43,7 +43,7 @@ class DatabaseReaderService(
         //trailing and leading whitespaces and tab characters are removed before processing!
 
         //node line. Executed before whitespace removal!
-        val anyNodeRegex = Regex("\\w(\\w|-\\w)*");
+        val anyNodeRegex = Regex("\\w(\\w|-\\w)*")
 
         // edge lines. Executed before whitespace removal!
         val anyEdgeRegex = Regex("\\w(\\w|-\\w)*\\s*,\\s*\\w(\\w|-\\w)*\\s*,\\s*\\w(\\w|-\\w)*") // Important: no ? allowed
@@ -51,9 +51,9 @@ class DatabaseReaderService(
         // property lines. Executed before whitespace removal!
         val anyPropertyRegex = Regex("\\w(\\w|-\\w)*\\s*(,\\s*\\w(\\w|-\\w)*\\s*)+") // At least one prop
 
-        var currentLineIndex: Int = 0;
+        var currentLineIndex: Int = 0
         while (currentLineIndex < inputFileMaxLines) {
-            currentLineIndex++;
+            currentLineIndex++
             // read current line; exit loop when at the end of the file
             currentLine = bufferedReader.readLine() ?: break
 
@@ -63,32 +63,32 @@ class DatabaseReaderService(
 
             //empty lines and lines starting with // are ignored
             if(commentLineRegex.matchEntire(currentLine) !== null || currentLine.isEmpty()){
-                continue;
+                continue
             }
             // when we see "nodes", we will read nodes starting from the next line
             if (currentLine == "nodes") {
                 currentlyReading = InputTypeEnum.NODES
                 // after setting the flags, we skip into the next line
-                continue;
+                continue
             }
 
             if (currentLine == "edges") {
                 currentlyReading = InputTypeEnum.EDGES
 
                 // after setting the flags, we skip into the next line
-                continue;
+                continue
             }
 
             if (currentLine == "properties") {
                 currentlyReading = InputTypeEnum.PROPERTIES
 
                 // after setting the flags, we skip into the next line
-                continue;
+                continue
             }
 
 
             //save og line for debugging
-            val originalLine = currentLine;
+            val originalLine = currentLine
 
             when(currentlyReading){
                 InputTypeEnum.NODES -> {
@@ -99,15 +99,15 @@ class DatabaseReaderService(
                         if(databaseNodes.contains(currentLine)){
                             //node identifier already taken, create warning
                             this.warn("Duplicated node identifier.", currentLineIndex, originalLine)
-                            continue;
+                            continue
                         }
                         node = DatabaseNode(currentLine)
                         databaseNodes[currentLine] = node
                         databaseGraph.addNodes(node)
                     }
                     else {
-                        this.error("Failed to read line as node: Invalid input format.", currentLineIndex, originalLine);
-                        if(breakOnError) break;
+                        this.error("Failed to read line as node: Invalid input format.", currentLineIndex, originalLine)
+                        if(breakOnError) break
                     }
                 }
 
@@ -126,8 +126,8 @@ class DatabaseReaderService(
                         alphabet.addRoleName(edgeLabel)
                     }
                     else {
-                        this.error("Failed to read line as edge: Invalid input format.", currentLineIndex, originalLine);
-                        if(breakOnError) break;
+                        this.error("Failed to read line as edge: Invalid input format.", currentLineIndex, originalLine)
+                        if(breakOnError) break
                     }
                 }
 
@@ -136,29 +136,29 @@ class DatabaseReaderService(
                         currentLine = currentLine.replace("\\s".toRegex(), "")
                         stringArray = currentLine.split(",").toTypedArray()
 
-                        val properties = stringArray.copyOf().drop(1);
+                        val properties = stringArray.copyOf().drop(1)
 
                         // nodes have to be present, because they have been defined before reading any edges in the file
                         val nodeOrNull = databaseGraph.getNode(stringArray[0])
                         if(nodeOrNull == null){
-                            val msg = "Failed to read line as property: No node with identifier '" + stringArray[0] + "' found.";
-                            this.error(msg, currentLineIndex, originalLine);
-                            if(breakOnError) break;
+                            val msg = "Failed to read line as property: No node with identifier '" + stringArray[0] + "' found."
+                            this.error(msg, currentLineIndex, originalLine)
+                            if(breakOnError) break
                         }
                         else {
-                            node = nodeOrNull;
+                            node = nodeOrNull
                             properties.forEach {
                                 if(node.hasProperty(it)){
-                                    this.warn("Redundant property assignment: Property '"+ it + "' already assigned to node '" + stringArray[0] + "'", currentLineIndex, originalLine);
+                                    this.warn("Redundant property assignment: Property '"+ it + "' already assigned to node '" + stringArray[0] + "'", currentLineIndex, originalLine)
                                 }
-                                databaseGraph.addNodeProperty(node, it);
+                                databaseGraph.addNodeProperty(node, it)
                                 alphabet.addConceptName(it)
                             }
                         }
                     }
                     else {
-                        this.error("Failed to read line as property: Invalid input format.", currentLineIndex, originalLine);
-                        if(breakOnError) break;
+                        this.error("Failed to read line as property: Invalid input format.", currentLineIndex, originalLine)
+                        if(breakOnError) break
                     }
                 }
 
@@ -169,15 +169,15 @@ class DatabaseReaderService(
         }
 
         if(currentLineIndex == inputFileMaxLines && bufferedReader.readLine() !== null){
-            this.warn("Max input file size reached. Reader stopped before entire file was processed!", currentLineIndex, "");
+            this.warn("Max input file size reached. Reader stopped before entire file was processed!", currentLineIndex, "")
         }
 
         databaseGraph.alphabet = alphabet
 
         //debug output
-        databaseGraph.printGraph();
+        //databaseGraph.printGraph();
 
-        return FileReaderResult<DatabaseGraph>(databaseGraph, this.warnings, this.errors);
+        return FileReaderResult<DatabaseGraph>(databaseGraph, this.warnings, this.errors)
 
     }
 }

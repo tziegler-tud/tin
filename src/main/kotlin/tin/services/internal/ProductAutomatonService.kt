@@ -2,7 +2,7 @@ package tin.services.internal
 
 import org.springframework.stereotype.Service
 import tin.model.alphabet.Alphabet
-import tin.model.dataProvider.DataProvider
+import tin.model.dataProvider.RegularPathQueryDataProvider
 import tin.model.database.DatabaseEdge
 import tin.model.productAutomaton.ProductAutomatonEdgeType
 import tin.model.productAutomaton.ProductAutomatonGraph
@@ -16,7 +16,7 @@ class ProductAutomatonService() {
     /**
      * constructs the product automaton accordingly to the Grahne & Thomo paper (2006)
      */
-    fun constructProductAutomaton(dataProvider: DataProvider): ProductAutomatonGraph {
+    fun constructProductAutomaton(regularPathQueryDataProvider: RegularPathQueryDataProvider): ProductAutomatonGraph {
 
         val temporaryNodes = HashMap<String, ProductAutomatonNode>()
         val fittingTransducerEdges = HashSet<TransducerEdge>()
@@ -27,13 +27,13 @@ class ProductAutomatonService() {
 
         val incomingEpsilonEdges = HashSet<TransducerEdge>()
         val propertyTransducerEdges = HashSet<TransducerEdge>()
-        if (dataProvider.queryGraph.nodes.isEmpty()) {
+        if (regularPathQueryDataProvider.queryGraph.nodes.isEmpty()) {
 
             // find all incoming epsilon edges
             // bandaid fix to insert incoming epsilon edges to fitting transducer edge every iteration.
 
-            dataProvider.transducerGraph.nodes.forEach { transducerNode ->
-                transducerNode.edges?.forEach { transducerEdge ->
+            regularPathQueryDataProvider.transducerGraph.nodes.forEach { transducerNode ->
+                transducerNode.edges.forEach { transducerEdge ->
                     if (isEpsilonString(transducerEdge.incomingString)) {
                         incomingEpsilonEdges.add(transducerEdge)
                     }
@@ -42,7 +42,7 @@ class ProductAutomatonService() {
         }
 
         //part (I)
-        for (queryNode in dataProvider.queryGraph.nodes) {
+        for (queryNode in regularPathQueryDataProvider.queryGraph.nodes) {
             for (queryEdge in queryNode.edges) {
                 val localQueryLabel = queryEdge.label
 
@@ -51,8 +51,8 @@ class ProductAutomatonService() {
                 fittingTransducerEdges.clear()
                 fittingTransducerEdges.addAll(incomingEpsilonEdges)
                 propertyTransducerEdges.addAll(incomingEpsilonEdges)
-                for (transducerNode in dataProvider.transducerGraph.nodes) {
-                    for (transducerEdge in transducerNode.edges!!) {
+                for (transducerNode in regularPathQueryDataProvider.transducerGraph.nodes) {
+                    for (transducerEdge in transducerNode.edges) {
                         if (localQueryLabel == transducerEdge.incomingString) {
                             fittingTransducerEdges.add(transducerEdge)
                         }
@@ -69,7 +69,7 @@ class ProductAutomatonService() {
                 }
 
                 // part (III)
-                for (databaseNode in dataProvider.databaseGraph.nodes) {
+                for (databaseNode in regularPathQueryDataProvider.databaseGraph.nodes) {
                     // PA Graph construction Steps 1-9 + 14 + 15
                     for (databaseEdge in databaseNode.edges) {
                         val localDatabaseLabel = databaseEdge.label
@@ -852,7 +852,7 @@ class ProductAutomatonService() {
     }
 
     private fun isPropertyAssertion(string: String): Boolean {
-        return Alphabet.isConceptAssertion(string);
+        return Alphabet.isConceptAssertion(string)
     }
 
     /**

@@ -12,6 +12,9 @@ class LocalFileSyncController(
     @GetMapping("sync/regular-path-queries")
     fun syncRegularPathQueries() = localFileSyncService.syncRegularPathQueryFiles()
 
+    @GetMapping("sync/conjunctive-path-queries")
+    fun syncConjunctivePathQueries() = localFileSyncService.syncConjunctivePathQueryFiles()
+
     @GetMapping("sync/databases")
     fun syncDatabases() = localFileSyncService.syncDatabaseFiles()
 

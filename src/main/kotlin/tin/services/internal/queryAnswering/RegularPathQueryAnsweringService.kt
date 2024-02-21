@@ -1,24 +1,27 @@
-package tin.services.internal
+package tin.services.internal.queryAnswering
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import tin.model.alphabet.Alphabet
 import tin.model.utils.ProductAutomatonTuple
-import tin.model.dataProvider.DataProvider
+import tin.model.dataProvider.RegularPathQueryDataProvider
 import tin.model.productAutomaton.ProductAutomatonGraph
 import tin.model.query.QueryGraph
-import tin.model.queryResult.QueryResult
+import tin.model.queryResult.RegularPathQueryResult
 import tin.model.queryResult.QueryResultRepository
 import tin.model.queryTask.QueryTask
 import tin.model.queryTask.QueryTaskRepository
 import tin.model.queryTask.ComputationProperties
 import tin.model.queryResult.ComputationStatistics
+import tin.model.queryResult.QueryResult
 import tin.model.tintheweb.FileRepository
 import tin.model.transducer.TransducerGraph
-import tin.services.internal.algorithms.Dijkstra
-import tin.services.internal.algorithms.DijkstraThreshold
-import tin.services.internal.algorithms.DijkstraTopK
+import tin.services.internal.ProductAutomatonService
+import tin.services.internal.dijkstra.DijkstraQueryAnsweringUtils
+import tin.services.internal.dijkstra.algorithms.Dijkstra
+import tin.services.internal.dijkstra.algorithms.DijkstraThreshold
+import tin.services.internal.dijkstra.algorithms.DijkstraTopK
 import tin.services.technical.SystemConfigurationService
 import tin.utils.findByIdentifier
 import tin.services.internal.fileReaders.DatabaseReaderService
@@ -28,30 +31,36 @@ import tin.services.internal.fileReaders.fileReaderResult.FileReaderResult
 import kotlin.system.measureNanoTime
 
 @Service
-class DijkstraQueryAnsweringService(
+class RegularPathQueryAnsweringService(
     private val fileRepository: FileRepository,
     private val queryTaskRepository: QueryTaskRepository,
     private val queryResultRepository: QueryResultRepository,
+
 ) {
     @Autowired
     lateinit var systemConfigurationService: SystemConfigurationService
     @Autowired
-    lateinit var queryReaderService: QueryReaderService;
+    lateinit var queryReaderService: QueryReaderService
+
     @Autowired
-    lateinit var databaseReaderService: DatabaseReaderService;
+    lateinit var databaseReaderService: DatabaseReaderService
+
     @Autowired
-    lateinit var transducerReaderService: TransducerReaderService;
+    lateinit var transducerReaderService: TransducerReaderService
+
+    @Autowired
+    private lateinit var dijkstraQueryAnsweringUtils: DijkstraQueryAnsweringUtils
 
     @Transactional
-    fun calculateQueryTask(queryTask: QueryTask): QueryResult {
+    fun calculateQueryTask(queryTask: QueryTask): RegularPathQueryResult {
         // set status to calculating
         queryTask.apply { queryStatus = QueryTask.QueryStatus.Calculating }
         queryTaskRepository.save(queryTask)
 
         val dataProvider = buildDataProvider(queryTask)
-        var pairContainingCompStatsAndAnswerSet: Pair<ComputationStatistics, Set<QueryResult.AnswerTriplet>>? = null
+        var pairContainingCompStatsAndAnswerSet: Pair<ComputationStatistics, Set<RegularPathQueryResult.AnswerTriplet>>? = null
 
-        var queryResultStatus: QueryResult.QueryResultStatus = QueryResult.QueryResultStatus.NoError
+        var regularPathQueryResultStatus: QueryResult.QueryResultStatus = QueryResult.QueryResultStatus.NoError
 
 
         when (queryTask.computationProperties.computationModeEnum) {
@@ -59,7 +68,7 @@ class DijkstraQueryAnsweringService(
                 calculateDijkstra(dataProvider)
 
             ComputationProperties.ComputationModeEnum.Threshold -> if (queryTask.computationProperties.thresholdValue == null) {
-                queryResultStatus = QueryResult.QueryResultStatus.ErrorInComputationMode
+                regularPathQueryResultStatus = QueryResult.QueryResultStatus.ErrorInComputationMode
             } else {
                 pairContainingCompStatsAndAnswerSet = calculateThreshold(
                     dataProvider, queryTask.computationProperties.thresholdValue
@@ -67,29 +76,31 @@ class DijkstraQueryAnsweringService(
             }
 
             ComputationProperties.ComputationModeEnum.TopK -> if (queryTask.computationProperties.topKValue == null) {
-                queryResultStatus = QueryResult.QueryResultStatus.ErrorInComputationMode
+                regularPathQueryResultStatus = QueryResult.QueryResultStatus.ErrorInComputationMode
             } else {
                 pairContainingCompStatsAndAnswerSet =
                     calculateTopK(dataProvider, queryTask.computationProperties.topKValue)
             }
         }
 
-        val queryResult =
+        val regularPathQueryResult =
 
             // return if an error was found
-            if (queryResultStatus != QueryResult.QueryResultStatus.NoError) {
-                QueryResult(
+            if (regularPathQueryResultStatus != QueryResult.QueryResultStatus.NoError) {
+                RegularPathQueryResult(
                     queryTask,
                     null,
-                    queryResultStatus,
+                    regularPathQueryResultStatus,
+                    null,
                     HashSet()
                 )
             } else {
                 // no error found
-                QueryResult(
+                RegularPathQueryResult(
                     queryTask,
                     pairContainingCompStatsAndAnswerSet!!.first,
                     QueryResult.QueryResultStatus.NoError,
+                    null,
                     pairContainingCompStatsAndAnswerSet.second
                 )
             }
@@ -99,26 +110,26 @@ class DijkstraQueryAnsweringService(
         queryTaskRepository.save(queryTask)
 
         // save the queryResult
-        queryResultRepository.save(queryResult)
+        queryResultRepository.save(regularPathQueryResult)
 
-        return queryResult
+        return regularPathQueryResult
     }
 
-    private fun buildDataProvider(data: QueryTask): DataProvider {
+    private fun buildDataProvider(data: QueryTask): RegularPathQueryDataProvider {
 
         // find files
         val queryFileDb = fileRepository.findByIdentifier(data.queryFileIdentifier)
         val databaseFileDb = fileRepository.findByIdentifier(data.databaseFileIdentifier)
 
-        val queryReaderResult: FileReaderResult<QueryGraph> = queryReaderService.read(systemConfigurationService.getQueryPath(), queryFileDb.filename);
-        val queryGraph = queryReaderResult.get();
+        val queryReaderResult: FileReaderResult<QueryGraph> = queryReaderService.read(systemConfigurationService.getQueryPath(), queryFileDb.filename)
+        val queryGraph = queryReaderResult.get()
 
         val databaseReaderResult = databaseReaderService.read(systemConfigurationService.getDatabasePath(), databaseFileDb.filename)
-        val databaseGraph = databaseReaderResult.get();
+        val databaseGraph = databaseReaderResult.get()
 
         val transducerGraph: TransducerGraph
-        val alphabet = Alphabet(queryGraph.alphabet);
-        alphabet.addAlphabet(databaseGraph.alphabet);
+        val alphabet = Alphabet(queryGraph.alphabet)
+        alphabet.addAlphabet(databaseGraph.alphabet)
 
         if (data.computationProperties.generateTransducer && data.computationProperties.transducerGeneration != null) {
             // generate transducer
@@ -134,22 +145,22 @@ class DijkstraQueryAnsweringService(
         } else {
             // transducer file is provided -> no generation needed
             val transducerFileDb = fileRepository.findByIdentifier(data.transducerFileIdentifier!!)
-            val transducerReaderResult = transducerReaderService.read(systemConfigurationService.getTransducerPath(), transducerFileDb.filename);
-            transducerGraph = transducerReaderResult.get();
+            val transducerReaderResult = transducerReaderService.read(systemConfigurationService.getTransducerPath(), transducerFileDb.filename)
+            transducerGraph = transducerReaderResult.get()
         }
 
-        return DataProvider(queryGraph, transducerGraph, databaseGraph, alphabet)
+        return RegularPathQueryDataProvider(queryGraph, transducerGraph, databaseGraph, alphabet)
     }
 
     @Transactional
-    fun calculateDijkstra(dataProvider: DataProvider): Pair<ComputationStatistics, Set<QueryResult.AnswerTriplet>> {
+    fun calculateDijkstra(regularPathQueryDataProvider: RegularPathQueryDataProvider): Pair<ComputationStatistics, Set<RegularPathQueryResult.AnswerTriplet>> {
 
         val productAutomatonService = ProductAutomatonService()
         val productAutomatonGraph: ProductAutomatonGraph
         val answerMap: HashMap<ProductAutomatonTuple, Double>
 
         val preprocessingTime = measureNanoTime {
-            productAutomatonGraph = productAutomatonService.constructProductAutomaton(dataProvider)
+            productAutomatonGraph = productAutomatonService.constructProductAutomaton(regularPathQueryDataProvider)
         }
 
         val mainProcessingTime = measureNanoTime {
@@ -157,9 +168,9 @@ class DijkstraQueryAnsweringService(
             answerMap = dijkstra.processDijkstraOverAllInitialNodes()
         }
 
-        val transformedAnswerSet: Set<QueryResult.AnswerTriplet>
+        val transformedAnswerSet: Set<RegularPathQueryResult.AnswerTriplet>
         val postProcessingTime = measureNanoTime {
-            transformedAnswerSet = makeAnswerMapReadable(answerMap)
+            transformedAnswerSet = dijkstraQueryAnsweringUtils.makeAnswerMapReadable(answerMap)
         }
 
         val combinedTime = preprocessingTime + mainProcessingTime + postProcessingTime
@@ -174,15 +185,15 @@ class DijkstraQueryAnsweringService(
 
     @Transactional
     fun calculateThreshold(
-        dataProvider: DataProvider, threshold: Double
-    ): Pair<ComputationStatistics, Set<QueryResult.AnswerTriplet>> {
+        regularPathQueryDataProvider: RegularPathQueryDataProvider, threshold: Double
+    ): Pair<ComputationStatistics, Set<RegularPathQueryResult.AnswerTriplet>> {
 
         val productAutomatonService = ProductAutomatonService()
         val productAutomatonGraph: ProductAutomatonGraph
         var answerMap: HashMap<ProductAutomatonTuple, Double>
 
         val preprocessingTime = measureNanoTime {
-            productAutomatonGraph = productAutomatonService.constructProductAutomaton(dataProvider)
+            productAutomatonGraph = productAutomatonService.constructProductAutomaton(regularPathQueryDataProvider)
         }
 
         val mainProcessingTime = measureNanoTime {
@@ -190,10 +201,10 @@ class DijkstraQueryAnsweringService(
             answerMap = dijkstraThreshold.processDijkstraOverAllInitialNodes()
         }
 
-        val transformedAnswerSet: Set<QueryResult.AnswerTriplet>
+        val transformedAnswerSet: Set<RegularPathQueryResult.AnswerTriplet>
         val postProcessingTime = measureNanoTime {
             answerMap = trimAnswerMapToThreshold(answerMap, threshold)
-            transformedAnswerSet = makeAnswerMapReadable(answerMap)
+            transformedAnswerSet = dijkstraQueryAnsweringUtils.makeAnswerMapReadable(answerMap)
         }
 
         val combinedTime = preprocessingTime + mainProcessingTime + postProcessingTime
@@ -208,16 +219,16 @@ class DijkstraQueryAnsweringService(
 
     @Transactional
     fun calculateTopK(
-        dataProvider: DataProvider,
+        regularPathQueryDataProvider: RegularPathQueryDataProvider,
         kValue: Int
-    ): Pair<ComputationStatistics, Set<QueryResult.AnswerTriplet>> {
+    ): Pair<ComputationStatistics, Set<RegularPathQueryResult.AnswerTriplet>> {
 
         val productAutomatonService = ProductAutomatonService()
         val productAutomatonGraph: ProductAutomatonGraph
         var answerMap: HashMap<ProductAutomatonTuple, Double>
 
         val preprocessingTime = measureNanoTime {
-            productAutomatonGraph = productAutomatonService.constructProductAutomaton(dataProvider)
+            productAutomatonGraph = productAutomatonService.constructProductAutomaton(regularPathQueryDataProvider)
         }
 
         val mainProcessingTime = measureNanoTime {
@@ -225,10 +236,10 @@ class DijkstraQueryAnsweringService(
             answerMap = dijkstraTopK.processDijkstraOverAllInitialNodes()
         }
 
-        val transformedAnswerSet: Set<QueryResult.AnswerTriplet>
+        val transformedAnswerSet: Set<RegularPathQueryResult.AnswerTriplet>
         val postProcessingTime = measureNanoTime {
             answerMap = trimAnswerMapToTopK(answerMap, kValue)
-            transformedAnswerSet = makeAnswerMapReadable(answerMap)
+            transformedAnswerSet = dijkstraQueryAnsweringUtils.makeAnswerMapReadable(answerMap)
         }
 
         val combinedTime = preprocessingTime + mainProcessingTime + postProcessingTime
@@ -241,22 +252,6 @@ class DijkstraQueryAnsweringService(
         )
     }
 
-    /**
-     * transforms internal answerMap containing a (source, target) ProductAutomatonTuple as key, and a Double as value (cost of reaching target from source)
-     * into a set of AnswerTriplets (source.name, target.name, double); omitting the technical ProductAutomatonNodes
-     * after finishing the query we do not care about technical details, we simply want the (human-readable) results.
-     */
-    private fun makeAnswerMapReadable(
-        answerMap: HashMap<ProductAutomatonTuple, Double>
-    ): Set<QueryResult.AnswerTriplet> {
-        return HashSet<QueryResult.AnswerTriplet>().apply {
-            answerMap.forEach { (key, value) ->
-                val source = key.sourceProductAutomatonNode!!.identifier.third.identifier
-                val target = key.targetProductAutomatonNode.identifier.third.identifier
-                add(QueryResult.AnswerTriplet(source, target, value))
-            }
-        }
-    }
     private fun trimAnswerMapToTopK(
         answerMap: HashMap<ProductAutomatonTuple, Double>,
         topK: Int

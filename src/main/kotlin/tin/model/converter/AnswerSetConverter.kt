@@ -2,7 +2,7 @@ package tin.model.converter
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
-import tin.model.queryResult.QueryResult
+import tin.model.queryResult.RegularPathQueryResult
 import javax.persistence.AttributeConverter
 import javax.persistence.Converter
 
@@ -12,16 +12,16 @@ import javax.persistence.Converter
  */
 
 @Converter
-class AnswerSetConverter : AttributeConverter<Set<QueryResult.AnswerTriplet>, String> {
-    override fun convertToDatabaseColumn(attribute: Set<QueryResult.AnswerTriplet>?): String {
+class AnswerSetConverter : AttributeConverter<Set<RegularPathQueryResult.AnswerTriplet>, String> {
+    override fun convertToDatabaseColumn(attribute: Set<RegularPathQueryResult.AnswerTriplet>?): String {
         val mapper = jacksonObjectMapper()
         return mapper.writeValueAsString(attribute)
     }
 
-    override fun convertToEntityAttribute(dbData: String?): Set<QueryResult.AnswerTriplet> {
+    override fun convertToEntityAttribute(dbData: String?): Set<RegularPathQueryResult.AnswerTriplet> {
         val mapper = jacksonObjectMapper()
-        return dbData?.let { mapper.readValue<Set<QueryResult.AnswerTriplet>>(it) }
-            ?: run { HashSet<QueryResult.AnswerTriplet>() }
+        return dbData?.let { mapper.readValue<Set<RegularPathQueryResult.AnswerTriplet>>(it) }
+            ?: run { HashSet<RegularPathQueryResult.AnswerTriplet>() }
     }
 
 }

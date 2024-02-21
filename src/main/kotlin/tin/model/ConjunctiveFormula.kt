@@ -2,25 +2,47 @@ package tin.model
 
 class ConjunctiveFormula(
     val existentiallyQuantifiedVariables: MutableSet<String>,
-    val helperVariables: MutableSet<String>,
+    val answerVariables: MutableSet<String>,
     val greekLetter: String,
-    val regularPathQuerySourceVariableAssignment: MutableMap<String, String>, // {(z, {(r1.target, r2.target, r3.source, r3.target)})}
-    val regularPathQueryTargetVariableAssignment: MutableMap<String, String>
+    val regularPathQuerySourceVariableAssignment: MutableMap<String, String>, // {(queryIdentifier, variableName)}
+    val regularPathQueryTargetVariableAssignment: MutableMap<String, String>, // {(queryIdentifier, variableName)}
+    val conjunctsTripletSet: Set<ConjunctTriplet>,
 ) {
     override fun equals(other: Any?): Boolean {
         return this.existentiallyQuantifiedVariables == (other as ConjunctiveFormula).existentiallyQuantifiedVariables &&
-                this.helperVariables == other.helperVariables &&
+                this.answerVariables == other.answerVariables &&
                 this.greekLetter == other.greekLetter &&
                 this.regularPathQuerySourceVariableAssignment == other.regularPathQuerySourceVariableAssignment &&
-                this.regularPathQueryTargetVariableAssignment == other.regularPathQueryTargetVariableAssignment
+                this.regularPathQueryTargetVariableAssignment == other.regularPathQueryTargetVariableAssignment &&
+                this.conjunctsTripletSet == other.conjunctsTripletSet
     }
 
     override fun hashCode(): Int {
         var result = existentiallyQuantifiedVariables.hashCode()
-        result = 31 * result + helperVariables.hashCode()
+        result = 31 * result + answerVariables.hashCode()
         result = 31 * result + greekLetter.hashCode()
         result = 31 * result + regularPathQuerySourceVariableAssignment.hashCode()
         result = 31 * result + regularPathQueryTargetVariableAssignment.hashCode()
+        result = 31 * result + conjunctsTripletSet.hashCode()
+        return result
+    }
+}
+
+class ConjunctTriplet(
+    val identifier: String,
+    val sourceVariable: String,
+    val targetVariable: String,
+) {
+    override fun equals(other: Any?): Boolean {
+        return this.identifier == (other as ConjunctTriplet).identifier &&
+                this.sourceVariable == other.sourceVariable &&
+                this.targetVariable == other.targetVariable
+    }
+
+    override fun hashCode(): Int {
+        var result = identifier.hashCode()
+        result = 31 * result + sourceVariable.hashCode()
+        result = 31 * result + targetVariable.hashCode()
         return result
     }
 }

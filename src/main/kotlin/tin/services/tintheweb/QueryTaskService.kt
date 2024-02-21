@@ -69,6 +69,7 @@ class QueryTaskService(
             data.transducerFileIdentifier,
             data.databaseFileIdentifier,
             QueryTask.QueryStatus.Error,
+            QueryTask.QueryType.regularPathQuery,
             null,
             computationProperties
         )

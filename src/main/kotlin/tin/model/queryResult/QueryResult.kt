@@ -1,29 +1,23 @@
 package tin.model.queryResult
 
 import org.springframework.data.jpa.repository.JpaRepository
-import tin.model.converter.AnswerSetConverter
 import tin.model.queryTask.QueryTask
 import javax.persistence.*
 
 @Entity
-class QueryResult(
-
-    @OneToOne
-    @JoinColumn(name = "query_task_id")
-    val queryTask: QueryTask,
+abstract class QueryResult(
+    @ManyToOne(cascade = [CascadeType.ALL])
+    open val queryTask: QueryTask,
 
     @OneToOne(cascade = [CascadeType.ALL])
-    val computationStatistics: ComputationStatistics?,
+    open var computationStatistics: ComputationStatistics?,
 
-    val queryResultStatus: QueryResultStatus,
-
-    @Convert(converter = AnswerSetConverter::class)
-    val answerSet: Set<AnswerTriplet>
-
+    open val queryResultStatus: QueryResultStatus,
 ) {
+
     @GeneratedValue
     @Id
-    val id: Long = 0
+    open val id: Long = 0
 
     enum class QueryResultStatus {
         NoError,
@@ -33,14 +27,8 @@ class QueryResult(
         ErrorInComputationMode,
         ErrorInComputationProperties
     }
-    @Embeddable
-    data class AnswerTriplet(
-        val source: String,
-        val target: String,
-        val cost: Double
-
-    )
-
 }
 
-interface QueryResultRepository : JpaRepository<QueryResult, Long>
+interface QueryResultRepository : JpaRepository<QueryResult, Long> {
+    fun findAllByQueryTask(queryTask: QueryTask): List<QueryResult>
+}

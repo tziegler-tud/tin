@@ -1,5 +1,5 @@
 nodes
-t0, true, false,
+t0, true, false
 t1, false, false
 t2, false, true
 t3, false, true
