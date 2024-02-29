@@ -11,11 +11,6 @@ class TransducerGraph : Graph() {
         nodes.addAll(listOf(*n))
     }
 
-    override fun getNode(identifier: String) : TransducerNode? {
-        return nodes.find {
-            it.identifier == identifier
-        }
-    }
 
     /**
      * Note that we cannot use "nodes.add()" or similar functions that use "equals()" here.
