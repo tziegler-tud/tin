@@ -79,7 +79,8 @@ class ConjunctiveQueryReaderServiceTest {
             helperVariables,
             greekLetter,
             regularPathQuerySourceVariableAssignment,
-            regularPathQueryTargetVariableAssignment
+            regularPathQueryTargetVariableAssignment,
+            HashSet()
         )
         return ConjunctiveQueryFileReaderResult(graphMap, formula, mutableListOf(), mutableListOf())
     }
