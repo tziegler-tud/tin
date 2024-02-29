@@ -60,7 +60,6 @@ class QueryGraph : Graph() {
         }
     }
 
-
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other !is QueryGraph) return false
@@ -70,8 +69,6 @@ class QueryGraph : Graph() {
 //        return nodes == other.nodes &&
 //                alphabet == other.alphabet
     }
-    
-
 
     override fun hashCode(): Int {
         var result = nodes.hashCode()

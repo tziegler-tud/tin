@@ -64,28 +64,38 @@ class ProductAutomatonGraph {
         cost: Double
     ) {
 
+        var actualSource: ProductAutomatonNode;
+        var actualTarget: ProductAutomatonNode;
         /** check for existing source and target */
         val existingSource = findNodeWithoutEdgeComparison(source)
         val existingTarget = findNodeWithoutEdgeComparison(target)
 
         /** if it wasn't found: we add the new nodes.*/
         if (existingSource == null) {
-            addProductAutomatonNode(source)
+            addProductAutomatonNode(source);
+            actualSource = source;
+        }
+        else {
+            actualSource = existingSource;
         }
 
         if (existingTarget == null) {
             addProductAutomatonNode(target)
+            actualTarget = target;
+        }
+        else {
+            actualTarget = existingTarget;
         }
 
-        val newEdge = ProductAutomatonEdge(source, target, incoming, outgoing, cost)
+        val newEdge = ProductAutomatonEdge(actualSource, actualTarget, incoming, outgoing, cost)
 
         // don't add duplicate edges!
-        for (existingEdge in source.edges) {
+        for (existingEdge in actualSource.edges) {
             if (existingEdge == newEdge) {
                 return
             }
         }
-        source.edges.add(newEdge)
+        actualSource.edges.add(newEdge)
     }
 
     /** helper function to use in the context of populating the graph only.

@@ -74,32 +74,15 @@ class ProductAutomatonService() {
                     for (databaseEdge in databaseNode.edges) {
                         val localDatabaseLabel = databaseEdge.label
 
+                        //CAUTION: Below here belong ONLY cases 2,3,5,6,8,9 i.e. the ones that require a database edge!
+
                         // (2)
                         // for all transducer edges that were found in part (II):
                         //      check whether
                         for (transducerEdge in fittingTransducerEdges) {
                             if (isEpsilonString(transducerEdge.incomingString)) {
                                 // type 1:  incoming epsilon edges.
-                                if (isEpsilonString(transducerEdge.outgoingString)) {
-                                    // epsilon incoming, epsilon outgoing
-                                    pairOfNodes = constructAutomatonNode(
-                                        queryEdge,
-                                        transducerEdge,
-                                        databaseEdge,
-                                        ProductAutomatonEdgeType.EpsilonIncomingEpsilonOutgoing
-                                    )
-                                    source = pairOfNodes.first
-                                    target = pairOfNodes.second
-                                    source = getInstance(temporaryNodes, source) // duplicate check
-                                    target = getInstance(temporaryNodes, target) // duplicate check
-                                    productAutomatonGraph.addProductAutomatonEdge(
-                                        source,
-                                        target,
-                                        incoming = replaceEmptyStringWithInternalEpsilon(),
-                                        outgoing = replaceEmptyStringWithInternalEpsilon(),
-                                        transducerEdge.cost
-                                    )
-                                } else if (isNegated(transducerEdge.outgoingString) && localDatabaseLabel == unNegateString(
+                                if (isNegated(transducerEdge.outgoingString) && localDatabaseLabel == unNegateString(
                                         transducerEdge.outgoingString
                                     )
                                 ) {
@@ -142,27 +125,7 @@ class ProductAutomatonService() {
                                     )
                                 }
                             } else if (!isNegated(transducerEdge.incomingString)) {
-                                // type 2: incoming positive edges
-                                if (isEpsilonString(transducerEdge.outgoingString)) {
-                                    // positive incoming, epsilon outgoing
-                                    pairOfNodes = constructAutomatonNode(
-                                        queryEdge,
-                                        transducerEdge,
-                                        databaseEdge,
-                                        ProductAutomatonEdgeType.PositiveIncomingEpsilonOutgoing
-                                    )
-                                    source = pairOfNodes.first
-                                    target = pairOfNodes.second
-                                    source = getInstance(temporaryNodes, source) // duplicate check
-                                    target = getInstance(temporaryNodes, target) // duplicate check
-                                    productAutomatonGraph.addProductAutomatonEdge(
-                                        source,
-                                        target,
-                                        transducerEdge.incomingString,
-                                        outgoing = replaceEmptyStringWithInternalEpsilon(),
-                                        transducerEdge.cost
-                                    )
-                                } else if (!isNegated(transducerEdge.outgoingString) && localDatabaseLabel == transducerEdge.outgoingString) {
+                                if (!isNegated(transducerEdge.outgoingString) && localDatabaseLabel == transducerEdge.outgoingString) {
                                     // positive incoming, positive outgoing
                                     pairOfNodes = constructAutomatonNode(
                                         queryEdge,
@@ -206,26 +169,7 @@ class ProductAutomatonService() {
                                 }
                             } else if (isNegated(transducerEdge.incomingString)) {
                                 // type 3: incoming negative edges
-                                if (isEpsilonString(transducerEdge.outgoingString)) {
-                                    // negative incoming, epsilon outgoing
-                                    pairOfNodes = constructAutomatonNode(
-                                        queryEdge,
-                                        transducerEdge,
-                                        databaseEdge,
-                                        ProductAutomatonEdgeType.NegativeIncomingEpsilonOutgoing
-                                    )
-                                    source = pairOfNodes.first
-                                    target = pairOfNodes.second
-                                    source = getInstance(temporaryNodes, source) // duplicate check
-                                    target = getInstance(temporaryNodes, target) // duplicate check
-                                    productAutomatonGraph.addProductAutomatonEdge(
-                                        source,
-                                        target,
-                                        transducerEdge.incomingString,
-                                        outgoing = replaceEmptyStringWithInternalEpsilon(),
-                                        transducerEdge.cost
-                                    )
-                                } else if (!isNegated(transducerEdge.outgoingString) && localDatabaseLabel == transducerEdge.outgoingString) {
+                                if (!isNegated(transducerEdge.outgoingString) && localDatabaseLabel == transducerEdge.outgoingString) {
                                     // negative incoming, positive outgoing
                                     pairOfNodes = constructAutomatonNode(
                                         queryEdge,
@@ -270,7 +214,7 @@ class ProductAutomatonService() {
                             }
                         }
                     }
-                    // PA Graph construction 10-16
+                    // PA Graph construction 1,4,7,10-13,16
                     val databaseLoop = DatabaseEdge(
                             source = databaseNode,
                             target = databaseNode,
@@ -279,6 +223,27 @@ class ProductAutomatonService() {
                     for (transducerEdge in fittingTransducerEdges) {
                         if (isEpsilonString(transducerEdge.incomingString)) {
                             // type 1:  incoming epsilon edges.
+                            if (isEpsilonString(transducerEdge.outgoingString)) {
+                                // CASE 1
+                                // epsilon incoming, epsilon outgoing
+                                pairOfNodes = constructAutomatonNode(
+                                        queryEdge,
+                                        transducerEdge,
+                                        databaseLoop,
+                                        ProductAutomatonEdgeType.EpsilonIncomingEpsilonOutgoing
+                                )
+                                source = pairOfNodes.first
+                                target = pairOfNodes.second
+                                source = getInstance(temporaryNodes, source) // duplicate check
+                                target = getInstance(temporaryNodes, target) // duplicate check
+                                productAutomatonGraph.addProductAutomatonEdge(
+                                        source,
+                                        target,
+                                        incoming = replaceEmptyStringWithInternalEpsilon(),
+                                        outgoing = replaceEmptyStringWithInternalEpsilon(),
+                                        transducerEdge.cost
+                                )
+                            } else
                             if (isPropertyAssertion(transducerEdge.outgoingString) && databaseNode.hasProperty(Alphabet.conceptNameFromAssertion(transducerEdge.outgoingString))) {
                                 // epsilon incoming, outgoing property assertions
                                 // PA construction step 10
@@ -355,6 +320,26 @@ class ProductAutomatonService() {
                         }
                         else if ((!isNegated(transducerEdge.incomingString)) && !isPropertyAssertion(transducerEdge.incomingString)) {
                             //positive role incoming
+                            if (isEpsilonString(transducerEdge.outgoingString)) {
+                                // CASE 4: positive incoming, epsilon outgoing
+                                pairOfNodes = constructAutomatonNode(
+                                        queryEdge,
+                                        transducerEdge,
+                                        databaseLoop,
+                                        ProductAutomatonEdgeType.PositiveIncomingEpsilonOutgoing
+                                )
+                                source = pairOfNodes.first
+                                target = pairOfNodes.second
+                                source = getInstance(temporaryNodes, source) // duplicate check
+                                target = getInstance(temporaryNodes, target) // duplicate check
+                                productAutomatonGraph.addProductAutomatonEdge(
+                                        source,
+                                        target,
+                                        transducerEdge.incomingString,
+                                        outgoing = replaceEmptyStringWithInternalEpsilon(),
+                                        transducerEdge.cost
+                                )
+                            } else
                             if(isPropertyAssertion(transducerEdge.outgoingString) && databaseNode.hasProperty(Alphabet.conceptNameFromAssertion(transducerEdge.outgoingString))) {
                                 // positive incoming, Property outgoing
                                 // PA construction step 11
@@ -381,6 +366,27 @@ class ProductAutomatonService() {
                         }
                         else if (isNegated(transducerEdge.incomingString) && !isPropertyAssertion(transducerEdge.incomingString)) {
                             //negative role incoming
+                            if (isEpsilonString(transducerEdge.outgoingString)) {
+                                // CASE 7
+                                // negative incoming, epsilon outgoing
+                                pairOfNodes = constructAutomatonNode(
+                                        queryEdge,
+                                        transducerEdge,
+                                        databaseLoop,
+                                        ProductAutomatonEdgeType.NegativeIncomingEpsilonOutgoing
+                                )
+                                source = pairOfNodes.first
+                                target = pairOfNodes.second
+                                source = getInstance(temporaryNodes, source) // duplicate check
+                                target = getInstance(temporaryNodes, target) // duplicate check
+                                productAutomatonGraph.addProductAutomatonEdge(
+                                        source,
+                                        target,
+                                        transducerEdge.incomingString,
+                                        outgoing = replaceEmptyStringWithInternalEpsilon(),
+                                        transducerEdge.cost
+                                )
+                            } else
                             if(isPropertyAssertion(transducerEdge.outgoingString) && databaseNode.hasProperty(Alphabet.conceptNameFromAssertion(transducerEdge.outgoingString))) {
                                 // negative incoming, Property outgoing
                                 // PA construction step 12
