@@ -23,5 +23,16 @@ data class VariableMappingContainer(
         return result
     }
 
+    /**
+     * overridden copy function to create a deep copy where the maps do not share the same reference.
+     */
+    fun copy(): VariableMappingContainer {
+        return VariableMappingContainer(
+            cost = this.cost,
+            existentiallyQuantifiedVariablesMapping = HashMap(this.existentiallyQuantifiedVariablesMapping),
+            answerVariablesMapping = HashMap(this.answerVariablesMapping)
+        )
+    }
+
 
 }

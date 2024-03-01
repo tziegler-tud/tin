@@ -162,11 +162,7 @@ class QueryConjunctReassembler(
 
         }
 
-        val tempVMC = VariableMappingContainer(
-            cost = fittingVMC.cost,
-            existentiallyQuantifiedVariablesMapping = HashMap(fittingVMC.existentiallyQuantifiedVariablesMapping),
-            answerVariablesMapping = HashMap(fittingVMC.answerVariablesMapping)
-        )
+        val tempVMC = fittingVMC.copy()
 
 
         /**
