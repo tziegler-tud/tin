@@ -37,15 +37,15 @@ class QueryConjunctReassembler(
             throw IllegalArgumentException("Error while reading a single query result. The identifier is null.")
         }
 
-        // define prevVACSet = {} + 1x 'empty' VAC
+        // define prevVMCSet = {} + 1x 'empty' VMC
         val setOfAllVariables =
             conjunctiveQueryDataProvider.conjunctiveFormula.answerVariables + conjunctiveQueryDataProvider.conjunctiveFormula.existentiallyQuantifiedVariables
-        var prevVACSet = HashSet<VariableMappingContainer>().apply {
+        var prevVMCSet = HashSet<VariableMappingContainer>().apply {
             add(buildEmptyVariableContainerForVariables(conjunctiveFormula = conjunctiveQueryDataProvider.conjunctiveFormula))
         }
 
-        //define currentVACSet = {}
-        val currentVACSet: HashSet<VariableMappingContainer> = HashSet()
+        //define currentVMCSet = {}
+        val currentVMCSet: HashSet<VariableMappingContainer> = HashSet()
         var currentSourceVariableName: String
         var currentTargetVariableName: String
 
@@ -59,7 +59,7 @@ class QueryConjunctReassembler(
             currentTargetVariableName = tempTriplet.targetVariable
 
             answerSet.forEach { answerTriplet ->
-                prevVACSet.forEach { vacSet ->
+                prevVMCSet.forEach { vmcSet ->
 
                     // find out if we handle answer or existentially quantified variables
                     val sourceVariableIsAnswerVariable =
@@ -68,18 +68,20 @@ class QueryConjunctReassembler(
                         conjunctiveQueryDataProvider.conjunctiveFormula.answerVariables.contains(currentTargetVariableName)
 
                     val sourceVariableAssignment =
-                        if (sourceVariableIsAnswerVariable) vacSet.answerVariablesMapping[currentSourceVariableName] else vacSet.existentiallyQuantifiedVariablesMapping[currentSourceVariableName]
+                        if (sourceVariableIsAnswerVariable) vmcSet.answerVariablesMapping[currentSourceVariableName] else vmcSet.existentiallyQuantifiedVariablesMapping[currentSourceVariableName]
                     val targetVariableAssignment =
-                        if (targetVariableIsAnswerVariable) vacSet.answerVariablesMapping[currentTargetVariableName] else vacSet.existentiallyQuantifiedVariablesMapping[currentTargetVariableName]
+                        if (targetVariableIsAnswerVariable) vmcSet.answerVariablesMapping[currentTargetVariableName] else vmcSet.existentiallyQuantifiedVariablesMapping[currentTargetVariableName]
                     // find "mismatches", i.e. at least one variable is not null and differs the answerTriplet.
                     if (sourceVariableAssignment != null && sourceVariableAssignment != answerTriplet.source
                         || targetVariableAssignment != null && targetVariableAssignment != answerTriplet.target
                     ) {
-                        // We've encountered a mismatch, thus we do not add the prevVacSet to the currentVACSet.
-                    } else if (sourceVariableAssignment == null || targetVariableAssignment == null) {
-                        // We've encountered a match, thus we add the prevVacSet to the currentVACSet.
+                        // We've encountered a mismatch, thus we do not add the prevVacSet to the currentVMCSet.
+                    } else /*if (sourceVariableAssignment == null
+                        || targetVariableAssignment == null
+                        || (sourceVariableAssignment == answerTriplet.source && targetVariableAssignment == answerTriplet.target))*/{
+                        // We've encountered a match, thus we add the prevVacSet to the currentVMCSet.
                         applyVariableAssignments(
-                            tempVAC = vacSet,
+                            fittingVMC = vmcSet,
                             sourceVariableIsAnswerVariable = sourceVariableIsAnswerVariable,
                             sourceVariableName = currentSourceVariableName,
                             sourceVariableAssignment = answerTriplet.source,
@@ -88,17 +90,20 @@ class QueryConjunctReassembler(
                             targetVariableAssignment = answerTriplet.target,
                             cost = answerTriplet.cost
                         ).onSuccess {
-                            currentVACSet.add(it)
+                            currentVMCSet.add(it)
                         }
                     }
                 }
             }
 
-            // set the currentVACSet as the new prevVACSet
-            prevVACSet = currentVACSet
+            // set the currentVMCSet as the new prevVMCSet
+            prevVMCSet.clear()
+            prevVMCSet.addAll(currentVMCSet)
+            // reset the working set
+            currentVMCSet.clear()
         }
 
-        return currentVACSet
+        return prevVMCSet
     }
 
     private fun buildEmptyVariableContainerForVariables(conjunctiveFormula: ConjunctiveFormula): VariableMappingContainer {
@@ -110,17 +115,17 @@ class QueryConjunctReassembler(
     }
 
     /**
-     * This function applies the variable assignments to the given VariableAssignmentContainer and returns the new VAC including the added cost
-     * @param tempVAC the VAC to which the variable assignments should be applied
+     * This function applies the variable assignments to the given VariableAssignmentContainer and returns the new VMC including the added cost
+     * @param fittingVMC the VMC to be used as a base for the new VMC
      * @param sourceVariableName the name of the source variable
      * @param sourceVariableAssignment the assignment of the source variable (from answerTriplet)
      * @param targetVariableName the name of the target variable
      * @param targetVariableAssignment the assignment of the target variable (from answerTriplet)
-     * @param cost the cost that should be added to the VAC (from answerTriplet)
-     * @return the new VAC including the added cost
+     * @param cost the cost that should be added to the VMC (from answerTriplet)
+     * @return the new VMC including the added cost
      */
     private fun applyVariableAssignments(
-        tempVAC: VariableMappingContainer,
+        fittingVMC: VariableMappingContainer,
         sourceVariableIsAnswerVariable: Boolean,
         sourceVariableName: String,
         sourceVariableAssignment: String,
@@ -137,31 +142,37 @@ class QueryConjunctReassembler(
          */
 
         if (sourceVariableIsAnswerVariable) {
-            if (tempVAC.answerVariablesMapping[sourceVariableName] != null && tempVAC.answerVariablesMapping[sourceVariableName] != sourceVariableAssignment) {
+            if (fittingVMC.answerVariablesMapping[sourceVariableName] != null && fittingVMC.answerVariablesMapping[sourceVariableName] != sourceVariableAssignment) {
                 return Result.failure(Exception("Error while applying variable assignments. The source variable is already assigned to a different value."))
             }
         } else {
-            if (tempVAC.existentiallyQuantifiedVariablesMapping[sourceVariableName] != null && tempVAC.existentiallyQuantifiedVariablesMapping[sourceVariableName] != sourceVariableAssignment) {
+            if (fittingVMC.existentiallyQuantifiedVariablesMapping[sourceVariableName] != null && fittingVMC.existentiallyQuantifiedVariablesMapping[sourceVariableName] != sourceVariableAssignment) {
                 return Result.failure(Exception("Error while applying variable assignments. The source variable is already assigned to a different value."))
             }
         }
 
         if (targetVariableIsAnswerVariable) {
-            if (tempVAC.answerVariablesMapping[targetVariableName] != null && tempVAC.answerVariablesMapping[targetVariableName] != targetVariableAssignment) {
+            if (fittingVMC.answerVariablesMapping[targetVariableName] != null && fittingVMC.answerVariablesMapping[targetVariableName] != targetVariableAssignment) {
                 return Result.failure(Exception("Error while applying variable assignments. The target variable is already assigned to a different value."))
             }
         } else {
-            if (tempVAC.existentiallyQuantifiedVariablesMapping[targetVariableName] != null && tempVAC.existentiallyQuantifiedVariablesMapping[targetVariableName] != targetVariableAssignment) {
+            if (fittingVMC.existentiallyQuantifiedVariablesMapping[targetVariableName] != null && fittingVMC.existentiallyQuantifiedVariablesMapping[targetVariableName] != targetVariableAssignment) {
                 return Result.failure(Exception("Error while applying variable assignments. The target variable is already assigned to a different value."))
             }
 
         }
 
+        val tempVMC = VariableMappingContainer(
+            cost = fittingVMC.cost,
+            existentiallyQuantifiedVariablesMapping = HashMap(fittingVMC.existentiallyQuantifiedVariablesMapping),
+            answerVariablesMapping = HashMap(fittingVMC.answerVariablesMapping)
+        )
+
 
         /**
-         * return the new VAC with the applied variable assignments and the added cost
+         * return the new VMC with the applied variable assignments and the added cost
          */
-        return Result.success(tempVAC.apply {
+        return Result.success(tempVMC.apply {
             if (sourceVariableIsAnswerVariable) {
                 answerVariablesMapping[sourceVariableName] = sourceVariableAssignment
             } else {

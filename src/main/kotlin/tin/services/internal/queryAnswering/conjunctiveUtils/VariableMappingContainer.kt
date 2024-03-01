@@ -1,6 +1,6 @@
 package tin.services.internal.queryAnswering.conjunctiveUtils
 
-class VariableMappingContainer(
+data class VariableMappingContainer(
     var cost: Double,
     val existentiallyQuantifiedVariablesMapping: HashMap<String, String?>, // variableName (key) -> variableAssignment (value)
     val answerVariablesMapping: HashMap<String, String?>, // variableName (key) -> variableAssignment (value)
