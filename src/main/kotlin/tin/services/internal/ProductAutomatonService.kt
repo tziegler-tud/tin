@@ -12,11 +12,13 @@ import tin.model.transducer.TransducerEdge
 
 @Service
 class ProductAutomatonService() {
+    lateinit var dataProvider: RegularPathQueryDataProvider
 
     /**
      * constructs the product automaton accordingly to the Grahne & Thomo paper (2006)
      */
     fun constructProductAutomaton(regularPathQueryDataProvider: RegularPathQueryDataProvider): ProductAutomatonGraph {
+        dataProvider = regularPathQueryDataProvider
 
         val temporaryNodes = HashMap<String, ProductAutomatonNode>()
         val fittingTransducerEdges = HashSet<TransducerEdge>()
@@ -795,10 +797,10 @@ class ProductAutomatonService() {
         databaseEdge: DatabaseEdge,
         edgeType: ProductAutomatonEdgeType
     ): InitialFinalStateWrapper {
-        val sourceInitialState: Boolean
-        val sourceFinalState: Boolean
-        val targetInitialState: Boolean
-        val targetFinalState: Boolean
+        var sourceInitialState: Boolean
+        var sourceFinalState: Boolean
+        var targetInitialState: Boolean
+        var targetFinalState: Boolean
 
         when (edgeType) {
             ProductAutomatonEdgeType.EpsilonIncomingPositiveOutgoing -> {
@@ -834,9 +836,9 @@ class ProductAutomatonService() {
             ProductAutomatonEdgeType.EpsilonIncomingPropertyOutgoing -> {
                 // epsilon incoming, property outgoing
                 // q pause, t move, db pause (we do the property check ..)
-
                 sourceInitialState = queryEdge.source.isInitialState && transducerEdge.source.isInitialState
                 sourceFinalState = queryEdge.source.isFinalState && transducerEdge.source.isFinalState
+
                 targetInitialState = queryEdge.source.isInitialState && transducerEdge.target.isInitialState
                 targetFinalState = queryEdge.source.isFinalState && transducerEdge.target.isFinalState
             }
@@ -846,6 +848,7 @@ class ProductAutomatonService() {
                 // q move, t move, db move
                 sourceInitialState = queryEdge.source.isInitialState && transducerEdge.source.isInitialState
                 sourceFinalState = queryEdge.source.isFinalState && transducerEdge.source.isFinalState
+
                 targetInitialState = queryEdge.target.isInitialState && transducerEdge.target.isInitialState
                 targetFinalState = queryEdge.target.isFinalState && transducerEdge.target.isFinalState
             }
@@ -855,6 +858,7 @@ class ProductAutomatonService() {
                 // q move, t move, db move backwards
                 sourceInitialState = queryEdge.source.isInitialState && transducerEdge.source.isInitialState
                 sourceFinalState = queryEdge.source.isFinalState && transducerEdge.source.isFinalState
+
                 targetInitialState = queryEdge.target.isInitialState && transducerEdge.target.isInitialState
                 targetFinalState = queryEdge.target.isFinalState && transducerEdge.target.isFinalState
             }
@@ -864,6 +868,7 @@ class ProductAutomatonService() {
                 // q move, t move, db pause
                 sourceInitialState = queryEdge.source.isInitialState && transducerEdge.source.isInitialState
                 sourceFinalState = queryEdge.source.isFinalState && transducerEdge.source.isFinalState
+
                 targetInitialState = queryEdge.target.isInitialState && transducerEdge.target.isInitialState
                 targetFinalState = queryEdge.target.isFinalState && transducerEdge.target.isFinalState
             }
@@ -871,9 +876,9 @@ class ProductAutomatonService() {
             ProductAutomatonEdgeType.PositiveIncomingPropertyOutgoing -> {
                 // positive incoming, property outgoing
                 // q move, t move, db pause (we do the property check ..)
-
                 sourceInitialState = queryEdge.source.isInitialState && transducerEdge.source.isInitialState
                 sourceFinalState = queryEdge.source.isFinalState && transducerEdge.source.isFinalState
+
                 targetInitialState = queryEdge.target.isInitialState && transducerEdge.target.isInitialState
                 targetFinalState = queryEdge.target.isFinalState && transducerEdge.target.isFinalState
             }
@@ -883,6 +888,7 @@ class ProductAutomatonService() {
                 // q move, t move, db move
                 sourceInitialState = queryEdge.source.isInitialState && transducerEdge.source.isInitialState
                 sourceFinalState = queryEdge.source.isFinalState && transducerEdge.source.isFinalState
+
                 targetInitialState = queryEdge.target.isInitialState && transducerEdge.target.isInitialState
                 targetFinalState = queryEdge.target.isFinalState && transducerEdge.target.isFinalState
             }
@@ -892,6 +898,7 @@ class ProductAutomatonService() {
                 // q move, t move, db move backwards
                 sourceInitialState = queryEdge.source.isInitialState && transducerEdge.source.isInitialState
                 sourceFinalState = queryEdge.source.isFinalState && transducerEdge.source.isFinalState
+
                 targetInitialState = queryEdge.target.isInitialState && transducerEdge.target.isInitialState
                 targetFinalState = queryEdge.target.isFinalState && transducerEdge.target.isFinalState
             }
@@ -901,6 +908,7 @@ class ProductAutomatonService() {
                 // q move, t move, db pause
                 sourceInitialState = queryEdge.source.isInitialState && transducerEdge.source.isInitialState
                 sourceFinalState = queryEdge.source.isFinalState && transducerEdge.source.isFinalState
+
                 targetInitialState = queryEdge.target.isInitialState && transducerEdge.target.isInitialState
                 targetFinalState = queryEdge.target.isFinalState && transducerEdge.target.isFinalState
             }
@@ -908,9 +916,9 @@ class ProductAutomatonService() {
             ProductAutomatonEdgeType.NegativeIncomingPropertyOutgoing -> {
                 // negative incoming, property outgoing
                 // q move, t move, db pause (we do the property check ..)
-
                 sourceInitialState = queryEdge.source.isInitialState && transducerEdge.source.isInitialState
                 sourceFinalState = queryEdge.source.isFinalState && transducerEdge.source.isFinalState
+
                 targetInitialState = queryEdge.target.isInitialState && transducerEdge.target.isInitialState
                 targetFinalState = queryEdge.target.isFinalState && transducerEdge.target.isFinalState
             }
@@ -918,9 +926,9 @@ class ProductAutomatonService() {
             ProductAutomatonEdgeType.PropertyIncomingEpsilonOutgoing -> {
                 //property incoming, epsilon outgoing
                 // q move, t move, db pause
-
                 sourceInitialState = queryEdge.source.isInitialState && transducerEdge.source.isInitialState
                 sourceFinalState = queryEdge.source.isFinalState && transducerEdge.source.isFinalState
+
                 targetInitialState = queryEdge.target.isInitialState && transducerEdge.target.isInitialState
                 targetFinalState = queryEdge.target.isFinalState && transducerEdge.target.isFinalState
             }
@@ -932,9 +940,9 @@ class ProductAutomatonService() {
 
                 // property incoming, positive outgoing
                 // q move, t move, db move
-
                 sourceInitialState = queryEdge.source.isInitialState && transducerEdge.source.isInitialState
                 sourceFinalState = queryEdge.source.isFinalState && transducerEdge.source.isFinalState
+
                 targetInitialState = queryEdge.target.isInitialState && transducerEdge.target.isInitialState
                 targetFinalState = queryEdge.target.isFinalState && transducerEdge.target.isFinalState
             }
@@ -946,9 +954,9 @@ class ProductAutomatonService() {
 
                 // property incoming, negative outgoing
                 // q move, t move, db move backwards
-
                 sourceInitialState = queryEdge.source.isInitialState && transducerEdge.source.isInitialState
                 sourceFinalState = queryEdge.source.isFinalState && transducerEdge.source.isFinalState
+
                 targetInitialState = queryEdge.target.isInitialState && transducerEdge.target.isInitialState
                 targetFinalState = queryEdge.target.isFinalState && transducerEdge.target.isFinalState
             }
@@ -956,11 +964,110 @@ class ProductAutomatonService() {
             ProductAutomatonEdgeType.PropertyIncomingPropertyOutgoing -> {
                 // property incoming, property outgoing
                 // q move, t move, db pause
-
                 sourceInitialState = queryEdge.source.isInitialState && transducerEdge.source.isInitialState
                 sourceFinalState = queryEdge.source.isFinalState && transducerEdge.source.isFinalState
+
                 targetInitialState = queryEdge.target.isInitialState && transducerEdge.target.isInitialState
                 targetFinalState = queryEdge.target.isFinalState && transducerEdge.target.isFinalState
+            }
+        }
+
+        /**
+         * Now we check for the case of C2RPQs where instead of a variable, the user put a database individual.
+         * if the user put a database individual as either source or target within the atom (i.e. R1(a,b)), we have to check for the database source or target node.
+         * If the corresponding node equals the individual definition in the atom, it is an initial resp. final state (else not).
+         *
+         * Since we have a source and target ProductAutomatonNode, we have to check if the database moves, pauses, or moves backwards.
+         * The query and transducer do not matter at the moment.
+         *
+         */
+
+        when (edgeType) {
+            // cases where the db moves
+            ProductAutomatonEdgeType.EpsilonIncomingPositiveOutgoing,
+            ProductAutomatonEdgeType.PositiveIncomingPositiveOutgoing,
+            ProductAutomatonEdgeType.NegativeIncomingPositiveOutgoing,
+            ProductAutomatonEdgeType.PropertyIncomingPositiveOutgoing -> {
+                /**
+                 * db moves, that means:
+                 * the db source variable possibly changes the sourceInitialState
+                 * the db target variable possibly changes the targetFinalState
+                 */
+
+                if (dataProvider.sourceVariableName?.contains("_individual") == true) {
+                    if (databaseEdge.source.identifier != dataProvider.sourceVariableName!!.substringBefore("_individual")) {
+                        // the source variable is not the individual -> it is not an initial state
+                        sourceInitialState = false
+                    }
+                }
+
+                if (dataProvider.targetVariableName?.contains("_individual") == true) {
+                    if (databaseEdge.target.identifier != dataProvider.targetVariableName!!.substringBefore("_individual")) {
+                        // the target variable is not the individual -> it is not a final state
+                        targetFinalState = false
+                    }
+                }
+
+            }
+
+            // cases where the db pauses
+            ProductAutomatonEdgeType.EpsilonIncomingEpsilonOutgoing,
+            ProductAutomatonEdgeType.EpsilonIncomingPropertyOutgoing,
+            ProductAutomatonEdgeType.PositiveIncomingEpsilonOutgoing,
+            ProductAutomatonEdgeType.PositiveIncomingPropertyOutgoing,
+            ProductAutomatonEdgeType.NegativeIncomingEpsilonOutgoing,
+            ProductAutomatonEdgeType.NegativeIncomingPropertyOutgoing,
+            ProductAutomatonEdgeType.PropertyIncomingEpsilonOutgoing,
+            ProductAutomatonEdgeType.PropertyIncomingPropertyOutgoing -> {
+                /**
+                 * db pauses, that means:
+                 * the db source variable possibly changes the sourceInitialState
+                 * the db source variable possibly changes the targetFinalState
+                 *
+                 * Note that we basically have a self loop in the database from the sourceNode to itself.
+                 * (so theoretically we could also say the databaseEdge.target possibly changes the targetFinalState..)
+                 */
+
+                if (dataProvider.sourceVariableName?.contains("_individual") == true) {
+                    if (databaseEdge.source.identifier != dataProvider.sourceVariableName!!.substringBefore("_individual")) {
+                        // the source variable is not the individual -> it is not an initial state
+                        sourceInitialState = false
+                    }
+                }
+
+                if (dataProvider.targetVariableName?.contains("_individual") == true) {
+                    if (databaseEdge.source.identifier != dataProvider.targetVariableName!!.substringBefore("_individual")) {
+                        // the target variable is not the individual -> it is not a final state
+                        targetFinalState = false
+                    }
+                }
+
+            }
+
+            // cases where the db moves backwards
+            ProductAutomatonEdgeType.EpsilonIncomingNegativeOutgoing,
+            ProductAutomatonEdgeType.PositiveIncomingNegativeOutgoing,
+            ProductAutomatonEdgeType.NegativeIncomingNegativeOutgoing,
+            ProductAutomatonEdgeType.PropertyIncomingNegativeOutgoing -> {
+                /**
+                 * db moves backwards, that means:
+                 * the db source variable possibly changes the targetInitialState
+                 * the db target variable possibly changes the sourceFinalState
+                 */
+
+                if (dataProvider.sourceVariableName?.contains("_individual") == true) {
+                    if (databaseEdge.source.identifier != dataProvider.sourceVariableName!!.substringBefore("_individual")) {
+                        // the source variable is not the individual -> it is not an initial state
+                        targetInitialState = false
+                    }
+                }
+
+                if (dataProvider.targetVariableName?.contains("_individual") == true) {
+                    if (databaseEdge.target.identifier != dataProvider.targetVariableName!!.substringBefore("_individual")) {
+                        // the target variable is not the individual -> it is not a final state
+                        sourceFinalState = false
+                    }
+                }
             }
         }
 

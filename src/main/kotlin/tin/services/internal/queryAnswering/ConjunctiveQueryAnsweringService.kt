@@ -221,9 +221,11 @@ class ConjunctiveQueryAnsweringService(
             localPreprocessingTime = measureNanoTime {
                 productAutomatonGraph = productAutomatonService.constructProductAutomaton(
                     RegularPathQueryDataProvider(
-                        it.value,
-                        dataProvider.transducerGraph,
-                        dataProvider.databaseGraph,
+                        queryGraph = it.value,
+                        transducerGraph =  dataProvider.transducerGraph,
+                        databaseGraph =  dataProvider.databaseGraph,
+                        sourceVariableName =  dataProvider.conjunctiveFormula.regularPathQuerySourceVariableAssignment[it.key]!!,
+                        targetVariableName = dataProvider.conjunctiveFormula.regularPathQueryTargetVariableAssignment[it.key]!!,
                     )
                 )
             }

@@ -11,8 +11,10 @@ class RegularPathQueryDataProvider(
     var queryGraph: QueryGraph,
     transducerGraph: TransducerGraph,
     databaseGraph: DatabaseGraph,
-    alphabet: Alphabet = Alphabet()
-) : DataProvider(
+    val sourceVariableName: String? = null,
+    val targetVariableName: String? = null,
+    alphabet: Alphabet = Alphabet(),
+    ) : DataProvider(
     alphabet, transducerGraph, databaseGraph
 )
 
