@@ -73,6 +73,7 @@ dependencies {
     // other
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    annotationProcessor group: 'org.springframework.boot', name: 'spring-boot-configuration-processor', version: '2.7.0'
 
     //testing
     implementation 'org.springframework.boot:spring-boot-starter-test'
