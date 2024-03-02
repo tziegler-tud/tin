@@ -226,16 +226,51 @@ class ConjunctiveQueryReaderService(
 
                 InputTypeEnum.CONJUNCTIVE_FORMULA -> {
                     /**
+                     * the formula is of the form
+                     * q(x) = exists(y).phi(x,y), where
+                     * q is just an identifier for the query (in fact this identifier is not processed at the moment),
+                     * x is a tuple of variables, called answer variables,
+                     * y is a tuple of variables, called existentially quantified variables,
+                     * and phi(x,y) is a conjunction of atoms of the form R(t,t') where t,t' are either element of x or y, or database individuals (TODO: this is not implemented)
+                     */
+
+                    // step 1: handle the answer variables
+                    // we split the string at the '=' and remove all whitespaces
+                    val leftHandString = currentLine.substringBefore('=').replace(" ", "")
+                    val leftHandRegex = Regex("""^(\w+)\(([^)]*)\)$""")
+
+                    val leftHandMatch = leftHandRegex.matchEntire(leftHandString)
+                    val queryIdentifier = leftHandMatch?.groups?.get(1)?.value
+                    if (queryIdentifier == null) {
+                        this.error(
+                            "Failed to read line as formula: Invalid input format (query identifier not found).",
+                            currentLineIndex,
+                            currentLine
+                        )
+                    }
+
+                    val answerVariables = leftHandMatch?.groups?.get(2)?.value?.split(",")?.toMutableSet()
+                    if (answerVariables == null) {
+                        this.error(
+                            "Failed to read line as formula: Invalid input format (answer variables not found).",
+                            currentLineIndex,
+                            currentLine
+                        )
+                    }
+
+                    // step 2: handle the formula after the '='
+                    val rightHandString = currentLine.substringAfter('=')
+
+                    /**
                      * this pattern splits the formula into its parts
                      * e.g. for the formula 'exists(x,y).phi(R1(x,z) and R2(y,z) and R3(z,z))'
                      * the regex matches are 'exists(x,y)', 'phi(R1(x,z)', 'R2(y,z)', 'R3(z,z))'
                      */
                     val formulaSplitPattern = Regex("""(?:\b[a-zA-Z]+(?:\d+)?\([^)]+\))""")
-                    val patternMatches = formulaSplitPattern.findAll(currentLine)
+                    val patternMatches = formulaSplitPattern.findAll(rightHandString)
 
                     // storing the results in these variables
                     var existentiallyQuantifiedVariables: MutableSet<String> = mutableSetOf()
-                    var helperVariables: MutableSet<String> = mutableSetOf()
                     var greekLetter: String = ""
                     val alphabetOfAllMentionedVariables: MutableSet<String> = mutableSetOf()
                     val regularPathQuerySourceVariableAssignment: MutableMap<String, String> = mutableMapOf()
@@ -300,13 +335,12 @@ class ConjunctiveQueryReaderService(
                             alphabetOfAllMentionedVariables.add(sourceVariable)
                             alphabetOfAllMentionedVariables.add(targetVariable)
 
-                            conjunctsTripletSet = conjunctsTripletSet + ConjunctTriplet(identifier, sourceVariable, targetVariable)
+                            conjunctsTripletSet =
+                                conjunctsTripletSet + ConjunctTriplet(identifier, sourceVariable, targetVariable)
 
                         }
                     }
 
-                    helperVariables =
-                        (alphabetOfAllMentionedVariables - existentiallyQuantifiedVariables) as MutableSet<String>
 
                     /**
                      * check for errors
@@ -331,12 +365,12 @@ class ConjunctiveQueryReaderService(
 
 
                     formula = ConjunctiveFormula(
-                        existentiallyQuantifiedVariables,
-                        helperVariables,
-                        greekLetter,
-                        regularPathQuerySourceVariableAssignment,
-                        regularPathQueryTargetVariableAssignment,
-                        conjunctsTripletSet
+                        existentiallyQuantifiedVariables = existentiallyQuantifiedVariables,
+                        answerVariables = answerVariables!!, // we checked for null and write an error when this is the case
+                        greekLetter = greekLetter,
+                        regularPathQuerySourceVariableAssignment = regularPathQuerySourceVariableAssignment,
+                        regularPathQueryTargetVariableAssignment = regularPathQueryTargetVariableAssignment,
+                        conjunctsTripletSet = conjunctsTripletSet
                     )
 
                 }
