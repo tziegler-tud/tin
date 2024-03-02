@@ -36,9 +36,10 @@ class RegularPathQueryAnsweringService(
     private val queryTaskRepository: QueryTaskRepository,
     private val queryResultRepository: QueryResultRepository,
 
-) {
+    ) {
     @Autowired
     lateinit var systemConfigurationService: SystemConfigurationService
+
     @Autowired
     lateinit var queryReaderService: QueryReaderService
 
@@ -58,7 +59,8 @@ class RegularPathQueryAnsweringService(
         queryTaskRepository.save(queryTask)
 
         val dataProvider = buildDataProvider(queryTask)
-        var pairContainingCompStatsAndAnswerSet: Pair<ComputationStatistics, Set<RegularPathQueryResult.AnswerTriplet>>? = null
+        var pairContainingCompStatsAndAnswerSet: Pair<ComputationStatistics, Set<RegularPathQueryResult.AnswerTriplet>>? =
+            null
 
         var regularPathQueryResultStatus: QueryResult.QueryResultStatus = QueryResult.QueryResultStatus.NoError
 
@@ -121,10 +123,12 @@ class RegularPathQueryAnsweringService(
         val queryFileDb = fileRepository.findByIdentifier(data.queryFileIdentifier)
         val databaseFileDb = fileRepository.findByIdentifier(data.databaseFileIdentifier)
 
-        val queryReaderResult: FileReaderResult<QueryGraph> = queryReaderService.read(systemConfigurationService.getQueryPath(), queryFileDb.filename)
+        val queryReaderResult: FileReaderResult<QueryGraph> =
+            queryReaderService.read(systemConfigurationService.getQueryPath(), queryFileDb.filename)
         val queryGraph = queryReaderResult.get()
 
-        val databaseReaderResult = databaseReaderService.read(systemConfigurationService.getDatabasePath(), databaseFileDb.filename)
+        val databaseReaderResult =
+            databaseReaderService.read(systemConfigurationService.getDatabasePath(), databaseFileDb.filename)
         val databaseGraph = databaseReaderResult.get()
 
         val transducerGraph: TransducerGraph
@@ -135,21 +139,29 @@ class RegularPathQueryAnsweringService(
             // generate transducer
             transducerGraph = when (data.computationProperties.transducerGeneration) {
                 ComputationProperties.TransducerGeneration.ClassicalAnswersPreserving -> transducerReaderService.generateClassicAnswersTransducer(
-                        alphabet
+                    alphabet
                 )
 
                 ComputationProperties.TransducerGeneration.EditDistance -> transducerReaderService.generateEditDistanceTransducer(
-                        alphabet
+                    alphabet
                 )
             }
         } else {
             // transducer file is provided -> no generation needed
             val transducerFileDb = fileRepository.findByIdentifier(data.transducerFileIdentifier!!)
-            val transducerReaderResult = transducerReaderService.read(systemConfigurationService.getTransducerPath(), transducerFileDb.filename)
+            val transducerReaderResult =
+                transducerReaderService.read(systemConfigurationService.getTransducerPath(), transducerFileDb.filename)
             transducerGraph = transducerReaderResult.get()
         }
 
-        return RegularPathQueryDataProvider(queryGraph, transducerGraph, databaseGraph, alphabet)
+        return RegularPathQueryDataProvider(
+            queryGraph = queryGraph,
+            transducerGraph = transducerGraph,
+            databaseGraph = databaseGraph,
+            sourceVariableName = null,
+            targetVariableName = null,
+            alphabet = alphabet
+        )
     }
 
     @Transactional
@@ -178,7 +190,10 @@ class RegularPathQueryAnsweringService(
         // we store milliseconds instead of nanoseconds, hence we need to 10^-6 all processingTimes
         return Pair(
             ComputationStatistics(
-                preprocessingTime / 1000000, mainProcessingTime / 1000000, postProcessingTime / 1000000, combinedTime / 1000000
+                preprocessingTime / 1000000,
+                mainProcessingTime / 1000000,
+                postProcessingTime / 1000000,
+                combinedTime / 1000000
             ), transformedAnswerSet
         )
     }
@@ -212,7 +227,10 @@ class RegularPathQueryAnsweringService(
         // we store milliseconds instead of nanoseconds, hence we need to 10^-6 all processingTimes
         return Pair(
             ComputationStatistics(
-                preprocessingTime / 1000000, mainProcessingTime / 1000000, postProcessingTime / 1000000, combinedTime / 1000000
+                preprocessingTime / 1000000,
+                mainProcessingTime / 1000000,
+                postProcessingTime / 1000000,
+                combinedTime / 1000000
             ), transformedAnswerSet
         )
     }
@@ -247,7 +265,10 @@ class RegularPathQueryAnsweringService(
         // we store milliseconds instead of nanoseconds, hence we need to 10^-6 all processingTimes
         return Pair(
             ComputationStatistics(
-                preprocessingTime / 1000000, mainProcessingTime / 1000000, postProcessingTime / 1000000, combinedTime / 1000000
+                preprocessingTime / 1000000,
+                mainProcessingTime / 1000000,
+                postProcessingTime / 1000000,
+                combinedTime / 1000000
             ), transformedAnswerSet
         )
     }
