@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.context.TestConfiguration
+import tin.model.ConjunctTriplet
 import tin.model.ConjunctiveFormula
 import tin.model.ConjunctiveQueryGraphMap
 import tin.model.query.QueryEdge
@@ -11,6 +12,7 @@ import tin.model.query.QueryGraph
 import tin.model.query.QueryNode
 import tin.services.internal.fileReaders.fileReaderResult.ConjunctiveQueryFileReaderResult
 import tin.services.technical.SystemConfigurationService
+import java.util.HashSet
 
 @SpringBootTest
 @TestConfiguration
@@ -67,20 +69,25 @@ class ConjunctiveQueryReaderServiceTest {
         graphMap.addGraphToMap("R3", graphR3)
 
         //building formula
-        val existentiallyQuantifiedVariables: MutableSet<String> = mutableSetOf("x", "y")
-        val helperVariables: MutableSet<String> = mutableSetOf("z")
+        val existentiallyQuantifiedVariables: MutableSet<String> = mutableSetOf("z")
+        val answerVariables: MutableSet<String> = mutableSetOf("x", "y")
         val greekLetter: String = "phi"
         val regularPathQuerySourceVariableAssignment: MutableMap<String, String> =
             mutableMapOf("R1" to "x", "R2" to "y", "R3" to "z")
         val regularPathQueryTargetVariableAssignment: MutableMap<String, String> =
             mutableMapOf("R1" to "z", "R2" to "z", "R3" to "z")
+        val conjunctTripletSet = mutableSetOf(
+            ConjunctTriplet("R1", "x", "z"),
+            ConjunctTriplet("R2", "y", "z"),
+            ConjunctTriplet("R3", "z", "z")
+        )
         formula = ConjunctiveFormula(
-            existentiallyQuantifiedVariables,
-            helperVariables,
-            greekLetter,
-            regularPathQuerySourceVariableAssignment,
-            regularPathQueryTargetVariableAssignment,
-            HashSet()
+            existentiallyQuantifiedVariables = existentiallyQuantifiedVariables,
+            answerVariables = answerVariables,
+            greekLetter = greekLetter,
+            regularPathQuerySourceVariableAssignment = regularPathQuerySourceVariableAssignment,
+            regularPathQueryTargetVariableAssignment = regularPathQueryTargetVariableAssignment,
+            conjunctsTripletSet =  conjunctTripletSet
         )
         return ConjunctiveQueryFileReaderResult(graphMap, formula, mutableListOf(), mutableListOf())
     }
