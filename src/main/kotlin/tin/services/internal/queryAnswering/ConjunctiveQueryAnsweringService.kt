@@ -9,7 +9,6 @@ import tin.model.dataProvider.ConjunctiveQueryDataProvider
 import tin.model.dataProvider.RegularPathQueryDataProvider
 import tin.model.productAutomaton.ProductAutomatonGraph
 import tin.model.queryResult.*
-import tin.model.queryResult.computationStatistics.ComputationStatistics
 import tin.model.queryResult.computationStatistics.ConjunctiveComputationStatistics
 import tin.model.queryResult.computationStatistics.RegularPathComputationStatistics
 import tin.model.queryResult.conjunctiveQueryResult.ConjunctiveQueryAnswerMapping

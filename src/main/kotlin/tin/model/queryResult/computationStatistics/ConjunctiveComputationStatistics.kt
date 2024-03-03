@@ -1,6 +1,5 @@
 package tin.model.queryResult.computationStatistics
 
-import tin.model.queryResult.computationStatistics.ComputationStatistics
 import javax.persistence.Entity
 
 /**
