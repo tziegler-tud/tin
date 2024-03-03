@@ -13,8 +13,9 @@ import tin.model.queryResult.QueryResultRepository
 import tin.model.queryTask.QueryTask
 import tin.model.queryTask.QueryTaskRepository
 import tin.model.queryTask.ComputationProperties
-import tin.model.queryResult.ComputationStatistics
+import tin.model.queryResult.computationStatistics.ComputationStatistics
 import tin.model.queryResult.QueryResult
+import tin.model.queryResult.computationStatistics.RegularPathComputationStatistics
 import tin.model.tintheweb.FileRepository
 import tin.model.transducer.TransducerGraph
 import tin.services.internal.ProductAutomatonService
@@ -189,7 +190,7 @@ class RegularPathQueryAnsweringService(
 
         // we store milliseconds instead of nanoseconds, hence we need to 10^-6 all processingTimes
         return Pair(
-            ComputationStatistics(
+           RegularPathComputationStatistics(
                 preprocessingTime / 1000000,
                 mainProcessingTime / 1000000,
                 postProcessingTime / 1000000,
@@ -226,7 +227,7 @@ class RegularPathQueryAnsweringService(
 
         // we store milliseconds instead of nanoseconds, hence we need to 10^-6 all processingTimes
         return Pair(
-            ComputationStatistics(
+            RegularPathComputationStatistics(
                 preprocessingTime / 1000000,
                 mainProcessingTime / 1000000,
                 postProcessingTime / 1000000,
@@ -264,7 +265,7 @@ class RegularPathQueryAnsweringService(
 
         // we store milliseconds instead of nanoseconds, hence we need to 10^-6 all processingTimes
         return Pair(
-            ComputationStatistics(
+        RegularPathComputationStatistics(
                 preprocessingTime / 1000000,
                 mainProcessingTime / 1000000,
                 postProcessingTime / 1000000,

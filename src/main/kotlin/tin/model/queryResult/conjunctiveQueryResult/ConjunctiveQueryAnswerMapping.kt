@@ -1,4 +1,4 @@
-package tin.model.queryResult
+package tin.model.queryResult.conjunctiveQueryResult
 
 import org.springframework.data.jpa.repository.JpaRepository
 import tin.model.converter.VariableMappingConverter

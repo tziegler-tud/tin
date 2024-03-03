@@ -1,6 +1,8 @@
 package tin.model.queryResult
 
 import tin.model.converter.AnswerSetConverter
+import tin.model.queryResult.computationStatistics.ComputationStatistics
+import tin.model.queryResult.conjunctiveQueryResult.ConjunctiveQueryResult
 import tin.model.queryTask.QueryTask
 import javax.persistence.*
 
@@ -19,7 +21,7 @@ class RegularPathQueryResult(
     @JoinColumn(name = "conjunctive_query_result_id")
     val conjunctiveQueryResult: ConjunctiveQueryResult? = null,
 
-) : QueryResult(queryTask, computationStatistics, queryResultStatus) {
+    ) : QueryResult(queryTask, computationStatistics, queryResultStatus) {
 
     @Embeddable
     data class AnswerTriplet(

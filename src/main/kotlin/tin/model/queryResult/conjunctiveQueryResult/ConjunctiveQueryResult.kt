@@ -1,5 +1,8 @@
-package tin.model.queryResult
+package tin.model.queryResult.conjunctiveQueryResult
 
+import tin.model.queryResult.QueryResult
+import tin.model.queryResult.RegularPathQueryResult
+import tin.model.queryResult.computationStatistics.ConjunctiveComputationStatistics
 import tin.model.queryTask.QueryTask
 import javax.persistence.CascadeType
 import javax.persistence.Entity
@@ -8,7 +11,7 @@ import javax.persistence.OneToMany
 @Entity
 class ConjunctiveQueryResult(
     queryTask: QueryTask,
-    computationStatistics: ComputationStatistics?,
+    computationStatistics: ConjunctiveComputationStatistics?,
     queryResultStatus: QueryResultStatus,
 
     @OneToMany(mappedBy = "conjunctiveQueryResult", cascade = [CascadeType.ALL])

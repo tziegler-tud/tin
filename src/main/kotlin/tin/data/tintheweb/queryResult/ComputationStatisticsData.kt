@@ -2,7 +2,7 @@ package tin.data.tintheweb.queryResult
 
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
-import tin.model.queryResult.ComputationStatistics
+import tin.model.queryResult.computationStatistics.ComputationStatistics
 
 data class ComputationStatisticsData @JsonCreator constructor(
     @JsonProperty("preProcessingTimeInMs") val preProcessingTimeInMs: Long,

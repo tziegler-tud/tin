@@ -1,6 +1,7 @@
 package tin.model.queryResult
 
 import org.springframework.data.jpa.repository.JpaRepository
+import tin.model.queryResult.computationStatistics.ComputationStatistics
 import tin.model.queryTask.QueryTask
 import javax.persistence.*
 

@@ -1,4 +1,4 @@
-package tin.model.queryResult
+package tin.model.queryResult.computationStatistics
 
 import org.springframework.data.jpa.repository.JpaRepository
 import javax.persistence.Entity
@@ -6,16 +6,16 @@ import javax.persistence.GeneratedValue
 import javax.persistence.Id
 
 @Entity
-class ComputationStatistics(
-    val preProcessingTimeInMs: Long,
-    val mainProcessingTimeInMs: Long,
-    val postProcessingTimeInMs: Long,
-    val combinedTimeInMs: Long,
+abstract class ComputationStatistics(
+    open val preProcessingTimeInMs: Long,
+    open val mainProcessingTimeInMs: Long,
+    open val postProcessingTimeInMs: Long,
+    open val combinedTimeInMs: Long,
 ) {
 
     @GeneratedValue
     @Id
-    val id: Long = 0
+    open val id: Long = 0
 }
 
 interface ComputationStatisticsRepository : JpaRepository<ComputationStatistics, Long>
