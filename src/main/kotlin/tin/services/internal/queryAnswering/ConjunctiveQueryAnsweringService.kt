@@ -23,6 +23,7 @@ import tin.model.utils.ProductAutomatonTuple
 import tin.services.internal.ProductAutomatonService
 import tin.services.internal.dijkstra.DijkstraQueryAnsweringUtils
 import tin.services.internal.dijkstra.algorithms.Dijkstra
+import tin.services.internal.dijkstra.algorithms.DijkstraThreshold
 import tin.services.internal.fileReaders.ConjunctiveQueryReaderService
 import tin.services.internal.fileReaders.DatabaseReaderService
 import tin.services.internal.fileReaders.TransducerReaderService
@@ -324,7 +325,135 @@ class ConjunctiveQueryAnsweringService(
         queryTask: QueryTask,
     ): Pair<ConjunctiveQueryResult, ConjunctiveComputationStatisticsData> {
 
-        return TODO()
+        val productAutomatonService = ProductAutomatonService()
+        var productAutomatonGraph: ProductAutomatonGraph
+        var workingAlphabet: Alphabet
+        var localAnswerMap: HashMap<ProductAutomatonTuple, Double>
+
+        var totalRPQPreprocessingTime = 0L
+        var totalRPQMainProcessingTime = 0L
+        var totalRPQPostProcessingTime = 0L
+        var totalRPQInternalPostProcessingTime = 0L
+
+        var localPreprocessingTime: Long
+        var localMainProcessingTime: Long
+        var localPostProcessingTime: Long
+        var localInternalPostProcessingTime: Long
+
+        val regularPathQueryResultSet = HashSet<RegularPathQueryResult>()
+
+        dataProvider.conjunctiveQueryGraphMap.getMap().forEach {
+
+            workingAlphabet = it.value.alphabet
+            workingAlphabet.addAlphabet(dataProvider.databaseGraph.alphabet)
+
+            localPreprocessingTime = measureTimeMillis {
+                productAutomatonGraph = productAutomatonService.constructProductAutomaton(
+                    RegularPathQueryDataProvider(
+                        queryGraph = it.value,
+                        transducerGraph = dataProvider.transducerGraph,
+                        databaseGraph = dataProvider.databaseGraph,
+                        sourceVariableName = dataProvider.conjunctiveFormula.regularPathQuerySourceVariableAssignment[it.key]!!,
+                        targetVariableName = dataProvider.conjunctiveFormula.regularPathQueryTargetVariableAssignment[it.key]!!,
+                    )
+                )
+            }
+
+            localMainProcessingTime = measureTimeMillis {
+                val dijkstra = DijkstraThreshold(productAutomatonGraph, queryTask.computationProperties.thresholdValue!!)
+                localAnswerMap = dijkstra.processDijkstraOverAllInitialNodes()
+            }
+
+            val transformedAnswerSet: Set<RegularPathQueryResult.AnswerTriplet>
+            localPostProcessingTime = measureTimeMillis {
+                transformedAnswerSet = dijkstraQueryAnsweringUtils.makeAnswerMapReadable(localAnswerMap)
+            }
+
+            val combinedProcessingTimes: Long =
+                localPreprocessingTime + localMainProcessingTime + localPostProcessingTime
+
+
+            // persist each result separately
+            // FYI: in smoke tests this takes approximately 50ms in total
+            localInternalPostProcessingTime = measureTimeMillis {
+                regularPathQueryResultSet.add(
+                    queryResultRepository.save(
+                        RegularPathQueryResult(
+                            queryTask,
+                            RegularPathComputationStatistics(
+                                localPreprocessingTime,
+                                localMainProcessingTime,
+                                localPostProcessingTime,
+                                combinedProcessingTimes
+                            ),
+                            QueryResult.QueryResultStatus.NoError,
+                            it.key,
+                            transformedAnswerSet
+                        )
+                    )
+                )
+            }
+
+
+            totalRPQPreprocessingTime += localPreprocessingTime
+            totalRPQMainProcessingTime += localMainProcessingTime
+            totalRPQPostProcessingTime += localPostProcessingTime
+            totalRPQInternalPostProcessingTime += localInternalPostProcessingTime
+        }
+
+        val variableMappingContainerSet: Set<VariableMappingContainer>
+
+        val reassemblingTime = measureTimeMillis {
+            variableMappingContainerSet = queryConjunctReassembler.reassembleThreshold(dataProvider, queryTask).toSet()
+
+        }
+
+        val sortedVariableMappingsContainerSet: Set<VariableMappingContainer>
+
+        val postProcessing = measureTimeMillis {
+            sortedVariableMappingsContainerSet = variableMappingContainerSet.sortedBy { it.cost }.toSet()
+        }
+
+        /**
+         * build the final ConjunctiveQueryResult object such that we can reference it in the ConjunctiveQueryAnswerMapping
+         */
+        val combinedRPQTimeInMs = totalRPQPreprocessingTime + totalRPQMainProcessingTime + totalRPQPostProcessingTime
+        val conjunctiveQueryResult = ConjunctiveQueryResult(
+            queryTask = queryTask,
+            computationStatistics = null,
+            queryResultStatus = QueryResult.QueryResultStatus.NoError,
+            variableMappings = emptySet(),
+            regularPathQueryResults = regularPathQueryResultSet
+        )
+
+        /**
+         * use the previously built ConjunctiveQueryResult object to build the ConjunctiveQueryAnswerMapping objects and store them in the ConjunctiveQueryResult
+         */
+        val res = conjunctiveQueryResult.apply {
+            variableMappings = sortedVariableMappingsContainerSet.map {
+                ConjunctiveQueryAnswerMapping(
+                    cost = it.cost,
+                    conjunctiveQueryResult = conjunctiveQueryResult,
+                    existentiallyQuantifiedVariablesMapping = it.existentiallyQuantifiedVariablesMapping,
+                    answerVariablesMapping = it.answerVariablesMapping
+                )
+            }.toHashSet()
+        }
+
+        return Pair(
+            res, ConjunctiveComputationStatisticsData(
+                preProcessingTimeInMs = 0,
+                mainProcessingTimeInMs = 0,
+                postProcessingTimeInMs = postProcessing,
+                combinedTimeInMs = 0,
+                combinedRPQPreProcessingTimeInMs = totalRPQPreprocessingTime,
+                combinedRPQMainProcessingTimeInMs = totalRPQMainProcessingTime,
+                combinedRPQPostProcessingTimeInMs = totalRPQPostProcessingTime,
+                combinedRPQInternalPostProcessingTimeInMs = totalRPQInternalPostProcessingTime,
+                combinedRPQTimeInMs = combinedRPQTimeInMs,
+                reassemblyTimeInMs = reassemblingTime
+            )
+        )
     }
 
     private fun calculateTopK(
