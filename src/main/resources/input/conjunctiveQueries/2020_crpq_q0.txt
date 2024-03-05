@@ -1,5 +1,5 @@
 formula
-test(x,y) = exists(z).phi(R1(x,z) and R2(y,test_individual) and R3(z,z))
+test(x,y) = exists(z).phi(R1(x,z) and R2(y,z) and R3(z,z))
 // exists(x,y).phi(R1(x,z) and R2(y,z) and R3(z,z)) // this was the old input format that is deprecated since 2024-03-02
 graph R1
 nodes
