@@ -41,7 +41,7 @@ class DijkstraThreshold(
             val p = queue.poll()
             // check if the threshold is already reached and terminate if so.
             if (p.weight >= threshold) {
-                return
+                continue
             }
             // line 6
             setOfNodes.add(p)
