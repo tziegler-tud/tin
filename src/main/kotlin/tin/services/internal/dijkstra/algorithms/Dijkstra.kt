@@ -40,11 +40,9 @@ class Dijkstra(val productAutomatonGraph: ProductAutomatonGraph) {
         // line 2
         setOfNodes.clear()
         // line 3
-        queue.addAll(productAutomatonGraph.nodes)
-        // todo: queue.remove(sourceNode)
-        //       queue.add(sourceNode)
-        //       to start with the source node??
-        // System.out.println(queue);
+        // alternative: we only add the sourceNode and add further nodes down the road as needed.
+        // this yields performance increases AND we have to add/re-add the nodes to the queue anyway to keep their cost updated.
+        queue.add(sourceNode)
 
         // line 4
         // we need the second condition for a proper termination in possible infinite runs.
@@ -56,14 +54,15 @@ class Dijkstra(val productAutomatonGraph: ProductAutomatonGraph) {
 
             // line 5
             val p = queue.poll()
-            // todo: if p has larger weight: return "threshold is reached"
             // line 6
             setOfNodes.add(p)
             // line 7
             for (edge in p.edges) {
-                setOfNodes.add(edge.target)
+                //setOfNodes.add(edge.target) // why this?
                 // line 8
                 DijkstraAlgorithmUtils.relax(p, edge.target, edge, predecessor)
+                // now add the newly found node with its correct weight to the queue
+                queue.add(edge.target)
             }
         }
     }

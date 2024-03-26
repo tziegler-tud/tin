@@ -33,7 +33,9 @@ class DijkstraTopK(val productAutomatonGraph: ProductAutomatonGraph, private val
         // line 2
         setOfNodes.clear()
         // line 3
-        queue.addAll(productAutomatonGraph.nodes)
+        // alternative: we only add the sourceNode and add further nodes down the road as needed.
+        // this yields performance increases AND we have to add/re-add the nodes to the queue anyway to keep their cost updated.
+        queue.add(sourceNode)
 
         // line 4
         while (!queue.isEmpty()) {
@@ -57,6 +59,7 @@ class DijkstraTopK(val productAutomatonGraph: ProductAutomatonGraph, private val
 
                 // line 8
                 DijkstraAlgorithmUtils.relax(p, edge.target, edge, predecessor)
+                queue.add(edge.target)
             }
         }
     }
