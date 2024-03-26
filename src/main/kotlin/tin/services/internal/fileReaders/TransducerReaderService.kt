@@ -17,8 +17,8 @@ class TransducerReaderService (
         systemConfigurationService
 ) {
 
-    override var filePath = systemConfigurationService.getTransducerPath();
-    override var inputFileMaxLines : Int = systemConfigurationService.getTransducerSizeLimit();
+    override var filePath = systemConfigurationService.getTransducerPath()
+    override var inputFileMaxLines : Int = systemConfigurationService.getTransducerSizeLimit()
 
     override fun processFile(file: File, breakOnError: Boolean): FileReaderResult<TransducerGraph> {
         val transducerGraph = TransducerGraph()
@@ -46,14 +46,17 @@ class TransducerReaderService (
         //trailing and leading whitespaces and tab characters are removed before processing!
 
         //node line
-        val anyNodeRegex = Regex("\\w(\\w|-\\w)*\\s*,\\s*((true)|(false))\\s*,\\s*((true)|(false))");
+        val anyNodeRegex = Regex("\\w(\\w|-\\w)*\\s*,\\s*((true)|(false))\\s*,\\s*((true)|(false))")
 
         // edge lines node, node, edgeLabel, edgeLabel, cost
-         val anyEdgeRegex = Regex("\\w(\\w|-\\w)*\\s*,\\s*\\w(\\w|-\\w)*\\s*,\\s*\\w(\\w|-\\w)*\\??\\s*,\\s*\\w(\\w|-\\w)*\\??\\s*,\\s*\\d")
+        // val anyEdgeRegex = Regex("\\w(\\w|-\\w)*\\s*,\\s*\\w(\\w|-\\w)*\\s*,\\s*\\w(\\w|-\\w)*\\??\\s*,\\s*\\w(\\w|-\\w)*\\??\\s*,\\s*\\d")
 
-        var currentLineIndex: Int = 0;
+        // this should be the correct regex, that allows negative incoming and or outgoing labels; this is not tested extensively thus we keep the old regex as a quick backup
+        val anyEdgeRegex = Regex("\\w(\\w|-\\w)*\\s*,\\s*\\w(\\w|-\\w)*\\s*,\\s*[\\w-](\\w|-\\w)*\\??\\s*,\\s*[\\w-](\\w|-\\w)*\\??\\s*,\\s*\\d")
+
+        var currentLineIndex: Int = 0
         while (currentLineIndex < inputFileMaxLines) {
-            currentLineIndex++;
+            currentLineIndex++
             // read current line; exit loop when at the end of the file
             currentLine = bufferedReader.readLine() ?: break
 
@@ -63,24 +66,24 @@ class TransducerReaderService (
 
             //lines starting with // are ignored
             if(commentLineRegex.matchEntire(currentLine) !== null){
-                continue;
+                continue
             }
             // when we see "nodes", we will read nodes starting from the next line
             if (currentLine == "nodes") {
                 currentlyReading = InputTypeEnum.NODES
                 // after setting the flags, we skip into the next line
-                continue;
+                continue
             }
 
             if (currentLine == "edges") {
                 currentlyReading = InputTypeEnum.EDGES
 
                 // after setting the flags, we skip into the next line
-                continue;
+                continue
             }
 
             //save og line for debugging
-            val originalLine = currentLine;
+            val originalLine = currentLine
 
             when(currentlyReading){
                 InputTypeEnum.NODES -> {
@@ -90,17 +93,17 @@ class TransducerReaderService (
 
                         node = TransducerNode(stringArray[0], stringArray[1].toBoolean(), stringArray[2].toBoolean())
 
-                        val existingNode = transducerNodes[stringArray[0]];
+                        val existingNode = transducerNodes[stringArray[0]]
                         if(existingNode != null){
                             //node identifier already taken. Check similarity.
                             if(node.equalsWithoutEdges(existingNode)) {
                                 this.warn("Duplicated node identifier.", currentLineIndex, originalLine)
-                                continue;
+                                continue
                             }
                             else {
                                 //identifier taken, but initialState or finalState differs. This is an error.
                                 this.error("Failed to read line as node: Non-repairable duplicated node identifier.", currentLineIndex, originalLine)
-                                continue;
+                                continue
                             }
                         }
 
@@ -110,8 +113,8 @@ class TransducerReaderService (
                         //TODO: Check semantically, e.g. if there is at least one initial state and at least one reachable final state.
                     }
                     else {
-                        this.error("Failed to read line as node: Invalid input format.", currentLineIndex, originalLine);
-                        if(breakOnError) break;
+                        this.error("Failed to read line as node: Invalid input format.", currentLineIndex, originalLine)
+                        if(breakOnError) break
 
                     }
                 }
@@ -142,7 +145,7 @@ class TransducerReaderService (
                         val addEdgeToAlphabet = fun (edgeLabel: String) {
                             if(Alphabet.isConceptAssertion(edgeLabel)){
                                 //concept assertion read, extract concept name
-                                val conceptLabel = Alphabet.conceptNameFromAssertion(edgeLabel);
+                                val conceptLabel = Alphabet.conceptNameFromAssertion(edgeLabel)
                                 if(!alphabet.includes(conceptLabel)) alphabet.addConceptName(conceptLabel)
                             }
                             else {
@@ -152,16 +155,16 @@ class TransducerReaderService (
                         }
 
                         try{
-                            addEdgeToAlphabet(incoming);
-                            addEdgeToAlphabet(outgoing);
+                            addEdgeToAlphabet(incoming)
+                            addEdgeToAlphabet(outgoing)
                         }
                         catch (e: IllegalArgumentException){
                             this.error("Failed to read property name from edge label", currentLineIndex, currentLine)
                         }
                     }
                     else {
-                        this.error("Failed to read line as edge: Invalid input format.", currentLineIndex, originalLine);
-                        if(breakOnError) break;
+                        this.error("Failed to read line as edge: Invalid input format.", currentLineIndex, originalLine)
+                        if(breakOnError) break
                     }
                 }
 
@@ -172,10 +175,10 @@ class TransducerReaderService (
         }
 
         if(currentLineIndex == inputFileMaxLines && bufferedReader.readLine() !== null){
-            this.warn("Max input file size reached. Reader stopped before entire file was processed!", currentLineIndex, "");
+            this.warn("Max input file size reached. Reader stopped before entire file was processed!", currentLineIndex, "")
         }
         transducerGraph.alphabet = alphabet
-        return FileReaderResult<TransducerGraph>(transducerGraph, this.warnings, this.errors);
+        return FileReaderResult<TransducerGraph>(transducerGraph, this.warnings, this.errors)
 
     }
 
