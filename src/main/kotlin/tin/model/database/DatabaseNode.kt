@@ -11,7 +11,7 @@ class DatabaseNode(
     edges: EdgeSet<DatabaseEdge> = EdgeSet(),
     var properties: HashSet<String> = HashSet()
 ) : Node(
-        identifier, false, false, edges
+        identifier, true, true, edges
 ){
 
     override var edges: EdgeSet<DatabaseEdge> = EdgeSet();
