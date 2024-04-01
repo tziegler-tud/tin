@@ -24,7 +24,15 @@ class DijkstraTopK(val productAutomatonGraph: ProductAutomatonGraph, private val
     private var dijkstracounter = 0
 
 
-
+    /**
+     * this is now out of sync with the thesis algorithm.
+     * We did not include the termination condition after finding k local answers.
+     * This is because it does not guarantee the best answers.
+     * Think of the case where there are two nodes with cost 0.
+     * The first node (non-deterministically chosen by the min-prio queue) finds the k-th answer by traversing a path with cost > 0.
+     * Now we would terminate, BUT there could be the second node with cost 0 that would yield a better answer,
+     *  by traversing to an answer through an edge with weight 0.
+     */
     private fun singleSourceDijkstra(sourceNode: ProductAutomatonNode) {
         var finalNodesFound = 0
 
@@ -50,6 +58,7 @@ class DijkstraTopK(val productAutomatonGraph: ProductAutomatonGraph, private val
 
                 // first check if we've found an answer (edge.target.finalState == true), then
                 // check if we've found k answers here. if so -> terminate
+                // todo: this is inconsistent. See the comment in the class header.
                 if (edge.target.isFinalState) {
                     finalNodesFound++
                     if (finalNodesFound == k) {

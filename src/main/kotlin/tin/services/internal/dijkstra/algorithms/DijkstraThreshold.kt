@@ -25,6 +25,10 @@ class DijkstraThreshold(
     var answerMap: HashMap<ProductAutomatonTuple, Double> = HashMap()
     private var dijkstracounter = 0
 
+    /**
+     * this is now out of sync with the thesis algorithm. The thesis includes answers whose cost is equal to the threshold.
+     * lines that need changes: line 5 and line 7 (if-statements)
+     */
     private fun singleSourceDijkstra(sourceNode: ProductAutomatonNode) {
 
 
