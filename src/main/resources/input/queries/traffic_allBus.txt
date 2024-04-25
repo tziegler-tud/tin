@@ -1,8 +1,0 @@
-nodes
-s0, true, false
-s1, false, true
-s2, false, true
-edges
-s0, s1, Bus
-s1, s2, Bus
-s2, s1, Bus

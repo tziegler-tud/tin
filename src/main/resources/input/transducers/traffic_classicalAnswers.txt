@@ -1,9 +1,0 @@
-nodes
-t0, true, true,
-edges
-t0, t0, Tram_8, Tram_8, 0
-t0, t0, Tram_3, Tram_3, 0
-t0, t0, Tram_11, Tram_11, 0
-t0, t0, Bus_66, Bus_66, 0
-t0, t0, Bus_61, Bus_61, 0
-t0, t0, Bus_85, Bus_85, 0

@@ -22,11 +22,11 @@ class SchedulerService(
 
 
     // for debugging - delay further executions by one year
-    @Scheduled(initialDelay = 1000L, fixedDelay = 31536000000L)
+    //@Scheduled(initialDelay = 1000L, fixedDelay = 31536000000L)
 
 
     // every 5sec, check for a scheduled queryTask to process
-    //@Scheduled(cron = "0/5 * * * * *")
+    @Scheduled(cron = "0/5 * * * * *")
     @Transactional
     fun checkForQueryTask() {
         // get the oldest queryTask

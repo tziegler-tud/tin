@@ -1,0 +1,19 @@
+nodes
+t0, true, true
+edges
+t0, t0, has-part, has-part, 0
+t0, t0, is-part-of, is-part-of, 0
+t0, t0, rents, rents, 0
+t0, t0, Car?, Car?, 0
+t0, t0, CarFleet?, CarFleet?, 0
+t0, t0, Occupied?, Occupied?, 0
+t0, t0, Motor?, Motor?, 0
+t0, t0, Hitch?, Hitch?, 0
+t0, t0, Permanent?, Permanent?, 0
+t0, t0, Customer?, Customer?, 0
+t0, t0, Temporary?, Temporary?, 0
+t0, t0, has-part, is-part-of, 1
+t0, t0, is-part-of, has-part, 1
+t0, t0, CarFleet?, Car?, 3
+t0, t0, Occupied?, ε, 5
+t0, t0, Temporary?, ε, 5
