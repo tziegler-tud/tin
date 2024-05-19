@@ -1,5 +1,5 @@
 formula
-q(x) = exists(y).phi(R1(x,z) and R2(z,z))
+q(x) = exists(z).phi(R1(x,z) and R2(z,z))
 graph R1
 nodes
 s0, true, false
