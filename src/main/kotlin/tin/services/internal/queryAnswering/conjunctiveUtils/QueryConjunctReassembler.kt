@@ -276,7 +276,9 @@ class QueryConjunctReassembler(
             } else {
                 existentiallyQuantifiedVariablesMapping[targetVariableName] = targetVariableAssignment
             }
-
+            // TODO: the cost should be computed once at the end
+            //  here we should store the cost in a list ("costList") that collects all occurred costs.
+            //  this will then be according to the algorithm where the approximation cost is calculated at the end.
             this.cost += cost
         })
     }
