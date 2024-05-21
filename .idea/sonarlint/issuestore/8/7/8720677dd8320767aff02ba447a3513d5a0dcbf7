@@ -1,8 +1,0 @@
-
-o	java:S120"ZRename this package name to match the regular expression '^[a-z_]+(\.[a-z_][a-z0-9_]*)*$'.(Û‹‡«
-x
-java:S1104	"VMake identifier a static final constant or non-public and provide accessors if needed.(çİ‡±ÿÿÿÿÿ8‹ÿàäì.
-s
-java:S1104"QMake edges a static final constant or non-public and provide accessors if needed.(ˆ¦Éıÿÿÿÿ8Ê¹ôèì.
-“
-java:S1319"qThe type of the "edges" object should be an interface such as "List" rather than the implementation "LinkedList".(ˆ¦Éıÿÿÿÿ8Ê¹ôèì.

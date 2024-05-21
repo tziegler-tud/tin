@@ -1,14 +1,0 @@
-
-m
-java:S1104"PMake cost a static final constant or non-public and provide accessors if needed.(ù©‡­8ö÷Ïëì.
-o	java:S120"ZRename this package name to match the regular expression '^[a-z_]+(\.[a-z_][a-z0-9_]*)*$'.(Û‹‡«
-w
-java:S1104"ZMake outgoingString a static final constant or non-public and provide accessors if needed.(À•İà8·È¸ëì.
-S	java:S106"9Replace this use of System.out or System.err by a logger.(šûã‡şÿÿÿÿ
-w
-java:S1104
-"ZMake incomingString a static final constant or non-public and provide accessors if needed.(âñÒç8·È¸ëì.
-t
-java:S1104	"RMake target a static final constant or non-public and provide accessors if needed.(¡ùöûÿÿÿÿ8…¦°ëì.
-o
-java:S1104"RMake source a static final constant or non-public and provide accessors if needed.(š¥”—8…¦°ëì.
