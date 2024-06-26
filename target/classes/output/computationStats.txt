@@ -1,1 +1,0 @@
-max amount of possible nodes in the product automaton: 9. 
