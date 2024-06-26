@@ -45,6 +45,10 @@ class TransducerGraph : Graph() {
         source.edges.add(newEdge)
     }
 
+    fun addEdge(edge: TransducerEdge) {
+        return addEdge(edge.source, edge.target, edge.incomingString, edge.outgoingString, edge.cost);
+    }
+
     // TODO: print isolated nodes. (same as in the query)
     override fun printGraph() {
         for (node in nodes) {
