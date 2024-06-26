@@ -1,0 +1,14 @@
+//comments are ignored.
+//Next line raises unhandled line warning
+unhandled line
+nodes
+s0, true, false
+ s1, false, false
+s2, false, true
+//next line raises warning because of duplicated node configuration
+ s2, false, true
+edges
+s0, s1, S
+s1,s0,R
+//trailing, leading and whitespaces between terms are ignored
+s1 ,   s2  , prop1?

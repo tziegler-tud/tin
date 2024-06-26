@@ -1,0 +1,21 @@
+formula
+q(x,y) = exists(z).phi(R1(x,z) and R2(y,z) and R3(z,z))
+// exists(x,y).phi(R1(x,z) and R2(y,z) and R3(z,z)) // this was the old input format that is deprecated since 2024-03-02
+graph R1
+nodes
+s0, true, false
+s1, false, true
+edges
+s0,s1,has-part
+s1,s1,has-part
+graph R2
+nodes
+s0, true, true
+edges
+s0, s0, has-part
+graph R3
+nodes
+s0, true, false
+s1, false, true
+edges
+s0, s1, Motor?

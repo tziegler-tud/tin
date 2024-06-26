@@ -1,0 +1,42 @@
+name: test_2rpq
+queryGraph:
+nodes:
+s0, true, false
+s1, false, false
+s2, false, true
+s3, false, false
+s4, false, true
+edges:
+s0, s1, -b
+s0, s3, c
+s1, s2, -b
+s3, s4, a
+transducerGraph:
+nodes:
+t0, true, true
+t2, true, false
+t3, false, false
+t4, false, true
+edges:
+t0, t0, -b, -b, 0
+t0, t0, c, c, 0
+t0, t0, a, a, 0
+t2, t3, -b, a, 2
+t2, t3, c, -a, 5
+t3, t4, -b, -b, 0
+t3, t4, a, a, 0
+databaseGraph:
+nodes:
+a
+b
+c
+d
+e
+f
+edges:
+a, b, B
+b, c, B
+a, d, C
+d, e, a
+d, f, a
+e, c, a

@@ -1,0 +1,23 @@
+formula
+q(x) = exists(y,z).phi(R3(x,z) and R4(y,z))
+graph R3
+nodes
+s0, true, false
+s1, false, false
+s2, false, false
+s3, false, true
+edges
+s0,s1, Car?
+s1,s2, is-part-of
+s2,s3, CarFleet?
+s3,s3, epsilon
+graph R4
+nodes
+s0, true, false
+s1, false, false
+s2, false, false
+s3, false, true
+edges
+s0,s1, Customer?
+s1,s2, rents
+s2,s3, CarFleet?
