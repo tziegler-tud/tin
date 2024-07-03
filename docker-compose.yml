@@ -27,7 +27,7 @@ services:
       - '6379:6379'
 
   wpmongo:
-    image: mongo:4.1-bionic
+    image: mongodb/mongodb-community-server:5.0.21-ubuntu2004-20240703T064600Z
   webprotege:
     image: protegeproject/webprotege
     restart: always
