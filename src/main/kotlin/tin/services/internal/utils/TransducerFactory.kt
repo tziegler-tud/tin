@@ -22,7 +22,7 @@ class TransducerFactory {
         }
 
         fun generateEditDistanceTransducer(joinedAlphabet: Alphabet): TransducerGraph {
-            return TODO()
+            return generateEditDistanceTransducer(joinedAlphabet, joinedAlphabet,)
         }
 
         fun generateEditDistanceTransducer(queryAlphabet: Alphabet, databaseAlphabet: Alphabet): TransducerGraph {
