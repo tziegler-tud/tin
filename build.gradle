@@ -23,6 +23,7 @@ buildscript {
         classpath("org.jetbrains.kotlin:kotlin-allopen:${kotlinVersion}")
         classpath("org.jetbrains.kotlin:kotlin-noarg:${kotlinVersion}")
         tsSourceClasses "com.tin:tin:0.0.1-SNAPSHOT"
+
     }
 }
 
@@ -69,6 +70,10 @@ dependencies {
     // database
     runtimeOnly 'com.h2database:h2'
     runtimeOnly 'mysql:mysql-connector-java'
+
+    //owl api
+    implementation group: 'net.sourceforge.owlapi', name: 'owlapi-distribution', version: '5.1.0'
+    implementation group: 'net.sourceforge.owlapi', name: 'org.semanticweb.hermit', version: '1.3.8.510'
 
     // other
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'

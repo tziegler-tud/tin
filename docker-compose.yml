@@ -29,7 +29,7 @@ services:
   wpmongo:
     image: mongodb/mongodb-community-server:5.0.21-ubuntu2004-20240703T064600Z
   webprotege:
-    image: protegeproject/webprotege
+    image: protegeproject/webprotege:latest
     restart: always
     environment:
       - webprotege.mongodb.host=wpmongo
