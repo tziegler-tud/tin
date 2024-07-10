@@ -72,8 +72,10 @@ dependencies {
     runtimeOnly 'mysql:mysql-connector-java'
 
     //owl api
-    implementation group: 'net.sourceforge.owlapi', name: 'owlapi-distribution', version: '5.1.0'
+    implementation group: 'net.sourceforge.owlapi', name: 'owlapi-distribution', version: '4.5.26'
     implementation group: 'net.sourceforge.owlapi', name: 'org.semanticweb.hermit', version: '1.3.8.510'
+    implementation group: 'io.github.liveontologies', name: 'elk-distribution-owlapi', version: '0.6.0'
+
 
     // other
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
