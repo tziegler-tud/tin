@@ -5,6 +5,7 @@ buildscript {
     }
     repositories {
         mavenCentral()
+        google()
 /*        mavenLocal()
         maven { url "https://plugins.gradle.org/m2/" }
         maven { url "https://jitpack.io" }
@@ -49,9 +50,21 @@ version = "0.0.1-SNAPSHOT"
     id 'maven-publish'
 }*/
 
-repositories {
-    mavenCentral()
-    mavenLocal()
+allprojects {
+    repositories {
+        mavenCentral()
+        mavenLocal()
+        google()
+    }
+}
+
+sourceSets.all {
+    configurations.getByName(runtimeClasspathConfigurationName) {
+        attributes.attribute(Attribute.of("org.gradle.jvm.environment", String), "standard-jvm")
+    }
+    configurations.getByName(compileClasspathConfigurationName) {
+        attributes.attribute(Attribute.of("org.gradle.jvm.environment", String), "standard-jvm")
+    }
 }
 
 dependencies {
@@ -74,8 +87,10 @@ dependencies {
     //owl api
     implementation group: 'net.sourceforge.owlapi', name: 'owlapi-distribution', version: '4.5.26'
     implementation group: 'net.sourceforge.owlapi', name: 'org.semanticweb.hermit', version: '1.3.8.510'
-    implementation group: 'io.github.liveontologies', name: 'elk-distribution-owlapi', version: '0.6.0'
+//    implementation group: 'io.github.liveontologies', name: 'elk-distribution-owlapi', version: '0.6.0'
+    implementation group: 'de.tu-dresden.inf.lat.jcel', name: 'jcel-owlapi', version: '0.24.1'
 
+    //google dependency
 
     // other
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'

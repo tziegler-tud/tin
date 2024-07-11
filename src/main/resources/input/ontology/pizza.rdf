@@ -1,0 +1,277 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="http://www.semanticweb.org/tom/ontologies/2024/3/untitled-ontology-9/"
+     xml:base="http://www.semanticweb.org/tom/ontologies/2024/3/untitled-ontology-9/"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:untitled-ontology-9="http://www.semanticweb.org/tom/ontologies/2024/3/untitled-ontology-9#">
+    <owl:Ontology rdf:about="http://www.semanticweb.org/tom/ontologies/2024/3/untitled-ontology-9"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.semanticweb.org/tom/ontologies/2024/3/untitled-ontology-9#contains -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/tom/ontologies/2024/3/untitled-ontology-9#contains">
+        <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2002/07/owl#topObjectProperty"/>
+        <owl:inverseOf rdf:resource="http://www.semanticweb.org/tom/ontologies/2024/3/untitled-ontology-9#is_contained"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#InverseFunctionalProperty"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/tom/ontologies/2024/3/untitled-ontology-9#is_contained -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/tom/ontologies/2024/3/untitled-ontology-9#is_contained">
+        <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2002/07/owl#topObjectProperty"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#InverseFunctionalProperty"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/tom/ontologies/2024/3/untitled-ontology-9#serves -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/tom/ontologies/2024/3/untitled-ontology-9#serves">
+        <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2002/07/owl#topObjectProperty"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Data properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.semanticweb.org/tom/ontologies/2024/3/untitled-ontology-9#serves -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/tom/ontologies/2024/3/untitled-ontology-9#serves">
+        <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2002/07/owl#topDataProperty"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.semanticweb.org/tom/ontologies/2024/3/untitled-ontology-9#Bread -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/tom/ontologies/2024/3/untitled-ontology-9#Bread">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/tom/ontologies/2024/3/untitled-ontology-9#Ingredients"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.semanticweb.org/tom/ontologies/2024/3/untitled-ontology-9#contains"/>
+                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/tom/ontologies/2024/3/untitled-ontology-9#Flour"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/tom/ontologies/2024/3/untitled-ontology-9#Bruscetta -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/tom/ontologies/2024/3/untitled-ontology-9#Bruscetta">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/tom/ontologies/2024/3/untitled-ontology-9#Meal"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.semanticweb.org/tom/ontologies/2024/3/untitled-ontology-9#contains"/>
+                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/tom/ontologies/2024/3/untitled-ontology-9#Bread"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/tom/ontologies/2024/3/untitled-ontology-9#Carbonara -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/tom/ontologies/2024/3/untitled-ontology-9#Carbonara">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/tom/ontologies/2024/3/untitled-ontology-9#Meal"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.semanticweb.org/tom/ontologies/2024/3/untitled-ontology-9#contains"/>
+                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/tom/ontologies/2024/3/untitled-ontology-9#Egg"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.semanticweb.org/tom/ontologies/2024/3/untitled-ontology-9#contains"/>
+                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/tom/ontologies/2024/3/untitled-ontology-9#Pasta"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/tom/ontologies/2024/3/untitled-ontology-9#Chicken -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/tom/ontologies/2024/3/untitled-ontology-9#Chicken">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/tom/ontologies/2024/3/untitled-ontology-9#Ingredients"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.semanticweb.org/tom/ontologies/2024/3/untitled-ontology-9#contains"/>
+                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/tom/ontologies/2024/3/untitled-ontology-9#Egg"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/tom/ontologies/2024/3/untitled-ontology-9#Egg -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/tom/ontologies/2024/3/untitled-ontology-9#Egg">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/tom/ontologies/2024/3/untitled-ontology-9#Ingredients"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.semanticweb.org/tom/ontologies/2024/3/untitled-ontology-9#contains"/>
+                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/tom/ontologies/2024/3/untitled-ontology-9#Chicken"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/tom/ontologies/2024/3/untitled-ontology-9#Flour -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/tom/ontologies/2024/3/untitled-ontology-9#Flour">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/tom/ontologies/2024/3/untitled-ontology-9#Ingredients"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.semanticweb.org/tom/ontologies/2024/3/untitled-ontology-9#contains"/>
+                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/tom/ontologies/2024/3/untitled-ontology-9#Gluten"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/tom/ontologies/2024/3/untitled-ontology-9#Gluten -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/tom/ontologies/2024/3/untitled-ontology-9#Gluten">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/tom/ontologies/2024/3/untitled-ontology-9#Ingredients"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/tom/ontologies/2024/3/untitled-ontology-9#Ingredients -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/tom/ontologies/2024/3/untitled-ontology-9#Ingredients"/>
+    
+
+
+    <!-- http://www.semanticweb.org/tom/ontologies/2024/3/untitled-ontology-9#Meal -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/tom/ontologies/2024/3/untitled-ontology-9#Meal"/>
+    
+
+
+    <!-- http://www.semanticweb.org/tom/ontologies/2024/3/untitled-ontology-9#Pasta -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/tom/ontologies/2024/3/untitled-ontology-9#Pasta">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/tom/ontologies/2024/3/untitled-ontology-9#Ingredients"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.semanticweb.org/tom/ontologies/2024/3/untitled-ontology-9#contains"/>
+                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/tom/ontologies/2024/3/untitled-ontology-9#Flour"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/tom/ontologies/2024/3/untitled-ontology-9#Restaurant -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/tom/ontologies/2024/3/untitled-ontology-9#Restaurant"/>
+    
+
+
+    <!-- http://www.semanticweb.org/tom/ontologies/2024/3/untitled-ontology-9#Vegan -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/tom/ontologies/2024/3/untitled-ontology-9#Vegan">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/tom/ontologies/2024/3/untitled-ontology-9#Meal"/>
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/tom/ontologies/2024/3/untitled-ontology-9#Vegan"/>
+    </owl:Class>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Individuals
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.semanticweb.org/tom/ontologies/2024/3/untitled-ontology-9#bruschetta -->
+
+    <owl:NamedIndividual rdf:about="http://www.semanticweb.org/tom/ontologies/2024/3/untitled-ontology-9#bruschetta">
+        <rdf:type rdf:resource="http://www.semanticweb.org/tom/ontologies/2024/3/untitled-ontology-9#Bruscetta"/>
+        <rdf:type rdf:resource="http://www.semanticweb.org/tom/ontologies/2024/3/untitled-ontology-9#Vegan"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.semanticweb.org/tom/ontologies/2024/3/untitled-ontology-9#carbonara -->
+
+    <owl:NamedIndividual rdf:about="http://www.semanticweb.org/tom/ontologies/2024/3/untitled-ontology-9#carbonara">
+        <rdf:type rdf:resource="http://www.semanticweb.org/tom/ontologies/2024/3/untitled-ontology-9#Carbonara"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.semanticweb.org/tom/ontologies/2024/3/untitled-ontology-9#r -->
+
+    <owl:NamedIndividual rdf:about="http://www.semanticweb.org/tom/ontologies/2024/3/untitled-ontology-9#r">
+        <rdf:type rdf:resource="http://www.semanticweb.org/tom/ontologies/2024/3/untitled-ontology-9#Restaurant"/>
+        <untitled-ontology-9:serves rdf:resource="http://www.semanticweb.org/tom/ontologies/2024/3/untitled-ontology-9#bruschetta"/>
+        <untitled-ontology-9:serves rdf:resource="http://www.semanticweb.org/tom/ontologies/2024/3/untitled-ontology-9#carbonara"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // General axioms
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    <owl:Restriction>
+        <owl:onProperty rdf:resource="http://www.semanticweb.org/tom/ontologies/2024/3/untitled-ontology-9#is_contained"/>
+        <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/tom/ontologies/2024/3/untitled-ontology-9#Vegan"/>
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/tom/ontologies/2024/3/untitled-ontology-9#Vegan"/>
+    </owl:Restriction>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 4.5.29.2024-05-13T12:11:03Z) https://github.com/owlcs/owlapi -->
+
