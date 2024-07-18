@@ -12,6 +12,7 @@ import org.semanticweb.owlapi.util.InferredEquivalentClassAxiomGenerator
 import org.semanticweb.owlapi.util.InferredSubClassAxiomGenerator
 
 import org.semanticweb.HermiT.Reasoner as HermitReasoner
+import org.semanticweb.HermiT.ReasonerFactory as HermitReasonerFactory
 import de.tudresden.inf.lat.jcel.owlapi.main.JcelReasonerFactory;
 import org.semanticweb.owlapi.model.parameters.Imports
 import java.io.File
@@ -22,16 +23,18 @@ class OntologyManager() {
     private val manager = OWLManager.createOWLOntologyManager();
     private lateinit var ontology: OWLOntology;
     private lateinit var reasoner: OWLReasoner;
+    private var currentReasoner = BuildInReasoners.NONE;
 
     enum class BuildInReasoners {
-        ELK, JCEL, HERMIT
+        NONE, ELK, JCEL, HERMIT
+
     }
 
     fun loadOntology(path: String){
 
     }
 
-    fun loadOntology(file: File) {
+    fun loadOntology(file: File): OWLOntology {
         ontology = manager.loadOntologyFromOntologyDocument(file);
         //extract some ontology insights for testing
         val aboxAxioms = ontology.getABoxAxioms(Imports.EXCLUDED);
@@ -42,30 +45,38 @@ class OntologyManager() {
         println("Tbox axioms: $tboxAxioms");
         println("Signature: $signature");
 
-        return;
+        return ontology;
     }
 
-    fun loadReasoner(reasonerName: BuildInReasoners, ontology: OWLOntology) {
+    fun loadReasoner(reasonerName: BuildInReasoners): Boolean {
 
+        if(!this::ontology.isInitialized){
+            print("Failed to load reasoner: No ontology is loaded.");
+            return false;
+        }
         val reasonerFactory: OWLReasonerFactory;
         when (reasonerName) {
             BuildInReasoners.ELK -> {
 //                reasonerFactory = ElkReasonerFactory();
                 //strange dependency problem with google guava 32.2.0
                 //TODO: find a fix or throw out ELK support
-                return;
+                currentReasoner = BuildInReasoners.NONE;
+                return false;
             }
             BuildInReasoners.JCEL -> {
+                currentReasoner = reasonerName;
                 reasonerFactory = JcelReasonerFactory();
 
             }
             BuildInReasoners.HERMIT -> {
-                reasonerFactory = HermitReasoner.ReasonerFactory();
+                currentReasoner = reasonerName;
+                reasonerFactory = HermitReasonerFactory();
 
             }
             else -> {
+                currentReasoner = BuildInReasoners.NONE;
                 print("Failed to load reasoner: Unknown reasoner name given.");
-                return;
+                return false;
             }
         }
         reasoner = reasonerFactory.createReasoner(ontology)
@@ -78,6 +89,7 @@ class OntologyManager() {
 //        val gens: MutableList<InferredAxiomGenerator<out OWLAxiom?>> = ArrayList()
 //        gens.add(InferredSubClassAxiomGenerator())
 //        gens.add(InferredEquivalentClassAxiomGenerator())
+        return true;
     }
 
     fun getOntologyInfo(): OntologyInfoData {
@@ -85,7 +97,8 @@ class OntologyManager() {
         val aboxAxioms = ontology.getABoxAxioms(Imports.EXCLUDED);
         val tboxAxioms = ontology.getTBoxAxioms(Imports.EXCLUDED);
         val signature = ontology.getSignature(Imports.EXCLUDED);
+        val reasoner = currentReasoner;
 
-        return OntologyInfoData(name.toString(), aboxAxioms, tboxAxioms, signature);
+        return OntologyInfoData(name.toString(), aboxAxioms, tboxAxioms, signature, reasoner);
     }
 }

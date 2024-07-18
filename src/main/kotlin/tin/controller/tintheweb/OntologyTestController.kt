@@ -26,6 +26,7 @@ class OntologyTestController(
         val result: FileReaderResult<File> = ontologyReaderService.read("pizza.rdf");
 
         manager.loadOntology(result.get());
+        manager.loadReasoner(OntologyManager.BuildInReasoners.HERMIT)
         val info: OntologyInfoData = manager.getOntologyInfo();
         return OntologyData(info)
     }
@@ -37,6 +38,7 @@ class OntologyTestController(
         val result: FileReaderResult<File> = ontologyReaderService.read(filename);
 
         manager.loadOntology(result.get());
+        manager.loadReasoner(OntologyManager.BuildInReasoners.HERMIT)
         val info: OntologyInfoData = manager.getOntologyInfo();
         return OntologyData(info)
     }
