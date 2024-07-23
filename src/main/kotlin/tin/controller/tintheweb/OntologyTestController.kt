@@ -1,5 +1,6 @@
 package tin.controller.tintheweb
 
+import OnotlogyTestPostData
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.*
 import tin.data.tintheweb.ontology.OntologyData
@@ -20,13 +21,16 @@ class OntologyTestController(
     lateinit var ontologyReaderService: OntologyReaderService
 
     @PostMapping("ontology/load")
-    fun loadTestOntology(): OntologyData {
+    fun loadTestOntology(@RequestBody data: OnotlogyTestPostData): OntologyData {
+        //parse reasoner name
+        val reasoner = OntologyManager.BuildInReasoners.valueOf(data.reasonerName);
+
         val manager = OntologyManager();
         //get ontology file
-        val result: FileReaderResult<File> = ontologyReaderService.read("pizza.rdf");
+        val result: FileReaderResult<File> = ontologyReaderService.read(data.filename);
 
         manager.loadOntology(result.get());
-        manager.loadReasoner(OntologyManager.BuildInReasoners.HERMIT)
+        manager.loadReasoner(reasoner)
         val info: OntologyInfoData = manager.getOntologyInfo();
         return OntologyData(info)
     }

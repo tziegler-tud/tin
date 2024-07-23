@@ -1,6 +1,5 @@
 package tin.services.ontology
 
-//import org.semanticweb.elk.owlapi.ElkReasonerFactory
 import org.semanticweb.owlapi.apibinding.OWLManager
 import org.semanticweb.owlapi.model.OWLAxiom
 import org.semanticweb.owlapi.model.OWLOntology
@@ -10,6 +9,9 @@ import org.semanticweb.owlapi.reasoner.OWLReasonerFactory
 import org.semanticweb.owlapi.util.InferredAxiomGenerator
 import org.semanticweb.owlapi.util.InferredEquivalentClassAxiomGenerator
 import org.semanticweb.owlapi.util.InferredSubClassAxiomGenerator
+
+import org.semanticweb.elk.owlapi.ElkReasoner
+import org.semanticweb.elk.owlapi.ElkReasonerFactory
 
 import de.uni_stuttgart.vis.vowl.owl2vowl.Owl2Vowl
 import org.semanticweb.HermiT.Reasoner as HermitReasoner
@@ -66,8 +68,8 @@ class OntologyManager() {
 //                reasonerFactory = ElkReasonerFactory();
                 //strange dependency problem with google guava 32.2.0
                 //TODO: find a fix or throw out ELK support
-                currentReasoner = BuildInReasoners.NONE;
-                return false;
+                currentReasoner = reasonerName;
+                reasonerFactory = ElkReasonerFactory();
             }
             BuildInReasoners.JCEL -> {
                 currentReasoner = reasonerName;
@@ -81,7 +83,7 @@ class OntologyManager() {
             }
             else -> {
                 currentReasoner = BuildInReasoners.NONE;
-                print("Failed to load reasoner: Unknown reasoner name given.");
+                println("Failed to load reasoner: Unknown reasoner name given.");
                 return false;
             }
         }
