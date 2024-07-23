@@ -11,6 +11,7 @@ import org.semanticweb.owlapi.util.InferredAxiomGenerator
 import org.semanticweb.owlapi.util.InferredEquivalentClassAxiomGenerator
 import org.semanticweb.owlapi.util.InferredSubClassAxiomGenerator
 
+import de.uni_stuttgart.vis.vowl.owl2vowl.Owl2Vowl
 import org.semanticweb.HermiT.Reasoner as HermitReasoner
 import org.semanticweb.HermiT.ReasonerFactory as HermitReasonerFactory
 import de.tudresden.inf.lat.jcel.owlapi.main.JcelReasonerFactory;
@@ -44,6 +45,11 @@ class OntologyManager() {
         println("Abox axioms: $aboxAxioms");
         println("Tbox axioms: $tboxAxioms");
         println("Signature: $signature");
+
+        //create json represantation for vowl
+        val vowlJson = Owl2Vowl(ontology).getJsonAsString();
+        //save to json file
+        saveToJson(file.getName(), vowlJson)
 
         return ontology;
     }
@@ -100,5 +106,11 @@ class OntologyManager() {
         val reasoner = currentReasoner;
 
         return OntologyInfoData(name.toString(), aboxAxioms, tboxAxioms, signature, reasoner);
+    }
+
+    private fun saveToJson(filename: String, jsonString: String){
+        val f = File("src/main/resources/vowl/$filename.json")
+        f.createNewFile()
+        f.writeText(jsonString)
     }
 }
