@@ -16,7 +16,7 @@ import org.semanticweb.elk.owlapi.ElkReasonerFactory
 import de.uni_stuttgart.vis.vowl.owl2vowl.Owl2Vowl
 import org.semanticweb.HermiT.Reasoner as HermitReasoner
 import org.semanticweb.HermiT.ReasonerFactory as HermitReasonerFactory
-import de.tudresden.inf.lat.jcel.owlapi.main.JcelReasonerFactory;
+//import de.tudresden.inf.lat.jcel.owlapi.main.JcelReasonerFactory;
 import org.semanticweb.owlapi.model.parameters.Imports
 import java.io.File
 
@@ -72,8 +72,10 @@ class OntologyManager() {
                 reasonerFactory = ElkReasonerFactory();
             }
             BuildInReasoners.JCEL -> {
-                currentReasoner = reasonerName;
-                reasonerFactory = JcelReasonerFactory();
+                //JCEL currently does not support OWLAPI 5.5, disable for now
+                currentReasoner = BuildInReasoners.NONE;
+//                reasonerFactory = JcelReasonerFactory();
+                return false;
 
             }
             BuildInReasoners.HERMIT -> {
