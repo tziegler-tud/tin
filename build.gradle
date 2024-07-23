@@ -58,14 +58,14 @@ allprojects {
     }
 }
 
-sourceSets.all {
-    configurations.getByName(runtimeClasspathConfigurationName) {
-        attributes.attribute(Attribute.of("org.gradle.jvm.environment", String), "standard-jvm")
-    }
-    configurations.getByName(compileClasspathConfigurationName) {
-        attributes.attribute(Attribute.of("org.gradle.jvm.environment", String), "standard-jvm")
-    }
-}
+//sourceSets.all {
+//    configurations.getByName(runtimeClasspathConfigurationName) {
+//        attributes.attribute(Attribute.of("org.gradle.jvm.environment", String), "standard-jvm")
+//    }
+//    configurations.getByName(compileClasspathConfigurationName) {
+//        attributes.attribute(Attribute.of("org.gradle.jvm.environment", String), "standard-jvm")
+//    }
+//}
 
 dependencies {
     // kotlin
@@ -87,7 +87,7 @@ dependencies {
     //owl api
     implementation group: 'net.sourceforge.owlapi', name: 'owlapi-distribution', version: '5.5.0'
     implementation group: 'net.sourceforge.owlapi', name: 'org.semanticweb.hermit', version: '1.4.5.519'
-    //    implementation group: 'io.github.liveontologies', name: 'elk-distribution-owlapi', version: '0.6.0'
+        implementation group: 'io.github.liveontologies', name: 'elk-owlapi', version: '0.6.0'
     implementation group: 'de.tu-dresden.inf.lat.jcel', name: 'jcel-owlapi', version: '0.24.1'
 
     //owl2vowl
