@@ -5,4 +5,5 @@ enum class FileType {
     RegularPathQuery,
     Database,
     Transducer,
+    Ontology,
 }

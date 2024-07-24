@@ -19,15 +19,6 @@ abstract class QueryResult(
     @GeneratedValue
     @Id
     open val id: Long = 0
-
-    enum class QueryResultStatus {
-        NoError,
-        QueryFileNotFound,
-        TransducerFileNotFound,
-        DatabaseFileNotFound,
-        ErrorInComputationMode,
-        ErrorInComputationProperties
-    }
 }
 
 interface QueryResultRepository : JpaRepository<QueryResult, Long> {

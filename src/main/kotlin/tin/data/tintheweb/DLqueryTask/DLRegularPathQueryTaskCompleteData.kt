@@ -1,4 +1,4 @@
-package tin.data.tintheweb.queryTask
+package tin.data.tintheweb.DLqueryTask
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import tin.data.tintheweb.queryResult.RegularPathQueryResultData
@@ -6,12 +6,12 @@ import tin.model.queryResult.RegularPathQueryResult
 import tin.model.queryTask.QueryTask
 import java.util.*
 
-class RegularPathQueryTaskCompleteData(
+class DLRegularPathQueryTaskCompleteData(
     @JsonProperty("id") val id: Long?,
     @JsonProperty("computationProperties") val computationProperties: ComputationPropertiesData,
     @JsonProperty("queryFileIdentifier") val queryFileIdentifier: Long,
     @JsonProperty("transducerFileIdentifier") val transducerFileIdentifier: Long?,
-    @JsonProperty("databaseFileIdentifier") val databaseFileIdentifier: Long,
+    @JsonProperty("ontologyFileIdentifier") val ontologyFileIdentifier: Long,
     @JsonProperty("queryStatus") val queryStatus: QueryTask.QueryStatus,
     @JsonProperty("queryResult") val queryResult: RegularPathQueryResultData?,
     @JsonProperty("createdAt") val createdAt: Date
@@ -21,7 +21,7 @@ class RegularPathQueryTaskCompleteData(
         computationProperties = ComputationPropertiesData(model.computationProperties),
         queryFileIdentifier = model.queryFileIdentifier,
         transducerFileIdentifier = model.transducerFileIdentifier,
-        databaseFileIdentifier = model.dataSourceFileIdentifier,
+        ontologyFileIdentifier = model.dataSourceFileIdentifier,
         queryStatus = model.queryStatus,
         queryResult = model.queryResult?.let { RegularPathQueryResultData(it.first() as RegularPathQueryResult) },
         createdAt = model.createdAt
@@ -29,17 +29,16 @@ class RegularPathQueryTaskCompleteData(
 
 }
 
-class QueryTaskCreateData(
+class DLQueryTaskCreateData(
     @JsonProperty("computationProperties") val computationProperties: ComputationPropertiesData,
     @JsonProperty("queryFileIdentifier") val queryFileIdentifier: Long,
     @JsonProperty("transducerFileIdentifier") val transducerFileIdentifier: Long?,
-    @JsonProperty("databaseFileIdentifier") val databaseFileIdentifier: Long,
+    @JsonProperty("ontologyFileIdentifier") val ontologyFileIdentifier: Long,
 ) {
     constructor(model: QueryTask) : this(
         computationProperties = ComputationPropertiesData(model.computationProperties),
         queryFileIdentifier = model.queryFileIdentifier,
         transducerFileIdentifier = model.transducerFileIdentifier,
-        databaseFileIdentifier = model.dataSourceFileIdentifier,
+        ontologyFileIdentifier = model.dataSourceFileIdentifier,
     )
-
 }

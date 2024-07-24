@@ -28,13 +28,14 @@ import tin.services.internal.utils.TransducerFactory
 import tin.services.technical.SystemConfigurationService
 import tin.utils.findByIdentifier
 import tin.services.internal.fileReaders.DatabaseReaderService
+import tin.services.internal.fileReaders.OntologyReaderService
 import tin.services.internal.fileReaders.QueryReaderService
 import tin.services.internal.fileReaders.TransducerReaderService
 import tin.services.internal.fileReaders.fileReaderResult.FileReaderResult
 import kotlin.system.measureNanoTime
 
 @Service
-class RegularPathQueryAnsweringService(
+class DLRegularPathQueryAnsweringService(
     private val fileRepository: FileRepository,
     private val queryTaskRepository: QueryTaskRepository,
     private val queryResultRepository: QueryResultRepository,
@@ -47,7 +48,7 @@ class RegularPathQueryAnsweringService(
     lateinit var queryReaderService: QueryReaderService
 
     @Autowired
-    lateinit var databaseReaderService: DatabaseReaderService
+    lateinit var ontologyReaderService: OntologyReaderService
 
     @Autowired
     lateinit var transducerReaderService: TransducerReaderService
@@ -131,7 +132,7 @@ class RegularPathQueryAnsweringService(
         val queryGraph = queryReaderResult.get()
 
         val databaseReaderResult =
-            databaseReaderService.read(systemConfigurationService.getDatabasePath(), databaseFileDb.filename)
+            ontologyReaderService.read(systemConfigurationService.getDatabasePath(), databaseFileDb.filename)
         val databaseGraph = databaseReaderResult.get()
 
         val transducerGraph: TransducerGraph

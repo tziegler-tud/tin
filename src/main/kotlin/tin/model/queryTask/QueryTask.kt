@@ -9,7 +9,7 @@ import javax.persistence.*
 class QueryTask(
     val queryFileIdentifier: Long,
     val transducerFileIdentifier: Long?,
-    val databaseFileIdentifier: Long,
+    val dataSourceFileIdentifier: Long,
     var queryStatus: QueryStatus,
     val queryType: QueryType,
 
@@ -36,6 +36,7 @@ class QueryTask(
     enum class QueryType {
         regularPathQuery,
         conjunctiveQuery,
+        DLQuery,
     }
 }
 

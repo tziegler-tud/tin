@@ -1,6 +1,7 @@
 package tin.model.queryResult.conjunctiveQueryResult
 
 import tin.model.queryResult.QueryResult
+import tin.model.queryResult.QueryResultStatus
 import tin.model.queryResult.RegularPathQueryResult
 import tin.model.queryResult.computationStatistics.ConjunctiveComputationStatistics
 import tin.model.queryTask.QueryTask
