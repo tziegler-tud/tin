@@ -25,11 +25,10 @@ class OntologyTestController(
         //parse reasoner name
         val reasoner = OntologyManager.BuildInReasoners.valueOf(data.reasonerName);
 
-        val manager = OntologyManager();
         //get ontology file
         val result: FileReaderResult<File> = ontologyReaderService.read(data.filename);
 
-        manager.loadOntology(result.get());
+        val manager = OntologyManager(result.get());
         manager.loadReasoner(reasoner)
         val info: OntologyInfoData = manager.getOntologyInfo();
         return OntologyData(info)
@@ -37,11 +36,10 @@ class OntologyTestController(
 
     @GetMapping("ontology/info/{filename}")
     fun getOntologyInfo(@PathVariable filename: String): OntologyData {
-        val manager = OntologyManager();
         //get ontology file
         val result: FileReaderResult<File> = ontologyReaderService.read(filename);
 
-        manager.loadOntology(result.get());
+        val manager = OntologyManager(result.get());
         manager.loadReasoner(OntologyManager.BuildInReasoners.HERMIT)
         val info: OntologyInfoData = manager.getOntologyInfo();
         return OntologyData(info)

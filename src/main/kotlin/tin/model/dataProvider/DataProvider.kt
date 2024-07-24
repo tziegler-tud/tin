@@ -10,5 +10,4 @@ abstract class DataProvider (
     var databaseGraph: DatabaseGraph,
 ){
     var dataSetIdentifier: String? = null
-
 }

@@ -1,14 +1,10 @@
 package tin.services.ontology
 
 import org.semanticweb.owlapi.apibinding.OWLManager
-import org.semanticweb.owlapi.model.OWLAxiom
 import org.semanticweb.owlapi.model.OWLOntology
 import org.semanticweb.owlapi.reasoner.InferenceType
 import org.semanticweb.owlapi.reasoner.OWLReasoner
 import org.semanticweb.owlapi.reasoner.OWLReasonerFactory
-import org.semanticweb.owlapi.util.InferredAxiomGenerator
-import org.semanticweb.owlapi.util.InferredEquivalentClassAxiomGenerator
-import org.semanticweb.owlapi.util.InferredSubClassAxiomGenerator
 
 import org.semanticweb.elk.owlapi.ElkReasoner
 import org.semanticweb.elk.owlapi.ElkReasonerFactory
@@ -18,27 +14,22 @@ import org.semanticweb.HermiT.Reasoner as HermitReasoner
 import org.semanticweb.HermiT.ReasonerFactory as HermitReasonerFactory
 //import de.tudresden.inf.lat.jcel.owlapi.main.JcelReasonerFactory;
 import org.semanticweb.owlapi.model.parameters.Imports
+import tin.model.alphabet.Alphabet
 import java.io.File
 
 
-class OntologyManager() {
+class OntologyManager(val file: File) {
 
     private val manager = OWLManager.createOWLOntologyManager();
-    private lateinit var ontology: OWLOntology;
+    private val ontology: OWLOntology = manager.loadOntologyFromOntologyDocument(file);
     private lateinit var reasoner: OWLReasoner;
     private var currentReasoner = BuildInReasoners.NONE;
 
     enum class BuildInReasoners {
         NONE, ELK, JCEL, HERMIT
-
     }
 
-    fun loadOntology(path: String){
-
-    }
-
-    fun loadOntology(file: File): OWLOntology {
-        ontology = manager.loadOntologyFromOntologyDocument(file);
+    init {
         //extract some ontology insights for testing
         val aboxAxioms = ontology.getABoxAxioms(Imports.EXCLUDED);
         val tboxAxioms = ontology.getTBoxAxioms(Imports.EXCLUDED);
@@ -52,16 +43,10 @@ class OntologyManager() {
         val vowlJson = Owl2Vowl(ontology).getJsonAsString();
         //save to json file
         saveToJson(file.getName(), vowlJson)
-
-        return ontology;
     }
 
     fun loadReasoner(reasonerName: BuildInReasoners): Boolean {
 
-        if(!this::ontology.isInitialized){
-            print("Failed to load reasoner: No ontology is loaded.");
-            return false;
-        }
         val reasonerFactory: OWLReasonerFactory;
         when (reasonerName) {
             BuildInReasoners.ELK -> {
@@ -110,6 +95,11 @@ class OntologyManager() {
         val reasoner = currentReasoner;
 
         return OntologyInfoData(name.toString(), aboxAxioms, tboxAxioms, signature, reasoner);
+    }
+
+    fun getAlphabet(): Alphabet {
+        //TODO: Implement
+        return Alphabet();
     }
 
     private fun saveToJson(filename: String, jsonString: String){

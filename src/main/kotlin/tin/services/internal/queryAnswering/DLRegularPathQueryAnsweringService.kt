@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import tin.model.alphabet.Alphabet
+import tin.model.dataProvider.OntologyQueryDataProvider
 import tin.model.utils.ProductAutomatonTuple
 import tin.model.dataProvider.RegularPathQueryDataProvider
 import tin.model.productAutomaton.ProductAutomatonGraph
@@ -32,6 +33,7 @@ import tin.services.internal.fileReaders.OntologyReaderService
 import tin.services.internal.fileReaders.QueryReaderService
 import tin.services.internal.fileReaders.TransducerReaderService
 import tin.services.internal.fileReaders.fileReaderResult.FileReaderResult
+import tin.services.ontology.OntologyManager
 import kotlin.system.measureNanoTime
 
 @Service
@@ -69,28 +71,9 @@ class DLRegularPathQueryAnsweringService(
         var regularPathQueryResultStatus: QueryResultStatus = QueryResultStatus.NoError
 
 
-        when (queryTask.computationProperties.computationModeEnum) {
-            ComputationProperties.ComputationModeEnum.Dijkstra -> pairContainingCompStatsAndAnswerSet =
-                calculateDijkstra(dataProvider)
-
-            ComputationProperties.ComputationModeEnum.Threshold -> if (queryTask.computationProperties.thresholdValue == null) {
-                regularPathQueryResultStatus = QueryResultStatus.ErrorInComputationMode
-            } else {
-                pairContainingCompStatsAndAnswerSet = calculateThreshold(
-                    dataProvider, queryTask.computationProperties.thresholdValue
-                )
-            }
-
-            ComputationProperties.ComputationModeEnum.TopK -> if (queryTask.computationProperties.topKValue == null) {
-                regularPathQueryResultStatus = QueryResultStatus.ErrorInComputationMode
-            } else {
-                pairContainingCompStatsAndAnswerSet =
-                    calculateTopK(dataProvider, queryTask.computationProperties.topKValue)
-            }
-        }
+        //TODO: Call subservices to process query
 
         val regularPathQueryResult =
-
             // return if an error was found
             if (regularPathQueryResultStatus != QueryResultStatus.NoError) {
                 RegularPathQueryResult(
@@ -121,7 +104,7 @@ class DLRegularPathQueryAnsweringService(
         return regularPathQueryResult
     }
 
-    private fun buildDataProvider(data: QueryTask): RegularPathQueryDataProvider {
+    private fun buildDataProvider(data: QueryTask): OntologyQueryDataProvider {
 
         // find files
         val queryFileDb = fileRepository.findByIdentifier(data.queryFileIdentifier)
@@ -131,13 +114,19 @@ class DLRegularPathQueryAnsweringService(
             queryReaderService.read(systemConfigurationService.getQueryPath(), queryFileDb.filename)
         val queryGraph = queryReaderResult.get()
 
-        val databaseReaderResult =
+        val ontologyReaderResult =
             ontologyReaderService.read(systemConfigurationService.getDatabasePath(), databaseFileDb.filename)
-        val databaseGraph = databaseReaderResult.get()
+        val ontologyFile = ontologyReaderResult.get()
+
+
+
+        val ontologyManager = OntologyManager(ontologyFile)
+        val ontologyAlphabet = ontologyManager.getAlphabet();
 
         val transducerGraph: TransducerGraph
         val alphabet = Alphabet(queryGraph.alphabet)
-        alphabet.addAlphabet(databaseGraph.alphabet)
+        alphabet.addAlphabet(ontologyAlphabet)
+
 
         if (data.computationProperties.generateTransducer && data.computationProperties.transducerGeneration != null) {
             // generate transducer
@@ -147,7 +136,7 @@ class DLRegularPathQueryAnsweringService(
                 )
 
                 ComputationProperties.TransducerGeneration.EditDistance -> TransducerFactory.generateEditDistanceTransducer(
-                        queryGraph.alphabet, databaseGraph.alphabet
+                        queryGraph.alphabet, ontologyAlphabet
                 )
             }
         } else {
@@ -158,138 +147,13 @@ class DLRegularPathQueryAnsweringService(
             transducerGraph = transducerReaderResult.get()
         }
 
-        return RegularPathQueryDataProvider(
+        return OntologyQueryDataProvider(
             queryGraph = queryGraph,
             transducerGraph = transducerGraph,
-            databaseGraph = databaseGraph,
+            ontologyManager = ontologyManager,
             sourceVariableName = null,
             targetVariableName = null,
             alphabet = alphabet
         )
-    }
-
-    @Transactional
-    fun calculateDijkstra(regularPathQueryDataProvider: RegularPathQueryDataProvider): Pair<ComputationStatistics, Set<RegularPathQueryResult.AnswerTriplet>> {
-
-        val productAutomatonService = ProductAutomatonService()
-        val productAutomatonGraph: ProductAutomatonGraph
-        val answerMap: HashMap<ProductAutomatonTuple, Double>
-
-        val preprocessingTime = measureNanoTime {
-            productAutomatonGraph = productAutomatonService.constructProductAutomaton(regularPathQueryDataProvider)
-        }
-
-        val mainProcessingTime = measureNanoTime {
-            val dijkstra = Dijkstra(productAutomatonGraph)
-            answerMap = dijkstra.processDijkstraOverAllInitialNodes()
-        }
-
-        val transformedAnswerSet: Set<RegularPathQueryResult.AnswerTriplet>
-        val postProcessingTime = measureNanoTime {
-            transformedAnswerSet = dijkstraQueryAnsweringUtils.makeAnswerMapReadable(answerMap)
-        }
-
-        val combinedTime = preprocessingTime + mainProcessingTime + postProcessingTime
-
-        // we store milliseconds instead of nanoseconds, hence we need to 10^-6 all processingTimes
-        return Pair(
-           RegularPathComputationStatistics(
-                preprocessingTime / 1000000,
-                mainProcessingTime / 1000000,
-                postProcessingTime / 1000000,
-                combinedTime / 1000000
-            ), transformedAnswerSet
-        )
-    }
-
-    @Transactional
-    fun calculateThreshold(
-        regularPathQueryDataProvider: RegularPathQueryDataProvider, threshold: Double
-    ): Pair<ComputationStatistics, Set<RegularPathQueryResult.AnswerTriplet>> {
-
-        val productAutomatonService = ProductAutomatonService()
-        val productAutomatonGraph: ProductAutomatonGraph
-        var answerMap: HashMap<ProductAutomatonTuple, Double>
-
-        val preprocessingTime = measureNanoTime {
-            productAutomatonGraph = productAutomatonService.constructProductAutomaton(regularPathQueryDataProvider)
-        }
-
-        val mainProcessingTime = measureNanoTime {
-            val dijkstraThreshold = DijkstraThreshold(productAutomatonGraph, threshold)
-            answerMap = dijkstraThreshold.processDijkstraOverAllInitialNodes()
-        }
-
-        val transformedAnswerSet: Set<RegularPathQueryResult.AnswerTriplet>
-        val postProcessingTime = measureNanoTime {
-            answerMap = trimAnswerMapToThreshold(answerMap, threshold)
-            transformedAnswerSet = dijkstraQueryAnsweringUtils.makeAnswerMapReadable(answerMap)
-        }
-
-        val combinedTime = preprocessingTime + mainProcessingTime + postProcessingTime
-
-        // we store milliseconds instead of nanoseconds, hence we need to 10^-6 all processingTimes
-        return Pair(
-            RegularPathComputationStatistics(
-                preprocessingTime / 1000000,
-                mainProcessingTime / 1000000,
-                postProcessingTime / 1000000,
-                combinedTime / 1000000
-            ), transformedAnswerSet
-        )
-    }
-
-    @Transactional
-    fun calculateTopK(
-        regularPathQueryDataProvider: RegularPathQueryDataProvider,
-        kValue: Int
-    ): Pair<ComputationStatistics, Set<RegularPathQueryResult.AnswerTriplet>> {
-
-        val productAutomatonService = ProductAutomatonService()
-        val productAutomatonGraph: ProductAutomatonGraph
-        var answerMap: HashMap<ProductAutomatonTuple, Double>
-
-        val preprocessingTime = measureNanoTime {
-            productAutomatonGraph = productAutomatonService.constructProductAutomaton(regularPathQueryDataProvider)
-        }
-
-        val mainProcessingTime = measureNanoTime {
-            val dijkstraTopK = DijkstraTopK(productAutomatonGraph, kValue)
-            answerMap = dijkstraTopK.processDijkstraOverAllInitialNodes()
-        }
-
-        val transformedAnswerSet: Set<RegularPathQueryResult.AnswerTriplet>
-        val postProcessingTime = measureNanoTime {
-            answerMap = trimAnswerMapToTopK(answerMap, kValue)
-            transformedAnswerSet = dijkstraQueryAnsweringUtils.makeAnswerMapReadable(answerMap)
-        }
-
-        val combinedTime = preprocessingTime + mainProcessingTime + postProcessingTime
-
-        // we store milliseconds instead of nanoseconds, hence we need to 10^-6 all processingTimes
-        return Pair(
-        RegularPathComputationStatistics(
-                preprocessingTime / 1000000,
-                mainProcessingTime / 1000000,
-                postProcessingTime / 1000000,
-                combinedTime / 1000000
-            ), transformedAnswerSet
-        )
-    }
-
-    private fun trimAnswerMapToTopK(
-        answerMap: HashMap<ProductAutomatonTuple, Double>,
-        topK: Int
-    ): HashMap<ProductAutomatonTuple, Double> {
-        // sort the answerMap ascending by the Double value, then take the first topK elements, and return them as a new HashMap
-        return HashMap(answerMap.toList().sortedBy { (_, value) -> value }.take(topK).toMap())
-    }
-
-    private fun trimAnswerMapToThreshold(
-        answerMap: HashMap<ProductAutomatonTuple, Double>,
-        threshold: Double
-    ): HashMap<ProductAutomatonTuple, Double> {
-        // remove all elements whose value is larger than the threshold, then return the remaining HashMap
-        return HashMap(answerMap.filter { (_, value) -> value <= threshold })
     }
 }
