@@ -75,9 +75,9 @@
     
 
 
-    <!-- http://www.semanticweb.org/tindl/examples/1/pizza#Bruscetta -->
+    <!-- http://www.semanticweb.org/tindl/examples/1/pizza#Bruschetta -->
 
-    <owl:Class rdf:about="http://www.semanticweb.org/tindl/examples/1/pizza#Bruscetta">
+    <owl:Class rdf:about="http://www.semanticweb.org/tindl/examples/1/pizza#Bruschetta">
         <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/tindl/examples/1/pizza#Meal"/>
         <rdfs:subClassOf>
             <owl:Restriction>
@@ -214,7 +214,7 @@
     <!-- http://www.semanticweb.org/tindl/examples/1/pizza#bruschetta -->
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/tindl/examples/1/pizza#bruschetta">
-        <rdf:type rdf:resource="http://www.semanticweb.org/tindl/examples/1/pizza#Bruscetta"/>
+        <rdf:type rdf:resource="http://www.semanticweb.org/tindl/examples/1/pizza#Bruschetta"/>
         <rdf:type rdf:resource="http://www.semanticweb.org/tindl/examples/1/pizza#Vegan"/>
     </owl:NamedIndividual>
     
