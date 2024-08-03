@@ -40,21 +40,28 @@ class Alphabet {
 
     private var roleNames: HashSet<String>
     private var conceptNames: HashSet<String>
+    private var individualNames: HashSet<String>
     private var transformedConceptNames: HashSet<String>
 
     constructor(){
         this.roleNames = HashSet();
         this.conceptNames = HashSet();
+        this.individualNames = HashSet();
         this.transformedConceptNames = HashSet();
     }
     constructor(alphabet: Alphabet){
         this.roleNames = alphabet.getRoleNames();
         this.conceptNames = alphabet.getConceptNames();
+        this.individualNames = alphabet.getIndividualNames();
         this.transformedConceptNames = alphabet.getTransformedConceptNames();
     }
 
     public fun addRoleName(roleName: String) {
         roleNames.add(roleName)
+    }
+
+    public fun addRoleNames(roleNames: HashSet<String>){
+        roleNames.forEach { addRoleName(it) }
     }
 
     public fun addAlphabet(alphabet: Alphabet){
@@ -66,6 +73,18 @@ class Alphabet {
     public fun addConceptName(conceptName: String) {
         conceptNames.add(conceptName)
         transformedConceptNames.add(transformConceptName(conceptName));
+    }
+
+    public fun addConceptNames(conceptNames: HashSet<String>){
+        conceptNames.forEach { addConceptName(it) }
+    }
+
+    public fun addIndividualName(individualName: String) {
+        individualNames.add(individualName)
+    }
+
+    public fun addIndividualNames(individualNames: HashSet<String>){
+        individualNames.forEach { addIndividualName(it) }
     }
 
     public fun includes(identifier: String): Boolean {
@@ -98,6 +117,10 @@ class Alphabet {
         return this.conceptNames;
     }
 
+    public fun getIndividualNames(): HashSet<String> {
+        return this.individualNames;
+    }
+
     public fun getTransformedConceptNames(): HashSet<String> {
         return this.transformedConceptNames;
     }
@@ -109,6 +132,7 @@ class Alphabet {
         return (other is Alphabet)
                 && this.roleNames == other.getRoleNames()
                 && this.conceptNames == other.getConceptNames()
+                && this.individualNames == other.getIndividualNames()
     }
     override fun hashCode(): Int {
         return this.roleNames.hashCode() + this.conceptNames.hashCode()

@@ -30,16 +30,7 @@ class OntologyManager(val file: File) {
     }
 
     init {
-        //extract some ontology insights for testing
-        val aboxAxioms = ontology.getABoxAxioms(Imports.EXCLUDED);
-        val tboxAxioms = ontology.getTBoxAxioms(Imports.EXCLUDED);
-        val signature = ontology.getSignature(Imports.EXCLUDED);
-
-        println("Abox axioms: $aboxAxioms");
-        println("Tbox axioms: $tboxAxioms");
-        println("Signature: $signature");
-
-        //create json represantation for vowl
+        //create json representation for vowl
         val vowlJson = Owl2Vowl(ontology).getJsonAsString();
         //save to json file
         saveToJson(file.getName(), vowlJson)
@@ -98,8 +89,16 @@ class OntologyManager(val file: File) {
     }
 
     fun getAlphabet(): Alphabet {
-        //TODO: Implement
-        return Alphabet();
+        val classes = ontology.getClassesInSignature(Imports.EXCLUDED);
+        val properties = ontology.getObjectPropertiesInSignature(Imports.EXCLUDED);
+        val individuals = ontology.getIndividualsInSignature(Imports.EXCLUDED);
+
+        val alphabet = Alphabet();
+        //do not include top objects owl:Thing (the top class), owl:topObjectProperty (the top object property) , owl:topDataProperty
+        classes.forEach { if(!it.isTopEntity) alphabet.addConceptName(it.getIRI().getFragment()) }
+        properties.forEach { if(!it.isTopEntity) alphabet.addRoleName(it.getIRI().getFragment()) }
+        individuals.forEach { if(!it.isTopEntity) alphabet.addIndividualName(it.getIRI().getFragment()) }
+        return alphabet;
     }
 
     private fun saveToJson(filename: String, jsonString: String){
