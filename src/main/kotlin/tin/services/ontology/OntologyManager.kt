@@ -10,10 +10,14 @@ import org.semanticweb.elk.owlapi.ElkReasoner
 import org.semanticweb.elk.owlapi.ElkReasonerFactory
 
 import de.uni_stuttgart.vis.vowl.owl2vowl.Owl2Vowl
+import org.semanticweb.owlapi.expression.OWLExpressionParser
+import org.semanticweb.owlapi.manchestersyntax.parser.ManchesterOWLSyntaxClassExpressionParser
 import org.semanticweb.HermiT.Reasoner as HermitReasoner
 import org.semanticweb.HermiT.ReasonerFactory as HermitReasonerFactory
 //import de.tudresden.inf.lat.jcel.owlapi.main.JcelReasonerFactory;
 import org.semanticweb.owlapi.model.parameters.Imports
+import org.semanticweb.owlapi.util.ShortFormProvider
+import org.semanticweb.owlapi.util.SimpleShortFormProvider
 import tin.model.alphabet.Alphabet
 import java.io.File
 
@@ -22,6 +26,9 @@ class OntologyManager(val file: File) {
 
     private val manager = OWLManager.createOWLOntologyManager();
     private val ontology: OWLOntology = manager.loadOntologyFromOntologyDocument(file);
+    private val shortFormProvider: ShortFormProvider = SimpleShortFormProvider()
+    private var parser: DLQueryParser = DLQueryParser(ontology, shortFormProvider);
+
     private lateinit var reasoner: OWLReasoner;
     private var currentReasoner = BuildInReasoners.NONE;
 
@@ -34,6 +41,14 @@ class OntologyManager(val file: File) {
         val vowlJson = Owl2Vowl(ontology).getJsonAsString();
         //save to json file
         saveToJson(file.getName(), vowlJson)
+    }
+
+    fun getOntology(): OWLOntology {
+        return ontology;
+    }
+
+    fun getShortFormProvider(): ShortFormProvider{
+        return shortFormProvider
     }
 
     fun loadReasoner(reasonerName: BuildInReasoners): OWLReasoner {
@@ -85,6 +100,10 @@ class OntologyManager(val file: File) {
         else return null;
     }
 
+    fun getQueryParser(): DLQueryParser {
+        return parser;
+    }
+
     fun getOntologyInfo(): OntologyInfoData {
         val name = manager.getOntologyDocumentIRI(ontology);
         val aboxAxioms = ontology.getABoxAxioms(Imports.EXCLUDED);
@@ -102,9 +121,9 @@ class OntologyManager(val file: File) {
 
         val alphabet = Alphabet();
         //do not include top objects owl:Thing (the top class), owl:topObjectProperty (the top object property) , owl:topDataProperty
-        classes.forEach { if(!it.isTopEntity) alphabet.addConceptName(it.getIRI().getFragment()) }
-        properties.forEach { if(!it.isTopEntity) alphabet.addRoleName(it.getIRI().getFragment()) }
-        individuals.forEach { if(!it.isTopEntity) alphabet.addIndividualName(it.getIRI().getFragment()) }
+        classes.forEach { if(!it.isTopEntity) alphabet.addConceptName(shortFormProvider.getShortForm(it)) }
+        properties.forEach { if(!it.isTopEntity) alphabet.addRoleName(shortFormProvider.getShortForm(it)) }
+        individuals.forEach { if(!it.isTopEntity) alphabet.addIndividualName(shortFormProvider.getShortForm(it)) }
         return alphabet;
     }
 
