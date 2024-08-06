@@ -1,6 +1,7 @@
 package tin.services.ontology
 
 import org.junit.jupiter.api.Test
+import org.semanticweb.owlapi.model.OWLClassExpression
 import org.semanticweb.owlapi.reasoner.InferenceType
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -36,8 +37,12 @@ class OntologyManagerTest {
     @Test
     fun employHermitReasoner(){
         val manager = loadExampleOntology();
-        manager.loadReasoner(OntologyManager.BuildInReasoners.HERMIT)
-        manager.getOntologyInfo();
+        val reasoner = manager.loadReasoner(OntologyManager.BuildInReasoners.HERMIT)
+        val containsVegan = OWLClassExpression()
+        reasoner.getInstances(ec)
+
+        //test some reasoning tasks
+
 
         //use reasoner to answer simple subsumption
 
