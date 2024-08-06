@@ -36,7 +36,7 @@ class OntologyManager(val file: File) {
         saveToJson(file.getName(), vowlJson)
     }
 
-    fun loadReasoner(reasonerName: BuildInReasoners): Boolean {
+    fun loadReasoner(reasonerName: BuildInReasoners): OWLReasoner {
 
         val reasonerFactory: OWLReasonerFactory;
         when (reasonerName) {
@@ -46,13 +46,14 @@ class OntologyManager(val file: File) {
                 //TODO: find a fix or throw out ELK support
                 currentReasoner = reasonerName;
                 reasonerFactory = ElkReasonerFactory();
+                throw IllegalArgumentException("ELK Reasoner is currently not supported.")
+
             }
             BuildInReasoners.JCEL -> {
                 //JCEL currently does not support OWLAPI 5.5, disable for now
                 currentReasoner = BuildInReasoners.NONE;
 //                reasonerFactory = JcelReasonerFactory();
-                return false;
-
+                throw IllegalArgumentException("JCEL Reasoner is currently not supported.")
             }
             BuildInReasoners.HERMIT -> {
                 currentReasoner = reasonerName;
@@ -61,8 +62,7 @@ class OntologyManager(val file: File) {
             }
             else -> {
                 currentReasoner = BuildInReasoners.NONE;
-                println("Failed to load reasoner: Unknown reasoner name given.");
-                return false;
+                throw IllegalArgumentException("Failed to load reasoner: Unknown reasoner name given.");
             }
         }
         reasoner = reasonerFactory.createReasoner(ontology)
@@ -75,7 +75,14 @@ class OntologyManager(val file: File) {
 //        val gens: MutableList<InferredAxiomGenerator<out OWLAxiom?>> = ArrayList()
 //        gens.add(InferredSubClassAxiomGenerator())
 //        gens.add(InferredEquivalentClassAxiomGenerator())
-        return true;
+        return reasoner;
+    }
+
+    fun getReasoner(): OWLReasoner? {
+        if(this::reasoner.isInitialized){
+            return reasoner;
+        }
+        else return null;
     }
 
     fun getOntologyInfo(): OntologyInfoData {

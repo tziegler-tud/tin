@@ -28,7 +28,6 @@
     <owl:ObjectProperty rdf:about="http://www.semanticweb.org/tindl/examples/1/pizza#contains">
         <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2002/07/owl#topObjectProperty"/>
         <owl:inverseOf rdf:resource="http://www.semanticweb.org/tindl/examples/1/pizza#is_contained"/>
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#InverseFunctionalProperty"/>
     </owl:ObjectProperty>
     
 
@@ -37,7 +36,6 @@
 
     <owl:ObjectProperty rdf:about="http://www.semanticweb.org/tindl/examples/1/pizza#is_contained">
         <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2002/07/owl#topObjectProperty"/>
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#InverseFunctionalProperty"/>
     </owl:ObjectProperty>
     
 
