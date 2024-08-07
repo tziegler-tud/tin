@@ -43,7 +43,7 @@ class OntologyManagerTest {
     }
 
     @Test
-    fun testIndividualQueries(){
+    fun testInstanceQueries(){
         val manager = loadExampleOntology();
         val reasoner = manager.loadReasoner(OntologyManager.BuildInReasoners.HERMIT)
 
