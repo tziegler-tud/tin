@@ -81,15 +81,8 @@ class OntologyManager(val file: File) {
             }
         }
         reasoner = reasonerFactory.createReasoner(ontology)
-//
-//        // Classify the ontology.
+        // Classify the ontology.
         reasoner.precomputeInferences(InferenceType.CLASS_HIERARCHY)
-
-        // To generate an inferred ontology we use implementations of
-        // inferred axiom generators
-//        val gens: MutableList<InferredAxiomGenerator<out OWLAxiom?>> = ArrayList()
-//        gens.add(InferredSubClassAxiomGenerator())
-//        gens.add(InferredEquivalentClassAxiomGenerator())
         return reasoner;
     }
 
