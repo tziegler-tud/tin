@@ -108,14 +108,14 @@ class DLRegularPathQueryAnsweringService(
 
         // find files
         val queryFileDb = fileRepository.findByIdentifier(data.queryFileIdentifier)
-        val databaseFileDb = fileRepository.findByIdentifier(data.dataSourceFileIdentifier)
+        val ontologyFileDb = fileRepository.findByIdentifier(data.dataSourceFileIdentifier)
 
         val queryReaderResult: FileReaderResult<QueryGraph> =
             queryReaderService.read(systemConfigurationService.getQueryPath(), queryFileDb.filename)
         val queryGraph = queryReaderResult.get()
 
         val ontologyReaderResult =
-            ontologyReaderService.read(systemConfigurationService.getDatabasePath(), databaseFileDb.filename)
+            ontologyReaderService.read(systemConfigurationService.getOntologyPath(), ontologyFileDb.filename)
         val ontologyFile = ontologyReaderResult.get()
 
 
