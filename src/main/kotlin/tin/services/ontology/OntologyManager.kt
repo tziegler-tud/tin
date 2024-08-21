@@ -6,19 +6,18 @@ import org.semanticweb.owlapi.reasoner.InferenceType
 import org.semanticweb.owlapi.reasoner.OWLReasoner
 import org.semanticweb.owlapi.reasoner.OWLReasonerFactory
 
-import org.semanticweb.elk.owlapi.ElkReasoner
 import org.semanticweb.elk.owlapi.ElkReasonerFactory
 
 import de.uni_stuttgart.vis.vowl.owl2vowl.Owl2Vowl
-import org.semanticweb.owlapi.expression.OWLExpressionParser
-import org.semanticweb.owlapi.manchestersyntax.parser.ManchesterOWLSyntaxClassExpressionParser
-import org.semanticweb.HermiT.Reasoner as HermitReasoner
 import org.semanticweb.HermiT.ReasonerFactory as HermitReasonerFactory
 //import de.tudresden.inf.lat.jcel.owlapi.main.JcelReasonerFactory;
 import org.semanticweb.owlapi.model.parameters.Imports
 import org.semanticweb.owlapi.util.ShortFormProvider
 import org.semanticweb.owlapi.util.SimpleShortFormProvider
 import tin.model.alphabet.Alphabet
+import tin.services.ontology.OntologyExecutionContext.ExecutionContextType
+import tin.services.ontology.OntologyExecutionContext.OntologyExecutionContext
+import tin.services.ontology.OntologyExecutionContext.OntologyExecutionContextFactory
 import java.io.File
 
 
@@ -28,6 +27,7 @@ class OntologyManager(val file: File) {
     private val ontology: OWLOntology = manager.loadOntologyFromOntologyDocument(file);
     private val shortFormProvider: ShortFormProvider = SimpleShortFormProvider()
     private var parser: DLQueryParser = DLQueryParser(ontology, shortFormProvider);
+    private val executionContextFactory = OntologyExecutionContextFactory();
 
     private lateinit var reasoner: OWLReasoner;
     private var currentReasoner = BuildInReasoners.NONE;
@@ -124,5 +124,9 @@ class OntologyManager(val file: File) {
         val f = File("src/main/resources/vowl/$filename.json")
         f.createNewFile()
         f.writeText(jsonString)
+    }
+
+    fun createExecutionContext(executionContextType: ExecutionContextType): OntologyExecutionContext {
+        return executionContextFactory.create(executionContextType, this);
     }
 }

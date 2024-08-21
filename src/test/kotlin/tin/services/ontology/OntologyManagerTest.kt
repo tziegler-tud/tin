@@ -30,18 +30,19 @@ class OntologyManagerTest {
     @Autowired
     lateinit var systemConfigurationService: SystemConfigurationService;
 
-    private fun readWithFileReaderService(fileName: String, breakOnError: Boolean = false) : FileReaderResult<File> {
+    fun readWithFileReaderService(fileName: String, breakOnError: Boolean = false) : FileReaderResult<File> {
         var fileReaderService: OntologyReaderService = OntologyReaderService(systemConfigurationService);
         val testFilePath = systemConfigurationService.getOntologyPath();
         return fileReaderService.read(testFilePath, fileName, breakOnError);
     }
 
-    private fun loadExampleOntology() : OntologyManager {
+    fun loadExampleOntology() : OntologyManager {
         val exampleFile = readWithFileReaderService("pizza2.rdf").get()
         val manager = OntologyManager(exampleFile);
         return manager
     }
 
+//    private val ontologyTestUtils = OntologyTestUtils();
     @Test
     fun testInstanceQueries(){
         val manager = loadExampleOntology();
@@ -84,6 +85,7 @@ class OntologyManagerTest {
     @Test
     fun testClassSubsumption(){
         val manager = loadExampleOntology();
+
         val reasoner = manager.loadReasoner(OntologyManager.BuildInReasoners.HERMIT)
 
         //load parser
@@ -126,6 +128,7 @@ class OntologyManagerTest {
     @Test
     fun testAlphabet() {
         val manager = loadExampleOntology();
+
         val alphabet = manager.getAlphabet();
 
         val a = Alphabet();
