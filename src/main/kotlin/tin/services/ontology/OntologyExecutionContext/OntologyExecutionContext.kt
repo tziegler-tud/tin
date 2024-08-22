@@ -1,10 +1,22 @@
 package tin.services.ontology.OntologyExecutionContext
 
+import org.semanticweb.owlapi.apibinding.OWLManager
+import org.semanticweb.owlapi.model.OWLOntology
 import org.semanticweb.owlapi.model.parameters.Imports
+import org.semanticweb.owlapi.reasoner.OWLReasoner
+import org.semanticweb.owlapi.util.ShortFormProvider
+import org.semanticweb.owlapi.util.SimpleShortFormProvider
+import tin.services.ontology.DLQueryParser
 import tin.services.ontology.OntologyManager
 import kotlin.math.pow
 
-class OntologyExecutionContext(val manager: OntologyManager) {
+class OntologyExecutionContext() {
+
+    private val manager = OWLManager.createOWLOntologyManager();
+    private val ontology: OWLOntology = manager.loadOntologyFromOntologyDocument(file);
+    private val shortFormProvider: ShortFormProvider = SimpleShortFormProvider()
+    private var parser: DLQueryParser = DLQueryParser(ontology, shortFormProvider);
+    private lateinit var reasoner: OWLReasoner;
 
     private val alphabet = manager.getAlphabet()
     val conceptNames = alphabet.getConceptNames();

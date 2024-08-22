@@ -26,10 +26,7 @@ class OntologyManager(val file: File) {
     private val manager = OWLManager.createOWLOntologyManager();
     private val ontology: OWLOntology = manager.loadOntologyFromOntologyDocument(file);
     private val shortFormProvider: ShortFormProvider = SimpleShortFormProvider()
-    private var parser: DLQueryParser = DLQueryParser(ontology, shortFormProvider);
     private val executionContextFactory = OntologyExecutionContextFactory();
-
-    private lateinit var reasoner: OWLReasoner;
     private var currentReasoner = BuildInReasoners.NONE;
 
     enum class BuildInReasoners {

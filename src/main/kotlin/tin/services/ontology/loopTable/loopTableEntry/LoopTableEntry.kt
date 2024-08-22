@@ -8,4 +8,6 @@ interface LoopTableEntry {
     val source: Pair<QueryNode, TransducerNode>;
     val target: Pair<QueryNode, TransducerNode>
     val restriction: LoopTableEntryRestriction<Any>
+
+    fun hasEqualSourceAndTarget() : Boolean
 }

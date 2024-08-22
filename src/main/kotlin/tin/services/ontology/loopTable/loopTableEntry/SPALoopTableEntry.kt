@@ -9,4 +9,8 @@ class SPALoopTableEntry(
     override val target: Pair<QueryNode, TransducerNode>,
     override val restriction: ConceptNameRestriction,
     ) : LoopTableEntry {
+
+    override fun hasEqualSourceAndTarget(): Boolean {
+        return (source.first == target.first && source.second == target.second)
+    }
 }
