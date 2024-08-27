@@ -37,7 +37,7 @@ class OntologyExecutionContextTest {
     }
 
     fun loadExampleOntology() : OntologyManager {
-        val exampleFile = readWithFileReaderService("small1.rdf").get()
+        val exampleFile = readWithFileReaderService("pizza2.rdf").get()
         val manager = OntologyManager(exampleFile);
         return manager
     }
@@ -47,6 +47,39 @@ class OntologyExecutionContextTest {
         val manager = loadExampleOntology();
         val ec = manager.createExecutionContext(ExecutionContextType.LOOPTABLE);
         ec.prepareForLoopTableConstruction();
-        val powerset = ec.tailsets;
+        val classAmount = ec.getClassAmount();
+        val classNames = ec.getClassNames();
+
+        val powerset = ec.tailsets!!;
+        assert(powerset.size == Math.pow(2.0, classAmount.toDouble()).toInt())
+
+        val e1 = classNames.first();
+        val e2 = classNames.elementAt(1);
+        val e3 = classNames.elementAt(2);
+        val e4 = classNames.elementAt(3);
+        val e5 = classNames.elementAt(4);
+        val e6 = classNames.elementAt(5);
+
+        val testset_1el_1: HashSet<String> = hashSetOf(e1);
+        val testset_1el_2: HashSet<String> = hashSetOf(e2);
+        val testset_1el_3: HashSet<String> = hashSetOf(e3);
+        val testset_1el_4: HashSet<String> = hashSetOf(e4);
+        val testset_2el_1: HashSet<String> = hashSetOf(e1, e2)
+        val testset_2el_2: HashSet<String> = hashSetOf(e1, e3)
+        val testset_3el_1: HashSet<String> = hashSetOf(e1, e2, e3)
+        val testset_3el_2: HashSet<String> = hashSetOf(e1, e3, e5)
+        val testset_4el_1: HashSet<String> = hashSetOf(e1, e2, e3, e4)
+        val testset_4el_2: HashSet<String> = hashSetOf(e1, e3, e5, e6)
+        assert(powerset.contains(testset_1el_1));
+        assert(powerset.contains(testset_1el_2));
+        assert(powerset.contains(testset_1el_3));
+        assert(powerset.contains(testset_1el_4));
+        assert(powerset.contains(testset_2el_1));
+        assert(powerset.contains(testset_2el_2));
+        assert(powerset.contains(testset_2el_2));
+        assert(powerset.contains(testset_3el_1));
+        assert(powerset.contains(testset_3el_2));
+        assert(powerset.contains(testset_4el_1));
+        assert(powerset.contains(testset_4el_2));
     }
 }

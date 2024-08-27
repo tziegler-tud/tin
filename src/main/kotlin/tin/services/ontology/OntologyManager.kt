@@ -9,6 +9,7 @@ import org.semanticweb.owlapi.reasoner.OWLReasonerFactory
 import org.semanticweb.elk.owlapi.ElkReasonerFactory
 
 import de.uni_stuttgart.vis.vowl.owl2vowl.Owl2Vowl
+import org.semanticweb.owlapi.model.IRI
 import org.semanticweb.HermiT.ReasonerFactory as HermitReasonerFactory
 //import de.tudresden.inf.lat.jcel.owlapi.main.JcelReasonerFactory;
 import org.semanticweb.owlapi.model.parameters.Imports
@@ -28,6 +29,20 @@ class OntologyManager(val file: File) {
     private val shortFormProvider: ShortFormProvider = SimpleShortFormProvider()
     private val executionContextFactory = OntologyExecutionContextFactory();
     private var currentReasoner = BuildInReasoners.NONE;
+    private lateinit var reasoner: OWLReasoner;
+    private var parser: DLQueryParser = DLQueryParser(ontology, shortFormProvider);
+
+    private val name = manager.getOntologyDocumentIRI(ontology);
+    private val aboxAxioms = ontology.getABoxAxioms(Imports.EXCLUDED);
+    private val tboxAxioms = ontology.getTBoxAxioms(Imports.EXCLUDED);
+    private val signature = ontology.getSignature(Imports.EXCLUDED);
+
+    val classes = ontology.getClassesInSignature(Imports.EXCLUDED);
+    val properties = ontology.getObjectPropertiesInSignature(Imports.EXCLUDED);
+    val individuals = ontology.getIndividualsInSignature(Imports.EXCLUDED);
+
+    private val classNames: HashSet<String> = HashSet();
+    private val classIris: HashSet<IRI> = HashSet();
 
     enum class BuildInReasoners {
         NONE, ELK, JCEL, HERMIT
@@ -38,6 +53,12 @@ class OntologyManager(val file: File) {
         val vowlJson = Owl2Vowl(ontology).getJsonAsString();
         //save to json file
         saveToJson(file.getName(), vowlJson)
+
+        //fill classNames and Iris in one iteration
+        classes.forEach{
+            classIris.add(it.iri)
+            classNames.add(shortFormProvider.getShortForm(it));
+        };
     }
 
     fun getOntology(): OWLOntology {
@@ -123,7 +144,15 @@ class OntologyManager(val file: File) {
         f.writeText(jsonString)
     }
 
-    fun createExecutionContext(executionContextType: ExecutionContextType): OntologyExecutionContext {
+    fun getClassNames(): HashSet<String>{
+        return classNames;
+    }
+
+    fun getClassIris(): HashSet<IRI> {
+        return classIris;
+    }
+
+    fun createExecutionContext(executionContextType: ExecutionContextType) : OntologyExecutionContext {
         return executionContextFactory.create(executionContextType, this);
     }
 }

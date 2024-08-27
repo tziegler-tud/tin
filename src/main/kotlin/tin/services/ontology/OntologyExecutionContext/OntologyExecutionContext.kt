@@ -1,7 +1,10 @@
 package tin.services.ontology.OntologyExecutionContext
 
 import org.semanticweb.owlapi.apibinding.OWLManager
+import org.semanticweb.owlapi.io.OWLOntologyDocumentSource
+import org.semanticweb.owlapi.model.OWLEntity
 import org.semanticweb.owlapi.model.OWLOntology
+import org.semanticweb.owlapi.model.OWLOntologyManager
 import org.semanticweb.owlapi.model.parameters.Imports
 import org.semanticweb.owlapi.reasoner.OWLReasoner
 import org.semanticweb.owlapi.util.ShortFormProvider
@@ -10,20 +13,10 @@ import tin.services.ontology.DLQueryParser
 import tin.services.ontology.OntologyManager
 import kotlin.math.pow
 
-class OntologyExecutionContext() {
+class OntologyExecutionContext(private val manager: OntologyManager) {
 
-    private val manager = OWLManager.createOWLOntologyManager();
-    private val ontology: OWLOntology = manager.loadOntologyFromOntologyDocument(file);
-    private val shortFormProvider: ShortFormProvider = SimpleShortFormProvider()
-    private var parser: DLQueryParser = DLQueryParser(ontology, shortFormProvider);
-    private lateinit var reasoner: OWLReasoner;
-
-    private val alphabet = manager.getAlphabet()
-    val conceptNames = alphabet.getConceptNames();
-    private val individualNames = alphabet.getIndividualNames();
-    private val roleNames = alphabet.getRoleNames();
-    private val reasoner = manager.getReasoner();
-    val ontology = manager.getOntology();
+    private var ontology = manager.getOntology();
+    private var classes = manager.classes;
 
     var tailsets: HashSet<HashSet<String>>? = null;
     fun prepareForLoopTableConstruction(){
@@ -34,10 +27,10 @@ class OntologyExecutionContext() {
 
     private fun computeTailSets(): HashSet<HashSet<String>>{
         //powerset of all concept names in the ontology
-        val classes = ontology.getClassesInSignature(Imports.EXCLUDED);
+        val classes = manager.getClassNames();
         val amount = 2.0.pow(classes.size.toDouble()) +1;
 
-        val powerset = powerSet(conceptNames)
+        val powerset = powerSet<String>(classes)
         return powerset;
     }
 
@@ -61,5 +54,17 @@ class OntologyExecutionContext() {
             powerSet.addAll(newSubsets)
         }
         return powerSet
+    }
+
+    fun getClasses(): Set<OWLEntity> {
+        return classes;
+    }
+
+    fun getClassAmount(): Int {
+        return classes.size;
+    }
+
+    fun getClassNames(): HashSet<String> {
+        return manager.getClassNames();
     }
 }
