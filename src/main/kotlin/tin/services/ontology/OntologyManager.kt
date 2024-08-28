@@ -10,12 +10,15 @@ import org.semanticweb.elk.owlapi.ElkReasonerFactory
 
 import de.uni_stuttgart.vis.vowl.owl2vowl.Owl2Vowl
 import org.semanticweb.owlapi.model.IRI
+import org.semanticweb.owlapi.model.OWLObjectProperty
 import org.semanticweb.HermiT.ReasonerFactory as HermitReasonerFactory
 //import de.tudresden.inf.lat.jcel.owlapi.main.JcelReasonerFactory;
 import org.semanticweb.owlapi.model.parameters.Imports
 import org.semanticweb.owlapi.util.ShortFormProvider
 import org.semanticweb.owlapi.util.SimpleShortFormProvider
 import tin.model.alphabet.Alphabet
+import tin.services.ontology.Expressions.DLExpression
+import tin.services.ontology.Expressions.DLExpressionBuilder
 import tin.services.ontology.OntologyExecutionContext.ExecutionContextType
 import tin.services.ontology.OntologyExecutionContext.OntologyExecutionContext
 import tin.services.ontology.OntologyExecutionContext.OntologyExecutionContextFactory
@@ -32,6 +35,8 @@ class OntologyManager(val file: File) {
     private lateinit var reasoner: OWLReasoner;
     private var parser: DLQueryParser = DLQueryParser(ontology, shortFormProvider);
 
+    private val expressionBuilder = DLExpressionBuilder(this);
+
     private val name = manager.getOntologyDocumentIRI(ontology);
     private val aboxAxioms = ontology.getABoxAxioms(Imports.EXCLUDED);
     private val tboxAxioms = ontology.getTBoxAxioms(Imports.EXCLUDED);
@@ -42,6 +47,7 @@ class OntologyManager(val file: File) {
     val individuals = ontology.getIndividualsInSignature(Imports.EXCLUDED);
 
     private val classNames: HashSet<String> = HashSet();
+    private val roleNames: HashSet<String> = HashSet();
     private val classIris: HashSet<IRI> = HashSet();
 
     enum class BuildInReasoners {
@@ -59,6 +65,9 @@ class OntologyManager(val file: File) {
             classIris.add(it.iri)
             classNames.add(shortFormProvider.getShortForm(it));
         };
+        properties.forEach{
+            roleNames.add(shortFormProvider.getShortForm(it))
+        }
     }
 
     fun getOntology(): OWLOntology {
@@ -69,7 +78,14 @@ class OntologyManager(val file: File) {
         return shortFormProvider
     }
 
+    fun getExpressionBuilder(): DLExpressionBuilder {
+        return expressionBuilder;
+    }
+
     fun loadReasoner(reasonerName: BuildInReasoners): OWLReasoner {
+        if (currentReasoner === reasonerName){
+            return reasoner;
+        }
 
         val reasonerFactory: OWLReasonerFactory;
         when (reasonerName) {
@@ -111,6 +127,13 @@ class OntologyManager(val file: File) {
         else return null;
     }
 
+    fun getReasonerOrLoad(): OWLReasoner {
+        if(this::reasoner.isInitialized){
+            return reasoner;
+        }
+        else return loadReasoner(BuildInReasoners.HERMIT);
+    }
+
     fun getQueryParser(): DLQueryParser {
         return parser;
     }
@@ -126,10 +149,6 @@ class OntologyManager(val file: File) {
     }
 
     fun getAlphabet(): Alphabet {
-        val classes = ontology.getClassesInSignature(Imports.EXCLUDED);
-        val properties = ontology.getObjectPropertiesInSignature(Imports.EXCLUDED);
-        val individuals = ontology.getIndividualsInSignature(Imports.EXCLUDED);
-
         val alphabet = Alphabet();
         //do not include top objects owl:Thing (the top class), owl:topObjectProperty (the top object property) , owl:topDataProperty
         classes.forEach { if(!it.isTopEntity) alphabet.addConceptName(shortFormProvider.getShortForm(it)) }
@@ -146,6 +165,14 @@ class OntologyManager(val file: File) {
 
     fun getClassNames(): HashSet<String>{
         return classNames;
+    }
+
+    fun getRoleNames(): HashSet<String> {
+        return roleNames;
+    }
+
+    fun getRoles(): Set<OWLObjectProperty> {
+        return properties;
     }
 
     fun getClassIris(): HashSet<IRI> {

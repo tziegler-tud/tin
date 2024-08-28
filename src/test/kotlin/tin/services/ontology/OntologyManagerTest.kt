@@ -98,11 +98,11 @@ class OntologyManagerTest {
         val a3 = reasoner.getSubClasses(ce3);
 
         //get Individuals
-        val bruschetta = parser.getClassAxiom("Bruschetta")!!
-        val carbonara = parser.getClassAxiom("Carbonara")!!
-        val vegan = parser.getClassAxiom("Vegan")!!
-        val bread = parser.getClassAxiom("Bread")!!
-        val pasta = parser.getClassAxiom("Pasta")!!
+        val bruschetta = parser.getOWLClass("Bruschetta")!!
+        val carbonara = parser.getOWLClass("Carbonara")!!
+        val vegan = parser.getOWLClass("Vegan")!!
+        val bread = parser.getOWLClass("Bread")!!
+        val pasta = parser.getOWLClass("Pasta")!!
 
         val nothing = reasoner.bottomClassNode;
 

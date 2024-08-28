@@ -7,6 +7,7 @@ import org.semanticweb.owlapi.model.*
 import org.semanticweb.owlapi.util.BidirectionalShortFormProvider
 import org.semanticweb.owlapi.util.BidirectionalShortFormProviderAdapter
 import org.semanticweb.owlapi.util.ShortFormProvider
+import uk.ac.manchester.cs.owl.owlapi.OWLObjectIntersectionOfImpl
 
 class DLQueryParser(private val ontology: OWLOntology, shortFormProvider: ShortFormProvider) {
     private val bidiShortFormProvider: BidirectionalShortFormProvider
@@ -21,6 +22,15 @@ class DLQueryParser(private val ontology: OWLOntology, shortFormProvider: ShortF
             manager,
             importsClosure, shortFormProvider
         )
+    }
+
+    fun fromClassNames(classNames: Set<String>) : OWLClassExpression {
+        val classes: MutableList<OWLClassExpression> = mutableListOf<OWLClassExpression>()
+        classNames.forEach { className ->
+            val c = getOWLClass(className);
+            if (c != null) classes.add(c);
+        }
+        return OWLObjectIntersectionOfImpl(classes)
     }
 
     fun parseClassExpression(classExpressionString: String): OWLClassExpression {
@@ -39,8 +49,8 @@ class DLQueryParser(private val ontology: OWLOntology, shortFormProvider: ShortF
         return null;
     }
 
-    fun getClassAxiom(individualName: String): OWLClass? {
-        val entity = bidiShortFormProvider.getEntity(individualName);
+    fun getOWLClass(className: String): OWLClass? {
+        val entity = bidiShortFormProvider.getEntity(className);
         if (entity != null) {
             if (entity.isOWLClass) return entity.asOWLClass();
         }

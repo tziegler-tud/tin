@@ -5,11 +5,13 @@ import org.semanticweb.owlapi.io.OWLOntologyDocumentSource
 import org.semanticweb.owlapi.model.OWLEntity
 import org.semanticweb.owlapi.model.OWLOntology
 import org.semanticweb.owlapi.model.OWLOntologyManager
+import org.semanticweb.owlapi.model.OWLProperty
 import org.semanticweb.owlapi.model.parameters.Imports
 import org.semanticweb.owlapi.reasoner.OWLReasoner
 import org.semanticweb.owlapi.util.ShortFormProvider
 import org.semanticweb.owlapi.util.SimpleShortFormProvider
 import tin.services.ontology.DLQueryParser
+import tin.services.ontology.DLReasoner
 import tin.services.ontology.OntologyManager
 import kotlin.math.pow
 
@@ -17,6 +19,10 @@ class OntologyExecutionContext(private val manager: OntologyManager) {
 
     private var ontology = manager.getOntology();
     private var classes = manager.classes;
+    val dlReasoner = DLReasoner(manager.getReasoner() ?: manager.loadReasoner(OntologyManager.BuildInReasoners.HERMIT), manager.getExpressionBuilder())
+    val expressionBuilder = manager.getExpressionBuilder();
+    val parser = manager.getQueryParser();
+    val shortFormProvider = manager.getShortFormProvider();
 
     var tailsets: HashSet<HashSet<String>>? = null;
     fun prepareForLoopTableConstruction(){
@@ -30,7 +36,7 @@ class OntologyExecutionContext(private val manager: OntologyManager) {
         val classes = manager.getClassNames();
         val amount = 2.0.pow(classes.size.toDouble()) +1;
 
-        val powerset = powerSet<String>(classes)
+        val powerset = powerSet(classes)
         return powerset;
     }
 
@@ -67,4 +73,14 @@ class OntologyExecutionContext(private val manager: OntologyManager) {
     fun getClassNames(): HashSet<String> {
         return manager.getClassNames();
     }
+
+    fun getRoleNames(): HashSet<String> {
+        return manager.getRoleNames();
+    }
+
+    fun getRoles(): Set<OWLProperty> {
+        return manager.getRoles();
+    }
+
+
 }
