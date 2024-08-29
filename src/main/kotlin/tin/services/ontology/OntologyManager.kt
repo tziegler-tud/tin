@@ -22,6 +22,7 @@ import tin.services.ontology.Expressions.DLExpressionBuilder
 import tin.services.ontology.OntologyExecutionContext.ExecutionContextType
 import tin.services.ontology.OntologyExecutionContext.OntologyExecutionContext
 import tin.services.ontology.OntologyExecutionContext.OntologyExecutionContextFactory
+import tin.services.ontology.loopTable.LoopTableEntryRestriction.RestrictionBuilder
 import java.io.File
 
 
@@ -34,6 +35,7 @@ class OntologyManager(val file: File) {
     private var currentReasoner = BuildInReasoners.NONE;
     private lateinit var reasoner: OWLReasoner;
     private var parser: DLQueryParser = DLQueryParser(ontology, shortFormProvider);
+    private var restrictionBuilder = RestrictionBuilder(parser, shortFormProvider);
 
     private val expressionBuilder = DLExpressionBuilder(this);
 
@@ -138,6 +140,11 @@ class OntologyManager(val file: File) {
         return parser;
     }
 
+
+    fun getRestrictionBuilder() : RestrictionBuilder{
+        return restrictionBuilder;
+    }
+
     fun getOntologyInfo(): OntologyInfoData {
         val name = manager.getOntologyDocumentIRI(ontology);
         val aboxAxioms = ontology.getABoxAxioms(Imports.EXCLUDED);
@@ -147,6 +154,7 @@ class OntologyManager(val file: File) {
 
         return OntologyInfoData(name.toString(), aboxAxioms, tboxAxioms, signature, reasoner);
     }
+
 
     fun getAlphabet(): Alphabet {
         val alphabet = Alphabet();

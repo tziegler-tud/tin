@@ -1,13 +1,17 @@
 package tin.services.ontology.loopTable.LoopTableBuilder
 
+import org.semanticweb.owlapi.model.OWLObjectProperty
 import tin.model.query.QueryGraph
+import tin.model.query.QueryNode
 import tin.model.transducer.TransducerGraph
+import tin.model.transducer.TransducerNode
 import tin.services.ontology.OntologyExecutionContext.ExecutionContextType
 import tin.services.ontology.OntologyManager
 import tin.services.ontology.loopTable.LoopTable
 import tin.services.ontology.loopTable.SPALoopTable
 import tin.services.ontology.loopTable.loopTableEntry.LoopTableEntry
 import tin.services.ontology.loopTable.loopTableEntry.SPALoopTableEntry
+import kotlin.math.exp
 
 class SPALoopTableBuilder (
     private val queryGraph: QueryGraph,
@@ -24,7 +28,13 @@ class SPALoopTableBuilder (
     private val queryParser = ec.parser;
     private val shortFormProvider = ec.shortFormProvider;
 
+    private val restrictionBuilder = ec.restrictionBuilder;
+
     private val finished: Boolean = false;
+
+    private val pairsAvailable = mutableSetOf<Pair<QueryNode, TransducerNode>>();
+    private val tailsets = ec.tailsets!!;
+
     init {
 
 
@@ -35,21 +45,37 @@ class SPALoopTableBuilder (
         return 0;
     }
 
-    fun initializeTable(){
-
-        //initialize [p,p,M] = 0
-        //create pairs (s,t),(s,t)
+    private fun initializeTable(){
+        //build all pairs for (s,t) € queryNodes x transducerNodes
+        queryGraph.nodes.forEach { node ->
+            transducerGraph.nodes.forEach { transducerNode ->
+                pairsAvailable.add(Pair(node, transducerNode))
+            }
+        }
 
     }
 
     fun calculateNextIteration(){
 
+        //for each (p,q,M), perform S1 step
+        pairsAvailable.forEach{ source ->
+            pairsAvailable.forEach { target ->
+                tailsets.forEach { tailset ->
+                    val restriction = restrictionBuilder.createConceptNameRestriction(tailset)
+                    val entry = SPALoopTableEntry(source, target, restriction)
+                    calculateS1(entry);
+                }
+            }
+        };
+
+        calculateS3();
+
     }
 
     fun calculateFullTable(): SPALoopTable {
         //iterate until max iterations are reached
-
-
+        initializeTable();
+        calculateNextIteration();
 
         return table;
     }
@@ -88,6 +114,7 @@ class SPALoopTableBuilder (
         val costCutoff = table.get(spaLoopTableEntry) //0, int val or null
         val source = spaLoopTableEntry.source;
         val target = spaLoopTableEntry.target;
+        val M = spaLoopTableEntry.restriction;
         val s = source.first;
         val t = source.second;
         val se = target.first;
@@ -106,13 +133,25 @@ class SPALoopTableBuilder (
             val roleNames = ec.getRoleNames();
             val roles = ec.getRoles();
 
+            val MCLassExp = restrictionBuilder.asClassExpression(M)
+            val MExp = expressionBuilder.createELHIExpression(MCLassExp)
+
             //calculate candidate role names r s.t. M <= E r. M1
+            var candidateRoles: MutableSet<OWLObjectProperty> = hashSetOf();
             //for each role, check if entailed
             roles.forEach { role ->
                 //build class expressions
-                expressionBuilder.createELHIExpression()
-                val isEntailed = dlReasoner.checkIsSubsumed()
+                val M1ClassExp = restrictionBuilder.asClassExpression(M1);
+                val M1Expr = expressionBuilder.createELHIExpression(M1ClassExp);
+                val rM1 = expressionBuilder.createExistentialRestriction(role, M1ClassExp)
+                val rM1Exp = expressionBuilder.createELHIExpression(rM1);
+
+                //check if entailed
+                val isEntailed = dlReasoner.checkIsSubsumed(MExp, rM1Exp)
+                candidateRoles.add(role);
             }
+
+
 
         }
 

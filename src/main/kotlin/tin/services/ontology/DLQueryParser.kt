@@ -7,7 +7,10 @@ import org.semanticweb.owlapi.model.*
 import org.semanticweb.owlapi.util.BidirectionalShortFormProvider
 import org.semanticweb.owlapi.util.BidirectionalShortFormProviderAdapter
 import org.semanticweb.owlapi.util.ShortFormProvider
+import tin.services.ontology.Expressions.DLExpression
 import uk.ac.manchester.cs.owl.owlapi.OWLObjectIntersectionOfImpl
+import uk.ac.manchester.cs.owl.owlapi.OWLObjectSomeValuesFromImpl
+import uk.ac.manchester.cs.owl.owlapi.OWLSubClassOfAxiomImpl
 
 class DLQueryParser(private val ontology: OWLOntology, shortFormProvider: ShortFormProvider) {
     private val bidiShortFormProvider: BidirectionalShortFormProvider

@@ -2,10 +2,7 @@ package tin.services.ontology.OntologyExecutionContext
 
 import org.semanticweb.owlapi.apibinding.OWLManager
 import org.semanticweb.owlapi.io.OWLOntologyDocumentSource
-import org.semanticweb.owlapi.model.OWLEntity
-import org.semanticweb.owlapi.model.OWLOntology
-import org.semanticweb.owlapi.model.OWLOntologyManager
-import org.semanticweb.owlapi.model.OWLProperty
+import org.semanticweb.owlapi.model.*
 import org.semanticweb.owlapi.model.parameters.Imports
 import org.semanticweb.owlapi.reasoner.OWLReasoner
 import org.semanticweb.owlapi.util.ShortFormProvider
@@ -23,6 +20,7 @@ class OntologyExecutionContext(private val manager: OntologyManager) {
     val expressionBuilder = manager.getExpressionBuilder();
     val parser = manager.getQueryParser();
     val shortFormProvider = manager.getShortFormProvider();
+    val restrictionBuilder = manager.getRestrictionBuilder();
 
     var tailsets: HashSet<HashSet<String>>? = null;
     fun prepareForLoopTableConstruction(){
@@ -78,7 +76,7 @@ class OntologyExecutionContext(private val manager: OntologyManager) {
         return manager.getRoleNames();
     }
 
-    fun getRoles(): Set<OWLProperty> {
+    fun getRoles(): Set<OWLObjectProperty> {
         return manager.getRoles();
     }
 

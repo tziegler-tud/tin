@@ -1,9 +1,8 @@
 package tin.services.ontology.Expressions
 
-import org.semanticweb.owlapi.model.OWLAnnotation
-import org.semanticweb.owlapi.model.OWLClassExpression
-import org.semanticweb.owlapi.model.OWLSubClassOfAxiom
+import org.semanticweb.owlapi.model.*
 import tin.services.ontology.OntologyManager
+import uk.ac.manchester.cs.owl.owlapi.OWLObjectSomeValuesFromImpl
 import uk.ac.manchester.cs.owl.owlapi.OWLSubClassOfAxiomImpl
 
 class DLExpressionBuilder(private val manager: OntologyManager) {
@@ -48,6 +47,10 @@ class DLExpressionBuilder(private val manager: OntologyManager) {
         val parsed = queryParser.parseClassExpression(expressionString);
 
         return create(parsed, expressionType)
+    }
+
+    fun createExistentialRestriction(propertyExpression: OWLObjectPropertyExpression, classExpression: OWLClassExpression) : OWLObjectSomeValuesFrom {
+        return OWLObjectSomeValuesFromImpl(propertyExpression, classExpression)
     }
 
     fun createSubsumptionExpression(expr: DLExpression, superExpr: DLExpression) : OWLSubClassOfAxiom {
