@@ -11,6 +11,7 @@ import tin.services.ontology.loopTable.LoopTable
 import tin.services.ontology.loopTable.SPALoopTable
 import tin.services.ontology.loopTable.loopTableEntry.LoopTableEntry
 import tin.services.ontology.loopTable.loopTableEntry.SPALoopTableEntry
+import tin.services.ontology.loopTable.ruleCalculators.SpaS1Calculator
 import kotlin.math.exp
 
 class SPALoopTableBuilder (
@@ -53,6 +54,8 @@ class SPALoopTableBuilder (
             }
         }
 
+
+
     }
 
     fun calculateNextIteration(){
@@ -61,6 +64,8 @@ class SPALoopTableBuilder (
         pairsAvailable.forEach{ source ->
             pairsAvailable.forEach { target ->
                 tailsets.forEach { tailset ->
+                    //foreach (p,q,M) do:
+
                     val restriction = restrictionBuilder.createConceptNameRestriction(tailset)
                     val entry = SPALoopTableEntry(source, target, restriction)
                     calculateS1(entry);
@@ -111,6 +116,8 @@ class SPALoopTableBuilder (
          *
          */
 
+        val s1Calculator = SpaS1Calculator(restrictionBuilder, expressionBuilder, dlReasoner, ec)
+
         val costCutoff = table.get(spaLoopTableEntry) //0, int val or null
         val source = spaLoopTableEntry.source;
         val target = spaLoopTableEntry.target;
@@ -120,40 +127,32 @@ class SPALoopTableBuilder (
         val se = target.first;
         val te = target.second;
 
-        //list all entries < costCutoff
-        val candidateMap = table.getWithCostLimit(costCutoff)
-
-        //iterate through candidates and perform steps 2.1 - 2.6
-        candidateMap.forEach { (key, value) ->
-            val s1 = key.source.first;
-            val s2 = key.target.first;
-            val t1 = key.source.second;
-            val t2 = key.target.second;
-            val M1 = key.restriction;
-            val roleNames = ec.getRoleNames();
-            val roles = ec.getRoles();
-
-            val MCLassExp = restrictionBuilder.asClassExpression(M)
-            val MExp = expressionBuilder.createELHIExpression(MCLassExp)
-
-            //calculate candidate role names r s.t. M <= E r. M1
-            var candidateRoles: MutableSet<OWLObjectProperty> = hashSetOf();
-            //for each role, check if entailed
-            roles.forEach { role ->
-                //build class expressions
-                val M1ClassExp = restrictionBuilder.asClassExpression(M1);
-                val M1Expr = expressionBuilder.createELHIExpression(M1ClassExp);
-                val rM1 = expressionBuilder.createExistentialRestriction(role, M1ClassExp)
-                val rM1Exp = expressionBuilder.createELHIExpression(rM1);
-
-                //check if entailed
-                val isEntailed = dlReasoner.checkIsSubsumed(MExp, rM1Exp)
-                candidateRoles.add(role);
-            }
+        val MCLassExp = restrictionBuilder.asClassExpression(M)
+        val MExp = expressionBuilder.createELHIExpression(MCLassExp)
 
 
 
-        }
+        /**
+         * NEW Calculation:
+         * 0. Get Candidates (p,q,M1)
+         * 1. For each Role R:
+         *    Build superclass R' s.t. R <= R'
+         *    Build superclass R'' s.t. R(-) <= R''
+         *
+         *  1.1. For each candidate:
+         *      calculate Subclass M <= E R. M1
+         *      These are the M's that can could be updated using the respective role
+         *      Store entry for M with cost of candidate set
+         *
+         *  1.2. For each symetric pair (s,t),(s,t):
+         *      Calculate Subclass M <= E R . TOP
+         *      Store entry for M with cost 0
+         *
+         *  1.3 Use stored M's and foreach:
+         *
+         *      for each (s,t), (s',t'): calculate minimum weights w1, w2
+         *
+         */
 
 
 
@@ -162,6 +161,7 @@ class SPALoopTableBuilder (
     }
 
     private fun calculateS2(){
+
 
     }
 

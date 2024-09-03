@@ -58,7 +58,6 @@ class SpaLoopTableTest {
 
         val builder = SPALoopTableBuilder(query.graph, transducer.graph, manager);
         builder.calculateFullTable();
-        assert(false)
     }
 
 

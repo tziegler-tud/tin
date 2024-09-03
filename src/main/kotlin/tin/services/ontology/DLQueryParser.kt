@@ -59,4 +59,12 @@ class DLQueryParser(private val ontology: OWLOntology, shortFormProvider: ShortF
         }
         return null;
     }
+
+    fun getOWLObjectProperty(propertyName: String): OWLObjectProperty? {
+        val entity = bidiShortFormProvider.getEntity(propertyName);
+        if (entity != null) {
+            if (entity.isOWLObjectProperty) return entity.asOWLObjectProperty();
+        }
+        return null;
+    }
 }
