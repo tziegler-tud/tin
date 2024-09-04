@@ -4,9 +4,9 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.context.TestConfiguration
-import tin.model.query.QueryEdge
-import tin.model.query.QueryGraph
-import tin.model.query.QueryNode
+import tin.model.v1.query.QueryEdge
+import tin.model.v1.query.QueryGraph
+import tin.model.v1.query.QueryNode
 import tin.services.internal.fileReaders.fileReaderResult.FileReaderResult
 import tin.services.technical.SystemConfigurationService
 

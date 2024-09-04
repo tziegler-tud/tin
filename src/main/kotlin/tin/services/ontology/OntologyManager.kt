@@ -16,8 +16,7 @@ import org.semanticweb.HermiT.ReasonerFactory as HermitReasonerFactory
 import org.semanticweb.owlapi.model.parameters.Imports
 import org.semanticweb.owlapi.util.ShortFormProvider
 import org.semanticweb.owlapi.util.SimpleShortFormProvider
-import tin.model.alphabet.Alphabet
-import tin.services.ontology.Expressions.DLExpression
+import tin.model.v1.alphabet.Alphabet
 import tin.services.ontology.Expressions.DLExpressionBuilder
 import tin.services.ontology.OntologyExecutionContext.ExecutionContextType
 import tin.services.ontology.OntologyExecutionContext.OntologyExecutionContext

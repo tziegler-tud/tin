@@ -1,9 +1,8 @@
 package tin.services.internal.utils
 
-import tin.model.alphabet.Alphabet
-import tin.model.transducer.TransducerGraph
-import tin.model.transducer.TransducerNode
-import java.util.HashMap
+import tin.model.v1.alphabet.Alphabet
+import tin.model.v1.transducer.TransducerGraph
+import tin.model.v1.transducer.TransducerNode
 
 class TransducerFactory {
 

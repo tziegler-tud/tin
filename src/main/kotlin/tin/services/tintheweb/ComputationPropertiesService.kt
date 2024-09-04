@@ -3,8 +3,8 @@ package tin.services.tintheweb
 import org.springframework.stereotype.Service
 import org.springframework.web.bind.annotation.RequestBody
 import tin.data.tintheweb.queryTask.ComputationPropertiesData
-import tin.model.queryTask.ComputationProperties
-import tin.model.queryTask.ComputationPropertiesRepository
+import tin.model.v1.queryTask.ComputationProperties
+import tin.model.v1.queryTask.ComputationPropertiesRepository
 
 @Service
 class ComputationPropertiesService(

@@ -1,14 +1,14 @@
 package tin.services.internal
 
 import org.springframework.stereotype.Service
-import tin.model.alphabet.Alphabet
-import tin.model.dataProvider.RegularPathQueryDataProvider
-import tin.model.database.DatabaseEdge
-import tin.model.productAutomaton.ProductAutomatonEdgeType
-import tin.model.productAutomaton.ProductAutomatonGraph
-import tin.model.productAutomaton.ProductAutomatonNode
-import tin.model.query.QueryEdge
-import tin.model.transducer.TransducerEdge
+import tin.model.v1.alphabet.Alphabet
+import tin.model.v1.dataProvider.RegularPathQueryDataProvider
+import tin.model.v1.database.DatabaseEdge
+import tin.model.v1.productAutomaton.ProductAutomatonEdgeType
+import tin.model.v1.productAutomaton.ProductAutomatonGraph
+import tin.model.v1.productAutomaton.ProductAutomatonNode
+import tin.model.v1.query.QueryEdge
+import tin.model.v1.transducer.TransducerEdge
 
 @Service
 class ProductAutomatonService() {

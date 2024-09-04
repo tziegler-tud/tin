@@ -1,8 +1,8 @@
 package tin.services.internal.dijkstra
 
 import org.springframework.stereotype.Service
-import tin.model.queryResult.RegularPathQueryResult
-import tin.model.utils.ProductAutomatonTuple
+import tin.model.v1.queryResult.RegularPathQueryResult
+import tin.model.v1.utils.ProductAutomatonTuple
 
 @Service
 class DijkstraQueryAnsweringUtils {

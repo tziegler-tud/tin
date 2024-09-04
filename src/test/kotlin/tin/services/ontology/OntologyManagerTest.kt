@@ -1,22 +1,12 @@
 package tin.services.ontology
 
-import org.coode.owlapi.manchesterowlsyntax.ManchesterOWLSyntaxEditorParser
 import org.junit.jupiter.api.Test
-import org.semanticweb.owlapi.expression.OWLEntityChecker
-import org.semanticweb.owlapi.expression.ShortFormEntityChecker
-import org.semanticweb.owlapi.model.OWLClassExpression
-import org.semanticweb.owlapi.model.OWLNamedIndividual
-import org.semanticweb.owlapi.model.OWLOntology
-import org.semanticweb.owlapi.reasoner.NodeSet
 import org.semanticweb.owlapi.reasoner.impl.OWLClassNodeSet
 import org.semanticweb.owlapi.reasoner.impl.OWLNamedIndividualNodeSet
-import org.semanticweb.owlapi.util.BidirectionalShortFormProvider
-import org.semanticweb.owlapi.util.BidirectionalShortFormProviderAdapter
-import org.semanticweb.owlapi.util.ShortFormProvider
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.context.TestConfiguration
-import tin.model.alphabet.Alphabet
+import tin.model.v1.alphabet.Alphabet
 import tin.services.internal.fileReaders.OntologyReaderService
 import tin.services.internal.fileReaders.fileReaderResult.FileReaderResult
 import tin.services.technical.SystemConfigurationService

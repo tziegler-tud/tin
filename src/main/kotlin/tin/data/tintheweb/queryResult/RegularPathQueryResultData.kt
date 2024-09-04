@@ -1,9 +1,8 @@
 package tin.data.tintheweb.queryResult
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import tin.model.queryResult.QueryResult
-import tin.model.queryResult.QueryResultStatus
-import tin.model.queryResult.RegularPathQueryResult
+import tin.model.v1.queryResult.QueryResultStatus
+import tin.model.v1.queryResult.RegularPathQueryResult
 
 class RegularPathQueryResultData(
     @JsonProperty("id") val id: Long,

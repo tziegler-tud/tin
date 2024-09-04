@@ -2,8 +2,8 @@ package tin.data.tintheweb.DLqueryTask
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import tin.data.tintheweb.queryResult.RegularPathQueryResultData
-import tin.model.queryResult.RegularPathQueryResult
-import tin.model.queryTask.QueryTask
+import tin.model.v1.queryResult.RegularPathQueryResult
+import tin.model.v1.queryTask.QueryTask
 import java.util.*
 
 class DLRegularPathQueryTaskCompleteData(

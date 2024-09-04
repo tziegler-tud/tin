@@ -2,11 +2,7 @@ package tin.data.tintheweb.ontology
 
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
-import org.semanticweb.owlapi.model.OWLAxiom
-import org.semanticweb.owlapi.model.OWLEntity
-import tin.model.queryResult.RegularPathQueryResult
 import tin.services.ontology.OntologyInfoData
-import tin.services.ontology.OntologyManager
 
 data class OntologyData @JsonCreator constructor(
     @JsonProperty("filename") val fname: String,

@@ -4,9 +4,9 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.context.TestConfiguration
-import tin.model.transducer.TransducerEdge
-import tin.model.transducer.TransducerGraph
-import tin.model.transducer.TransducerNode
+import tin.model.v1.transducer.TransducerEdge
+import tin.model.v1.transducer.TransducerGraph
+import tin.model.v1.transducer.TransducerNode
 import tin.services.internal.fileReaders.fileReaderResult.FileReaderResult
 import tin.services.technical.SystemConfigurationService
 

@@ -5,15 +5,14 @@ import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.RequestBody
 import tin.data.tintheweb.DLqueryTask.DLQueryTaskCreateData
 import tin.data.tintheweb.queryTask.QueryTaskCreateData
-import tin.model.queryResult.QueryResult
-import tin.model.queryResult.QueryResultStatus
-import tin.model.queryTask.ComputationProperties
-import tin.model.queryTask.ComputationPropertiesRepository
-import tin.model.queryTask.QueryTask
-import tin.model.queryTask.QueryTaskRepository
-import tin.model.tintheweb.File
-import tin.model.tintheweb.FileRepository
-import tin.model.tintheweb.FileType
+import tin.model.v1.queryResult.QueryResultStatus
+import tin.model.v1.queryTask.ComputationProperties
+import tin.model.v1.queryTask.ComputationPropertiesRepository
+import tin.model.v1.queryTask.QueryTask
+import tin.model.v1.queryTask.QueryTaskRepository
+import tin.model.v1.tintheweb.File
+import tin.model.v1.tintheweb.FileRepository
+import tin.model.v1.tintheweb.FileType
 
 @Service
 class QueryTaskService(

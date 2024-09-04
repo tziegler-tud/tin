@@ -3,9 +3,9 @@ package tin
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
-import tin.model.alphabet.Alphabet
-import tin.model.database.DatabaseGraph
-import tin.model.database.DatabaseNode
+import tin.model.v1.alphabet.Alphabet
+import tin.model.v1.database.DatabaseGraph
+import tin.model.v1.database.DatabaseNode
 import tin.services.internal.DijkstraQueryAnsweringServiceTest
 import tin.services.internal.ProductAutomatonServiceTest
 

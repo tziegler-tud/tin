@@ -1,6 +1,5 @@
 package tin.services.internal.fileReaders
 
-import tin.model.query.QueryGraph
 import tin.services.internal.fileReaders.fileReaderResult.FileReaderResult
 import tin.services.technical.SystemConfigurationService
 import java.io.File

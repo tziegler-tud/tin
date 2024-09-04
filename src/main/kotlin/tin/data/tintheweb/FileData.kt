@@ -1,8 +1,8 @@
 package tin.data.tintheweb
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import tin.model.tintheweb.File
-import tin.model.tintheweb.FileType
+import tin.model.v1.tintheweb.File
+import tin.model.v1.tintheweb.FileType
 import java.util.Date
 
 class FileData(

@@ -2,9 +2,9 @@ package tin.services.internal.fileReaders
 
 
 import org.springframework.stereotype.Service
-import tin.model.alphabet.Alphabet
-import tin.model.transducer.TransducerGraph
-import tin.model.transducer.TransducerNode
+import tin.model.v1.alphabet.Alphabet
+import tin.model.v1.transducer.TransducerGraph
+import tin.model.v1.transducer.TransducerNode
 import tin.services.internal.fileReaders.fileReaderResult.FileReaderResult
 import tin.services.technical.SystemConfigurationService
 import java.io.BufferedReader

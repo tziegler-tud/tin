@@ -4,9 +4,9 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.context.TestConfiguration
-import tin.model.database.DatabaseEdge
-import tin.model.database.DatabaseGraph
-import tin.model.database.DatabaseNode
+import tin.model.v1.database.DatabaseEdge
+import tin.model.v1.database.DatabaseGraph
+import tin.model.v1.database.DatabaseNode
 import tin.services.internal.fileReaders.fileReaderResult.FileReaderResult
 import tin.services.technical.SystemConfigurationService
 
@@ -24,7 +24,7 @@ class DatabaseReaderServiceTest {
         return fileReaderService.read(testFilePath, fileName, breakOnError);
     }
 
-    private fun constructComparisonGraph() : DatabaseGraph{
+    private fun constructComparisonGraph() : DatabaseGraph {
         //build comparison graph
         val d0 = DatabaseNode("d0");
         val d1 = DatabaseNode("d1");

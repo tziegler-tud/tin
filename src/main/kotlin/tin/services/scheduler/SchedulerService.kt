@@ -4,8 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import tin.model.queryTask.QueryTask
-import tin.model.queryTask.QueryTaskRepository
+import tin.model.v1.queryTask.QueryTask
+import tin.model.v1.queryTask.QueryTaskRepository
 import tin.services.internal.queryAnswering.ConjunctiveQueryAnsweringService
 import tin.services.internal.queryAnswering.RegularPathQueryAnsweringService
 
