@@ -1,6 +1,9 @@
-package tin.services.ontology.loopTable.ruleCalculators
+package tin.services.ontology.loopTable.LoopTableBuilder.ruleCalculators
 
 import org.semanticweb.owlapi.model.OWLObjectProperty
+import tin.model.v2.query.QueryGraph
+import tin.model.v2.graph.Node
+import tin.model.v2.transducer.TransducerGraph
 import tin.services.ontology.DLReasoner
 import tin.services.ontology.Expressions.DLExpression
 import tin.services.ontology.Expressions.DLExpressionBuilder
@@ -9,7 +12,14 @@ import tin.services.ontology.loopTable.LoopTableEntryRestriction.RestrictionBuil
 import tin.services.ontology.loopTable.SPALoopTable
 import tin.services.ontology.loopTable.loopTableEntry.SPALoopTableEntry
 
-class SpaS1Calculator(private val restrictionBuilder: RestrictionBuilder, private val expressionBuilder: DLExpressionBuilder, private val dlReasoner: DLReasoner, private val ec: OntologyExecutionContext) {
+class SpaS1Calculator(
+    private val restrictionBuilder: RestrictionBuilder,
+    private val expressionBuilder: DLExpressionBuilder,
+    private val dlReasoner: DLReasoner,
+    private val ec: OntologyExecutionContext,
+    private val queryGraph: QueryGraph,
+    private val transducerGraph: TransducerGraph
+    ) {
 
     /**
      * for each role r given, check if M <= E r. M1
@@ -64,7 +74,7 @@ class SpaS1Calculator(private val restrictionBuilder: RestrictionBuilder, privat
 
         //iterate through candidates and perform steps 2.1 - 2.6
         candidateMap.forEach { (candidateEntry, candidateCost) ->
-            val s1 = candidateEntry.source.first;
+            val s1: Node = candidateEntry.source.first;
             val s2 = candidateEntry.target.first;
             val t1 = candidateEntry.source.second;
             val t2 = candidateEntry.target.second;
@@ -92,7 +102,9 @@ class SpaS1Calculator(private val restrictionBuilder: RestrictionBuilder, privat
                 //more specifically, the second set contains the inverse role of each one in the first
                 //this also means we would not have to calculate both.
 
-
+                //get all edges (s,u,s1) € QueryGraph
+                var candidateQueryEdges = queryGraph.getEdgesWithSourceAndTarget(s1, s2);
+                var candidateTransducerEdges = transducerGraph.getEdgesWithSourceAndTarget(t1, t2);
 
             }
         }

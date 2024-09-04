@@ -1,18 +1,13 @@
 package tin.services.ontology.loopTable.LoopTableBuilder
 
-import org.semanticweb.owlapi.model.OWLObjectProperty
-import tin.model.query.QueryGraph
-import tin.model.query.QueryNode
-import tin.model.transducer.TransducerGraph
-import tin.model.transducer.TransducerNode
+import tin.model.v2.query.QueryGraph
+import tin.model.v2.graph.Node
+import tin.model.v2.transducer.TransducerGraph
 import tin.services.ontology.OntologyExecutionContext.ExecutionContextType
 import tin.services.ontology.OntologyManager
-import tin.services.ontology.loopTable.LoopTable
 import tin.services.ontology.loopTable.SPALoopTable
-import tin.services.ontology.loopTable.loopTableEntry.LoopTableEntry
 import tin.services.ontology.loopTable.loopTableEntry.SPALoopTableEntry
-import tin.services.ontology.loopTable.ruleCalculators.SpaS1Calculator
-import kotlin.math.exp
+import tin.services.ontology.loopTable.LoopTableBuilder.ruleCalculators.SpaS1Calculator
 
 class SPALoopTableBuilder (
     private val queryGraph: QueryGraph,
@@ -33,8 +28,10 @@ class SPALoopTableBuilder (
 
     private val finished: Boolean = false;
 
-    private val pairsAvailable = mutableSetOf<Pair<QueryNode, TransducerNode>>();
+    private val pairsAvailable = mutableSetOf<Pair<Node, Node>>();
     private val tailsets = ec.tailsets!!;
+
+    private val s1Calculator = SpaS1Calculator(restrictionBuilder, expressionBuilder, dlReasoner, ec, queryGraph, transducerGraph)
 
     init {
 
@@ -115,8 +112,6 @@ class SPALoopTableBuilder (
          *     2.6.3 If found, mark u' as okay and associate w_2
          *
          */
-
-        val s1Calculator = SpaS1Calculator(restrictionBuilder, expressionBuilder, dlReasoner, ec)
 
         val costCutoff = table.get(spaLoopTableEntry) //0, int val or null
         val source = spaLoopTableEntry.source;

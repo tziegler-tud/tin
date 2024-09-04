@@ -1,12 +1,12 @@
-package tin.model.query
+package tin.model.v2.query
 
-import tin.model.graph.Edge
-import tin.model.graph.EdgeSet
+import tin.model.v2.graph.Edge
+import tin.model.v2.graph.Node
 
 class QueryEdge (
-        override var source: QueryNode,
-        override var target: QueryNode,
-        label: String
+    override var source: Node,
+    override var target: Node,
+    label: String
 ) : Edge(
         source, target, label
 ) {
