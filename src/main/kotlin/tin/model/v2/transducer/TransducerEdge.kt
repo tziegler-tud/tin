@@ -8,7 +8,7 @@ class TransducerEdge(
     override var target: Node,
     var incomingString: String,
     var outgoingString: String,
-    var cost: Double
+    var cost: Int
 ) : Edge(
         source, target, "$incomingString, $outgoingString, $cost"
 ){

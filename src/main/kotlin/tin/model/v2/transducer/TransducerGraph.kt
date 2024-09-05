@@ -10,7 +10,7 @@ class TransducerGraph : Graph() {
     override val nodes: NodeSet = NodeSet()
     override val edges: TransducerEdgeSet = TransducerEdgeSet()
 
-    fun addEdge(source: Node, target: Node, incoming: String, outgoing: String, cost: Double) {
+    fun addEdge(source: Node, target: Node, incoming: String, outgoing: String, cost: Int) {
         addEdge(TransducerEdge(source, target, incoming, outgoing, cost))
     }
 
@@ -36,6 +36,10 @@ class TransducerGraph : Graph() {
 
     override fun getEdgesWithTarget(target: Node): List<TransducerEdge> {
         return edges.filterForTarget(target);
+    }
+
+    override fun getEdgesWithSourceAndTarget(source: Node, target: Node): List<TransducerEdge> {
+        return edges.filterForSourceAndTarget(source, target);
     }
 
     override fun getEdgesWithLabel(label: String): List<TransducerEdge> {

@@ -9,6 +9,7 @@ import org.semanticweb.owlapi.reasoner.OWLReasonerFactory
 import org.semanticweb.elk.owlapi.ElkReasonerFactory
 
 import de.uni_stuttgart.vis.vowl.owl2vowl.Owl2Vowl
+import org.semanticweb.owlapi.manchestersyntax.renderer.ManchesterOWLSyntaxPrefixNameShortFormProvider
 import org.semanticweb.owlapi.model.IRI
 import org.semanticweb.owlapi.model.OWLObjectProperty
 import org.semanticweb.HermiT.ReasonerFactory as HermitReasonerFactory
@@ -30,6 +31,7 @@ class OntologyManager(val file: File) {
     private val manager = OWLManager.createOWLOntologyManager();
     private val ontology: OWLOntology = manager.loadOntologyFromOntologyDocument(file);
     private val shortFormProvider: ShortFormProvider = SimpleShortFormProvider()
+    val manchesterShortFormProvider: ShortFormProvider = ManchesterOWLSyntaxPrefixNameShortFormProvider(ontology);
     private val executionContextFactory = OntologyExecutionContextFactory();
     private var currentReasoner = BuildInReasoners.NONE;
     private lateinit var reasoner: OWLReasoner;

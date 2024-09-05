@@ -1,15 +1,15 @@
-package tin.services.ontology
+package tin.services.ontology.LoopTableBuilder
 
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.context.TestConfiguration
-import tin.model.v1.query.QueryGraph
-import tin.model.v1.transducer.TransducerGraph
-import tin.services.internal.fileReaders.OntologyReaderService
-import tin.services.internal.fileReaders.QueryReaderService
-import tin.services.internal.fileReaders.TransducerReaderService
+import tin.model.v2.query.QueryGraph
+import tin.model.v2.transducer.TransducerGraph
+import tin.services.internal.fileReaders.*
 import tin.services.internal.fileReaders.fileReaderResult.FileReaderResult
+import tin.services.ontology.DLReasoner
+import tin.services.ontology.OntologyManager
 import tin.services.ontology.loopTable.LoopTableBuilder.SPALoopTableBuilder
 import tin.services.technical.SystemConfigurationService
 import java.io.File
@@ -27,13 +27,13 @@ class SpaLoopTableTest {
     }
 
     private fun readQueryWithFileReaderService(fileName: String, breakOnError: Boolean = false) : FileReaderResult<QueryGraph> {
-        var fileReaderService: QueryReaderService = QueryReaderService(systemConfigurationService);
+        var fileReaderService: QueryReaderServiceV2 = QueryReaderServiceV2(systemConfigurationService);
         val testFilePath = systemConfigurationService.getQueryPath();
         return fileReaderService.read(testFilePath, fileName, breakOnError);
     }
 
     private fun readTransducerWithFileReaderService(fileName: String, breakOnError: Boolean = false) : FileReaderResult<TransducerGraph> {
-        var fileReaderService: TransducerReaderService = TransducerReaderService(systemConfigurationService);
+        var fileReaderService: TransducerReaderServiceV2 = TransducerReaderServiceV2(systemConfigurationService);
         val testFilePath = systemConfigurationService.getTransducerPath();
         return fileReaderService.read(testFilePath, fileName, breakOnError);
     }

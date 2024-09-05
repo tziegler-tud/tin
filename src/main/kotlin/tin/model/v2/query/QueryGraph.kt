@@ -37,6 +37,10 @@ class QueryGraph : Graph() {
         return edges.filterForTarget(target);
     }
 
+    override fun getEdgesWithSourceAndTarget(source: Node, target: Node): List<QueryEdge> {
+        return edges.filterForSourceAndTarget(source, target);
+    }
+
     override fun getEdgesWithLabel(label: String): List<QueryEdge> {
         return edges.filterForLabel(label);
     }

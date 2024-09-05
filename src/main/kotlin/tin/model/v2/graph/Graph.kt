@@ -71,6 +71,11 @@ abstract class Graph {
                 if (it != node) return false;
             } else return false;
         }
+        edges.forEach {
+            if (!other.edges.contains(it)) {
+                return false;
+            }
+        }
         return alphabet == other.alphabet;
 
     }

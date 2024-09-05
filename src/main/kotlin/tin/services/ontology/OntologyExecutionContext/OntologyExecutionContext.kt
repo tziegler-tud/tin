@@ -20,6 +20,7 @@ class OntologyExecutionContext(private val manager: OntologyManager) {
     val expressionBuilder = manager.getExpressionBuilder();
     val parser = manager.getQueryParser();
     val shortFormProvider = manager.getShortFormProvider();
+    val manchesterShortFormProvider = manager.manchesterShortFormProvider;
     val restrictionBuilder = manager.getRestrictionBuilder();
 
     var tailsets: HashSet<HashSet<String>>? = null;

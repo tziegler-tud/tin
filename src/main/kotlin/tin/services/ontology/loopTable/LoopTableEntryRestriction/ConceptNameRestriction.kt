@@ -5,5 +5,11 @@ class ConceptNameRestriction(override val value: HashSet<String>) : LoopTableEnt
         return value;
     }
 
+    fun containsClassName(className: String) : Boolean {
+        return value.contains(className);
+    }
+
+
+
 
 }

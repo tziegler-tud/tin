@@ -23,7 +23,7 @@ class QueryGraphTest {
     private val e4 = QueryEdge(s2, s4, "c")
     private val e5 = QueryEdge(s4, s4, "l")
 
-    fun buildTestGraph() : QueryGraph {
+    fun buildTestGraph1() : QueryGraph {
         val graph = QueryGraph();
         graph.addNodes(s1,s2,s3,s4);
         graph.addEdge(e0);
@@ -36,18 +36,38 @@ class QueryGraphTest {
         return graph;
     }
 
+    fun buildTestGraph2() : QueryGraph {
+        val graph = QueryGraph();
+        graph.addNodes(s1,s2,s3,s4);
+        graph.addEdge(e0);
+        graph.addEdge(e1);
+        graph.addEdge(e2);
+        graph.addEdge(e3);
+        graph.addEdge(e4);
+        graph.addEdge(e5);
+        return graph;
+    }
+
+    @Test
+    fun testGraphEquality(){
+        val graph1 = buildTestGraph1();
+        val graph2 = buildTestGraph2();
+
+        assert(graph1 == graph1)
+        assert(graph1 != graph2)
+    }
+
     @Test
     fun testEdgeRetrieval(){
 
-
-        val graph = buildTestGraph();
+        val graph = buildTestGraph1();
         val s1 = graph.getNode("s1")!!
         val s2 = graph.getNode("s2")!!
         val s3 = graph.getNode("s3")!!
         val s4 = graph.getNode("s4")!!
 
         val edgesS1 = graph.getEdgesWithSource(s1)
-        assert(edgesS1.size == 3);
+        assert(edgesS1.size == 4);
         assert(edgesS1.contains(e0))
         assert(edgesS1.contains(e1))
         assert(edgesS1.contains(e2))

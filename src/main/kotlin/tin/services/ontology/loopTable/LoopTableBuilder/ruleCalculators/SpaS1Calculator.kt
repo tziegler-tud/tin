@@ -13,13 +13,16 @@ import tin.services.ontology.loopTable.SPALoopTable
 import tin.services.ontology.loopTable.loopTableEntry.SPALoopTableEntry
 
 class SpaS1Calculator(
-    private val restrictionBuilder: RestrictionBuilder,
-    private val expressionBuilder: DLExpressionBuilder,
-    private val dlReasoner: DLReasoner,
     private val ec: OntologyExecutionContext,
     private val queryGraph: QueryGraph,
     private val transducerGraph: TransducerGraph
     ) {
+
+    private val shortFormProvider = ec.shortFormProvider;
+    private val restrictionBuilder = ec.restrictionBuilder;
+    private val expressionBuilder = ec.expressionBuilder;
+    private val dlReasoner = ec.dlReasoner;
+    private val manchesterShortFormProvider = ec.manchesterShortFormProvider;
 
     /**
      * for each role r given, check if M <= E r. M1
@@ -49,7 +52,7 @@ class SpaS1Calculator(
     /**
      * calculates the updated value for an entry spa[(s,t),(s',t'),M]
      */
-    private fun calculate(spaLoopTableEntry: SPALoopTableEntry, table: SPALoopTable): Int {
+    fun calculate(spaLoopTableEntry: SPALoopTableEntry, table: SPALoopTable): Int {
         val source = spaLoopTableEntry.source;
         val target = spaLoopTableEntry.target;
         val M = spaLoopTableEntry.restriction;
@@ -72,6 +75,9 @@ class SpaS1Calculator(
         var candidateRolesFromTable: Set<OWLObjectProperty>
         var candidateRolesSym: Set<OWLObjectProperty>;
 
+        var minimumCostCandidate : SPALoopTableEntry? = null;
+        var minimumCost: Int = -1;
+
         //iterate through candidates and perform steps 2.1 - 2.6
         candidateMap.forEach { (candidateEntry, candidateCost) ->
             val s1: Node = candidateEntry.source.first;
@@ -90,22 +96,81 @@ class SpaS1Calculator(
             //complexity is EXP x |roles in ontology|
             candidateRolesFromTable = calculateCandidateRoles(MExp, M1Exp, roles);
 
-            candidateRolesFromTable.forEach { role ->
+            candidateRolesFromTable.forEach lit@ { role ->
 
                 //for each r, calculate superclass r'
-                val super_r = dlReasoner.calculateSuperProperties(role);
+                val superR = dlReasoner.calculateSuperProperties(role);
                 //we need to add the role itself, as it is not included in the superroles calculated by the reasoner
+                val superRShortForms = superR.map {
+                    shortFormProvider.getShortForm(it.representativeElement.asOWLObjectProperty());
+                }.toMutableList();
+                superRShortForms.add(shortFormProvider.getShortForm(role));
 
-                val inv_super_r = dlReasoner.calculateSuperProperties(role.getInverseProperty());
+//                val invSuperR = dlReasoner.calculateSuperProperties(role.getInverseProperty());
+//                val invSuperRShortForms = invSuperR.map {
+//                    shortFormProvider.getShortForm(it.representativeElement.asOWLObjectProperty());
+//                }.toMutableList();
+//                invSuperRShortForms.add(shortFormProvider.getShortForm(role.inverseProperty.asOWLObjectProperty()));
 
                 //both sets should have the same cardinality
                 //more specifically, the second set contains the inverse role of each one in the first
                 //this also means we would not have to calculate both.
 
-                //get all edges (s,u,s1) € QueryGraph
-                var candidateQueryEdges = queryGraph.getEdgesWithSourceAndTarget(s1, s2);
-                var candidateTransducerEdges = transducerGraph.getEdgesWithSourceAndTarget(t1, t2);
 
+                /**
+                 * Downwards transition
+                 */
+                //get all edges (s,u,s1) € QueryGraph
+                var candidateQueryEdges = queryGraph.getEdgesWithSourceAndTarget(s,s1);
+                if(candidateQueryEdges.isEmpty()) {
+                    return@lit;
+                }
+                var candidateQueryTransitions = candidateQueryEdges.map{it.label}
+                var candidateTransducerEdges = transducerGraph.getEdgesWithSourceAndTarget(t, t1);
+                if(candidateTransducerEdges.isEmpty()) {
+                    return@lit;
+                }
+                val sortedEdges = candidateTransducerEdges.sortedByDescending { it.cost }
+                val minCostEdgeDown = sortedEdges.findLast {
+                    candidateQueryTransitions.contains(it.incomingString) &&
+                    superRShortForms.contains(it.outgoingString)
+                }
+
+                if(minCostEdgeDown == null) {
+                    return@lit;
+                }
+
+                /**
+                 * upwards transition
+                 */
+                //get all edges (s2,u',s') € QueryGraph
+                var candidateQueryEdgesUp = queryGraph.getEdgesWithSourceAndTarget(s2,se);
+                if(candidateQueryEdgesUp.isEmpty()) {
+                    return@lit;
+                }
+                var candidateQueryTransitionsUp = candidateQueryEdgesUp.map{it.label}
+                var candidateTransducerEdgesUp = transducerGraph.getEdgesWithSourceAndTarget(t2, te);
+                if(candidateTransducerEdgesUp.isEmpty()) {
+                    return@lit;
+                }
+
+                //now, we have to go back up with an inverse role from superR.
+
+                val sortedEdgesUp = candidateTransducerEdgesUp.sortedByDescending { it.cost }
+                val minCostEdgeUp = sortedEdgesUp.findLast {
+                    candidateQueryTransitions.contains(it.incomingString) &&
+                            superRShortForms.contains(it.outgoingString)
+                }
+
+                if(minCostEdgeUp == null) {
+                    return@lit;
+                }
+
+                val localCost = minCostEdgeDown.cost + candidateCost + minCostEdgeUp.cost
+                if (localCost < minimumCost || minimumCost == -1){
+                    minimumCost = localCost;
+                    minimumCostCandidate = candidateEntry;
+                }
             }
         }
 

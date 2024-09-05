@@ -31,7 +31,7 @@ class SPALoopTableBuilder (
     private val pairsAvailable = mutableSetOf<Pair<Node, Node>>();
     private val tailsets = ec.tailsets!!;
 
-    private val s1Calculator = SpaS1Calculator(restrictionBuilder, expressionBuilder, dlReasoner, ec, queryGraph, transducerGraph)
+    private val s1Calculator = SpaS1Calculator(ec, queryGraph, transducerGraph)
 
     init {
 
@@ -112,18 +112,20 @@ class SPALoopTableBuilder (
          *     2.6.3 If found, mark u' as okay and associate w_2
          *
          */
-
-        val costCutoff = table.get(spaLoopTableEntry) //0, int val or null
-        val source = spaLoopTableEntry.source;
-        val target = spaLoopTableEntry.target;
-        val M = spaLoopTableEntry.restriction;
-        val s = source.first;
-        val t = source.second;
-        val se = target.first;
-        val te = target.second;
-
-        val MCLassExp = restrictionBuilder.asClassExpression(M)
-        val MExp = expressionBuilder.createELHIExpression(MCLassExp)
+//
+//        val costCutoff = table.get(spaLoopTableEntry) //0, int val or null
+//        val source = spaLoopTableEntry.source;
+//        val target = spaLoopTableEntry.target;
+//        val M = spaLoopTableEntry.restriction;
+//        val s = source.first;
+//        val t = source.second;
+//        val se = target.first;
+//        val te = target.second;
+//
+//        val MCLassExp = restrictionBuilder.asClassExpression(M)
+//        val MExp = expressionBuilder.createELHIExpression(MCLassExp)
+//
+        s1Calculator.calculate(spaLoopTableEntry, table)
 
 
 
