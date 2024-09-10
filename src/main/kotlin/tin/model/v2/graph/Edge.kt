@@ -1,20 +1,17 @@
 package tin.model.v2.graph
 
+import tin.model.v2.query.EdgeLabel
 import tin.model.v2.transducer.TransducerEdge
 import tin.model.v2.query.QueryEdge
 
 open class Edge(
     open val source: Node,
     open val target: Node,
-    val label: String
+    val label: EdgeLabel
 ) {
 
     override fun toString(): String {
-        val eps = "epsilon"
-        val incoming: String = if (label.isEmpty()) {
-            eps
-        } else label
-        return String.format("(%s) -[%3s]-> (%s)", source.identifier, incoming, target.identifier)
+        return "(${source.identifier}) - [${label}] - (${target.identifier})";
     }
 
     fun print() {

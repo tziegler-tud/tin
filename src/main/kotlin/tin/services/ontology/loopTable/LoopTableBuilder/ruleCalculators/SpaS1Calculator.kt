@@ -19,6 +19,7 @@ class SpaS1Calculator(
     ) {
 
     private val shortFormProvider = ec.shortFormProvider;
+    private val queryParser = ec.parser;
     private val restrictionBuilder = ec.restrictionBuilder;
     private val expressionBuilder = ec.expressionBuilder;
     private val dlReasoner = ec.dlReasoner;
@@ -130,10 +131,14 @@ class SpaS1Calculator(
                 if(candidateTransducerEdges.isEmpty()) {
                     return@lit;
                 }
-                val sortedEdges = candidateTransducerEdges.sortedByDescending { it.cost }
-                val minCostEdgeDown = sortedEdges.findLast {
-                    candidateQueryTransitions.contains(it.incomingString) &&
-                    superRShortForms.contains(it.outgoingString)
+                val sortedEdges = candidateTransducerEdges.sortedBy { it.cost }
+                val minCostEdgeDown = sortedEdges.firstNotNullOf {edge -> {
+                    //try to match edge label to role name
+                    val edgeProperty = queryParser.getOWLObjectProperty(edge.outgoingString);
+                    candidateQueryTransitions.contains(edge.incomingString)
+                            && superRShortForms.contains(edge.outgoingString);
+                    }
+
                 }
 
                 if(minCostEdgeDown == null) {

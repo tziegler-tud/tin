@@ -21,7 +21,7 @@ class QueryGraph : Graph() {
         return edges.add(edge.asQueryEdge());
     }
 
-    fun addEdge(source: Node, target: Node, label: String) : Boolean {
+    fun addEdge(source: Node, target: Node, label: EdgeLabel) : Boolean {
         return addEdge(QueryEdge(source, target, label));
     }
 
@@ -41,7 +41,7 @@ class QueryGraph : Graph() {
         return edges.filterForSourceAndTarget(source, target);
     }
 
-    override fun getEdgesWithLabel(label: String): List<QueryEdge> {
+    override fun getEdgesWithLabel(label: EdgeLabel): List<QueryEdge> {
         return edges.filterForLabel(label);
     }
 

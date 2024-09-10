@@ -45,7 +45,7 @@ class QueryReaderServiceV2 (
         val anyNodeRegex = Regex("\\w(\\w|-\\w)*\\s*,\\s*((true)|(false))\\s*,\\s*((true)|(false))")
 
         // edge lines
-        val anyEdgeRegex = Regex("\\w(\\w|-\\w)*\\s*,\\s*\\w(\\w|-\\w)*\\s*,\\s*\\w(\\w|-\\w)*\\??") // for roles
+        val anyEdgeRegex = Regex("\\w(\\w|-\\w)*\\s*,\\s*\\w(\\w|-\\w)*\\s*,\\s*(inverse\\()?\\s*\\w(\\w|-\\w)*(\\s*\\)|\\?)?") // for roles
 
         var currentLineIndex=0
         while (currentLineIndex <= inputFileMaxLines) {
@@ -122,7 +122,8 @@ class QueryReaderServiceV2 (
                         source = queryNodes[stringArray[0]]!!
                         target = queryNodes[stringArray[1]]!!
 
-                        edgeLabel = stringArray[2]
+                        edgeLabel = stringArray[2];
+
                         queryGraph.addEdge(source, target, edgeLabel)
 
                         if(Alphabet.isConceptAssertion(edgeLabel)){
@@ -138,7 +139,24 @@ class QueryReaderServiceV2 (
                         }
                         else {
                             //not a concept assertions
-                            if(!alphabet.includes(edgeLabel)) alphabet.addRoleName(edgeLabel)
+                            //check for valid role name
+                            if(Alphabet.isValidRoleName(edgeLabel)){
+                                var normalizedEdgeLabel = edgeLabel;
+                                if(Alphabet.isInverseRoleName(edgeLabel)){
+                                    //inverse role name found, handle accordingly
+                                    normalizedEdgeLabel = Alphabet.transformToPositiveRoleName(edgeLabel);
+                                }
+                                else {
+                                    //non-inverse (positive) role name found
+                                }
+                                if(!alphabet.includes(normalizedEdgeLabel)) alphabet.addRoleName(normalizedEdgeLabel)
+                            }
+                            else {
+                                //invalid role name found, throw error
+                                this.error("Failed to read line as edge: Invalid role name given.", currentLineIndex, currentLine)
+                                if(breakOnError) break
+                            }
+
                         }
                     }
                     else {

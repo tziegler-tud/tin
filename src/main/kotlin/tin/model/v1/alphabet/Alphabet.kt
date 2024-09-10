@@ -33,8 +33,38 @@ class Alphabet {
         }
 
         fun isConceptAssertion(string: String): Boolean {
-            val reg = Regex("\\w(\\w|-\\w)*\\?");
+            val reg = Regex("\\w(\\w|-\\w)*\\?$");
             return reg.matchEntire(string) !== null
+        }
+
+        fun isValidRoleName(roleName: String): Boolean {
+            val reg = Regex("\\w(\\w|-\\w)*$");
+            return reg.matchEntire(roleName) !== null || isInverseRoleName(roleName);
+        }
+
+        fun isInverseRoleName(roleName: String): Boolean {
+            val reg = Regex("inverse\\(\\w(\\w|-\\w)*\\)\$");
+            return reg.matchEntire(roleName) !== null
+        }
+
+        fun transformToPositiveRoleName(inverseRoleName: String): String {
+            if(!isValidRoleName(inverseRoleName))
+                throw IllegalArgumentException("Failed to transform role name: Not a valid role name.");
+            if(!isInverseRoleName(inverseRoleName)) return inverseRoleName;
+            val roleNameExtractor = Regex("inverse\\((?<name>\\w(?>\\w|-\\w)*)\\)\$");
+            val match = roleNameExtractor.matchEntire(inverseRoleName);
+            if(match == null)
+                throw IllegalArgumentException("Failed to transform role name: Not a valid role name.");
+            val groups = match.groups;
+            val roleName = groups[1]!!;
+            return roleName.value;
+        }
+
+        fun transformToInverseRoleName(roleName: String): String {
+            if(!isValidRoleName(roleName))
+                throw IllegalArgumentException("Failed to transform role name: Not a valid role name.");
+            if(isInverseRoleName(roleName)) return roleName;
+            return "inverse($roleName)";
         }
     }
 

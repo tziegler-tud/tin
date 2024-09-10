@@ -4,31 +4,16 @@ import tin.model.v2.graph.Edge
 import tin.model.v2.graph.Node
 
 class TransducerEdge(
-    override var source: Node,
-    override var target: Node,
-    var incomingString: String,
-    var outgoingString: String,
-    var cost: Int
+    source: Node,
+    target: Node,
+    label: TransducerEdgeLabel,
+
 ) : Edge(
-        source, target, "$incomingString, $outgoingString, $cost"
+        source, target, label
 ){
 
     override fun toString(): String {
-        val eps = "epsilon"
-        val incoming: String = if (incomingString.isEmpty()) {
-            eps
-        } else incomingString
-        val outgoing: String = if (outgoingString.isEmpty()) {
-            eps
-        } else outgoingString
-        return String.format(
-            "(%s) -[%3s|%3s|%3s]-> (%s)",
-            source.identifier,
-            incoming,
-            outgoing,
-            cost,
-            target.identifier
-        )
+        return "(${source.identifier})-["
     }
 
     override fun equals(other: Any?): Boolean {
@@ -36,9 +21,7 @@ class TransducerEdge(
         if (other !is TransducerEdge) return false
 
         return checkForNodesEquality(other) &&
-                incomingString == other.incomingString &&
-                outgoingString == other.outgoingString &&
-                cost == other.cost
+                label == other.label
     }
     /**
      * call the trimmed TransducerNode.equals() method in order to prevent a circular dependency.
@@ -51,9 +34,7 @@ class TransducerEdge(
     override fun hashCode(): Int {
         var result = source.identifier.hashCode()
         result = 31 * result + target.identifier.hashCode()
-        result = 31 * result + incomingString.hashCode()
-        result = 31 * result + outgoingString.hashCode()
-        result = 31 * result + cost.hashCode()
+        result = 31 * result + label.hashCode()
         return result
     }
 }

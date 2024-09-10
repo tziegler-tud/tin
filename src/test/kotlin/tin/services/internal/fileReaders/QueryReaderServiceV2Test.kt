@@ -46,12 +46,53 @@ class QueryReaderServiceV2Test {
 
         return comparisonGraph;
     }
+
+
+    private fun constructComparisonGraph2() : QueryGraph {
+        //build comparison graph
+        val s0 = Node("s0", true, false);
+        val s1 = Node("s1", false, false);
+        val s2 = Node("s2", false, true);
+        val s3 = Node("s3", false, false);
+
+        val e0 = QueryEdge(s0, s1, "S")
+        val e1 = QueryEdge(s1, s0, "inverse(R)")
+        val e2 = QueryEdge(s1, s2, "prop1?")
+        val e3 = QueryEdge(s2, s3, "inverse(S)")
+
+        val comparisonGraph = QueryGraph();
+        comparisonGraph.addNodes(s0,s1,s2,s3);
+
+        comparisonGraph.addEdge(e0.source, e0.target, e0.label);
+        comparisonGraph.addEdge(e1.source, e1.target, e1.label);
+        comparisonGraph.addEdge(e2.source, e2.target, e2.label);
+        comparisonGraph.addEdge(e3);
+
+        comparisonGraph.alphabet.addRoleName("S")
+        comparisonGraph.alphabet.addRoleName("R")
+        comparisonGraph.alphabet.addConceptName("prop1")
+
+        return comparisonGraph;
+    }
     @Test
     fun readSaneFile(){
         val testFileName = "test_query_sane.txt";
         val result = readWithFileReaderService(testFileName);
         val graph = result.get();
         val comparisonGraph = constructComparisonGraph();
+
+        //expect no warnings, no errors, and a correct database graph
+        assert(result.warnings.isEmpty())
+        assert(result.errors.isEmpty())
+        assert(graph == comparisonGraph)
+    }
+
+    @Test
+    fun readSaneFile2(){
+        val testFileName = "test_query_sane_2.txt";
+        val result = readWithFileReaderService(testFileName);
+        val graph = result.get();
+        val comparisonGraph = constructComparisonGraph2();
 
         //expect no warnings, no errors, and a correct database graph
         assert(result.warnings.isEmpty())

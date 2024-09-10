@@ -1,5 +1,6 @@
 package tin.model.v2.query
 
+import tin.model.v2.graph.EdgeLabel
 import tin.model.v2.graph.EdgeSet
 import tin.model.v2.graph.Node
 
@@ -21,7 +22,7 @@ class QueryEdgeSet : EdgeSet<QueryEdge>() {
     override fun filterForSourceAndTarget(source: Node, target: Node): List<QueryEdge> {
         return filter{it.source === source && it.target === target};
     }
-    override fun filterForLabel(label: String): List<QueryEdge> {
+    override fun filterForLabel(label: EdgeLabel): List<QueryEdge> {
         return filter{it.label === label};
     }
 }

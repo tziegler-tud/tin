@@ -6,7 +6,7 @@ import tin.model.v2.graph.Node
 class QueryEdge (
     override var source: Node,
     override var target: Node,
-    label: String
+    label: QueryEdgeLabel
 ) : Edge(
         source, target, label
 ) {

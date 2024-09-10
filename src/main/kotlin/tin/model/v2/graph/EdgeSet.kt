@@ -5,5 +5,5 @@ abstract class EdgeSet<Edge> : HashSet<Edge>() {
     abstract fun filterForSource(source: Node): List<Edge>;
     abstract fun filterForTarget(target: Node): List<Edge>;
     abstract fun filterForSourceAndTarget(source:Node, target: Node): List<Edge>;
-    abstract fun filterForLabel(label: String): List<Edge>;
+    abstract fun filterForLabel(label: EdgeLabel): List<Edge>;
 }

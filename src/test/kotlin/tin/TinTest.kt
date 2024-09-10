@@ -75,6 +75,21 @@ class TinTest {
 
         assert(a1.hashCode() == a2.hashCode())
         assert(a1.hashCode() != a3.hashCode())
+
+        val valid1 = "validRoleName1"
+        val inverseValid1 = "inverse(validRoleName1)";
+
+        assert(Alphabet.isValidRoleName(valid1))
+        assert(Alphabet.isValidRoleName(inverseValid1))
+        assert(Alphabet.isValidRoleName("invalid_RoleName1"))
+
+        assert(!Alphabet.isValidRoleName("invalidRoleName1?"))
+        assert(!Alphabet.isValidRoleName("invers(validRoleName1)"))
+
+        assert(!Alphabet.isInverseRoleName(valid1))
+        assert(Alphabet.isInverseRoleName(inverseValid1))
+        assert(Alphabet.transformToInverseRoleName(valid1) == inverseValid1)
+        assert(Alphabet.transformToPositiveRoleName(inverseValid1) == valid1)
     }
 
     @Test
