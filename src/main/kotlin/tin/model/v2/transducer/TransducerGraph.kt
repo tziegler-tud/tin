@@ -1,29 +1,35 @@
 package tin.model.v2.transducer
 
-import tin.model.v2.graph.Graph
-import tin.model.v2.graph.NodeSet
-import tin.model.v2.graph.Edge
-import tin.model.v2.graph.Node
+import tin.model.v1.alphabet.Alphabet
+import tin.model.v2.graph.*
 import tin.model.v2.query.QueryEdge
 
-class TransducerGraph : Graph() {
+class TransducerGraph() : AbstractGraph() {
     override val nodes: NodeSet = NodeSet()
     override val edges: TransducerEdgeSet = TransducerEdgeSet()
 
-    fun addEdge(source: Node, target: Node, incoming: String, outgoing: String, cost: Int) {
-        addEdge(TransducerEdge(source, target, incoming, outgoing, cost))
+    override var alphabet: Alphabet = Alphabet();
+
+    fun addEdge(source: Node, target: Node, transducerEdgeLabel: TransducerEdgeLabel) : Boolean {
+        return addEdge(TransducerEdge(source, target, transducerEdgeLabel))
+    }
+
+    fun addEdge(source: Node, target: Node, incoming: String, outgoing: String, cost: Int) : Boolean {
+        return addEdge(TransducerEdge(source, target, incoming, outgoing, cost))
+    }
+
+    fun addEdge(transducerEdge: TransducerEdge): Boolean {
+        return addEdge(transducerEdge);
     }
 
     override fun addEdge(edge: Edge) : Boolean {
-
         if (!nodes.contains(edge.source)) {
             nodes.add(edge.source)
         }
-
         if (!nodes.contains(edge.target)) {
             nodes.add(edge.target)
         }
-        return edges.add(edge.asTransducerEdge());
+        return edges.add(edge.asTransducerEdge()!!);
     }
 
     override fun containsEdge(edge: Edge) : Boolean {
@@ -42,7 +48,7 @@ class TransducerGraph : Graph() {
         return edges.filterForSourceAndTarget(source, target);
     }
 
-    override fun getEdgesWithLabel(label: String): List<TransducerEdge> {
+    override fun getEdgesWithLabel(label: EdgeLabel): List<TransducerEdge> {
         return edges.filterForLabel(label);
     }
 
@@ -50,12 +56,46 @@ class TransducerGraph : Graph() {
         if (this === other) return true
         if (other !is TransducerGraph) return false
 
-        return super.equals(other);
 
-//        return nodes == other.nodes
+        nodes.forEach {
+            val node = other.getNode(it.identifier);
+            if (node !== null) {
+                if (it != node) return false;
+            } else return false;
+        }
+        edges.forEach {
+            if (!other.edges.contains(it)) {
+                return false;
+            }
+        }
+        return alphabet == other.alphabet;
     }
 
     override fun hashCode(): Int {
-        return nodes.hashCode()
+        var result = nodes.hashCode()
+        result = 31 * result + edges.hashCode()
+        result = 31 * result + alphabet.hashCode()
+        return result
+    }
+
+    override fun isEmpty(): Boolean {
+        return nodes.isEmpty()
+    }
+
+    override fun isValidGraph(): Boolean {
+        return hasInitialNode() && hasFinalNode()
+    }
+
+    override fun hasInitialNode(): Boolean{
+        return nodes.any{it.isInitialState}
+    }
+    override fun hasFinalNode(): Boolean{
+        return nodes.any{it.isFinalState}
+    }
+
+    override fun printGraph() {
+        for (edge in edges) {
+            edge.print();
+        }
     }
 }

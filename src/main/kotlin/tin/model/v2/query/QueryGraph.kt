@@ -1,11 +1,13 @@
 package tin.model.v2.query
 
+import tin.model.v1.alphabet.Alphabet
 import tin.model.v2.graph.*
 import tin.model.v2.transducer.TransducerEdge
 
-class QueryGraph : Graph() {
+class QueryGraph : AbstractGraph() {
     override var nodes: NodeSet = NodeSet()
     override var edges = QueryEdgeSet()
+    override var alphabet: Alphabet = Alphabet();
 
     override fun addEdge(edge: Edge) : Boolean {
         /**
@@ -18,11 +20,14 @@ class QueryGraph : Graph() {
         if (nodes.contains(edge.target)) {
             nodes.add(edge.target)
         }
-        return edges.add(edge.asQueryEdge());
+        return edges.add(edge.asQueryEdge()!!);
     }
 
-    fun addEdge(source: Node, target: Node, label: EdgeLabel) : Boolean {
+    fun addEdge(source: Node, target: Node, label: QueryEdgeLabel) : Boolean {
         return addEdge(QueryEdge(source, target, label));
+    }
+    fun addEdge(source: Node, target: Node, stringLabel: String) : Boolean {
+        return addEdge(QueryEdge(source, target, stringLabel));
     }
 
     override fun containsEdge(edge: Edge) : Boolean {

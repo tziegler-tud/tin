@@ -1,15 +1,17 @@
 package tin.model.v2.transducer
 
-import tin.model.v1.alphabet.Alphabet
 import tin.model.v2.graph.EdgeLabel
-import tin.model.v2.query.EdgeLabelProperty
+import tin.model.v2.graph.EdgeLabelProperty
+import tin.model.v2.query.QueryEdgeLabel
 
 class TransducerEdgeLabel(
-    private val incoming: EdgeLabelProperty,
-    private val outgoing: EdgeLabelProperty,
-    private val cost: Int,
+    val incoming: EdgeLabelProperty,
+    val outgoing: EdgeLabelProperty,
+    val cost: Int,
     ) : EdgeLabel
 {
+    constructor(incoming: String, outgoing: String, cost: Int) : this(EdgeLabelProperty.fromString(incoming), EdgeLabelProperty.fromString(outgoing), cost)
+
     override fun toString(): String {
         return "${incoming}|${outgoing}|${cost}";
     }
@@ -19,5 +21,15 @@ class TransducerEdgeLabel(
         result = 31 * result + outgoing.hashCode()
         result = 31 * result + cost.hashCode()
         return result;
+    }
+
+    fun getCost() : Int {
+        return cost;
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is TransducerEdgeLabel) return false
+        return incoming == other.incoming && outgoing == other.outgoing && cost == other.cost;
     }
 }

@@ -36,8 +36,8 @@ class TransducerReaderServiceV2Test {
         val comparisonGraph = TransducerGraph();
         comparisonGraph.addNodes(t0,t1,t2);
 
-        comparisonGraph.addEdge(e0.source, e0.target, e0.incomingString, e0.outgoingString, e0.cost);
-        comparisonGraph.addEdge(e1.source, e1.target, e1.incomingString, e1.outgoingString, e1.cost);
+        comparisonGraph.addEdge(e0);
+        comparisonGraph.addEdge(e1);
         comparisonGraph.addEdge(e2);
         comparisonGraph.addEdge(e3);
 

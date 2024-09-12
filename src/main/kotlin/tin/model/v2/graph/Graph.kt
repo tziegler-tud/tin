@@ -1,9 +1,8 @@
 package tin.model.v2.graph
 
 import tin.model.v1.alphabet.Alphabet
-import tin.model.v2.query.QueryEdge
 
-abstract class Graph {
+interface Graph {
 
     companion object {
         fun isValidGraph(graphLikeObject: Any?): Boolean {
@@ -16,95 +15,43 @@ abstract class Graph {
         }
     }
 
-    abstract val nodes: NodeSet;
-    abstract val edges: EdgeSet<out Edge>
-    var alphabet: Alphabet = Alphabet();
+    val nodes: NodeSet;
+    val edges: EdgeSet<out Edge>
+    var alphabet: Alphabet;
 
-    open fun addNode(node: Node) : Boolean {
-        return nodes.add(node);
-    }
+    fun addNode(node: Node) : Boolean;
 
-    open fun addNodes(vararg n: Node){
-        val list = listOf(*n);
-        list.forEach { addNode(it) }
-    }
+    fun addNodes(vararg n: Node): Boolean;
 
-    fun getNode(identifier: String) : Node? {
-        return nodes.get(identifier)
-    }
+    fun getNode(identifier: String) : Node?
 
-    fun containsNode(identifier: String) : Boolean {
-        return nodes.find { it.identifier == identifier } != null
-    }
+    fun containsNode(identifier: String) : Boolean;
 
-    fun containsNode(node: Node) : Boolean {
-        return nodes.contains(node)
-    }
+    fun containsNode(node: Node) : Boolean;
 
-    open fun containsEdge(edge: Edge) : Boolean {
-        return edges.contains(edge)
-    }
+    fun addEdge(edge: Edge) : Boolean;
 
-    open fun getEdgesWithSource(source: Node): List<Edge> {
-        return edges.filterForSource(source);
-    }
+    fun containsEdge(edge: Edge) : Boolean;
 
-    open fun getEdgesWithTarget(target: Node): List<Edge> {
-        return edges.filterForTarget(target);
-    }
+    fun getEdgesWithSource(source: Node): List<Edge>;
 
-    open fun getEdgesWithSourceAndTarget(source: Node, target: Node): List<Edge> {
-        return edges.filterForSourceAndTarget(source, target);
-    }
+    fun getEdgesWithTarget(target: Node): List<Edge>;
 
-    open fun getEdgesWithLabel(label: String): List<Edge> {
-        return edges.filterForLabel(label);
-    }
+    fun getEdgesWithSourceAndTarget(source: Node, target: Node): List<Edge>;
 
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (other !is Graph) return false
+    fun getEdgesWithLabel(label: EdgeLabel): List<Edge>;
 
-        nodes.forEach {
-            val node = other.getNode(it.identifier);
-            if (node !== null) {
-                if (it != node) return false;
-            } else return false;
-        }
-        edges.forEach {
-            if (!other.edges.contains(it)) {
-                return false;
-            }
-        }
-        return alphabet == other.alphabet;
+    override fun equals(other: Any?): Boolean;
 
-    }
+    override fun hashCode(): Int;
 
-    override fun hashCode(): Int {
-        var result = nodes.hashCode()
-        result = 31 * result + alphabet.hashCode()
-        return result
-    }
+    fun isEmpty(): Boolean;
 
-    final fun isEmpty(): Boolean {
-        return nodes.isEmpty()
-    }
+    fun isValidGraph(): Boolean;
 
-    final fun isValidGraph(): Boolean {
-        return hasInitialNode() && hasFinalNode()
-    }
+    fun hasInitialNode(): Boolean;
 
-    final fun hasInitialNode(): Boolean{
-        return nodes.any{it.isInitialState}
-    }
-    final fun hasFinalNode(): Boolean{
-        return nodes.any{it.isFinalState}
-    }
+    fun hasFinalNode(): Boolean;
 
-    open fun printGraph() {
-        for (edge in edges) {
-            edge.print();
-        }
-    }
-    abstract fun addEdge(edge: Edge) : Boolean;
+    fun printGraph();
 }

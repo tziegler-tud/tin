@@ -2,15 +2,15 @@ package tin.model.v2.transducer
 
 import tin.model.v2.graph.Edge
 import tin.model.v2.graph.Node
+import tin.model.v2.query.QueryEdge
 
 class TransducerEdge(
-    source: Node,
-    target: Node,
-    label: TransducerEdgeLabel,
-
-) : Edge(
-        source, target, label
-){
+    override val source: Node,
+    override val target: Node,
+    override val label: TransducerEdgeLabel,
+) : Edge
+{
+    constructor(source: Node, target: Node, incoming: String, outgoing: String, cost: Int) : this(source, target, TransducerEdgeLabel(incoming, outgoing, cost))
 
     override fun toString(): String {
         return "(${source.identifier})-["
@@ -31,10 +31,22 @@ class TransducerEdge(
                 target == other.target
     }
 
+    override fun asTransducerEdge(): TransducerEdge {
+        return this;
+    }
+
+    override fun asQueryEdge(): QueryEdge? {
+        return null;
+    }
+
     override fun hashCode(): Int {
         var result = source.identifier.hashCode()
         result = 31 * result + target.identifier.hashCode()
         result = 31 * result + label.hashCode()
         return result
+    }
+
+    override fun print(){
+        println(this);
     }
 }

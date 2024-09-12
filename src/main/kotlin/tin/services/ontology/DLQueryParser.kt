@@ -7,6 +7,7 @@ import org.semanticweb.owlapi.model.*
 import org.semanticweb.owlapi.util.BidirectionalShortFormProvider
 import org.semanticweb.owlapi.util.BidirectionalShortFormProviderAdapter
 import org.semanticweb.owlapi.util.ShortFormProvider
+import tin.model.v2.graph.EdgeLabelProperty
 import tin.services.ontology.Expressions.DLExpression
 import uk.ac.manchester.cs.owl.owlapi.OWLObjectIntersectionOfImpl
 import uk.ac.manchester.cs.owl.owlapi.OWLObjectSomeValuesFromImpl
@@ -64,6 +65,16 @@ class DLQueryParser(private val ontology: OWLOntology, shortFormProvider: ShortF
         val entity = bidiShortFormProvider.getEntity(propertyName);
         if (entity != null) {
             if (entity.isOWLObjectProperty) return entity.asOWLObjectProperty();
+        }
+        return null;
+    }
+
+    fun getOWLObjectPropertyExpression(edgeLabelProperty: EdgeLabelProperty): OWLObjectPropertyExpression? {
+        val entity = bidiShortFormProvider.getEntity(edgeLabelProperty.getLabel());
+        if (entity != null) {
+            if (entity.isOWLObjectProperty) {
+                return edgeLabelProperty.isInverse() ? entity.asOWLObjectProperty().inverseProperty : entity.asOWLObjectProperty();
+            };
         }
         return null;
     }

@@ -1,4 +1,4 @@
-package tin.model.v2.query
+package tin.model.v2.graph
 
 import tin.model.v1.alphabet.Alphabet
 

@@ -1,8 +1,10 @@
 package tin.services.ontology.loopTable.LoopTableBuilder.ruleCalculators
 
 import org.semanticweb.owlapi.model.OWLObjectProperty
+import org.semanticweb.owlapi.model.OWLObjectPropertyExpression
 import tin.model.v2.query.QueryGraph
 import tin.model.v2.graph.Node
+import tin.model.v2.query.QueryEdgeLabel
 import tin.model.v2.transducer.TransducerGraph
 import tin.services.ontology.DLReasoner
 import tin.services.ontology.Expressions.DLExpression
@@ -121,24 +123,39 @@ class SpaS1Calculator(
                 /**
                  * Downwards transition
                  */
-                //get all edges (s,u,s1) € QueryGraph
+                //get all edges (s,_,s1) € QueryGraph
                 var candidateQueryEdges = queryGraph.getEdgesWithSourceAndTarget(s,s1);
                 if(candidateQueryEdges.isEmpty()) {
                     return@lit;
                 }
                 var candidateQueryTransitions = candidateQueryEdges.map{it.label}
+
+                //get all edges (t,_,_,_,t1) € TransducerGraph
                 var candidateTransducerEdges = transducerGraph.getEdgesWithSourceAndTarget(t, t1);
                 if(candidateTransducerEdges.isEmpty()) {
                     return@lit;
                 }
-                val sortedEdges = candidateTransducerEdges.sortedBy { it.cost }
-                val minCostEdgeDown = sortedEdges.firstNotNullOf {edge -> {
-                    //try to match edge label to role name
-                    val edgeProperty = queryParser.getOWLObjectProperty(edge.outgoingString);
-                    candidateQueryTransitions.contains(edge.incomingString)
-                            && superRShortForms.contains(edge.outgoingString);
-                    }
+                val sortedTransducerEdges = candidateTransducerEdges.sortedBy { it.label.cost }
 
+                //find the minimal cost of an edge (t,u,R',w,t1) with:
+                //  u in candidateQueryTransitions
+                //  R' in superR
+
+                val minCostEdgeDown = null;
+                sortedTransducerEdges.forEach edgeCheck@ { transducerEdge ->
+                    val inLabel = transducerEdge.label.incoming;
+                    val outLabel = transducerEdge.label.outgoing;
+
+                    //outgoing label must be a role name, not a concept assertion;
+                    if(outLabel.isConceptAssertion()) return@edgeCheck;
+                    // try to match edge label to positive role name
+                    var edgeProperty: OWLObjectPropertyExpression = queryParser.getOWLObjectProperty(outLabel) ?: return@edgeCheck;
+                    //if no property could be obtained, there is no way to continue - this also means our transducer uses property names which are not part of our ontology.
+
+
+
+                    val isValidQueryTransition = candidateQueryTransitions.contains(QueryEdgeLabel(inLabel))
+                            && superR.contains(edgeProperty);
                 }
 
                 if(minCostEdgeDown == null) {
@@ -161,10 +178,10 @@ class SpaS1Calculator(
 
                 //now, we have to go back up with an inverse role from superR.
 
-                val sortedEdgesUp = candidateTransducerEdgesUp.sortedByDescending { it.cost }
+                val sortedEdgesUp = candidateTransducerEdgesUp.sortedByDescending { it.label.cost }
                 val minCostEdgeUp = sortedEdgesUp.findLast {
-                    candidateQueryTransitions.contains(it.incomingString) &&
-                            superRShortForms.contains(it.outgoingString)
+                    candidateQueryTransitions.contains(it.label.incoming) &&
+                            superRShortForms.contains(it.label.outgoing)
                 }
 
                 if(minCostEdgeUp == null) {
