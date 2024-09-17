@@ -26,4 +26,11 @@ class TransducerEdgeSet : EdgeSet<TransducerEdge>() {
     override fun filterForLabel(label: EdgeLabel): List<TransducerEdge> {
         return filter{it.label == label};
     }
+
+    override fun containsEdge(edge: TransducerEdge): Boolean {
+        for (transducerEdge in this) {
+            if(transducerEdge == edge) return true;
+        }
+        return false;
+    }
 }

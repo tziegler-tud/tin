@@ -51,6 +51,25 @@ class EdgeLabelProperty(
         return label;
     }
     override fun toString(): String {
-        return label;
+        return if(inverse) {
+            Alphabet.transformToInverseRoleName(label);
+        } else {
+            label;
+        }
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is EdgeLabelProperty) return false
+        return label == other.label
+                && inverse == other.inverse
+                && conceptAssertion == other.conceptAssertion
+                && empty == other.empty;
+    }
+
+    override fun hashCode(): Int {
+        var result = label.hashCode()
+        result = 31 * result + inverse.hashCode()
+        return result
     }
 }

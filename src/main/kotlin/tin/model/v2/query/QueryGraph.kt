@@ -31,7 +31,8 @@ class QueryGraph : AbstractGraph() {
     }
 
     override fun containsEdge(edge: Edge) : Boolean {
-        return edges.contains(edge.asQueryEdge())
+        val e = edge.asQueryEdge() ?: return false;
+        return edges.contains(e)
     }
 
     override fun getEdgesWithSource(source: Node): List<QueryEdge> {

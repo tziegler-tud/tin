@@ -22,9 +22,13 @@ class QueryEdge (
         if (this === other) return true
         if (other !is QueryEdge) return false
 
-        return super.equals(other);
-//        return this.checkForNodesEquality(other) &&
-//                label == other.label
+        return checkForNodesEquality(other) &&
+                label == other.label
+    }
+
+    private fun checkForNodesEquality(other: QueryEdge): Boolean {
+        return source == other.source &&
+                target == other.target
     }
 
     override fun print() {
@@ -41,6 +45,9 @@ class QueryEdge (
 
 
     override fun hashCode(): Int {
-        return super.hashCode();
+        var result = source.identifier.hashCode()
+        result = 31 * result + target.identifier.hashCode()
+        result = 31 * result + label.hashCode()
+        return result
     }
 }

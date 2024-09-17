@@ -28,6 +28,7 @@ class TransducerGraphTest {
         val graph = TransducerGraph();
         graph.addNodes(s1,s2,s3,s4);
         graph.addEdge(e0);
+        graph.addEdge(e1);
         graph.addEdge(e2);
         graph.addEdge(e3);
         graph.addEdge(e4);
@@ -51,9 +52,10 @@ class TransducerGraphTest {
         val graph1 = buildTestGraph1();
         val graph2 = buildTestGraph2();
 
-        assert(graph1 == graph1)
-        graph2.addEdge(e1);
+        assert(graph1 == graph1);
         assert(graph1 != graph2)
+        graph2.addEdge(e1);
+        assert(graph1 == graph2)
     }
 
     @Test
@@ -66,7 +68,7 @@ class TransducerGraphTest {
         val s4 = graph.getNode("s4")!!
 
         val edgesS1 = graph.getEdgesWithSource(s1)
-        assert(edgesS1.size == 4);
+        assert(edgesS1.size == 3);
         assert(edgesS1.contains(e0))
         assert(edgesS1.contains(e1))
         assert(edgesS1.contains(e2))
@@ -78,7 +80,7 @@ class TransducerGraphTest {
         assert(edgesTargetS4.contains(e5))
 
         val edgesS1S2 = graph.getEdgesWithSourceAndTarget(s1,s2);
-        assert(edgesS1S2.size == 2)
+        assert(edgesS1S2.size == 1)
         assert(edgesS1S2.contains(e1))
     }
 }

@@ -18,10 +18,6 @@ class TransducerGraph() : AbstractGraph() {
         return addEdge(TransducerEdge(source, target, incoming, outgoing, cost))
     }
 
-    fun addEdge(transducerEdge: TransducerEdge): Boolean {
-        return addEdge(transducerEdge);
-    }
-
     override fun addEdge(edge: Edge) : Boolean {
         if (!nodes.contains(edge.source)) {
             nodes.add(edge.source)
@@ -33,7 +29,8 @@ class TransducerGraph() : AbstractGraph() {
     }
 
     override fun containsEdge(edge: Edge) : Boolean {
-        return edges.contains(edge.asTransducerEdge())
+        val e = edge.asTransducerEdge() ?: return false;
+        return edges.contains(e)
     }
 
     override fun getEdgesWithSource(source: Node): List<TransducerEdge> {
@@ -55,20 +52,7 @@ class TransducerGraph() : AbstractGraph() {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other !is TransducerGraph) return false
-
-
-        nodes.forEach {
-            val node = other.getNode(it.identifier);
-            if (node !== null) {
-                if (it != node) return false;
-            } else return false;
-        }
-        edges.forEach {
-            if (!other.edges.contains(it)) {
-                return false;
-            }
-        }
-        return alphabet == other.alphabet;
+        return super.equals(other);
     }
 
     override fun hashCode(): Int {

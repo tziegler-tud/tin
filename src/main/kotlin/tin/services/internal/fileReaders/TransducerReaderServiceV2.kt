@@ -52,7 +52,8 @@ class TransducerReaderServiceV2 (
         // val anyEdgeRegex = Regex("\\w(\\w|-\\w)*\\s*,\\s*\\w(\\w|-\\w)*\\s*,\\s*\\w(\\w|-\\w)*\\??\\s*,\\s*\\w(\\w|-\\w)*\\??\\s*,\\s*\\d")
 
         // this should be the correct regex, that allows negative incoming and or outgoing labels; this is not tested extensively thus we keep the old regex as a quick backup
-        val anyEdgeRegex = Regex("\\w(\\w|-\\w)*\\s*,\\s*\\w(\\w|-\\w)*\\s*,\\s*[\\w-](\\w|-\\w)*\\??\\s*,\\s*[\\w-](\\w|-\\w)*\\??\\s*,\\s*\\d")
+//        val anyEdgeRegex = Regex("\\w(\\w|-\\w)*\\s*,\\s*\\w(\\w|-\\w)*\\s*,\\s*[\\w-](\\w|-\\w)*\\??\\s*,\\s*[\\w-](\\w|-\\w)*\\??\\s*,\\s*\\d")
+        val anyEdgeRegex = Regex("\\w(\\w|-\\w)*\\s*,\\s*\\w(\\w|-\\w)*\\s*,\\s*(inverse\\()?\\s*\\w(\\w|-\\w)*(\\s*\\)|\\?)?\\s*,\\s*(inverse\\()?\\s*\\w(\\w|-\\w)*(\\s*\\)|\\?)?\\s*,\\s*\\d")
 
         var currentLineIndex: Int = 0
         while (currentLineIndex < inputFileMaxLines) {
@@ -137,20 +138,38 @@ class TransducerReaderServiceV2 (
                             outgoing = replaceEmptyStringWithInternalEpsilon()
                         }
                         cost = stringArray[4].toInt()
-                        transducerGraph.addEdge(source, target, incoming, outgoing, cost)
-
                         /**
                          * @throws IllegalArgumentException
                          */
                         val addEdgeToAlphabet = fun (edgeLabel: String) {
                             if(Alphabet.isConceptAssertion(edgeLabel)){
                                 //concept assertion read, extract concept name
-                                val conceptLabel = Alphabet.conceptNameFromAssertion(edgeLabel)
-                                if(!alphabet.includes(conceptLabel)) alphabet.addConceptName(conceptLabel)
+                                try{
+                                    val conceptLabel = Alphabet.conceptNameFromAssertion(edgeLabel)
+                                    if(!alphabet.includes(conceptLabel)) alphabet.addConceptName(conceptLabel)
+                                }
+                                catch (e: IllegalArgumentException){
+                                    throw IllegalArgumentException("Failed to read property name from edge label")
+                                }
                             }
                             else {
                                 //not a concept assertions
-                                if(!alphabet.includes(edgeLabel)) alphabet.addRoleName(edgeLabel)
+                                //check for valid role name
+                                if(Alphabet.isValidRoleName(edgeLabel)){
+                                    var normalizedEdgeLabel = edgeLabel;
+                                    if(Alphabet.isInverseRoleName(edgeLabel)){
+                                        //inverse role name found, handle accordingly
+                                        normalizedEdgeLabel = Alphabet.transformToPositiveRoleName(edgeLabel);
+                                    }
+                                    else {
+                                        //non-inverse (positive) role name found
+                                    }
+                                    if(!alphabet.includes(normalizedEdgeLabel)) alphabet.addRoleName(normalizedEdgeLabel)
+                                }
+                                else {
+                                    //invalid role name found, throw error
+                                    throw IllegalArgumentException("Failed to read line as edge: Invalid role name given.")
+                                }
                             }
                         }
 
@@ -159,8 +178,9 @@ class TransducerReaderServiceV2 (
                             addEdgeToAlphabet(outgoing)
                         }
                         catch (e: IllegalArgumentException){
-                            this.error("Failed to read property name from edge label", currentLineIndex, currentLine)
+                            this.error(e.message?:"Failed to read property name from edge label", currentLineIndex, currentLine)
                         }
+                        transducerGraph.addEdge(source, target, incoming, outgoing, cost)
                     }
                     else {
                         this.error("Failed to read line as edge: Invalid input format.", currentLineIndex, originalLine)

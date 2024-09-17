@@ -2,6 +2,7 @@ package tin.model.v2.graph
 
 import tin.model.v1.alphabet.Alphabet
 import tin.model.v2.query.QueryEdge
+import tin.model.v2.transducer.TransducerGraph
 
 abstract class AbstractGraph : Graph {
 
@@ -67,6 +68,9 @@ abstract class AbstractGraph : Graph {
         if (this === other) return true
         if (other !is Graph) return false
 
+        if (nodes.count() != other.nodes.count()) return false
+        if (edges.count() != other.edges.count()) return false
+
         nodes.forEach {
             val node = other.getNode(it.identifier);
             if (node !== null) {
@@ -74,7 +78,7 @@ abstract class AbstractGraph : Graph {
             } else return false;
         }
         edges.forEach {
-            if (!other.edges.contains(it)) {
+            if (!other.containsEdge(it)) {
                 return false;
             }
         }

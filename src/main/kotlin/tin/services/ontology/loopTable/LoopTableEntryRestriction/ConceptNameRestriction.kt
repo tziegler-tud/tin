@@ -1,15 +1,23 @@
 package tin.services.ontology.loopTable.LoopTableEntryRestriction
+import org.semanticweb.owlapi.model.OWLClass
 
-class ConceptNameRestriction(override val value: HashSet<String>) : LoopTableEntryRestriction<Any> {
-    fun asSet(): HashSet<String> {
+class ConceptNameRestriction() : LoopTableEntryRestriction<OWLClass> {
+
+    override val value: MutableSet<OWLClass> = hashSetOf();
+
+    override fun asSet(): MutableSet<OWLClass> {
         return value;
     }
 
-    fun containsClassName(className: String) : Boolean {
-        return value.contains(className);
+    override fun asList(): List<OWLClass> {
+        return value.toList();
     }
 
+    override fun containsElement(element: OWLClass) : Boolean {
+        return value.contains(element);
+    }
 
-
-
+    fun addElement(element: OWLClass): Boolean {
+        return value.add(element);
+    }
 }

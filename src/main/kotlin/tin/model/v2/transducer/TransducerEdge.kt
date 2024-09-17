@@ -13,7 +13,7 @@ class TransducerEdge(
     constructor(source: Node, target: Node, incoming: String, outgoing: String, cost: Int) : this(source, target, TransducerEdgeLabel(incoming, outgoing, cost))
 
     override fun toString(): String {
-        return "(${source.identifier})-["
+        return "(${source.identifier})-[${label}]-${target.identifier}";
     }
 
     override fun equals(other: Any?): Boolean {

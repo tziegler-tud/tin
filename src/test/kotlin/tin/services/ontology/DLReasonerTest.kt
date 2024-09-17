@@ -198,6 +198,32 @@ class DLReasonerTest {
         assert(subR1.containsEntity(u1.inverseProperty));
     }
 
+    @Test
+    fun testTopConceptExpressions(){
+        val manager = loadExampleOntology("propertyTest2.rdf");
+        val reasoner = manager.loadReasoner(OntologyManager.BuildInReasoners.HERMIT)
+        val expressionBuilder = manager.getExpressionBuilder();
+        val restrictionBuilder = manager.getRestrictionBuilder();
+        val dlReasoner = DLReasoner(reasoner, expressionBuilder);
+
+        val parser = manager.getQueryParser();
+
+        val topClassNode = dlReasoner.getTopClassNode();
+        val owlTopClassRestriction = restrictionBuilder.createConceptNameRestriction(topClassNode.representativeElement)
+
+        assert(topClassNode.isTopNode);
+
+        val r = parser.getOWLObjectProperty("r")!!;
+        val someRExpression = expressionBuilder.createExistentialRestriction(r, topClassNode.representativeElement)
+        val someR = dlReasoner.reasoner.getSubClasses(someRExpression);
+
+        val A = parser.getOWLClass("A")!!;
+        val D = parser.getOWLClass("D")!!;
+
+        assert(someR.containsEntity(A))
+        assert(someR.containsEntity(D))
+    }
+
 
 
 }

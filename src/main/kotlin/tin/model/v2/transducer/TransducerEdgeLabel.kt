@@ -23,10 +23,6 @@ class TransducerEdgeLabel(
         return result;
     }
 
-    fun getCost() : Int {
-        return cost;
-    }
-
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other !is TransducerEdgeLabel) return false

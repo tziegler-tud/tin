@@ -61,6 +61,11 @@ class DLQueryParser(private val ontology: OWLOntology, shortFormProvider: ShortF
         return null;
     }
 
+    fun getOWLClass(edgeLabelProperty: EdgeLabelProperty): OWLClass? {
+        if(!edgeLabelProperty.isConceptAssertion()) return null;
+        return getOWLClass(edgeLabelProperty.getLabel())
+    }
+
     fun getOWLObjectProperty(propertyName: String): OWLObjectProperty? {
         val entity = bidiShortFormProvider.getEntity(propertyName);
         if (entity != null) {
@@ -73,9 +78,21 @@ class DLQueryParser(private val ontology: OWLOntology, shortFormProvider: ShortF
         val entity = bidiShortFormProvider.getEntity(edgeLabelProperty.getLabel());
         if (entity != null) {
             if (entity.isOWLObjectProperty) {
-                return edgeLabelProperty.isInverse() ? entity.asOWLObjectProperty().inverseProperty : entity.asOWLObjectProperty();
+                return if (edgeLabelProperty.isInverse()) {
+                    entity.asOWLObjectProperty().inverseProperty
+                } else {
+                    entity.asOWLObjectProperty();
+                }
             };
         }
         return null;
+    }
+
+    fun getTopOWLClass(): OWLClass {
+        return getOWLClass("owl:Thing")!!;
+    }
+
+    fun getTopOWLProperty() : OWLObjectProperty {
+        return getOWLObjectProperty("owl:topObjectProperty")!!;
     }
 }
