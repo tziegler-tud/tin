@@ -1,6 +1,6 @@
 package tin.model.v2.graph
 
-import tin.model.v2.graph.EdgeLabel
+import tin.model.v2.genericGraph.GenericEdge
 import tin.model.v2.transducer.TransducerEdge
 import tin.model.v2.query.QueryEdge
 
@@ -12,6 +12,7 @@ interface Edge {
 
     fun print();
 
+    fun asGenericEdge(): GenericEdge?;
     fun asTransducerEdge(): TransducerEdge?;
     fun asQueryEdge(): QueryEdge?;
 }

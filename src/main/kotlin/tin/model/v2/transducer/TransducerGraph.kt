@@ -2,7 +2,6 @@ package tin.model.v2.transducer
 
 import tin.model.v1.alphabet.Alphabet
 import tin.model.v2.graph.*
-import tin.model.v2.query.QueryEdge
 
 class TransducerGraph() : AbstractGraph() {
     override val nodes: NodeSet = NodeSet()
@@ -55,13 +54,6 @@ class TransducerGraph() : AbstractGraph() {
         return super.equals(other);
     }
 
-    override fun hashCode(): Int {
-        var result = nodes.hashCode()
-        result = 31 * result + edges.hashCode()
-        result = 31 * result + alphabet.hashCode()
-        return result
-    }
-
     override fun isEmpty(): Boolean {
         return nodes.isEmpty()
     }
@@ -75,11 +67,5 @@ class TransducerGraph() : AbstractGraph() {
     }
     override fun hasFinalNode(): Boolean{
         return nodes.any{it.isFinalState}
-    }
-
-    override fun printGraph() {
-        for (edge in edges) {
-            edge.print();
-        }
     }
 }

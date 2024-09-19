@@ -3,7 +3,7 @@ package tin.model.v2.query
 import tin.model.v2.graph.EdgeLabel
 import tin.model.v2.graph.EdgeSet
 import tin.model.v2.graph.Node
-import tin.model.v2.transducer.TransducerEdge
+import tin.model.v2.query.QueryEdge
 
 class QueryEdgeSet : EdgeSet<QueryEdge>() {
     companion object {

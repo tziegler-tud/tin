@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.context.TestConfiguration
 import tin.model.v2.graph.Node
+import tin.model.v2.query.QueryEdge
 
 
 @SpringBootTest

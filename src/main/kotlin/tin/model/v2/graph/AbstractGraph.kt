@@ -1,8 +1,6 @@
 package tin.model.v2.graph
 
 import tin.model.v1.alphabet.Alphabet
-import tin.model.v2.query.QueryEdge
-import tin.model.v2.transducer.TransducerGraph
 
 abstract class AbstractGraph : Graph {
 
@@ -88,6 +86,7 @@ abstract class AbstractGraph : Graph {
 
     override fun hashCode(): Int {
         var result = nodes.hashCode()
+        result = 31 * result + edges.hashCode();
         result = 31 * result + alphabet.hashCode()
         return result
     }

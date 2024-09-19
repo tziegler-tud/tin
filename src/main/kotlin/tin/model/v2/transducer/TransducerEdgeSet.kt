@@ -3,7 +3,6 @@ package tin.model.v2.transducer
 import tin.model.v2.graph.EdgeLabel
 import tin.model.v2.graph.EdgeSet
 import tin.model.v2.graph.Node
-import tin.model.v2.query.QueryEdge
 
 class TransducerEdgeSet : EdgeSet<TransducerEdge>() {
     companion object {

@@ -4,17 +4,13 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.context.TestConfiguration
-import tin.model.v2.graph.Node
-import tin.model.v2.query.QueryEdge
 import tin.model.v2.query.QueryGraph
-import tin.model.v2.transducer.TransducerEdge
 import tin.model.v2.transducer.TransducerGraph
 import tin.services.internal.fileReaders.*
 import tin.services.internal.fileReaders.fileReaderResult.FileReaderResult
 import tin.services.ontology.DLReasoner
 import tin.services.ontology.OntologyExecutionContext.ExecutionContextType
 import tin.services.ontology.OntologyManager
-import tin.services.ontology.loopTable.LoopTableBuilder.SPALoopTableBuilder
 import tin.services.ontology.loopTable.LoopTableBuilder.ruleCalculators.SpaS1Calculator
 import tin.services.ontology.loopTable.SPALoopTable
 import tin.services.ontology.loopTable.loopTableEntry.SPALoopTableEntry

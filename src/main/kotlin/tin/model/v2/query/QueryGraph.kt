@@ -2,7 +2,7 @@ package tin.model.v2.query
 
 import tin.model.v1.alphabet.Alphabet
 import tin.model.v2.graph.*
-import tin.model.v2.transducer.TransducerEdge
+import tin.model.v2.query.QueryEdge
 
 class QueryGraph : AbstractGraph() {
     override var nodes: NodeSet = NodeSet()
@@ -51,27 +51,10 @@ class QueryGraph : AbstractGraph() {
         return edges.filterForLabel(label);
     }
 
-    override fun printGraph() {
-        for (node in nodes) {
-            for (edge in edges) {
-                edge.print()
-            }
-        }
-    }
-
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other !is QueryGraph) return false
 
         return super.equals(other);
-
-//        return nodes == other.nodes &&
-//                alphabet == other.alphabet
-    }
-
-    override fun hashCode(): Int {
-        var result = nodes.hashCode()
-        result = 31 * result + alphabet.hashCode()
-        return result
     }
 }
