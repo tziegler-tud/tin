@@ -96,7 +96,7 @@ class SpaS3Calculator(
                 graph.addNode(node)
 //                graph.addEdge(GenericEdge(node, node, GenericEdgeLabel(0)))  //do we even need them? They can never impact result
                 // add edges < inf
-                if(candidateMap.contains(SPALoopTableEntry(node)))
+
             }
         }
 

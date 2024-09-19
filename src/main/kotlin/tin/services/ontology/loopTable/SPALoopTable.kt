@@ -1,6 +1,7 @@
 package tin.services.ontology.loopTable
 import tin.model.v2.graph.Node
 import tin.services.ontology.loopTable.LoopTableEntryRestriction.ConceptNameRestriction
+import tin.services.ontology.loopTable.LoopTableFilter.LoopTableFilter
 import tin.services.ontology.loopTable.loopTableEntry.LoopTableEntry
 import tin.services.ontology.loopTable.loopTableEntry.SPALoopTableEntry
 
@@ -44,4 +45,8 @@ class SPALoopTable(
         return map.filter { it.key.restriction == restriction && it.key.source == source };
     }
 
+    fun applyFilter(filter: LoopTableFilter): SPALoopTable {
+        val filteredMap = filter.apply(map);
+        return SPALoopTable(filteredMap);
+    }
 }
