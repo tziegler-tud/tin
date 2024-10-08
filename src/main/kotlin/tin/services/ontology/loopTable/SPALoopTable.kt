@@ -2,11 +2,12 @@ package tin.services.ontology.loopTable
 import tin.model.v2.graph.Node
 import tin.services.ontology.loopTable.LoopTableEntryRestriction.ConceptNameRestriction
 import tin.services.ontology.loopTable.LoopTableFilter.LoopTableFilter
+import tin.services.ontology.loopTable.LoopTableFragment.SPALoopTableFragment
 import tin.services.ontology.loopTable.loopTableEntry.LoopTableEntry
 import tin.services.ontology.loopTable.loopTableEntry.SPALoopTableEntry
 
 class SPALoopTable(
-    override val map: HashMap<SPALoopTableEntry, Int>,
+    override val map: HashMap<SPALoopTableEntry, Int>
 )
     : LoopTable<SPALoopTableEntry> {
 
@@ -37,16 +38,11 @@ class SPALoopTable(
      * returns a HashMap <spaLoopTableEntry, Int> containing all entries that use the given restriction.
      * If limit is given, only return entries with value BELOW (< ) the given limit.
      */
-    fun getWithRestriction(restriction: ConceptNameRestriction, limit: Int? = null) : Map<SPALoopTableEntry, Int> {
-        return map.filter{it.key.restriction == restriction && if (limit == null) true else it.value < limit};
+    fun getWithRestriction(restriction: ConceptNameRestriction, limit: Int? = null) : SPALoopTableFragment {
+        return SPALoopTableFragment(map.filter{it.key.restriction == restriction && if (limit == null) true else it.value < limit}, restriction);
     }
 
-    fun getWithSourceAndRestriction(source: Pair<Node, Node>, restriction: ConceptNameRestriction) : Map<SPALoopTableEntry, Int> {
-        return map.filter { it.key.restriction == restriction && it.key.source == source };
-    }
-
-    fun applyFilter(filter: LoopTableFilter): SPALoopTable {
-        val filteredMap = filter.apply(map);
-        return SPALoopTable(filteredMap);
+    fun getWithSourceAndRestriction(source: Pair<Node, Node>, restriction: ConceptNameRestriction) : SPALoopTableFragment {
+        return SPALoopTableFragment(map.filter { it.key.restriction == restriction && it.key.source == source }, restriction);
     }
 }

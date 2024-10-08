@@ -1,10 +1,12 @@
-package tin.model.v2.graph
+package tin.model.v2.genericGraph
 
-open class Node(
-        var identifier: String,
-        var isInitialState : Boolean = false,
-        var isFinalState : Boolean = false,
-    )
+import tin.model.v2.graph.Node
+
+class PairNode(
+    private val queryNode: Node,
+    private val transducerNode: Node,
+) : Node(queryNode.identifier+transducerNode.identifier, false, false)
+
 {
     /**
      * plain QueryNode.equals() and QueryEdge.equals() methods will cause a circular dependency and stack overflows.
@@ -16,8 +18,16 @@ open class Node(
         if (other !is Node) return false
 
         return identifier == other.identifier &&
-            isInitialState == other.isInitialState &&
-            isFinalState == other.isFinalState;
+                isInitialState == other.isInitialState &&
+                isFinalState == other.isFinalState;
+    }
+
+    fun getQueryNode(): Node {
+        return queryNode;
+    }
+
+    fun getTransducerNode(): Node {
+        return transducerNode;
     }
 
     override fun hashCode(): Int {
@@ -25,9 +35,5 @@ open class Node(
         result = 31 * result + isInitialState.hashCode()
         result = 31 * result + isFinalState.hashCode()
         return result
-    }
-
-    override fun toString(): String {
-        return this.identifier;
     }
 }

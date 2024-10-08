@@ -1,0 +1,12 @@
+nodes
+t0, true, true
+t1, true, true
+edges
+t0, t0, contains, inverse(contains), 3
+t0, t0, Chicken?, Egg?, 2
+t0, t0, contains, Ingredients?, 6
+
+t0, t1, contains, contains, 0
+
+t1,t1, contains, contains, 0
+t1, t1, Chicken?, Egg?, 4

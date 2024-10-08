@@ -14,7 +14,7 @@ interface LoopTable<entryType: LoopTableEntry> {
      - efficient querying of entries. All 3 keys are required for each lookup
      */
 
-    val map: HashMap<entryType, Int>
+    val map: Map<entryType, Int>
 
     fun get(entry: entryType): Int?
 
