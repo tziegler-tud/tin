@@ -21,8 +21,7 @@ class SPALoopTableEntry(
         if (this === other) return true
         if (other !is SPALoopTableEntry) return false
 
-        return source === other.source && target === other.target && restriction === other.restriction;
-
+        return source == other.source && target == other.target && restriction == other.restriction;
     }
 
     override fun hashCode(): Int {

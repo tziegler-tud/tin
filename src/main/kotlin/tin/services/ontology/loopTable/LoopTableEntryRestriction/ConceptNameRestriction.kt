@@ -20,4 +20,15 @@ class ConceptNameRestriction() : LoopTableEntryRestriction<OWLClass> {
     fun addElement(element: OWLClass): Boolean {
         return value.add(element);
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (other !is ConceptNameRestriction) {
+            return false;
+        }
+        return value == other.value;
+    }
+
+    override fun hashCode(): Int {
+        return value.hashCode();
+    }
 }
