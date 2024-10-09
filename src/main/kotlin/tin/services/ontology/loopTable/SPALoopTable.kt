@@ -22,6 +22,7 @@ class SPALoopTable(
     }
 
     override fun set(entry: SPALoopTableEntry, value: Int) {
+        if(entry.hasEqualSourceAndTarget()) return;
         map[entry] = value;
     }
 

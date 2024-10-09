@@ -36,6 +36,8 @@ class OntologyExecutionContext(private val manager: OntologyManager) {
         val amount = 2.0.pow(classes.size.toDouble()) +1;
 
         val powerset = powerSet(classes)
+        //remove empty set
+        powerset.remove(HashSet())
         return powerset;
     }
 

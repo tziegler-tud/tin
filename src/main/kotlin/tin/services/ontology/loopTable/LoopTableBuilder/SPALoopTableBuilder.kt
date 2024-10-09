@@ -8,6 +8,8 @@ import tin.services.ontology.OntologyManager
 import tin.services.ontology.loopTable.SPALoopTable
 import tin.services.ontology.loopTable.loopTableEntry.SPALoopTableEntry
 import tin.services.ontology.loopTable.LoopTableBuilder.ruleCalculators.SpaS1Calculator
+import tin.services.ontology.loopTable.LoopTableBuilder.ruleCalculators.SpaS2Calculator
+import tin.services.ontology.loopTable.LoopTableBuilder.ruleCalculators.SpaS3Calculator
 
 class SPALoopTableBuilder (
     private val queryGraph: QueryGraph,
@@ -32,6 +34,8 @@ class SPALoopTableBuilder (
     private val tailsets = ec.tailsets!!;
 
     private val s1Calculator = SpaS1Calculator(ec, queryGraph, transducerGraph)
+    private val s2Calculator = SpaS2Calculator(ec, queryGraph, transducerGraph)
+    private val s3Calculator = SpaS3Calculator(ec, queryGraph, transducerGraph)
 
     init {
 
@@ -50,39 +54,63 @@ class SPALoopTableBuilder (
                 pairsAvailable.add(Pair(node, transducerNode))
             }
         }
-
-
-
     }
 
     fun calculateNextIteration(){
 
         //for each (p,q,M), perform S1 step
         pairsAvailable.forEach{ source ->
-            pairsAvailable.forEach { target ->
+            pairsAvailable.forEach target@{ target ->
+                if(source.first == target.first && source.second == target.second) return@target;
                 tailsets.forEach { tailset ->
                     //foreach (p,q,M) do:
-
                     val restriction = restrictionBuilder.createConceptNameRestriction(tailset)
                     val entry = SPALoopTableEntry(source, target, restriction)
-                    calculateS1(entry);
+                    val updatedValue = calculateS1(entry)
+                    if(updatedValue !== null) {
+                        table.set(entry, updatedValue );
+                    }
                 }
+                calculateS3();
             }
         };
 
-        calculateS3();
 
     }
 
     fun calculateFullTable(): SPALoopTable {
         //iterate until max iterations are reached
         initializeTable();
+
+        //apply S2 to all (q x t)^2 x M
+        pairsAvailable.forEach{ source ->
+            pairsAvailable.forEach target@{ target ->
+                if(source.first == target.first && source.second == target.second) return@target;
+                tailsets.forEach tailset@{ tailset ->
+                    //foreach (p,q,M) do:
+                    val restriction = restrictionBuilder.createConceptNameRestriction(tailset)
+                    val entry = SPALoopTableEntry(source, target, restriction)
+                    // dont add table entries (q,t)(q,t),_
+                    val updatedValue = calculateS2(entry)
+                    if(updatedValue !== null) {
+                        table.set(entry, updatedValue );
+                    }
+                }
+            }
+        };
+
+        //apply S3
+        calculateS3();
+
+        //depth 0
+
+
         calculateNextIteration();
 
         return table;
     }
 
-    private fun calculateS1(spaLoopTableEntry: SPALoopTableEntry){
+    private fun calculateS1(spaLoopTableEntry: SPALoopTableEntry): Int? {
         /**
          *  Given: (s,t),(s',t'),M
          *  spa[(s,t),(s',t'),M] <-- we call this value costCutoff and use it to discard a run if this is superseded at any time
@@ -112,58 +140,25 @@ class SPALoopTableBuilder (
          *     2.6.3 If found, mark u' as okay and associate w_2
          *
          */
-//
-//        val costCutoff = table.get(spaLoopTableEntry) //0, int val or null
-//        val source = spaLoopTableEntry.source;
-//        val target = spaLoopTableEntry.target;
-//        val M = spaLoopTableEntry.restriction;
-//        val s = source.first;
-//        val t = source.second;
-//        val se = target.first;
-//        val te = target.second;
-//
-//        val MCLassExp = restrictionBuilder.asClassExpression(M)
-//        val MExp = expressionBuilder.createELHIExpression(MCLassExp)
-//
-        s1Calculator.calculate(spaLoopTableEntry, table)
-
-
-
-        /**
-         * NEW Calculation:
-         * 0. Get Candidates (p,q,M1)
-         * 1. For each Role R:
-         *    Build superclass R' s.t. R <= R'
-         *    Build superclass R'' s.t. R(-) <= R''
-         *
-         *  1.1. For each candidate:
-         *      calculate Subclass M <= E R. M1
-         *      These are the M's that can could be updated using the respective role
-         *      Store entry for M with cost of candidate set
-         *
-         *  1.2. For each symetric pair (s,t),(s,t):
-         *      Calculate Subclass M <= E R . TOP
-         *      Store entry for M with cost 0
-         *
-         *  1.3 Use stored M's and foreach:
-         *
-         *      for each (s,t), (s',t'): calculate minimum weights w1, w2
-         *
-         */
-
-
-
-
-
+        val result = s1Calculator.calculate(spaLoopTableEntry, table);
+        //result is either an int, meaning this is the updated value, or null if no value could be obtained
+        return result;
     }
 
-    private fun calculateS2(){
+    private fun calculateS2(spaLoopTableEntry: SPALoopTableEntry) : Int? {
 
-
+        val result = s2Calculator.calculate(spaLoopTableEntry, table)
+        return result;
     }
 
     private fun calculateS3(){
-
+        for (tailset in tailsets) {
+            val restriction = restrictionBuilder.createConceptNameRestriction(tailset);
+            val updatedMap = s3Calculator.calculateAll(restriction, table);
+            //contains <spaEntry , Int> pairs that need to be updated in the loop table
+            updatedMap.forEach { (entry, value) ->
+                table.set(entry, value);
+            }
+        }
     }
-
 }

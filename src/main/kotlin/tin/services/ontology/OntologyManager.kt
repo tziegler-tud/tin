@@ -119,7 +119,7 @@ class OntologyManager(val file: File) {
         }
         reasoner = reasonerFactory.createReasoner(ontology)
         // Classify the ontology.
-        reasoner.precomputeInferences(InferenceType.CLASS_HIERARCHY)
+        reasoner.precomputeInferences(InferenceType.CLASS_HIERARCHY, InferenceType.OBJECT_PROPERTY_HIERARCHY)
         return reasoner;
     }
 
