@@ -137,7 +137,7 @@ class SpaS2Calculator(
                             var validClassNames = candidateTransducerEdges.map{it.label.outgoing}.distinct()
 
                             tailsets.forEach tailsets@{ tailset ->
-                                val restriction = restrictionBuilder.createConceptNameRestriction(tailset)
+                                val restriction = restrictionBuilder.createConceptNameRestrictionFromStringSet(tailset)
                                 val MClassExp = restrictionBuilder.asClassExpression(restriction);
                                 val MExp = expressionBuilder.createELHIExpression(MClassExp);
 

@@ -143,22 +143,22 @@ class SpaS2CalculatorTest {
 
         for (tailset in ec.tailsets!!) {
             if(dlReasoner.checkIsSubsumed(expressionBuilder.createELHIExpression(queryParser.fromClassNames(tailset)), expressionBuilder.createELHExpressionFromString("Egg"))) {
-                assert(table2.get(SPALoopTableEntry(Pair(s1,t0), Pair(s2,t0),restrictionBuilder.createConceptNameRestriction(tailset))) == 2)
+                assert(table2.get(SPALoopTableEntry(Pair(s1,t0), Pair(s2,t0),restrictionBuilder.createConceptNameRestrictionFromStringSet(tailset))) == 2)
             }
             else {
                 if(dlReasoner.checkIsSubsumed(expressionBuilder.createELHIExpression(queryParser.fromClassNames(tailset)), expressionBuilder.createELHExpressionFromString("Ingredients"))) {
-                    assert(table2.get(SPALoopTableEntry(Pair(s0,t0), Pair(s1,t0),restrictionBuilder.createConceptNameRestriction(tailset))) == 6)
-                    assert(table2.get(SPALoopTableEntry(Pair(s2,t0), Pair(s3,t0),restrictionBuilder.createConceptNameRestriction(tailset))) == 6)
+                    assert(table2.get(SPALoopTableEntry(Pair(s0,t0), Pair(s1,t0),restrictionBuilder.createConceptNameRestrictionFromStringSet(tailset))) == 6)
+                    assert(table2.get(SPALoopTableEntry(Pair(s2,t0), Pair(s3,t0),restrictionBuilder.createConceptNameRestrictionFromStringSet(tailset))) == 6)
                 }
                 else {
-                    assert(table2.get(SPALoopTableEntry(Pair(s0,t0), Pair(s1,t0),restrictionBuilder.createConceptNameRestriction(tailset))) == null)
-                    assert(table2.get(SPALoopTableEntry(Pair(s1,t0), Pair(s2,t0),restrictionBuilder.createConceptNameRestriction(tailset))) == null)
-                    assert(table2.get(SPALoopTableEntry(Pair(s2,t0), Pair(s3,t0),restrictionBuilder.createConceptNameRestriction(tailset))) == null)
+                    assert(table2.get(SPALoopTableEntry(Pair(s0,t0), Pair(s1,t0),restrictionBuilder.createConceptNameRestrictionFromStringSet(tailset))) == null)
+                    assert(table2.get(SPALoopTableEntry(Pair(s1,t0), Pair(s2,t0),restrictionBuilder.createConceptNameRestrictionFromStringSet(tailset))) == null)
+                    assert(table2.get(SPALoopTableEntry(Pair(s2,t0), Pair(s3,t0),restrictionBuilder.createConceptNameRestrictionFromStringSet(tailset))) == null)
                 }
             }
-            assert(table2.get(SPALoopTableEntry(Pair(s0,t0), Pair(s2,t0),restrictionBuilder.createConceptNameRestriction(tailset))) == null)
-            assert(table2.get(SPALoopTableEntry(Pair(s0,t0), Pair(s3,t0),restrictionBuilder.createConceptNameRestriction(tailset))) == null)
-            assert(table2.get(SPALoopTableEntry(Pair(s1,t0), Pair(s3,t0),restrictionBuilder.createConceptNameRestriction(tailset))) == null)
+            assert(table2.get(SPALoopTableEntry(Pair(s0,t0), Pair(s2,t0),restrictionBuilder.createConceptNameRestrictionFromStringSet(tailset))) == null)
+            assert(table2.get(SPALoopTableEntry(Pair(s0,t0), Pair(s3,t0),restrictionBuilder.createConceptNameRestrictionFromStringSet(tailset))) == null)
+            assert(table2.get(SPALoopTableEntry(Pair(s1,t0), Pair(s3,t0),restrictionBuilder.createConceptNameRestrictionFromStringSet(tailset))) == null)
         }
     }
 
@@ -195,7 +195,7 @@ class SpaS2CalculatorTest {
                 if(source.first == target.first && source.second == target.second) return@target;
                 tailsets.forEach tailset@{ tailset ->
                     //foreach (p,q,M) do:
-                    val restriction = restrictionBuilder.createConceptNameRestriction(tailset)
+                    val restriction = restrictionBuilder.createConceptNameRestrictionFromStringSet(tailset)
                     val entry = SPALoopTableEntry(source, target, restriction)
                     // dont add table entries (q,t)(q,t),_
                     val updatedValue = s2Calculator.calculate(entry, table)
@@ -246,7 +246,7 @@ class SpaS2CalculatorTest {
                 if(source.first == target.first && source.second == target.second) return@target;
                 tailsets.forEach tailset@{ tailset ->
                     //foreach (p,q,M) do:
-                    val restriction = restrictionBuilder.createConceptNameRestriction(tailset)
+                    val restriction = restrictionBuilder.createConceptNameRestrictionFromStringSet(tailset)
                     val entry = SPALoopTableEntry(source, target, restriction)
                     // dont add table entries (q,t)(q,t),_
                     val updatedValue = s2Calculator.calculate(entry, table)

@@ -14,7 +14,7 @@ import uk.ac.manchester.cs.owl.owlapi.OWLObjectUnionOfImpl
 
 class RestrictionBuilder(private val queryParser: DLQueryParser, private val shortFormProvider: ShortFormProvider) {
 
-    fun createConceptNameRestriction(values: Set<String>): ConceptNameRestriction {
+    fun createConceptNameRestrictionFromStringSet(values: Set<String>): ConceptNameRestriction {
         val restriction = ConceptNameRestriction();
         for (value in values) {
             val exp = queryParser.getOWLClass(value);
@@ -25,16 +25,30 @@ class RestrictionBuilder(private val queryParser: DLQueryParser, private val sho
         return restriction
     }
 
-    fun createConceptNameRestriction(vararg n: String): ConceptNameRestriction {
+    fun createConceptNameRestriction(values: Set<OWLClass>): ConceptNameRestriction {
+        val restriction = ConceptNameRestriction();
+        for (value in values) {
+            restriction.addElement(value);
+        }
+        return restriction
+    }
+
+    fun createConceptNameRestriction(vararg n: OWLClass): ConceptNameRestriction {
         val values = hashSetOf(*n);
         return createConceptNameRestriction(values)
     }
 
-    fun createConceptNameRestriction(element: OWLClass): ConceptNameRestriction {
-        val restriction = ConceptNameRestriction();
-        restriction.addElement(element);
-        return restriction;
+
+    fun createConceptNameRestriction(vararg n: String): ConceptNameRestriction {
+        val values = hashSetOf(*n);
+        return createConceptNameRestrictionFromStringSet(values)
     }
+
+//    fun createConceptNameRestriction(element: OWLClass): ConceptNameRestriction {
+//        val restriction = ConceptNameRestriction();
+//        restriction.addElement(element);
+//        return restriction;
+//    }
 
 //    fun createConceptNameRestriction(elements: Set<OWLClass>): ConceptNameRestriction {
 //        val restriction = ConceptNameRestriction();

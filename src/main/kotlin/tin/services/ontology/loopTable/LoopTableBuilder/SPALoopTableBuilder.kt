@@ -18,7 +18,6 @@ class SPALoopTableBuilder (
     private val ontologyManager: OntologyManager)
 
 {
-    private val maxIterationDepth = calculateMaxIterationDepth();
     private var table: SPALoopTable = SPALoopTable();
     // prepare ontology execution context
     private val ec = ontologyManager.createExecutionContext(ExecutionContextType.LOOPTABLE);
@@ -38,6 +37,9 @@ class SPALoopTableBuilder (
     private val s2Calculator = SpaS2Calculator(ec, queryGraph, transducerGraph)
     private val s3Calculator = SpaS3Calculator(ec, queryGraph, transducerGraph)
 
+    private val maxIterationDepth = calculateMaxIterationDepth();
+
+
     init {
 
 
@@ -45,7 +47,8 @@ class SPALoopTableBuilder (
 
     private fun calculateMaxIterationDepth() : Int {
         //calculate iteration depth based on ontology signature
-        return 0;
+        val queryTransSize = queryGraph.nodes.size * transducerGraph.nodes.size;
+        return queryTransSize * queryTransSize * ec.tailsets!!.size;
     }
 
     private fun initializeTable(){
@@ -53,10 +56,10 @@ class SPALoopTableBuilder (
         queryGraph.nodes.forEach { node ->
             transducerGraph.nodes.forEach { transducerNode ->
                 pairsAvailable.add(Pair(node, transducerNode))
-                ec.tailsets!!.forEach { tailset ->
-                    val restriction = restrictionBuilder.createConceptNameRestriction(tailset);
-                    table.set(SPALoopTableEntry(node, transducerNode, node, transducerNode, restriction), 0);
-                }
+//                ec.tailsets!!.forEach { tailset ->
+//                    val restriction = restrictionBuilder.createConceptNameRestriction(tailset);
+//                    table.set(SPALoopTableEntry(node, transducerNode, node, transducerNode, restriction), 0);
+//                }
             }
         }
     }
@@ -74,7 +77,7 @@ class SPALoopTableBuilder (
                 if(source.first == target.first && source.second == target.second) return@target;
                 tailsets.forEach tailset@{ tailset ->
                     //foreach (p,q,M) do:
-                    val restriction = restrictionBuilder.createConceptNameRestriction(tailset)
+                    val restriction = restrictionBuilder.createConceptNameRestrictionFromStringSet(tailset)
                     val entry = SPALoopTableEntry(source, target, restriction)
                     // dont add table entries (q,t)(q,t),_
                     val updatedValue = calculateS2(entry)
@@ -110,7 +113,7 @@ class SPALoopTableBuilder (
                     println("Calculating tailset " + counter + " / " + tailsets.size)
 //                    if(counter > 2) return@target;
                     //foreach (p,q,M) do:
-                    val restriction = restrictionBuilder.createConceptNameRestriction(tailset)
+                    val restriction = restrictionBuilder.createConceptNameRestrictionFromStringSet(tailset)
                     val entry = SPALoopTableEntry(source, target, restriction)
                     val updatedValue = calculateS1(entry)
                     if(updatedValue !== null) {
@@ -119,7 +122,7 @@ class SPALoopTableBuilder (
                 }
             }
         };
-        calculateS3();
+        calculateS3V2();
     }
 
     fun calculateNextIterationV2(){
@@ -129,7 +132,7 @@ class SPALoopTableBuilder (
         var counter : Int;
 
         table = calculateS1V2();
-        calculateS3();
+        calculateS3V2();
     }
 
     fun calculateFullTable(): SPALoopTable {
@@ -141,13 +144,10 @@ class SPALoopTableBuilder (
         //depth 0
 
 
-        calculateNextIterationV2();
-//        calculateNextIteration();
-//        calculateNextIteration();
-//        calculateNextIteration();
-//        calculateNextIteration();
-//        calculateNextIteration();
-//        calculateNextIteration();
+        for(i in 1..200) {
+            println("Calculating iteration ${i} / ${maxIterationDepth}")
+            calculateNextIterationV2();
+        }
 
         return table;
     }
@@ -188,7 +188,7 @@ class SPALoopTableBuilder (
     }
 
     private fun calculateS1V2() : SPALoopTable {
-        val result = s1Calculator.calculateAll(table);
+        val result = s1Calculator.calculateAllV2(table);
         return result;
     }
 
@@ -200,12 +200,20 @@ class SPALoopTableBuilder (
 
     private fun calculateS3() {
         for (tailset in tailsets) {
-            val restriction = restrictionBuilder.createConceptNameRestriction(tailset);
+            val restriction = restrictionBuilder.createConceptNameRestrictionFromStringSet(tailset);
             val updatedMap = s3Calculator.calculateAll(restriction, table);
             //contains <spaEntry , Int> pairs that need to be updated in the loop table
             updatedMap.forEach { (entry, value) ->
                 table.set(entry, value);
             }
+        }
+    }
+
+    private fun calculateS3V2() {
+        val updatedMap = s3Calculator.calculateAllV2(table);
+        //contains <spaEntry , Int> pairs that need to be updated in the loop table
+        updatedMap.forEach { (entry, value) ->
+            table.set(entry, value);
         }
     }
 

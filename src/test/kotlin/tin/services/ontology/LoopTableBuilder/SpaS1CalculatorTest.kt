@@ -102,4 +102,50 @@ class SpaS1CalculatorTest {
         assert(table.get(entry3) == result3)
     }
 
+    @Test
+    fun testCalculationV2(){
+        val manager = loadExampleOntology();
+
+        val query = readQueryWithFileReaderService("spaCalculation/S1/test_spaS1_1.txt")
+        val transducer = readTransducerWithFileReaderService("spaCalculation/S1/test_spaS1_1.txt")
+
+        val ec = manager.createExecutionContext(ExecutionContextType.LOOPTABLE);
+
+        val dlReasoner = ec.dlReasoner
+        val expressionBuilder = ec.expressionBuilder
+        val queryParser = ec.parser;
+        val shortFormProvider = ec.shortFormProvider;
+        val restrictionBuilder = ec.restrictionBuilder;
+
+
+
+        val s1Calculator = SpaS1Calculator(ec, query.graph, transducer.graph);
+
+        //calculate s1 for a non-trivial entry
+
+        val s0 = query.graph.getNode("s0")!!
+        val s1 = query.graph.getNode("s1")!!
+        val s2 = query.graph.getNode("s2")!!
+        val s3 = query.graph.getNode("s3")!!
+
+        val t0 = transducer.graph.getNode("t0")!!
+        val M = restrictionBuilder.createConceptNameRestriction("Bread")
+        val entry = SPALoopTableEntry(Pair(s0,t0), Pair(s3,t0),M);
+
+        val entry2 = SPALoopTableEntry(Pair(s0,t0), Pair(s2,t0),M);
+        val entry3 = SPALoopTableEntry(Pair(s1,t0), Pair(s3,t0),M);
+
+
+        //create empty loop table
+        val table: SPALoopTable = SPALoopTable();
+        //fill with non-trivial candidates for testing
+        val M1 = restrictionBuilder.createConceptNameRestriction("Flour");
+        table.set(SPALoopTableEntry(Pair(s1,t0),Pair(s2,t0), M1), 2)
+
+        val resultTable = s1Calculator.calculateAllV2(table);
+        assert(resultTable.get(entry) == 7); // 2 + 2 + 3
+        assert(resultTable.get(entry2) == null); // no path found
+        assert(resultTable.get(entry3) == null); // no path found
+    }
+
 }

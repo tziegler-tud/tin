@@ -39,7 +39,7 @@ class SpaLoopTableTest {
     }
 
     fun loadExampleOntology() : OntologyManager {
-        val exampleFile = readWithFileReaderService("pizza2.rdf").get()
+        val exampleFile = readWithFileReaderService("pizza2_test.rdf").get()
         val manager = OntologyManager(exampleFile);
         return manager
     }
@@ -77,8 +77,8 @@ class SpaLoopTableTest {
         println("Equiv Node Cache Size: " + builder.getExecutionContext().dlReasoner.equivalentClassCache.size)
         println("Superclass Cache Hits: " + builder.getExecutionContext().dlReasoner.equivNodeCacheHitCounter)
 
-        println("Subsumption Cache Size: " + builder.getExecutionContext().dlReasoner.subsumptionCache.size)
-        println("Subsumption Cache Hits: " + builder.getExecutionContext().dlReasoner.subsumptionCacheHitCounter)
+        println("SubClasses Cache Size: " + builder.getExecutionContext().dlReasoner.subClassCache.size)
+        println("SubClasses Cache Hits: " + builder.getExecutionContext().dlReasoner.subClassCacheHitCounter)
 
         println("Entailment Check Cache Size: " + builder.getExecutionContext().dlReasoner.entailmentCache.size)
         println("Entailment Cache Hits: " + builder.getExecutionContext().dlReasoner.entailmentCacheHitCounter)

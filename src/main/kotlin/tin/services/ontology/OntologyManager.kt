@@ -1,7 +1,6 @@
 package tin.services.ontology
 
 import org.semanticweb.owlapi.apibinding.OWLManager
-import org.semanticweb.owlapi.model.OWLOntology
 import org.semanticweb.owlapi.reasoner.InferenceType
 import org.semanticweb.owlapi.reasoner.OWLReasoner
 import org.semanticweb.owlapi.reasoner.OWLReasonerFactory
@@ -10,8 +9,7 @@ import org.semanticweb.elk.owlapi.ElkReasonerFactory
 
 import de.uni_stuttgart.vis.vowl.owl2vowl.Owl2Vowl
 import org.semanticweb.owlapi.manchestersyntax.renderer.ManchesterOWLSyntaxPrefixNameShortFormProvider
-import org.semanticweb.owlapi.model.IRI
-import org.semanticweb.owlapi.model.OWLObjectProperty
+import org.semanticweb.owlapi.model.*
 import org.semanticweb.HermiT.ReasonerFactory as HermitReasonerFactory
 //import de.tudresden.inf.lat.jcel.owlapi.main.JcelReasonerFactory;
 import org.semanticweb.owlapi.model.parameters.Imports
@@ -43,9 +41,9 @@ class OntologyManager(val file: File) {
     private val tboxAxioms = ontology.getTBoxAxioms(Imports.EXCLUDED);
     private val signature = ontology.getSignature(Imports.EXCLUDED);
 
-    val classes = ontology.getClassesInSignature(Imports.EXCLUDED);
-    val properties = ontology.getObjectPropertiesInSignature(Imports.EXCLUDED);
-    val individuals = ontology.getIndividualsInSignature(Imports.EXCLUDED);
+    val classes: Set<OWLClass> = ontology.getClassesInSignature(Imports.EXCLUDED);
+    val properties: Set<OWLObjectProperty> = ontology.getObjectPropertiesInSignature(Imports.EXCLUDED);
+    val individuals: Set<OWLNamedIndividual> = ontology.getIndividualsInSignature(Imports.EXCLUDED);
 
     private val classNames: HashSet<String> = HashSet();
     private val roleNames: HashSet<String> = HashSet();

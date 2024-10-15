@@ -22,13 +22,13 @@ class CachingDLReasoner(
 ) {
     public val superClassCache: HashMap<DLExpression, NodeSet<OWLClass>> = hashMapOf()
     public val equivalentClassCache: HashMap<DLExpression, Node<OWLClass>> = hashMapOf()
-    public val subsumptionCache: HashMap<DLExpression, NodeSet<OWLClass>> = hashMapOf()
+    public val subClassCache: HashMap<DLExpression, NodeSet<OWLClass>> = hashMapOf()
     public val propertySubsumptionCache: HashMap<Pair<OWLPropertyExpression, OWLPropertyExpression>, Boolean> = hashMapOf()
     public val entailmentCache: HashMap<Pair<DLExpression, DLExpression>, Boolean> = hashMapOf()
 
     public var superClassCacheHitCounter = 0;
     public var equivNodeCacheHitCounter = 0;
-    public var subsumptionCacheHitCounter = 0;
+    public var subClassCacheHitCounter = 0;
     public var propertySubsumptionCacheHitCounter = 0;
     public var entailmentCacheHitCounter = 0;
     public var entailmentCacheMissCounter = 0;
@@ -63,6 +63,7 @@ class CachingDLReasoner(
         return properties;
     }
 
+
     public fun calculateSuperPropertiesMock(property: OWLObjectPropertyExpression): NodeSet<OWLObjectPropertyExpression> {
         return OWLObjectPropertyNodeSet(property)
     }
@@ -70,6 +71,21 @@ class CachingDLReasoner(
     public fun calculateSubProperties(property: OWLObjectPropertyExpression): NodeSet<OWLObjectPropertyExpression> {
         val properties = reasoner.getSubObjectProperties(property, false);
         return properties;
+    }
+
+    public fun calculateSubClasses(expr: DLExpression): NodeSet<OWLClass> {
+        val cacheEntry = subClassCache[expr];
+        if(cacheEntry != null){
+            subClassCacheHitCounter++;
+            return cacheEntry
+        }
+        var classes = reasoner.getSubClasses(expr.getClassExpression(), false);
+        //remove owl:Nothing
+        if(classes.isBottomSingleton) {
+            classes = OWLClassNodeSet();
+        }
+        subClassCache[expr] = classes
+        return classes;
     }
 
     fun getTopClassNode(): Node<OWLClass> {
@@ -114,6 +130,8 @@ class CachingDLReasoner(
     fun clearCache() {
         superClassCache.clear();
         equivalentClassCache.clear();
-        subsumptionCache.clear();
+        subClassCache.clear();
+        propertySubsumptionCache.clear();
+        entailmentCache.clear();
     }
 }

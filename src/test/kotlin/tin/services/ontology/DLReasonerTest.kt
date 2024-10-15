@@ -1,6 +1,7 @@
 package tin.services.ontology
 
 import org.junit.jupiter.api.Test
+import org.semanticweb.owlapi.model.OWLClassExpression
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.context.TestConfiguration
@@ -285,6 +286,40 @@ class DLReasonerTest {
         assert(someR.containsEntity(A))
         assert(someR.containsEntity(D))
     }
+
+    @Test
+    fun testCalculateClassSubsumees() {
+        val manager = loadExampleOntology("pizza2_test.rdf");
+        val ec = manager.createExecutionContext(ExecutionContextType.LOOPTABLE)
+        val dlReasoner = ec.dlReasoner;
+        val expressionBuilder = ec.expressionBuilder
+        val restrictionBuilder = ec.restrictionBuilder
+        val queryParser = ec.parser
+
+        val parser = manager.getQueryParser();
+
+        val role = queryParser.getOWLObjectProperty("contains")!!
+
+        val res1 = restrictionBuilder.createConceptNameRestriction("Pasta","Bread","Egg");
+        val class1 = restrictionBuilder.asClassExpression(res1);
+        val r1Exp = expressionBuilder.createExistentialRestriction(role, class1)
+        val atomicSubClasses = dlReasoner.calculateSubClasses(expressionBuilder.createELHIExpression(r1Exp))
+
+        val res2 = restrictionBuilder.createConceptNameRestriction("Flour","Egg");
+        val class2 = restrictionBuilder.asClassExpression(res2);
+        val r2Exp = expressionBuilder.createExistentialRestriction(role, class2)
+        val atomicSubClasses2 = dlReasoner.calculateSubClasses(expressionBuilder.createELHIExpression(r2Exp))
+
+
+        val r1111 = parser.getOWLObjectProperty("r1111")!!;
+        val s = parser.getOWLObjectProperty("s")!!;
+        val t = parser.getOWLObjectProperty("t")!!;
+
+
+
+
+    }
+
 
 
 

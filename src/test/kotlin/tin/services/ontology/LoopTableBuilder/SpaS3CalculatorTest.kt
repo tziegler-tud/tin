@@ -146,11 +146,129 @@ class SpaS3CalculatorTest {
          * s1t1 |  1    |  0     |  2!   | 0
          * ***********************************************/
 
-        //s1t1s0t1
-        val hash = result.entries.first().key.hashCode()
+
+        assert(result[s0t0s0t0] == 0)
+        assert(result[s0t0s0t1] == 2)
+        assert(result[s0t0s1t0] == 1)
+        assert(result[s0t0s1t1] == 2)
+
+        assert(result[s0t1s0t0] == 2)
+        assert(result[s0t1s0t1] == 0)
+        assert(result[s0t1s1t0] == 2)
+        assert(result[s0t1s1t1] == 1)
+
+        assert(result[s1t0s0t0] == 2)
+        assert(result[s1t0s0t1] == 1)
+        assert(result[s1t0s1t0] == 0)
+        assert(result[s1t0s1t1] == 1)
+
+        assert(result[s1t1s0t0] == 1)
+        assert(result[s1t1s0t1] == 0)
+        assert(result[s1t1s1t0] == 2)
+        assert(result[s1t1s1t1] == 0)
+
+    }
+
+    @Test
+    fun testCalculationV2(){
+        val manager = loadExampleOntology();
+        val reasoner = manager.createReasoner(OntologyManager.BuildInReasoners.HERMIT)
+        val expressionBuilder = manager.getExpressionBuilder();
+        val dlReasoner = DLReasoner(reasoner, expressionBuilder);
+
+        val query = readQueryWithFileReaderService("spaCalculation/S3/test_spaS3_1.txt")
+        val transducer = readTransducerWithFileReaderService("spaCalculation/S3/test_spaS3_1.txt")
+
+        val ec = manager.createExecutionContext(ExecutionContextType.LOOPTABLE);
+        val queryParser = ec.parser;
+        val shortFormProvider = ec.shortFormProvider;
+        val restrictionBuilder = ec.restrictionBuilder;
 
 
-        assert(result.get(s0t0s0t0) == 0)
+
+        val s3Calculator = SpaS3Calculator(ec, query.graph, transducer.graph);
+
+        //calculate s3 for a non-trivial entry
+
+        val s0 = query.graph.getNode("s0")!!
+        val s1 = query.graph.getNode("s1")!!
+
+        val t0 = transducer.graph.getNode("t0")!!
+        val t1 = transducer.graph.getNode("t1")!!
+
+        val M = restrictionBuilder.createConceptNameRestriction("Egg")
+
+        val s0t0s0t0 = SPALoopTableEntry(Pair(s0,t0), Pair(s0,t0),M);
+        val s0t1s0t1 = SPALoopTableEntry(Pair(s0,t1), Pair(s0,t1),M);
+        val s1t0s1t0 = SPALoopTableEntry(Pair(s1,t0), Pair(s1,t0),M);
+        val s1t1s1t1 = SPALoopTableEntry(Pair(s1,t1), Pair(s1,t1),M);
+
+        val s0t0s0t1 = SPALoopTableEntry(Pair(s0,t0), Pair(s0,t1),M);
+        val s0t0s1t0 = SPALoopTableEntry(Pair(s0,t0), Pair(s1,t0),M);
+        val s0t0s1t1 = SPALoopTableEntry(Pair(s0,t0), Pair(s1,t1),M);
+        val s0t1s0t0 = SPALoopTableEntry(Pair(s0,t1), Pair(s0,t0),M);
+
+        val s0t1s1t0 = SPALoopTableEntry(Pair(s0,t1), Pair(s1,t0),M);
+        val s0t1s1t1 = SPALoopTableEntry(Pair(s0,t1), Pair(s1,t1),M);
+        val s1t0s0t0 = SPALoopTableEntry(Pair(s1,t0), Pair(s0,t0),M);
+        val s1t0s0t1 = SPALoopTableEntry(Pair(s1,t0), Pair(s0,t1),M);
+        val s1t0s1t1 = SPALoopTableEntry(Pair(s1,t0), Pair(s1,t1),M);
+        val s1t1s0t0 = SPALoopTableEntry(Pair(s1,t1), Pair(s0,t0),M);
+        val s1t1s0t1 = SPALoopTableEntry(Pair(s1,t1), Pair(s0,t1),M);
+        val s1t1s1t0 = SPALoopTableEntry(Pair(s1,t1), Pair(s1,t0),M);
+        //create empty loop table
+        val table: SPALoopTable = SPALoopTable();
+
+
+        /***********************************************
+         *       | s0t0 |  s0t1 |   s1t0 | s1t1
+         * ------------------------------------------
+         * s0t0 | 0    |  3    |   1    | +inf
+         * ------------------------------------------
+         * s0t1 | 4     |  0   |   2    | 1
+         * ------------------------------------------
+         * s1t0 | 5     |  +inf |  0    | 1
+         * -------------------------------------------
+         * s1t1 |  1    |  0    |  5    | 0
+         * ***********************************************/
+
+        table.set(s0t0s0t1, 3)
+        table.set(s0t0s1t0, 1)
+//        table.set(s0t0s1t1, 0)
+
+        table.set(s0t1s0t0, 4)
+        table.set(s0t1s1t0, 2)
+        table.set(s0t1s1t1, 1)
+
+        table.set(s1t0s0t0, 5)
+//        table.set(s1t0s0t1, 2)
+        table.set(s1t0s1t1, 1)
+
+        table.set(s1t1s0t0, 1)
+        table.set(s1t1s0t1, 0)
+        table.set(s1t1s1t0, 5)
+
+        //calculate spa[(s1,t0),(s2,t0),{Egg}]
+        val result = s3Calculator.calculateAllV2(table);
+
+        /****
+        Result:
+         ****/
+
+        /***********************************************
+         *       | s0t0 |  s0t1 |   s1t0 | s1t1
+         * ------------------------------------------
+         * s0t0 | 0    |  2!    |   1    | 2!
+         * ------------------------------------------
+         * s0t1 | 2!    |  0    |   2    | 1
+         * ------------------------------------------
+         * s1t0 | 2!     |  1!   |  0    | 1
+         * -------------------------------------------
+         * s1t1 |  1    |  0     |  2!   | 0
+         * ***********************************************/
+
+
+        assert(result[s0t0s0t0] == 0)
         assert(result[s0t0s0t1] == 2)
         assert(result[s0t0s1t0] == 1)
         assert(result[s0t0s1t1] == 2)

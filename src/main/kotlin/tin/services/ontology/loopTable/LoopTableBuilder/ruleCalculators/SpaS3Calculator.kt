@@ -70,6 +70,70 @@ class SpaS3Calculator(
         return updateMap;
     }
 
+    //use Floyd Warshall to calculate all possible updates in one step
+    fun calculateAllV2(table: SPALoopTable): Map<SPALoopTableEntry, Int> {
+
+        //build graph structure
+        val graph = GenericGraph();
+
+        val updateMap: MutableMap<SPALoopTableEntry, Int> = mutableMapOf();
+
+        //build a graph for each M
+        val graphMap: HashMap<ConceptNameRestriction, GenericGraph> = hashMapOf()
+
+        val pairNodes: MutableList<PairNode> = mutableListOf();
+
+
+        queryGraph.nodes.forEach { queryNode ->
+            transducerGraph.nodes.forEach { transducerNode ->
+                val node = PairNode(queryNode, transducerNode);
+                pairNodes.add(node); //add to stash for later
+            }
+        }
+
+        table.map.forEach { (spaEntry, value) ->
+
+            var graph: GenericGraph;
+            if(graphMap.contains(spaEntry.restriction)){
+                graph = graphMap[spaEntry.restriction]!!;
+            }
+            else {
+                graph = GenericGraph();
+                pairNodes.forEach { pairNode ->
+                    graph.addNode(pairNode)
+                    graph.addEdge(GenericEdge(pairNode, pairNode, GenericEdgeLabel(0)))
+                    // add edges < inf
+                }
+                graphMap[spaEntry.restriction] = graph;
+            }
+
+            val source = graph.getNode(spaEntry.source.first.toString() + spaEntry.source.second.toString());
+            val target = graph.getNode(spaEntry.target.first.toString() + spaEntry.target.second.toString());
+
+            if(source === null || target === null) return@forEach;
+            graph.addEdge(GenericEdge(source, target, GenericEdgeLabel(value)))
+        }
+
+        graphMap.forEach { (restriction, graph) ->
+            val distance = floydWarshall(graph);
+
+            distance.forEach { (nodePair, distance) ->
+                // nodePair contains Pair<PairNode, PairNode>
+                val sourceNode = nodePair.first;
+                val targetNode = nodePair.second;
+                // refine type to pairNode using stash
+                val sourcePairNode = pairNodes.find { it.identifier == sourceNode.identifier }!!
+                val targetPairNode = pairNodes.find { it.identifier == targetNode.identifier }!!
+
+                //build SPALoopTableEntry
+                val entry = SPALoopTableEntry(sourcePairNode.getQueryNode(), sourcePairNode.getTransducerNode(), targetPairNode.getQueryNode(), targetPairNode.getTransducerNode(), restriction);
+
+                updateMap[entry] = distance;
+            }
+        }
+        return updateMap;
+    }
+
     private fun floydWarshall(graph: GenericGraph): HashMap<Pair<Node,Node>, Int> {
         var distance: HashMap<Pair<Node, Node>, Int> = HashMap();
 

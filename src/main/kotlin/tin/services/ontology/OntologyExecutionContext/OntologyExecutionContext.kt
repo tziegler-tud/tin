@@ -25,9 +25,11 @@ class OntologyExecutionContext(private val manager: OntologyManager) {
     val restrictionBuilder = manager.getRestrictionBuilder();
 
     var tailsets: HashSet<HashSet<String>>? = null;
+    var tailsetsAsClasses: HashSet<HashSet<OWLClass>>? = null;
     fun prepareForLoopTableConstruction(){
         //create a new instance
         tailsets = computeTailSets();
+        tailsetsAsClasses = computeTailSetsAsOWLClass();
         //nothing to do for now
     }
 
@@ -42,14 +44,47 @@ class OntologyExecutionContext(private val manager: OntologyManager) {
         return powerset;
     }
 
-    private fun <T> powerSet(originalSet: HashSet<T>): HashSet<HashSet<T>> {
+    private fun computeTailSetsAsOWLClass(): HashSet<HashSet<OWLClass>>{
+        //powerset of all concept names in the ontology
+        val classes = manager.classes;
+        val amount = 2.0.pow(classes.size.toDouble()) +1;
+
+        val powerset = powerSet(classes)
+        //remove empty set
+        powerset.remove(HashSet())
+        return powerset;
+    }
+
+    private fun powerSet(originalSet: HashSet<String>): HashSet<HashSet<String>> {
         // Start with the empty set
-        val powerSet = HashSet<HashSet<T>>()
+        val powerSet = HashSet<HashSet<String>>()
         powerSet.add(HashSet())
 
         // Iterate over each element in the original set
         for (element in originalSet) {
-            val newSubsets = HashSet<HashSet<T>>()
+            val newSubsets = HashSet<HashSet<String>>()
+
+            // For each subset in the current powerSet, add the current element
+            for (subset in powerSet) {
+                val newSubset = HashSet(subset)
+                newSubset.add(element)
+                newSubsets.add(newSubset)
+            }
+
+            // Add the newly created subsets to the powerset
+            powerSet.addAll(newSubsets)
+        }
+        return powerSet
+    }
+
+    private fun powerSet(originalSet: Set<OWLClass>): HashSet<HashSet<OWLClass>> {
+        // Start with the empty set
+        val powerSet = HashSet<HashSet<OWLClass>>()
+        powerSet.add(HashSet())
+
+        // Iterate over each element in the original set
+        for (element in originalSet) {
+            val newSubsets = HashSet<HashSet<OWLClass>>()
 
             // For each subset in the current powerSet, add the current element
             for (subset in powerSet) {
