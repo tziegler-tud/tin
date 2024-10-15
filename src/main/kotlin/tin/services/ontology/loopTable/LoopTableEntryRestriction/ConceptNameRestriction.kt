@@ -9,6 +9,10 @@ class ConceptNameRestriction() : LoopTableEntryRestriction<OWLClass> {
         return value;
     }
 
+    override fun isEmpty(): Boolean {
+        return value.isEmpty();
+    }
+
     override fun asList(): List<OWLClass> {
         return value.toList();
     }

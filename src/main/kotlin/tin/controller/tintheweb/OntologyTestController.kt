@@ -30,7 +30,7 @@ class OntologyTestController(
         val result: FileReaderResult<File> = ontologyReaderService.read(data.filename);
 
         val manager = OntologyManager(result.get());
-        val reasoner = manager.loadReasoner(reasonerName)
+        val reasoner = manager.createReasoner(reasonerName)
         val info: OntologyInfoData = manager.getOntologyInfo();
         return OntologyData(info)
     }
@@ -41,7 +41,7 @@ class OntologyTestController(
         val result: FileReaderResult<File> = ontologyReaderService.read(filename);
 
         val manager = OntologyManager(result.get());
-        manager.loadReasoner(OntologyManager.BuildInReasoners.HERMIT)
+        manager.createReasoner(OntologyManager.BuildInReasoners.HERMIT)
         val info: OntologyInfoData = manager.getOntologyInfo();
         return OntologyData(info)
     }

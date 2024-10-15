@@ -4,6 +4,7 @@ import tin.model.v2.query.QueryGraph
 import tin.model.v2.graph.Node
 import tin.model.v2.transducer.TransducerGraph
 import tin.services.ontology.OntologyExecutionContext.ExecutionContextType
+import tin.services.ontology.OntologyExecutionContext.OntologyExecutionContext
 import tin.services.ontology.OntologyManager
 import tin.services.ontology.loopTable.SPALoopTable
 import tin.services.ontology.loopTable.loopTableEntry.SPALoopTableEntry
@@ -18,7 +19,7 @@ class SPALoopTableBuilder (
 
 {
     private val maxIterationDepth = calculateMaxIterationDepth();
-    private val table: SPALoopTable = SPALoopTable();
+    private var table: SPALoopTable = SPALoopTable();
     // prepare ontology execution context
     private val ec = ontologyManager.createExecutionContext(ExecutionContextType.LOOPTABLE);
     private val dlReasoner = ec.dlReasoner;
@@ -52,36 +53,21 @@ class SPALoopTableBuilder (
         queryGraph.nodes.forEach { node ->
             transducerGraph.nodes.forEach { transducerNode ->
                 pairsAvailable.add(Pair(node, transducerNode))
+                ec.tailsets!!.forEach { tailset ->
+                    val restriction = restrictionBuilder.createConceptNameRestriction(tailset);
+                    table.set(SPALoopTableEntry(node, transducerNode, node, transducerNode, restriction), 0);
+                }
             }
         }
     }
 
-    fun calculateNextIteration(){
-
-        //for each (p,q,M), perform S1 step
-        pairsAvailable.forEach{ source ->
-            pairsAvailable.forEach target@{ target ->
-                if(source.first == target.first && source.second == target.second) return@target;
-                tailsets.forEach { tailset ->
-                    //foreach (p,q,M) do:
-                    val restriction = restrictionBuilder.createConceptNameRestriction(tailset)
-                    val entry = SPALoopTableEntry(source, target, restriction)
-                    val updatedValue = calculateS1(entry)
-                    if(updatedValue !== null) {
-                        table.set(entry, updatedValue );
-                    }
-                }
-                calculateS3();
-            }
-        };
-
-
+    fun calculateInitialS2V2(): SPALoopTable {
+        //apply S2 to all (q x t)^2 x M
+        table = s2Calculator.calculateAll(table);
+        return table;
     }
 
-    fun calculateFullTable(): SPALoopTable {
-        //iterate until max iterations are reached
-        initializeTable();
-
+    fun calculateInitialS2(): SPALoopTable {
         //apply S2 to all (q x t)^2 x M
         pairsAvailable.forEach{ source ->
             pairsAvailable.forEach target@{ target ->
@@ -98,14 +84,70 @@ class SPALoopTableBuilder (
                 }
             }
         };
+        return table;
+    }
 
+    fun calculateInitialStep(): SPALoopTable {
+        calculateInitialS2V2();
         //apply S3
         calculateS3();
+        return table;
+    }
+
+    fun calculateNextIteration(){
+
+        println("Calculating iteration...")
+
+        var counter : Int;
+
+        //for each (p,q,M), perform S1 step
+        pairsAvailable.forEach{ source ->
+            pairsAvailable.forEach target@{ target ->
+                counter = 0;
+                if(source.first == target.first && source.second == target.second) return@target;
+                tailsets.forEach { tailset ->
+                    counter++;
+                    println("Calculating tailset " + counter + " / " + tailsets.size)
+//                    if(counter > 2) return@target;
+                    //foreach (p,q,M) do:
+                    val restriction = restrictionBuilder.createConceptNameRestriction(tailset)
+                    val entry = SPALoopTableEntry(source, target, restriction)
+                    val updatedValue = calculateS1(entry)
+                    if(updatedValue !== null) {
+                        table.set(entry, updatedValue );
+                    }
+                }
+            }
+        };
+        calculateS3();
+    }
+
+    fun calculateNextIterationV2(){
+
+        println("Calculating iteration...")
+
+        var counter : Int;
+
+        table = calculateS1V2();
+        calculateS3();
+    }
+
+    fun calculateFullTable(): SPALoopTable {
+        //iterate until max iterations are reached
+        initializeTable();
+
+        calculateInitialStep();
 
         //depth 0
 
 
-        calculateNextIteration();
+        calculateNextIterationV2();
+//        calculateNextIteration();
+//        calculateNextIteration();
+//        calculateNextIteration();
+//        calculateNextIteration();
+//        calculateNextIteration();
+//        calculateNextIteration();
 
         return table;
     }
@@ -145,13 +187,18 @@ class SPALoopTableBuilder (
         return result;
     }
 
+    private fun calculateS1V2() : SPALoopTable {
+        val result = s1Calculator.calculateAll(table);
+        return result;
+    }
+
     private fun calculateS2(spaLoopTableEntry: SPALoopTableEntry) : Int? {
 
         val result = s2Calculator.calculate(spaLoopTableEntry, table)
         return result;
     }
 
-    private fun calculateS3(){
+    private fun calculateS3() {
         for (tailset in tailsets) {
             val restriction = restrictionBuilder.createConceptNameRestriction(tailset);
             val updatedMap = s3Calculator.calculateAll(restriction, table);
@@ -160,5 +207,9 @@ class SPALoopTableBuilder (
                 table.set(entry, value);
             }
         }
+    }
+
+    public fun getExecutionContext(): OntologyExecutionContext {
+        return ec;
     }
 }

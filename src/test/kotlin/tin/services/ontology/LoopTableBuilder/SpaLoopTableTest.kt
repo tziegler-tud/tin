@@ -45,9 +45,9 @@ class SpaLoopTableTest {
     }
 
     @Test
-    fun testS1(){
+    fun testLoopTableInitialStep() {
         val manager = loadExampleOntology();
-        val reasoner = manager.loadReasoner(OntologyManager.BuildInReasoners.HERMIT)
+        val reasoner = manager.createReasoner(OntologyManager.BuildInReasoners.HERMIT)
         val expressionBuilder = manager.getExpressionBuilder();
         val dlReasoner = DLReasoner(reasoner, expressionBuilder);
 
@@ -55,7 +55,36 @@ class SpaLoopTableTest {
         val transducer = readTransducerWithFileReaderService("test1.txt")
 
         val builder = SPALoopTableBuilder(query.graph, transducer.graph, manager);
+        builder.calculateInitialStep();
+        assert(true)
+    }
+
+    @Test
+    fun testLoopTableConstruction(){
+        val manager = loadExampleOntology();
+        val reasoner = manager.createReasoner(OntologyManager.BuildInReasoners.HERMIT)
+        val expressionBuilder = manager.getExpressionBuilder();
+        val dlReasoner = DLReasoner(reasoner, expressionBuilder);
+
+        val query = readQueryWithFileReaderService("spaCalculation/table/test1.txt")
+        val transducer = readTransducerWithFileReaderService("spaCalculation/table/test1.txt")
+
+        val builder = SPALoopTableBuilder(query.graph, transducer.graph, manager);
         builder.calculateFullTable();
+        println("Superclass Cache Size: " + builder.getExecutionContext().dlReasoner.superClassCache.size)
+        println("Superclass Cache Hits: " + builder.getExecutionContext().dlReasoner.superClassCacheHitCounter)
+
+        println("Equiv Node Cache Size: " + builder.getExecutionContext().dlReasoner.equivalentClassCache.size)
+        println("Superclass Cache Hits: " + builder.getExecutionContext().dlReasoner.equivNodeCacheHitCounter)
+
+        println("Subsumption Cache Size: " + builder.getExecutionContext().dlReasoner.subsumptionCache.size)
+        println("Subsumption Cache Hits: " + builder.getExecutionContext().dlReasoner.subsumptionCacheHitCounter)
+
+        println("Entailment Check Cache Size: " + builder.getExecutionContext().dlReasoner.entailmentCache.size)
+        println("Entailment Cache Hits: " + builder.getExecutionContext().dlReasoner.entailmentCacheHitCounter)
+        println("Entailment Cache Misses: " + builder.getExecutionContext().dlReasoner.entailmentCacheMissCounter)
+
+
     }
 
 

@@ -51,7 +51,7 @@ class SpaS3CalculatorTest {
     @Test
     fun testCalculation(){
         val manager = loadExampleOntology();
-        val reasoner = manager.loadReasoner(OntologyManager.BuildInReasoners.HERMIT)
+        val reasoner = manager.createReasoner(OntologyManager.BuildInReasoners.HERMIT)
         val expressionBuilder = manager.getExpressionBuilder();
         val dlReasoner = DLReasoner(reasoner, expressionBuilder);
 

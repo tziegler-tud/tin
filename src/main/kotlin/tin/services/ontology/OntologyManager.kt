@@ -33,8 +33,6 @@ class OntologyManager(val file: File) {
     private val shortFormProvider: ShortFormProvider = SimpleShortFormProvider()
     val manchesterShortFormProvider: ShortFormProvider = ManchesterOWLSyntaxPrefixNameShortFormProvider(ontology);
     private val executionContextFactory = OntologyExecutionContextFactory();
-    private var currentReasoner = BuildInReasoners.NONE;
-    private lateinit var reasoner: OWLReasoner;
     private var parser: DLQueryParser = DLQueryParser(ontology, shortFormProvider);
     private var restrictionBuilder = RestrictionBuilder(parser, shortFormProvider);
 
@@ -85,62 +83,40 @@ class OntologyManager(val file: File) {
         return expressionBuilder;
     }
 
-    fun loadReasoner(reasonerName: BuildInReasoners): OWLReasoner {
-        if (currentReasoner === reasonerName){
-            return reasoner;
-        }
-
+    fun createReasoner(reasonerName: BuildInReasoners): OWLReasoner {
         val reasonerFactory: OWLReasonerFactory;
         when (reasonerName) {
             BuildInReasoners.ELK -> {
 //                reasonerFactory = ElkReasonerFactory();
                 //strange dependency problem with google guava 32.2.0
                 //TODO: find a fix or throw out ELK support
-                currentReasoner = reasonerName;
                 reasonerFactory = ElkReasonerFactory();
                 throw IllegalArgumentException("ELK Reasoner is currently not supported.")
 
             }
             BuildInReasoners.JCEL -> {
                 //JCEL currently does not support OWLAPI 5.5, disable for now
-                currentReasoner = BuildInReasoners.NONE;
 //                reasonerFactory = JcelReasonerFactory();
                 throw IllegalArgumentException("JCEL Reasoner is currently not supported.")
             }
             BuildInReasoners.HERMIT -> {
-                currentReasoner = reasonerName;
                 reasonerFactory = HermitReasonerFactory();
 
             }
             else -> {
-                currentReasoner = BuildInReasoners.NONE;
                 throw IllegalArgumentException("Failed to load reasoner: Unknown reasoner name given.");
             }
         }
-        reasoner = reasonerFactory.createReasoner(ontology)
+        val reasoner = reasonerFactory.createReasoner(ontology)
         // Classify the ontology.
-        reasoner.precomputeInferences(InferenceType.CLASS_HIERARCHY, InferenceType.OBJECT_PROPERTY_HIERARCHY)
+        val precomputableInferenceTypes = reasoner.precomputableInferenceTypes;
+        reasoner.precomputeInferences(InferenceType.CLASS_HIERARCHY, InferenceType.OBJECT_PROPERTY_HIERARCHY, InferenceType.SAME_INDIVIDUAL)
         return reasoner;
-    }
-
-    fun getReasoner(): OWLReasoner? {
-        if(this::reasoner.isInitialized){
-            return reasoner;
-        }
-        else return null;
-    }
-
-    fun getReasonerOrLoad(): OWLReasoner {
-        if(this::reasoner.isInitialized){
-            return reasoner;
-        }
-        else return loadReasoner(BuildInReasoners.HERMIT);
     }
 
     fun getQueryParser(): DLQueryParser {
         return parser;
     }
-
 
     fun getRestrictionBuilder() : RestrictionBuilder{
         return restrictionBuilder;
@@ -151,9 +127,7 @@ class OntologyManager(val file: File) {
         val aboxAxioms = ontology.getABoxAxioms(Imports.EXCLUDED);
         val tboxAxioms = ontology.getTBoxAxioms(Imports.EXCLUDED);
         val signature = ontology.getSignature(Imports.EXCLUDED);
-        val reasoner = currentReasoner;
-
-        return OntologyInfoData(name.toString(), aboxAxioms, tboxAxioms, signature, reasoner);
+        return OntologyInfoData(name.toString(), aboxAxioms, tboxAxioms, signature);
     }
 
 

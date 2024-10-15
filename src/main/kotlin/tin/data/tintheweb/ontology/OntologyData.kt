@@ -12,7 +12,6 @@ data class OntologyData @JsonCreator constructor(
     @JsonProperty("AboxAxioms") val axboxAxioms: List<String>,
     @JsonProperty("TboxAxioms") val tboxAxions: List<String>,
     @JsonProperty("signature") val signature: List<String>,
-    @JsonProperty("reasoner") val reasoner: String,
 ) {
     constructor(ontologyInfoData: OntologyInfoData): this(
         fname = ontologyInfoData.filename,
@@ -22,7 +21,5 @@ data class OntologyData @JsonCreator constructor(
         axboxAxioms = ontologyInfoData.aboxAxioms.map{it.toString()},
         tboxAxions = ontologyInfoData.tboxAxioms.map{it.toString()},
         signature = ontologyInfoData.signature.map{it.toString()},
-        reasoner = ontologyInfoData.getCurrentReasonerName(),
-
     )
 }

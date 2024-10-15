@@ -22,7 +22,7 @@ class SPALoopTable(
     }
 
     override fun set(entry: SPALoopTableEntry, value: Int) {
-        if(entry.hasEqualSourceAndTarget()) return;
+//        if(entry.hasEqualSourceAndTarget()) return;
         map[entry] = value;
     }
 
@@ -43,7 +43,20 @@ class SPALoopTable(
         return SPALoopTableFragment(map.filter{it.key.restriction == restriction && if (limit == null) true else it.value < limit}, restriction);
     }
 
+    fun getWithSourceAndTarget(source: Pair<Node, Node>, target: Pair<Node, Node>, limit: Int? = null) : SPALoopTableFragment {
+        return SPALoopTableFragment(map.filter { it.key.source == source && it.key.target == target && if (limit == null) true else it.value < limit}, ConceptNameRestriction());
+    }
+
     fun getWithSourceAndRestriction(source: Pair<Node, Node>, restriction: ConceptNameRestriction) : SPALoopTableFragment {
         return SPALoopTableFragment(map.filter { it.key.restriction == restriction && it.key.source == source }, restriction);
+    }
+
+    override fun equals(other: Any?) : Boolean {
+        if(other !is SPALoopTable) return false;
+        return map == other.map;
+    }
+
+    override fun hashCode() : Int {
+        return map.hashCode()
     }
 }

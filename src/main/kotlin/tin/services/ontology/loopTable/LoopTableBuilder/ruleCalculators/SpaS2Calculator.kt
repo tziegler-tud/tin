@@ -29,6 +29,8 @@ class SpaS2Calculator(
     private val expressionBuilder = ec.expressionBuilder;
     private val dlReasoner = ec.dlReasoner;
     private val manchesterShortFormProvider = ec.manchesterShortFormProvider;
+    private val tailsets = ec.tailsets!!;
+
 
     /**
      * calculates the updated value for an entry spa[(s,t),(s',t'),M]
@@ -93,5 +95,93 @@ class SpaS2Calculator(
         else {
             return validEdges.minOf { it.label.cost };
         }
+    }
+
+    /**
+     * optimised version to calculate S2 for all (s,t),(s',t'),M . About 6x faster than the original implementation
+     */
+    fun calculateAll(table: SPALoopTable) : SPALoopTable {
+            queryGraph.nodes.forEach { querySource ->
+                transducerGraph.nodes.forEach { transducerSource ->
+                    queryGraph.nodes.forEach { queryTarget ->
+                        transducerGraph.nodes.forEach transducerTarget@{ transducerTarget ->
+
+                            if(querySource == queryTarget && transducerSource == transducerTarget) {
+                                // (s,t),(s,t),M = 0 always
+                                //we don't want to add these to the loop table
+                                return@transducerTarget
+                            }
+
+                            //get all edges (s,_,s1) € QueryGraph
+                            var candidateQueryEdges = queryGraph.getEdgesWithSourceAndTarget(querySource, queryTarget);
+                            if(candidateQueryEdges.isEmpty()) {
+                                return@transducerTarget
+                            }
+
+                            var candidateQueryTransitions = candidateQueryEdges.map{it.label}
+
+                            //get all edges (t,_,_,_,t1) € TransducerGraph
+                            var candidateTransducerEdges = transducerGraph.getEdgesWithSourceAndTarget(transducerSource, transducerTarget);
+                            // keep only those that have matching u for some A? s.t. (s,u,s') € query and (t,u,A?,w.t') € trans
+                            candidateTransducerEdges = candidateTransducerEdges.filter { transEdge ->
+                                candidateQueryTransitions.contains(QueryEdgeLabel(transEdge.label.incoming)) &&
+                                        queryParser.getOWLClass(transEdge.label.outgoing) !== null
+                            }
+                            if(candidateTransducerEdges.isEmpty()) {
+                                return@transducerTarget
+                            }
+
+                            val sortedTransducerEdges = candidateTransducerEdges.sortedBy { it.label.cost }
+                            //extract target class names from edges
+
+                            var validClassNames = candidateTransducerEdges.map{it.label.outgoing}.distinct()
+
+                            tailsets.forEach tailsets@{ tailset ->
+                                val restriction = restrictionBuilder.createConceptNameRestriction(tailset)
+                                val MClassExp = restrictionBuilder.asClassExpression(restriction);
+                                val MExp = expressionBuilder.createELHIExpression(MClassExp);
+
+                                val entry = SPALoopTableEntry(
+                                    Pair(querySource, transducerSource),
+                                    Pair(queryTarget, transducerTarget),
+                                    restriction
+                                )
+
+                                val costCutoff = table.get(entry) //0, int val or null
+                                if (costCutoff == 0) return@tailsets //we cannot improve an entry with cost 0
+
+
+                                // for each possible class name, check subsumption M <= A
+                                val validEdges: MutableList<TransducerEdge> = mutableListOf()
+
+                                sortedTransducerEdges.forEach edgeCheck@ { transducerEdge ->
+                                    val inLabel = transducerEdge.label.incoming;
+                                    val outLabel = transducerEdge.label.outgoing;
+                                    // try to match edge label to concept assertion. outgoing label must be a concept assertion
+                                    //if no property could be obtained, there is no way to continue - this also means our transducer uses class names which are not part of our ontology.
+                                    var edgeClass: OWLClass = queryParser.getOWLClass(outLabel) ?: return@edgeCheck;
+
+                                    //create subsumption expression
+                                    val classExp = expressionBuilder.createELHIExpression(edgeClass);
+                                    //check if entailed
+                                    val isEntailed = dlReasoner.checkIsSubsumed(MExp, classExp);
+
+                                    if(isEntailed) {
+                                        validEdges.add(transducerEdge)
+                                    };
+                                }
+
+                                if(validEdges.isEmpty()){
+                                    return@tailsets
+                                }
+                                else {
+                                    table.set(entry, validEdges.minOf { it.label.cost });
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        return table;
     }
 }

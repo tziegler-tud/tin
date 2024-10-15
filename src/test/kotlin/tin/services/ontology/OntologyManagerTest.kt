@@ -36,7 +36,7 @@ class OntologyManagerTest {
     @Test
     fun testInstanceQueries(){
         val manager = loadExampleOntology();
-        val reasoner = manager.loadReasoner(OntologyManager.BuildInReasoners.HERMIT)
+        val reasoner = manager.createReasoner(OntologyManager.BuildInReasoners.HERMIT)
 
         //load parser
         val parser = manager.getQueryParser();
@@ -76,7 +76,7 @@ class OntologyManagerTest {
     fun testClassSubsumption(){
         val manager = loadExampleOntology();
 
-        val reasoner = manager.loadReasoner(OntologyManager.BuildInReasoners.HERMIT)
+        val reasoner = manager.createReasoner(OntologyManager.BuildInReasoners.HERMIT)
 
         //load parser
         val parser = manager.getQueryParser();

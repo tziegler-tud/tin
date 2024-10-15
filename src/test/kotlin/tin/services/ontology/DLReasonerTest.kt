@@ -7,6 +7,7 @@ import org.springframework.boot.test.context.TestConfiguration
 import tin.services.internal.fileReaders.OntologyReaderService
 import tin.services.internal.fileReaders.fileReaderResult.FileReaderResult
 import tin.services.ontology.Expressions.DLExpressionBuilder
+import tin.services.ontology.OntologyExecutionContext.ExecutionContextType
 import tin.services.technical.SystemConfigurationService
 import java.io.File
 import kotlin.math.exp
@@ -32,10 +33,12 @@ class DLReasonerTest {
     @Test
     fun testSubsumptionCheck(){
         val manager = loadExampleOntology("pizza2.rdf");
-        val reasoner = manager.loadReasoner(OntologyManager.BuildInReasoners.HERMIT)
-        val expressionBuilder = manager.getExpressionBuilder();
-        val dlReasoner = DLReasoner(reasoner, expressionBuilder);
+        val ec = manager.createExecutionContext(ExecutionContextType.LOOPTABLE);
 
+        val dlReasoner = ec.dlReasoner;
+        val expressionBuilder = ec.expressionBuilder;
+        val restrictionBuilder = ec.restrictionBuilder;
+        val parser = ec.parser;
 
         val l1 = expressionBuilder.createELHExpressionFromString("Bread")
         val l2 = expressionBuilder.createELHExpressionFromString("Pasta")
@@ -49,9 +52,68 @@ class DLReasonerTest {
     }
 
     @Test
+    fun testSubsumptionCheckTopElement(){
+        val manager = loadExampleOntology("pizza2.rdf");
+        val reasoner = manager.createReasoner(OntologyManager.BuildInReasoners.HERMIT)
+        val ec = manager.createExecutionContext(ExecutionContextType.LOOPTABLE);
+        val expressionBuilder = ec.expressionBuilder;
+        val restrictionBuilder = ec.restrictionBuilder;
+        val parser = ec.parser
+        val dlReasoner = ec.dlReasoner;
+
+
+        val l1 = expressionBuilder.createELHExpressionFromString("Bread")
+        val l2 = expressionBuilder.createELHExpressionFromString("Pasta")
+        val l3 = expressionBuilder.createELHExpressionFromString("Bruschetta")
+        val l4 = expressionBuilder.createELHExpressionFromString("Carbonara")
+        val l5 = expressionBuilder.createELHExpressionFromString("Chicken")
+        val l6 = expressionBuilder.createELHExpressionFromString("Egg")
+        val l7 = expressionBuilder.createELHExpressionFromString("Flour")
+
+        val n1 = expressionBuilder.createELHExpressionFromString("Gluten")
+        val n2 = expressionBuilder.createELHExpressionFromString("Vegan")
+        val n3 = expressionBuilder.createELHExpressionFromString("Restaurant")
+
+        val topClassNode = dlReasoner.getTopClassNode();
+        val owlTopClassRestriction = restrictionBuilder.createConceptNameRestriction(topClassNode.representativeElement)
+
+
+//        val joinedTopRestriction = restrictionBuilder.createConceptNameRestriction(topClassNode.representativeElement)
+//        joinedTopRestriction.addElement(parser.getOWLClass("Bread")!!);
+//
+//        val testRestriction = restrictionBuilder.createConceptNameRestriction("Bread");
+//        val testClassExpr = restrictionBuilder.asClassExpression(testRestriction);
+//        val testExpr = expressionBuilder.createELHIExpression(testClassExpr);
+
+        val role = ec.parser.getOWLObjectProperty("contains")!!
+
+
+        val M1ClassExp = restrictionBuilder.asClassExpression(owlTopClassRestriction);
+        val M1Exp = expressionBuilder.createELHIExpression(M1ClassExp);
+        val rM1 = expressionBuilder.createExistentialRestriction(role, M1ClassExp)
+        val rM1Exp = expressionBuilder.createELHIExpression(rM1);
+
+        assert(dlReasoner.checkIsSubsumed(l1, rM1Exp))
+        assert(dlReasoner.checkIsSubsumed(l2, rM1Exp))
+        assert(dlReasoner.checkIsSubsumed(l3, rM1Exp))
+        assert(dlReasoner.checkIsSubsumed(l4, rM1Exp))
+        assert(dlReasoner.checkIsSubsumed(l5, rM1Exp))
+        assert(dlReasoner.checkIsSubsumed(l6, rM1Exp))
+        assert(dlReasoner.checkIsSubsumed(l7, rM1Exp))
+
+        assert(!dlReasoner.checkIsSubsumed(n1, rM1Exp))
+        assert(!dlReasoner.checkIsSubsumed(n2, rM1Exp))
+        assert(!dlReasoner.checkIsSubsumed(n3, rM1Exp))
+
+//        assert(dlReasoner.checkIsSubsumed(l2, r1));
+//        assert(!dlReasoner.checkIsSubsumed(l1, r2));
+//        assert(!dlReasoner.checkIsSubsumed(l2, r2));
+    }
+
+    @Test
     fun testSuperPropertiesCalculation(){
         val manager = loadExampleOntology("propertyTest2.rdf");
-        val reasoner = manager.loadReasoner(OntologyManager.BuildInReasoners.HERMIT)
+        val reasoner = manager.createReasoner(OntologyManager.BuildInReasoners.HERMIT)
         val expressionBuilder = manager.getExpressionBuilder();
         val dlReasoner = DLReasoner(reasoner, expressionBuilder);
 
@@ -89,7 +151,7 @@ class DLReasonerTest {
     @Test
     fun testInverseSuperPropertiesCalculation(){
         val manager = loadExampleOntology("propertyTest2.rdf");
-        val reasoner = manager.loadReasoner(OntologyManager.BuildInReasoners.HERMIT)
+        val reasoner = manager.createReasoner(OntologyManager.BuildInReasoners.HERMIT)
         val expressionBuilder = manager.getExpressionBuilder();
         val dlReasoner = DLReasoner(reasoner, expressionBuilder);
 
@@ -148,7 +210,7 @@ class DLReasonerTest {
     @Test
     fun testSubPropertiesCalculation(){
         val manager = loadExampleOntology("propertyTest2.rdf");
-        val reasoner = manager.loadReasoner(OntologyManager.BuildInReasoners.HERMIT)
+        val reasoner = manager.createReasoner(OntologyManager.BuildInReasoners.HERMIT)
         val expressionBuilder = manager.getExpressionBuilder();
         val dlReasoner = DLReasoner(reasoner, expressionBuilder);
 
@@ -201,7 +263,7 @@ class DLReasonerTest {
     @Test
     fun testTopConceptExpressions(){
         val manager = loadExampleOntology("propertyTest2.rdf");
-        val reasoner = manager.loadReasoner(OntologyManager.BuildInReasoners.HERMIT)
+        val reasoner = manager.createReasoner(OntologyManager.BuildInReasoners.HERMIT)
         val expressionBuilder = manager.getExpressionBuilder();
         val restrictionBuilder = manager.getRestrictionBuilder();
         val dlReasoner = DLReasoner(reasoner, expressionBuilder);

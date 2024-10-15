@@ -4,6 +4,7 @@ import org.semanticweb.owlapi.model.*
 import tin.services.ontology.OntologyManager
 import uk.ac.manchester.cs.owl.owlapi.OWLObjectSomeValuesFromImpl
 import uk.ac.manchester.cs.owl.owlapi.OWLSubClassOfAxiomImpl
+import uk.ac.manchester.cs.owl.owlapi.OWLSubObjectPropertyOfAxiomImpl
 
 class DLExpressionBuilder(private val manager: OntologyManager) {
     private val ontology = manager.getOntology();
@@ -55,5 +56,10 @@ class DLExpressionBuilder(private val manager: OntologyManager) {
 
     fun createSubsumptionExpression(expr: DLExpression, superExpr: DLExpression) : OWLSubClassOfAxiom {
         return OWLSubClassOfAxiomImpl(expr.getClassExpression(), superExpr.getClassExpression(), HashSet<OWLAnnotation>())
+    }
+
+    fun createPropertySubsumptionExpression(property: OWLObjectPropertyExpression, superProperty: OWLObjectPropertyExpression) : OWLSubObjectPropertyOfAxiom {
+        return OWLSubObjectPropertyOfAxiomImpl(property, superProperty, HashSet<OWLAnnotation>())
+
     }
 }

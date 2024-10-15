@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.context.TestConfiguration
+import tin.model.v2.graph.Node
 import tin.model.v2.query.QueryGraph
 import tin.model.v2.transducer.TransducerGraph
 import tin.services.internal.fileReaders.*
@@ -16,6 +17,8 @@ import tin.services.ontology.loopTable.SPALoopTable
 import tin.services.ontology.loopTable.loopTableEntry.SPALoopTableEntry
 import tin.services.technical.SystemConfigurationService
 import java.io.File
+import kotlin.time.ExperimentalTime
+import kotlin.time.TimeSource
 
 @SpringBootTest
 @TestConfiguration
@@ -50,7 +53,7 @@ class SpaS2CalculatorTest {
     @Test
     fun testCalculation(){
         val manager = loadExampleOntology();
-        val reasoner = manager.loadReasoner(OntologyManager.BuildInReasoners.HERMIT)
+        val reasoner = manager.createReasoner(OntologyManager.BuildInReasoners.HERMIT)
         val expressionBuilder = manager.getExpressionBuilder();
         val dlReasoner = DLReasoner(reasoner, expressionBuilder);
 
@@ -96,6 +99,181 @@ class SpaS2CalculatorTest {
         assert(result2 == 6); // 2 + 0 + 3
         table.set(entry2, result2!!);
         assert(table.get(entry2) == result2)
+    }
+
+    @Test
+    fun testCalculationV2(){
+        val exampleFile = readWithFileReaderService("pizza_small.rdf").get()
+        val manager = OntologyManager(exampleFile);
+        val reasoner = manager.createReasoner(OntologyManager.BuildInReasoners.HERMIT)
+        val expressionBuilder = manager.getExpressionBuilder();
+        val dlReasoner = DLReasoner(reasoner, expressionBuilder);
+
+        val query = readQueryWithFileReaderService("spaCalculation/S2/test_spaS2_1.txt")
+        val transducer = readTransducerWithFileReaderService("spaCalculation/S2/test_spaS2_1.txt")
+
+        val ec = manager.createExecutionContext(ExecutionContextType.LOOPTABLE);
+        val queryParser = ec.parser;
+        val shortFormProvider = ec.shortFormProvider;
+        val restrictionBuilder = ec.restrictionBuilder;
+
+
+
+        val s2Calculator = SpaS2Calculator(ec, query.graph, transducer.graph);
+
+        //calculate s1 for a non-trivial entry
+
+        val s0 = query.graph.getNode("s0")!!
+        val s1 = query.graph.getNode("s1")!!
+        val s2 = query.graph.getNode("s2")!!
+        val s3 = query.graph.getNode("s3")!!
+
+        val t0 = transducer.graph.getNode("t0")!!
+
+        val classNames = ec.getClassNames();
+
+        val M = restrictionBuilder.createConceptNameRestriction("Egg")
+
+        //create empty loop table
+        val table: SPALoopTable = SPALoopTable();
+        //calculate spa[(s1,t0),(s2,t0),{Egg}]
+        val table2 = s2Calculator.calculateAll(table);
+        //use s1->Chicken?->s2 with t0-Chicken?|Egg?|2->t0
+        val filtered = table2.getWithRestriction(M);
+
+        for (tailset in ec.tailsets!!) {
+            if(dlReasoner.checkIsSubsumed(expressionBuilder.createELHIExpression(queryParser.fromClassNames(tailset)), expressionBuilder.createELHExpressionFromString("Egg"))) {
+                assert(table2.get(SPALoopTableEntry(Pair(s1,t0), Pair(s2,t0),restrictionBuilder.createConceptNameRestriction(tailset))) == 2)
+            }
+            else {
+                if(dlReasoner.checkIsSubsumed(expressionBuilder.createELHIExpression(queryParser.fromClassNames(tailset)), expressionBuilder.createELHExpressionFromString("Ingredients"))) {
+                    assert(table2.get(SPALoopTableEntry(Pair(s0,t0), Pair(s1,t0),restrictionBuilder.createConceptNameRestriction(tailset))) == 6)
+                    assert(table2.get(SPALoopTableEntry(Pair(s2,t0), Pair(s3,t0),restrictionBuilder.createConceptNameRestriction(tailset))) == 6)
+                }
+                else {
+                    assert(table2.get(SPALoopTableEntry(Pair(s0,t0), Pair(s1,t0),restrictionBuilder.createConceptNameRestriction(tailset))) == null)
+                    assert(table2.get(SPALoopTableEntry(Pair(s1,t0), Pair(s2,t0),restrictionBuilder.createConceptNameRestriction(tailset))) == null)
+                    assert(table2.get(SPALoopTableEntry(Pair(s2,t0), Pair(s3,t0),restrictionBuilder.createConceptNameRestriction(tailset))) == null)
+                }
+            }
+            assert(table2.get(SPALoopTableEntry(Pair(s0,t0), Pair(s2,t0),restrictionBuilder.createConceptNameRestriction(tailset))) == null)
+            assert(table2.get(SPALoopTableEntry(Pair(s0,t0), Pair(s3,t0),restrictionBuilder.createConceptNameRestriction(tailset))) == null)
+            assert(table2.get(SPALoopTableEntry(Pair(s1,t0), Pair(s3,t0),restrictionBuilder.createConceptNameRestriction(tailset))) == null)
+        }
+    }
+
+    @Test
+    fun testCalculationAllEntries(){
+        val manager = loadExampleOntology();
+        val query = readQueryWithFileReaderService("spaCalculation/S2/test_spaS2_1.txt")
+        val transducer = readTransducerWithFileReaderService("spaCalculation/S2/test_spaS2_2.txt")
+
+        val ec = manager.createExecutionContext(ExecutionContextType.LOOPTABLE);
+        val dlReasoner = ec.dlReasoner;
+        val queryParser = ec.parser;
+        val shortFormProvider = ec.shortFormProvider;
+        val restrictionBuilder = ec.restrictionBuilder;
+
+        val pairsAvailable = mutableSetOf<Pair<Node, Node>>();
+        val tailsets = ec.tailsets!!;
+
+        val s2Calculator = SpaS2Calculator(ec, query.graph, transducer.graph);
+
+        val table: SPALoopTable = SPALoopTable();
+
+        val timeSource = TimeSource.Monotonic
+
+        query.graph.nodes.forEach { node ->
+            transducer.graph.nodes.forEach { transducerNode ->
+                pairsAvailable.add(Pair(node, transducerNode))
+            }
+        }
+
+        val v1StartTime = timeSource.markNow()
+        pairsAvailable.forEach{ source ->
+            pairsAvailable.forEach target@{ target ->
+                if(source.first == target.first && source.second == target.second) return@target;
+                tailsets.forEach tailset@{ tailset ->
+                    //foreach (p,q,M) do:
+                    val restriction = restrictionBuilder.createConceptNameRestriction(tailset)
+                    val entry = SPALoopTableEntry(source, target, restriction)
+                    // dont add table entries (q,t)(q,t),_
+                    val updatedValue = s2Calculator.calculate(entry, table)
+                    if(updatedValue !== null) {
+                        table.set(entry, updatedValue );
+                    }
+                }
+            }
+        };
+
+        val v1EndTime = timeSource.markNow()
+        val v1Time = v1EndTime - v1StartTime;
+        println("V1 Time: " + v1Time)
+
+    }
+
+    @Test
+    fun testCalculationAllEntriesCompare(){
+        val manager = loadExampleOntology();
+        val query = readQueryWithFileReaderService("spaCalculation/S2/test_spaS2_3.txt")
+        val transducer = readTransducerWithFileReaderService("spaCalculation/S2/test_spaS2_3.txt")
+
+        val ec = manager.createExecutionContext(ExecutionContextType.LOOPTABLE);
+        val dlReasoner = ec.dlReasoner;
+        val queryParser = ec.parser;
+        val shortFormProvider = ec.shortFormProvider;
+        val restrictionBuilder = ec.restrictionBuilder;
+
+        val pairsAvailable = mutableSetOf<Pair<Node, Node>>();
+        val tailsets = ec.tailsets!!;
+
+        val s2Calculator = SpaS2Calculator(ec, query.graph, transducer.graph);
+
+        val table: SPALoopTable = SPALoopTable();
+        var table2: SPALoopTable = SPALoopTable();
+
+        val timeSource = TimeSource.Monotonic
+
+        query.graph.nodes.forEach { node ->
+            transducer.graph.nodes.forEach { transducerNode ->
+                pairsAvailable.add(Pair(node, transducerNode))
+            }
+        }
+
+        val v1StartTime = timeSource.markNow()
+        pairsAvailable.forEach{ source ->
+            pairsAvailable.forEach target@{ target ->
+                if(source.first == target.first && source.second == target.second) return@target;
+                tailsets.forEach tailset@{ tailset ->
+                    //foreach (p,q,M) do:
+                    val restriction = restrictionBuilder.createConceptNameRestriction(tailset)
+                    val entry = SPALoopTableEntry(source, target, restriction)
+                    // dont add table entries (q,t)(q,t),_
+                    val updatedValue = s2Calculator.calculate(entry, table)
+                    if(updatedValue !== null) {
+                        table.set(entry, updatedValue );
+                    }
+                }
+            }
+        };
+        val v1EndTime = timeSource.markNow()
+        dlReasoner.clearCache();
+
+        /**
+         * v3
+         */
+        val v2StartTime = timeSource.markNow()
+        table2 = s2Calculator.calculateAll(table2)
+        val v2EndTime = timeSource.markNow()
+
+        val v1Time = v1EndTime - v1StartTime;
+        val v2Time = v2EndTime - v2StartTime;
+
+        println("V1 Time: " + v1Time)
+        println("V2 Time: " + v2Time)
+
+        assert(table == table2);
+
 
     }
 

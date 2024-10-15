@@ -3,6 +3,7 @@ package tin.services.ontology
 import org.semanticweb.owlapi.model.OWLClass
 import org.semanticweb.owlapi.model.OWLObjectProperty
 import org.semanticweb.owlapi.model.OWLObjectPropertyExpression
+import org.semanticweb.owlapi.model.OWLPropertyExpression
 import org.semanticweb.owlapi.reasoner.Node
 import org.semanticweb.owlapi.reasoner.NodeSet
 import org.semanticweb.owlapi.reasoner.OWLReasoner
@@ -15,18 +16,46 @@ import tin.services.ontology.Expressions.DLExpressionBuilder
 /**
  * wrapper class to provide some high-level utility using the owl reasoner interface
  */
-class DLReasoner(
+class CachingDLReasoner(
     val reasoner: OWLReasoner,
     private val expressionBuilder: DLExpressionBuilder
 ) {
     public val superClassCache: HashMap<DLExpression, NodeSet<OWLClass>> = hashMapOf()
     public val equivalentClassCache: HashMap<DLExpression, Node<OWLClass>> = hashMapOf()
+    public val subsumptionCache: HashMap<DLExpression, NodeSet<OWLClass>> = hashMapOf()
+    public val propertySubsumptionCache: HashMap<Pair<OWLPropertyExpression, OWLPropertyExpression>, Boolean> = hashMapOf()
+    public val entailmentCache: HashMap<Pair<DLExpression, DLExpression>, Boolean> = hashMapOf()
+
     public var superClassCacheHitCounter = 0;
     public var equivNodeCacheHitCounter = 0;
+    public var subsumptionCacheHitCounter = 0;
+    public var propertySubsumptionCacheHitCounter = 0;
+    public var entailmentCacheHitCounter = 0;
+    public var entailmentCacheMissCounter = 0;
 
     public fun checkIsSubsumed(expr: DLExpression, superExpression: DLExpression): Boolean {
+        val cacheEntry = entailmentCache[Pair(expr, superExpression)];
+        if(cacheEntry != null){
+            entailmentCacheHitCounter++;
+            return cacheEntry
+        }
+        entailmentCacheMissCounter++;
         val subex = expressionBuilder.createSubsumptionExpression(expr, superExpression);
-        return reasoner.isEntailed(subex);
+        val isEntailed = reasoner.isEntailed(subex);
+        entailmentCache[Pair(expr, superExpression)] = isEntailed;
+        return isEntailed;
+    }
+
+    public fun checkPropertySubsumption(property: OWLObjectPropertyExpression, superProperty: OWLObjectPropertyExpression): Boolean {
+        val cacheEntry = propertySubsumptionCache[Pair(property, superProperty)];
+        if(cacheEntry != null){
+            propertySubsumptionCacheHitCounter++;
+            return cacheEntry
+        }
+        val subex = expressionBuilder.createPropertySubsumptionExpression(property, superProperty);
+        val isEntailed = reasoner.isEntailed(subex);
+        propertySubsumptionCache[Pair(property, superProperty)] = isEntailed;
+        return isEntailed;
     }
 
     public fun calculateSuperProperties(property: OWLObjectPropertyExpression): NodeSet<OWLObjectPropertyExpression> {
@@ -80,5 +109,11 @@ class DLReasoner(
 
     fun calculateEquivalentClasses(expr: DLExpression): Node<OWLClass> {
         return reasoner.getEquivalentClasses(expr.getClassExpression());
+    }
+
+    fun clearCache() {
+        superClassCache.clear();
+        equivalentClassCache.clear();
+        subsumptionCache.clear();
     }
 }

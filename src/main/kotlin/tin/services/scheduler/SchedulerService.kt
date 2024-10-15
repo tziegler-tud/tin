@@ -26,7 +26,7 @@ class SchedulerService(
 
 
     // every 5sec, check for a scheduled queryTask to process
-    @Scheduled(cron = "0/5 * * * * *")
+    @Scheduled(cron = "0/50 * * * * *")
     @Transactional
     fun checkForQueryTask() {
         // get the oldest queryTask

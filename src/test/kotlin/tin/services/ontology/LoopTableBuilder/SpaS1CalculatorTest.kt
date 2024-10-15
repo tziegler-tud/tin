@@ -50,14 +50,14 @@ class SpaS1CalculatorTest {
     @Test
     fun testCalculation(){
         val manager = loadExampleOntology();
-        val reasoner = manager.loadReasoner(OntologyManager.BuildInReasoners.HERMIT)
-        val expressionBuilder = manager.getExpressionBuilder();
-        val dlReasoner = DLReasoner(reasoner, expressionBuilder);
 
-        val query = readQueryWithFileReaderService("test2.txt")
-        val transducer = readTransducerWithFileReaderService("test2.txt")
+        val query = readQueryWithFileReaderService("spaCalculation/S1/test_spaS1_1.txt")
+        val transducer = readTransducerWithFileReaderService("spaCalculation/S1/test_spaS1_1.txt")
 
         val ec = manager.createExecutionContext(ExecutionContextType.LOOPTABLE);
+
+        val dlReasoner = ec.dlReasoner
+        val expressionBuilder = ec.expressionBuilder
         val queryParser = ec.parser;
         val shortFormProvider = ec.shortFormProvider;
         val restrictionBuilder = ec.restrictionBuilder;
@@ -78,6 +78,7 @@ class SpaS1CalculatorTest {
         val entry = SPALoopTableEntry(Pair(s0,t0), Pair(s3,t0),M);
 
         val entry2 = SPALoopTableEntry(Pair(s0,t0), Pair(s2,t0),M);
+        val entry3 = SPALoopTableEntry(Pair(s1,t0), Pair(s3,t0),M);
 
 
         //create empty loop table
@@ -86,7 +87,6 @@ class SpaS1CalculatorTest {
         val M1 = restrictionBuilder.createConceptNameRestriction("Flour");
         table.set(SPALoopTableEntry(Pair(s1,t0),Pair(s2,t0), M1), 2)
 
-
         val result = s1Calculator.calculate(entry, table);
         assert(result == 7); // 2 + 2 + 3
         table.set(entry, result!!);
@@ -94,10 +94,12 @@ class SpaS1CalculatorTest {
         assert(table.get(entry) == result)
 
         val result2 = s1Calculator.calculate(entry2, table);
-        assert(result2 == 7); // 2 + 0 + 3
-        table.set(entry2, result2!!);
+        assert(result2 == null); // no path found
         assert(table.get(entry2) == result2)
 
+        val result3 = s1Calculator.calculate(entry3, table);
+        assert(result3 == null); // 3 + 0 + 4
+        assert(table.get(entry3) == result3)
     }
 
 }

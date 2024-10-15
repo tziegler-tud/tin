@@ -7,6 +7,7 @@ import org.semanticweb.owlapi.model.parameters.Imports
 import org.semanticweb.owlapi.reasoner.OWLReasoner
 import org.semanticweb.owlapi.util.ShortFormProvider
 import org.semanticweb.owlapi.util.SimpleShortFormProvider
+import tin.services.ontology.CachingDLReasoner
 import tin.services.ontology.DLQueryParser
 import tin.services.ontology.DLReasoner
 import tin.services.ontology.OntologyManager
@@ -16,7 +17,7 @@ class OntologyExecutionContext(private val manager: OntologyManager) {
 
     private var ontology = manager.getOntology();
     private var classes = manager.classes;
-    val dlReasoner = DLReasoner(manager.getReasoner() ?: manager.loadReasoner(OntologyManager.BuildInReasoners.HERMIT), manager.getExpressionBuilder())
+    val dlReasoner = CachingDLReasoner(manager.createReasoner(OntologyManager.BuildInReasoners.HERMIT), manager.getExpressionBuilder())
     val expressionBuilder = manager.getExpressionBuilder();
     val parser = manager.getQueryParser();
     val shortFormProvider = manager.getShortFormProvider();

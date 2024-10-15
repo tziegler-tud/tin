@@ -21,4 +21,14 @@ open class ELHIExpression(override val expression: OWLClassExpression): DLExpres
     override fun getRoleNames(): HashSet<OWLPropertyExpression> {
         return HashSet<OWLPropertyExpression>();
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true;
+        if (other !is ELHIExpression) return false;
+        return expression == other.expression;
+    }
+
+    override fun hashCode(): Int {
+        return expression.hashCode();
+    }
 }

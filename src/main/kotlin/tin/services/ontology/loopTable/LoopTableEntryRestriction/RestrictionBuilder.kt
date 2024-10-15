@@ -6,7 +6,11 @@ import org.semanticweb.owlapi.reasoner.impl.OWLClassNode
 import org.semanticweb.owlapi.util.ShortFormProvider
 import tin.model.v2.graph.Node
 import tin.services.ontology.DLQueryParser
+import uk.ac.manchester.cs.owl.owlapi.OWLAnonymousClassExpressionImpl
+import uk.ac.manchester.cs.owl.owlapi.OWLClassExpressionImpl
+import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl
 import uk.ac.manchester.cs.owl.owlapi.OWLObjectIntersectionOfImpl
+import uk.ac.manchester.cs.owl.owlapi.OWLObjectUnionOfImpl
 
 class RestrictionBuilder(private val queryParser: DLQueryParser, private val shortFormProvider: ShortFormProvider) {
 
@@ -41,6 +45,20 @@ class RestrictionBuilder(private val queryParser: DLQueryParser, private val sho
 //    }
 
     fun asClassExpression(conceptNameRestriction: ConceptNameRestriction) : OWLClassExpression {
+        if(conceptNameRestriction.isEmpty()) {
+            throw Error("Cannot create class Expression from empty restriction.")
+        }
+        if(conceptNameRestriction.value.size == 1) {
+            return conceptNameRestriction.value.first();
+        }
         return OWLObjectIntersectionOfImpl(conceptNameRestriction.asList());
+    }
+
+    fun testUnion(conceptNameRestriction: ConceptNameRestriction) : OWLClassExpression {
+        return OWLObjectUnionOfImpl(conceptNameRestriction.asList());
+    }
+
+    fun testNoIntersect(conceptNameRestriction: ConceptNameRestriction): OWLClassExpression {
+        return conceptNameRestriction.asList().first();
     }
 }
