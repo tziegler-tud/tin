@@ -1,0 +1,238 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="http://www.semanticweb.org/tindl/examples/1/pizza2/"
+     xml:base="http://www.semanticweb.org/tindl/examples/1/pizza2/"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+    <owl:Ontology rdf:about="http://www.semanticweb.org/tindl/v1/examples/propertyTest"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.semanticweb.org/tindl/v1/examples/propertyTest#A -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/tindl/v1/examples/propertyTest#A"/>
+    
+
+
+    <!-- http://www.semanticweb.org/tindl/v1/examples/propertyTest#A1 -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/tindl/v1/examples/propertyTest#A1">
+        <rdfs:subPropertyOf rdf:resource="http://www.semanticweb.org/tindl/v1/examples/propertyTest#A"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/tindl/v1/examples/propertyTest#A11 -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/tindl/v1/examples/propertyTest#A11">
+        <rdfs:subPropertyOf rdf:resource="http://www.semanticweb.org/tindl/v1/examples/propertyTest#A1"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/tindl/v1/examples/propertyTest#A111 -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/tindl/v1/examples/propertyTest#A111">
+        <rdfs:subPropertyOf rdf:resource="http://www.semanticweb.org/tindl/v1/examples/propertyTest#A11"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/tindl/v1/examples/propertyTest#A1111 -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/tindl/v1/examples/propertyTest#A1111">
+        <rdfs:subPropertyOf rdf:resource="http://www.semanticweb.org/tindl/v1/examples/propertyTest#A111"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/tindl/v1/examples/propertyTest#A112 -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/tindl/v1/examples/propertyTest#A112">
+        <rdfs:subPropertyOf rdf:resource="http://www.semanticweb.org/tindl/v1/examples/propertyTest#A11"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/tindl/v1/examples/propertyTest#A12 -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/tindl/v1/examples/propertyTest#A12">
+        <rdfs:subPropertyOf rdf:resource="http://www.semanticweb.org/tindl/v1/examples/propertyTest#A1"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/tindl/v1/examples/propertyTest#A121 -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/tindl/v1/examples/propertyTest#A121">
+        <rdfs:subPropertyOf rdf:resource="http://www.semanticweb.org/tindl/v1/examples/propertyTest#A12"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/tindl/v1/examples/propertyTest#A13 -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/tindl/v1/examples/propertyTest#A13">
+        <rdfs:subPropertyOf rdf:resource="http://www.semanticweb.org/tindl/v1/examples/propertyTest#A1"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/tindl/v1/examples/propertyTest#A131 -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/tindl/v1/examples/propertyTest#A131">
+        <rdfs:subPropertyOf rdf:resource="http://www.semanticweb.org/tindl/v1/examples/propertyTest#A13"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/tindl/v1/examples/propertyTest#A2 -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/tindl/v1/examples/propertyTest#A2">
+        <rdfs:subPropertyOf rdf:resource="http://www.semanticweb.org/tindl/v1/examples/propertyTest#A"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/tindl/v1/examples/propertyTest#A21 -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/tindl/v1/examples/propertyTest#A21">
+        <rdfs:subPropertyOf rdf:resource="http://www.semanticweb.org/tindl/v1/examples/propertyTest#A2"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/tindl/v1/examples/propertyTest#A22 -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/tindl/v1/examples/propertyTest#A22">
+        <rdfs:subPropertyOf rdf:resource="http://www.semanticweb.org/tindl/v1/examples/propertyTest#A2"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/tindl/v1/examples/propertyTest#A23 -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/tindl/v1/examples/propertyTest#A23">
+        <rdfs:subPropertyOf rdf:resource="http://www.semanticweb.org/tindl/v1/examples/propertyTest#A2"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/tindl/v1/examples/propertyTest#A3 -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/tindl/v1/examples/propertyTest#A3">
+        <rdfs:subPropertyOf rdf:resource="http://www.semanticweb.org/tindl/v1/examples/propertyTest#A"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/tindl/v1/examples/propertyTest#ABC -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/tindl/v1/examples/propertyTest#ABC">
+        <rdfs:subPropertyOf rdf:resource="http://www.semanticweb.org/tindl/v1/examples/propertyTest#A"/>
+        <rdfs:subPropertyOf rdf:resource="http://www.semanticweb.org/tindl/v1/examples/propertyTest#B"/>
+        <rdfs:subPropertyOf rdf:resource="http://www.semanticweb.org/tindl/v1/examples/propertyTest#C"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/tindl/v1/examples/propertyTest#B -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/tindl/v1/examples/propertyTest#B"/>
+    
+
+
+    <!-- http://www.semanticweb.org/tindl/v1/examples/propertyTest#B1 -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/tindl/v1/examples/propertyTest#B1">
+        <rdfs:subPropertyOf rdf:resource="http://www.semanticweb.org/tindl/v1/examples/propertyTest#B"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/tindl/v1/examples/propertyTest#B11 -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/tindl/v1/examples/propertyTest#B11">
+        <rdfs:subPropertyOf rdf:resource="http://www.semanticweb.org/tindl/v1/examples/propertyTest#B1"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/tindl/v1/examples/propertyTest#B12 -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/tindl/v1/examples/propertyTest#B12">
+        <rdfs:subPropertyOf rdf:resource="http://www.semanticweb.org/tindl/v1/examples/propertyTest#B1"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/tindl/v1/examples/propertyTest#B13 -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/tindl/v1/examples/propertyTest#B13">
+        <rdfs:subPropertyOf rdf:resource="http://www.semanticweb.org/tindl/v1/examples/propertyTest#B1"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/tindl/v1/examples/propertyTest#B2 -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/tindl/v1/examples/propertyTest#B2">
+        <rdfs:subPropertyOf rdf:resource="http://www.semanticweb.org/tindl/v1/examples/propertyTest#B"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/tindl/v1/examples/propertyTest#B21 -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/tindl/v1/examples/propertyTest#B21">
+        <rdfs:subPropertyOf rdf:resource="http://www.semanticweb.org/tindl/v1/examples/propertyTest#B2"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/tindl/v1/examples/propertyTest#B22 -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/tindl/v1/examples/propertyTest#B22">
+        <rdfs:subPropertyOf rdf:resource="http://www.semanticweb.org/tindl/v1/examples/propertyTest#B2"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/tindl/v1/examples/propertyTest#B3 -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/tindl/v1/examples/propertyTest#B3">
+        <rdfs:subPropertyOf rdf:resource="http://www.semanticweb.org/tindl/v1/examples/propertyTest#B"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/tindl/v1/examples/propertyTest#B31 -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/tindl/v1/examples/propertyTest#B31">
+        <rdfs:subPropertyOf rdf:resource="http://www.semanticweb.org/tindl/v1/examples/propertyTest#B3"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/tindl/v1/examples/propertyTest#C -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/tindl/v1/examples/propertyTest#C"/>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 4.5.26.2023-07-17T20:34:13Z) https://github.com/owlcs/owlapi -->
+
