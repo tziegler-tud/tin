@@ -19,8 +19,9 @@ class SPALoopTableBuilder (
 
 {
     private var table: SPALoopTable = SPALoopTable();
+    private var updateTable: SPALoopTable = SPALoopTable();
     // prepare ontology execution context
-    private val ec = ontologyManager.createExecutionContext(ExecutionContextType.LOOPTABLE);
+    private val ec = ontologyManager.createExecutionContext(ExecutionContextType.LOOPTABLE, false);
     private val dlReasoner = ec.dlReasoner;
     private val expressionBuilder = ec.expressionBuilder;
     private val queryParser = ec.parser;
@@ -37,7 +38,7 @@ class SPALoopTableBuilder (
     private val s2Calculator = SpaS2Calculator(ec, queryGraph, transducerGraph)
     private val s3Calculator = SpaS3Calculator(ec, queryGraph, transducerGraph)
 
-    private val maxIterationDepth = calculateMaxIterationDepth();
+    public val maxIterationDepth = calculateMaxIterationDepth();
 
 
     init {
@@ -99,8 +100,6 @@ class SPALoopTableBuilder (
 
     fun calculateNextIteration(){
 
-        println("Calculating iteration...")
-
         var counter : Int;
 
         //for each (p,q,M), perform S1 step
@@ -125,14 +124,48 @@ class SPALoopTableBuilder (
         calculateS3V2();
     }
 
-    fun calculateNextIterationV2(){
-
-        println("Calculating iteration...")
+    fun calculateFirstIterationV2(){
 
         var counter : Int;
 
-        table = calculateS1V2();
-        calculateS3V2();
+        updateTable = calculateS1V2(true);
+        updateTable.map.forEach { (entry, value) ->
+            table.set(entry, value);
+        }
+
+        val updateMap = calculateS3V2();
+        updateMap.forEach { (entry, value) ->
+            val current = table.get(entry)
+            if(current == null || value < current) {
+                updateTable.set(entry, value)
+                table.set(entry, value);
+            };
+        }
+    }
+
+    fun calculateNextIterationV2() : Boolean {
+
+        var counter : Int;
+
+        updateTable = calculateS1V2(false);
+        updateTable.map.forEach { (entry, value) ->
+            table.set(entry, value);
+        }
+
+        //if nothing changed, no need to run S3 rule again
+        //TODO: do we even have to continue in this case? Is one iteration without changes enough to abort?
+        //TODO: This is important!
+        if(updateTable.map.isEmpty()) return false
+
+        val updateMap = calculateS3V2();
+        updateMap.forEach { (entry, value) ->
+            val current = table.get(entry)
+            if(current == null || value < current) {
+                updateTable.set(entry, value)
+                table.set(entry, value);
+            };
+        }
+        return true;
     }
 
     fun calculateFullTable(): SPALoopTable {
@@ -143,12 +176,37 @@ class SPALoopTableBuilder (
 
         //depth 0
 
+        updateTable = SPALoopTable(table.map);
+        println("Calculating iteration 1 / ${maxIterationDepth}")
+        calculateFirstIterationV2();
 
-        for(i in 1..200) {
+
+        for(i in 2..maxIterationDepth) {
             println("Calculating iteration ${i} / ${maxIterationDepth}")
-            calculateNextIterationV2();
+            val hasChanged = calculateNextIterationV2();
+            if(!hasChanged) return table;
         }
 
+        return table;
+    }
+
+    fun calculateWithDepthLimit(limit: Int): SPALoopTable {
+        //iterate until max iterations are reached
+        println("Calculating loop table for paths up to depth ${limit}...")
+        initializeTable();
+
+        calculateInitialStep();
+
+        updateTable = SPALoopTable(table.map);
+        //depth 0
+
+        println("Calculating iteration 1 / ${maxIterationDepth}")
+        calculateFirstIterationV2();
+
+        for(i in 2..limit) {
+            println("Calculating iteration ${i} / ${limit}")
+            calculateNextIterationV2();
+        }
         return table;
     }
 
@@ -187,8 +245,8 @@ class SPALoopTableBuilder (
         return result;
     }
 
-    private fun calculateS1V2() : SPALoopTable {
-        val result = s1Calculator.calculateAllV2(table);
+    private fun calculateS1V2(isInitialIteration: Boolean) : SPALoopTable {
+        val result = s1Calculator.calculateAllV2(table, updateTable, isInitialIteration);
         return result;
     }
 
@@ -209,12 +267,10 @@ class SPALoopTableBuilder (
         }
     }
 
-    private fun calculateS3V2() {
+    private fun calculateS3V2(): Map<SPALoopTableEntry, Int> {
         val updatedMap = s3Calculator.calculateAllV2(table);
         //contains <spaEntry , Int> pairs that need to be updated in the loop table
-        updatedMap.forEach { (entry, value) ->
-            table.set(entry, value);
-        }
+        return updatedMap;
     }
 
     public fun getExecutionContext(): OntologyExecutionContext {

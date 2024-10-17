@@ -320,7 +320,19 @@ class DLReasonerTest {
 
     }
 
+    @Test
+    fun testCachePrewarming() {
+        val manager = loadExampleOntology("pizza2_test.rdf");
+        val ec = manager.createExecutionContext(ExecutionContextType.LOOPTABLE, true);
 
+        val dlReasoner = ec.dlReasoner;
+        val expressionBuilder = ec.expressionBuilder
+        val restrictionBuilder = ec.restrictionBuilder
+        val queryParser = ec.parser
 
-
+        //cache size should be |roles| x |tailsets|
+        assert(dlReasoner.subClassCache.size == ec.getRoles().size * ec.tailsetsAsClasses.size);
+        //cache hits should be 0
+        assert(dlReasoner.subClassCacheHitCounter == 0);
+    }
 }

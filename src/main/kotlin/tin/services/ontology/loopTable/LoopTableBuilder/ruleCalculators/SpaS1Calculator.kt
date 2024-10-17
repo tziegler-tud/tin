@@ -443,7 +443,7 @@ class SpaS1Calculator(
     /**
      * calculates the updated value for all entries (s,t),(s',t'),M
      */
-    fun calculateAllV2(table: SPALoopTable): SPALoopTable {
+    fun calculateAllV2(table: SPALoopTable, updateTable: SPALoopTable, isInitialIteration: Boolean = true): SPALoopTable {
 
         val topClassNode = dlReasoner.getTopClassNode();
         val owlTopClassRestriction =
@@ -451,6 +451,10 @@ class SpaS1Calculator(
 
         val roles = ec.getRoles();
         val roleNames = ec.getRoleNames();
+
+        val newTable = SPALoopTable()
+
+        if(updateTable.map.isEmpty()) return newTable;
 
         var costCutoff: Int? = null;
 
@@ -500,56 +504,71 @@ class SpaS1Calculator(
 
                                         var candidateResultList: List<Pair<OWLClassExpression, Int>> = mutableListOf();
 
-                                        if(candidateQuerySource == candidateQueryTarget && candidateTransducerSource == candidateTransducerTarget) {
+                                        //only add (s,t,)(s,t),0 candidates for initial iteration (cannot be improved later on)
+                                        if(isInitialIteration && candidateQuerySource == candidateQueryTarget && candidateTransducerSource == candidateTransducerTarget) {
                                             val mutableList: MutableList<Pair<OWLClassExpression, Int>> = mutableListOf()
-                                            ec.tailsets!!.forEach { tailset ->
-                                                val restriction = restrictionBuilder.createConceptNameRestrictionFromStringSet(tailset)
-                                                mutableList.add(Pair(restrictionBuilder.asClassExpression(restriction), 0))
+                                            ec.tailsetsAsClasses.forEach { tailset ->
+                                                mutableList.add(Pair(expressionBuilder.createClassExpression(tailset), 0))
                                             }
                                             candidateResultList = mutableList;
                                         }
                                         else {
-                                            val candidateMap = table.getWithSourceAndTarget(
+                                            val candidateMap = updateTable.getWithSourceAndTarget(
                                                 Pair(candidateQuerySource, candidateTransducerSource), Pair(candidateQueryTarget, candidateTransducerTarget), costCutoff).map.toMutableMap()
 
                                             if(candidateMap.isEmpty()) return@candidateTransducerTarget
 
                                             //create optimized map to use from here. We only need class expression and value
                                             candidateResultList = candidateMap.map { (entry, v) ->
-                                                val candidateRestriction = entry.restriction;
-                                                //build class expressions
-                                                val M1ClassExp = restrictionBuilder.asClassExpression(candidateRestriction);
-                                                Pair(M1ClassExp, v)
+                                                Pair(restrictionBuilder.asClassExpression(entry.restriction), v)
                                             }.sortedBy{it.second}
                                         }
+
+                                        if(candidateResultList.isEmpty()) return@candidateTransducerTarget
 
                                         //find valid role names R s.t. R <= R' and R- <= R''
                                         //for each R, we only keep the best R' and R''
                                         val candidateEdgeMap: MutableMap<OWLObjectProperty, Pair<TransducerEdge, TransducerEdge>> = mutableMapOf()
 
                                         roles.forEach roles@ { role ->
-                                            sortedTransducerEdgesDown.forEach down@ { down ->
-                                                val downProperty =
-                                                    queryParser.getOWLObjectPropertyExpression(down.label.outgoing) ?: return@roles
-                                                val downEntailed = dlReasoner.checkPropertySubsumption(role, downProperty);
-                                                if(!downEntailed) return@down
-
-                                                sortedTransducerEdgesUp.forEach up@{ up ->
-                                                    //eliminate pair if combined cost is > costCutoff
-//                                                    if(remainingCost != null) {
-//                                                        if(down.label.cost + up.label.cost > remainingCost) return@up;
-//                                                    }
-
-                                                    val upProperty =
-                                                        queryParser.getOWLObjectPropertyExpression(up.label.outgoing) ?: return@roles
-                                                    val upEntailed = dlReasoner.checkPropertySubsumption(role.inverseProperty, upProperty)
-                                                    if(!upEntailed) return@up
-
-                                                    // store pair and move to next role
-                                                    candidateEdgeMap[role] = Pair(down, up);
-                                                    return@roles;
+                                            var downEdge: TransducerEdge? = null;
+                                            var upEdge: TransducerEdge? = null;
+                                            run downIterator@ {
+                                                sortedTransducerEdgesDown.forEach down@{ down ->
+                                                    val downProperty =
+                                                        queryParser.getOWLObjectPropertyExpression(down.label.outgoing)
+                                                            ?: return@down
+                                                    val downEntailed =
+                                                        dlReasoner.checkPropertySubsumption(role, downProperty);
+                                                    if (downEntailed) {
+                                                        downEdge = down;
+                                                        // we could exit the for loop at this point because the set was ordered
+                                                        return@downIterator
+                                                    }
                                                 }
                                             }
+
+
+                                            if (downEdge == null) return@roles;
+
+                                            run upIterator@ {
+                                                sortedTransducerEdgesUp.forEach up@{ up ->
+                                                    val upProperty =
+                                                        queryParser.getOWLObjectPropertyExpression(up.label.outgoing)
+                                                            ?: return@up
+                                                    val upEntailed = dlReasoner.checkPropertySubsumption(
+                                                        role.inverseProperty,
+                                                        upProperty
+                                                    )
+                                                    if (upEntailed) {
+                                                        upEdge = up;
+                                                        return@upIterator
+                                                    }
+                                                }
+                                            }
+
+                                            if (upEdge == null) return@roles;
+                                            candidateEdgeMap[role] = Pair(downEdge!!, upEdge!!);
                                         }
 
                                         if(candidateEdgeMap.isEmpty()) return@candidateTransducerTarget
@@ -577,18 +596,18 @@ class SpaS1Calculator(
 //                                                if(tcCounter == 10) return@transducerTarget
 
                                                 //calculate basic class that are subsumed by A <= €R.M1
-                                                val atomicSubsumers = dlReasoner.calculateSubClasses(rM1Exp)
+//                                                val atomicSubsumers = dlReasoner.calculateSubClasses(rM1Exp)
 
-                                                if(atomicSubsumers.isEmpty) return@candidates;
+//                                                if(atomicSubsumers.isEmpty()) return@candidates;
 
-                                                ec.tailsetsAsClasses!!.forEach tailsets@{ tailset ->
-
-                                                    tailset.forEach atomics@{ owlClass ->
-                                                        if(!atomicSubsumers.containsEntity(owlClass)) {
-                                                            //if an element from M is not an atomic subsumer, the tailset is unfeasible. No reasoning needed.
-                                                            return@tailsets
-                                                        }
-                                                    }
+                                                ec.tailsetsAsClasses.forEach tailsets@{ tailset ->
+//                                                    tailset.forEach atomics@{ owlClass ->
+//                                                        if(!atomicSubsumers.contains(owlClass)) return@tailsets
+////                                                        if(!atomicSubsumers.containsEntity(owlClass)) {
+////                                                            //if an element from M is not an atomic subsumer, the tailset is unfeasible. No reasoning needed.
+////                                                            return@tailsets
+////                                                        }
+//                                                    }
                                                     val restriction =
                                                         restrictionBuilder.createConceptNameRestriction(tailset)
 
@@ -632,7 +651,7 @@ class SpaS1Calculator(
                                                         if (isEntailed) {
                                                             //everything in place, this is valid rule application
                                                             //update entry with final value
-                                                            table.set(entry, result);
+                                                            newTable.set(entry, result);
                                                             return@tailsets
                                                         }
                                                     }
@@ -647,7 +666,7 @@ class SpaS1Calculator(
                 }
             }
         }
-        return table;
+        return newTable;
     }
 
     private fun getCandidateEdges(querySource: Node, queryTarget: Node, transducerSource: Node, transducerTarget: Node, maxCost: Int?): Pair<List<QueryEdge>, List<TransducerEdge>>? {
@@ -671,7 +690,7 @@ class SpaS1Calculator(
         else {
             candidateTransducerEdges = candidateTransducerEdges.filter { transEdge ->
                 candidateQueryTransitions.contains(QueryEdgeLabel(transEdge.label.incoming)) &&
-                        transEdge.label.outgoing.isConceptAssertion() &&
+                        !transEdge.label.outgoing.isConceptAssertion() &&
                         transEdge.label.cost <= maxCost;
             }
         }

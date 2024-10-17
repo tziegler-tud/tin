@@ -9,10 +9,12 @@ import tin.model.v2.transducer.TransducerGraph
 import tin.services.internal.fileReaders.*
 import tin.services.internal.fileReaders.fileReaderResult.FileReaderResult
 import tin.services.ontology.DLReasoner
+import tin.services.ontology.OntologyExecutionContext.ExecutionContextType
 import tin.services.ontology.OntologyManager
 import tin.services.ontology.loopTable.LoopTableBuilder.SPALoopTableBuilder
 import tin.services.technical.SystemConfigurationService
 import java.io.File
+import kotlin.time.TimeSource
 
 @SpringBootTest
 @TestConfiguration
@@ -39,7 +41,8 @@ class SpaLoopTableTest {
     }
 
     fun loadExampleOntology() : OntologyManager {
-        val exampleFile = readWithFileReaderService("pizza2_test.rdf").get()
+        val exampleFile = readWithFileReaderService("pizza2.rdf").get()
+//        val exampleFile = readWithFileReaderService("univ-bench.owl.rdf").get()
         val manager = OntologyManager(exampleFile);
         return manager
     }
@@ -62,15 +65,39 @@ class SpaLoopTableTest {
     @Test
     fun testLoopTableConstruction(){
         val manager = loadExampleOntology();
-        val reasoner = manager.createReasoner(OntologyManager.BuildInReasoners.HERMIT)
-        val expressionBuilder = manager.getExpressionBuilder();
-        val dlReasoner = DLReasoner(reasoner, expressionBuilder);
+
+
 
         val query = readQueryWithFileReaderService("spaCalculation/table/test1.txt")
         val transducer = readTransducerWithFileReaderService("spaCalculation/table/test1.txt")
 
+        val iterationLimit = 2000
+
+        val timeSource = TimeSource.Monotonic
+        val initialTime = timeSource.markNow()
+
         val builder = SPALoopTableBuilder(query.graph, transducer.graph, manager);
+
+        val startTime = timeSource.markNow()
+
+//        builder.calculateWithDepthLimit(iterationLimit);
         builder.calculateFullTable();
+
+        val endTime = timeSource.markNow()
+
+        val prewarmTime = startTime - initialTime;
+        val iterationTime = endTime - startTime;
+        val timePerIteration = iterationTime / iterationLimit;
+        val totalTime = endTime - initialTime;
+
+        val estimatedTotalTime = timePerIteration * builder.maxIterationDepth;
+
+        println("Total computation time: " + totalTime)
+        println("Cache prewarming: " + prewarmTime)
+        println("Iteration computation time: " + iterationTime)
+        println("Time per iteration: " + timePerIteration)
+        println("Estimated time to build complete table: " + estimatedTotalTime)
+
         println("Superclass Cache Size: " + builder.getExecutionContext().dlReasoner.superClassCache.size)
         println("Superclass Cache Hits: " + builder.getExecutionContext().dlReasoner.superClassCacheHitCounter)
 

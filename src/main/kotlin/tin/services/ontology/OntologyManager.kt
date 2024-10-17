@@ -160,7 +160,7 @@ class OntologyManager(val file: File) {
         return classIris;
     }
 
-    fun createExecutionContext(executionContextType: ExecutionContextType) : OntologyExecutionContext {
-        return executionContextFactory.create(executionContextType, this);
+    fun createExecutionContext(executionContextType: ExecutionContextType, prewarmCaches: Boolean = false) : OntologyExecutionContext {
+        return executionContextFactory.create(executionContextType, this, prewarmCaches);
     }
 }

@@ -17,6 +17,7 @@ class OntologyExecutionContext(private val manager: OntologyManager) {
 
     private var ontology = manager.getOntology();
     private var classes = manager.classes;
+    private var properties = manager.properties;
     val dlReasoner = CachingDLReasoner(manager.createReasoner(OntologyManager.BuildInReasoners.HERMIT), manager.getExpressionBuilder())
     val expressionBuilder = manager.getExpressionBuilder();
     val parser = manager.getQueryParser();
@@ -24,13 +25,28 @@ class OntologyExecutionContext(private val manager: OntologyManager) {
     val manchesterShortFormProvider = manager.manchesterShortFormProvider;
     val restrictionBuilder = manager.getRestrictionBuilder();
 
-    var tailsets: HashSet<HashSet<String>>? = null;
-    var tailsetsAsClasses: HashSet<HashSet<OWLClass>>? = null;
-    fun prepareForLoopTableConstruction(){
+    var tailsets: HashSet<HashSet<String>>? = hashSetOf();
+    var tailsetsAsClasses: HashSet<HashSet<OWLClass>> = hashSetOf();
+    fun prepareForLoopTableConstruction(prewarmCaches: Boolean = false){
         //create a new instance
         tailsets = computeTailSets();
         tailsetsAsClasses = computeTailSetsAsOWLClass();
         //nothing to do for now
+
+        if(prewarmCaches) {
+            println("ExecutionContext: Prewarming subsumption Cache...")
+            //prewarm property subsumption cache
+            tailsetsAsClasses.forEach { tailset ->
+                properties.forEach { property ->
+                    val restriction = restrictionBuilder.createConceptNameRestriction(tailset)
+                    val classExp = restrictionBuilder.asClassExpression(restriction)
+                    val rM1 = expressionBuilder.createExistentialRestriction(property, classExp)
+                    val rM1Exp = expressionBuilder.createELHIExpression(rM1);
+                    dlReasoner.calculateSubClasses(rM1Exp)
+                }
+            }
+            println("ExecutionContext: Prewarming subsumption Cache finished. Cache size: ${dlReasoner.subClassCache.size}");
+        }
     }
 
     private fun computeTailSets(): HashSet<HashSet<String>>{

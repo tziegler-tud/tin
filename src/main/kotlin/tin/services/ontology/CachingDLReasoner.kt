@@ -12,6 +12,7 @@ import org.semanticweb.owlapi.reasoner.impl.OWLObjectPropertyNode
 import org.semanticweb.owlapi.reasoner.impl.OWLObjectPropertyNodeSet
 import tin.services.ontology.Expressions.DLExpression
 import tin.services.ontology.Expressions.DLExpressionBuilder
+import kotlin.streams.toList
 
 /**
  * wrapper class to provide some high-level utility using the owl reasoner interface
@@ -22,7 +23,7 @@ class CachingDLReasoner(
 ) {
     public val superClassCache: HashMap<DLExpression, NodeSet<OWLClass>> = hashMapOf()
     public val equivalentClassCache: HashMap<DLExpression, Node<OWLClass>> = hashMapOf()
-    public val subClassCache: HashMap<DLExpression, NodeSet<OWLClass>> = hashMapOf()
+    public val subClassCache: HashMap<DLExpression, HashSet<OWLClass>> = hashMapOf()
     public val propertySubsumptionCache: HashMap<Pair<OWLPropertyExpression, OWLPropertyExpression>, Boolean> = hashMapOf()
     public val entailmentCache: HashMap<Pair<DLExpression, DLExpression>, Boolean> = hashMapOf()
 
@@ -73,19 +74,21 @@ class CachingDLReasoner(
         return properties;
     }
 
-    public fun calculateSubClasses(expr: DLExpression): NodeSet<OWLClass> {
+    public fun calculateSubClasses(expr: DLExpression): HashSet<OWLClass> {
         val cacheEntry = subClassCache[expr];
         if(cacheEntry != null){
             subClassCacheHitCounter++;
             return cacheEntry
         }
-        var classes = reasoner.getSubClasses(expr.getClassExpression(), false);
+        var classes = reasoner.getSubClasses(expr.getClassExpression(), false)
         //remove owl:Nothing
         if(classes.isBottomSingleton) {
             classes = OWLClassNodeSet();
         }
-        subClassCache[expr] = classes
-        return classes;
+
+        val hashSet = classes.entities().toList().toHashSet()
+        subClassCache[expr] = hashSet;
+        return hashSet;
     }
 
     fun getTopClassNode(): Node<OWLClass> {

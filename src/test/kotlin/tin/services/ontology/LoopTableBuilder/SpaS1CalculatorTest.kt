@@ -142,7 +142,7 @@ class SpaS1CalculatorTest {
         val M1 = restrictionBuilder.createConceptNameRestriction("Flour");
         table.set(SPALoopTableEntry(Pair(s1,t0),Pair(s2,t0), M1), 2)
 
-        val resultTable = s1Calculator.calculateAllV2(table);
+        val resultTable = s1Calculator.calculateAllV2(table, table, true);
         assert(resultTable.get(entry) == 7); // 2 + 2 + 3
         assert(resultTable.get(entry2) == null); // no path found
         assert(resultTable.get(entry3) == null); // no path found
