@@ -16,6 +16,7 @@ import tin.services.ontology.DLReasoner
 import tin.services.ontology.Expressions.DLExpression
 import tin.services.ontology.Expressions.DLExpressionBuilder
 import tin.services.ontology.OntologyExecutionContext.OntologyExecutionContext
+import tin.services.ontology.loopTable.LoopTableEntryRestriction.ConceptNameRestriction
 import tin.services.ontology.loopTable.LoopTableEntryRestriction.RestrictionBuilder
 import tin.services.ontology.loopTable.SPALoopTable
 import tin.services.ontology.loopTable.loopTableEntry.SPALoopTableEntry
@@ -592,25 +593,36 @@ class SpaS1Calculator(
                                                  * debug line
                                                  */
                                                 tcCounter++;
-//                                                println("Calculating candidate set " + tcCounter + "/ " + candidateMap.size);
-//                                                if(tcCounter == 10) return@transducerTarget
+                                                println("Calculating candidate set " + tcCounter + "/ " + candidateResultList.size);
+//                                                if(tcCounter == 10) return@candidateEdges
 
                                                 //calculate basic class that are subsumed by A <= €R.M1
-//                                                val atomicSubsumers = dlReasoner.calculateSubClasses(rM1Exp)
+                                                val atomicSubsumers = dlReasoner.calculateSubClasses(rM1Exp)
+                                                val complexSubsumers: HashSet<ConceptNameRestriction> = hashSetOf();
+
+                                                val eliminatedSets: HashSet<ConceptNameRestriction> = hashSetOf();
 
 //                                                if(atomicSubsumers.isEmpty()) return@candidates;
 
+                                                /**
+                                                 * Test: build restriction consisting of all concept names
+                                                 */
+                                                val allClasses: ConceptNameRestriction = ConceptNameRestriction();
+                                                ec.getClasses().forEach { owlClass ->
+                                                    allClasses.addElement(owlClass.asOWLClass());
+                                                }
+
+                                                val allClassExpr = expressionBuilder.createELHIExpression(restrictionBuilder.asClassExpression(allClasses))
+                                                val isEntailed = dlReasoner.checkIsSubsumed(allClassExpr, rM1Exp)
+                                                if(!isEntailed) {
+                                                    eliminatedSets.add(allClasses)
+                                                };
+
+
                                                 ec.tailsetsAsClasses.forEach tailsets@{ tailset ->
-//                                                    tailset.forEach atomics@{ owlClass ->
-//                                                        if(!atomicSubsumers.contains(owlClass)) return@tailsets
-////                                                        if(!atomicSubsumers.containsEntity(owlClass)) {
-////                                                            //if an element from M is not an atomic subsumer, the tailset is unfeasible. No reasoning needed.
-////                                                            return@tailsets
-////                                                        }
-//                                                    }
+
                                                     val restriction =
                                                         restrictionBuilder.createConceptNameRestriction(tailset)
-
 
                                                     val entry = SPALoopTableEntry(
                                                         querySource,
@@ -642,17 +654,56 @@ class SpaS1Calculator(
                                                      * This looks strange, but is a little faster than the obvious way to implement this
                                                      */
                                                     if (costCutoff == null || costCutoff > result) {
-                                                        val MClassExp =
-                                                            restrictionBuilder.asClassExpression(restriction);
-                                                        val MExp = expressionBuilder.createELHIExpression(MClassExp);
-                                                        //check if entailed
-                                                        val isEntailed = dlReasoner.checkIsSubsumed(MExp, rM1Exp)
-//                                                        val isEntailed = false
-                                                        if (isEntailed) {
+
+
+                                                        //if all A € M and A in atomicSubsumers, so is M
+                                                        var isSuperSet: Boolean = false;
+                                                        run atomicCheck@ {
+                                                            atomicSubsumers.forEach { atomic ->
+                                                                if (restriction.containsElement(atomic)) {
+                                                                    isSuperSet = true;
+                                                                    return@atomicCheck;
+                                                                }
+                                                            }
+                                                        }
+                                                        var isSuperSet2: Boolean = false;
+                                                        isSuperSet2 = restriction.containsElementFromSet(atomicSubsumers)
+                                                        val isComplexSuperSet = restriction.containsAllElementsFromSet(complexSubsumers);
+                                                        if(!isSuperSet2 == isSuperSet) {
+                                                            println("WATCH OUT WATCH OUT WATCH OUT")
+                                                        }
+
+                                                        if (isSuperSet || isComplexSuperSet) {
                                                             //everything in place, this is valid rule application
                                                             //update entry with final value
                                                             newTable.set(entry, result);
                                                             return@tailsets
+                                                        }
+
+                                                        //if M is a subset of an element in eliminatedSets, it cannot be entailed
+                                                        eliminatedSets.forEach { set ->
+                                                            if(restriction.isSubsetOf(set)) {
+                                                                return@tailsets
+                                                            }
+                                                        }
+
+
+                                                        val MClassExp =
+                                                            restrictionBuilder.asClassExpression(restriction);
+                                                        val MExp = expressionBuilder.createELHIExpression(MClassExp);
+
+                                                        //check if entailed
+                                                        val isEntailed = dlReasoner.checkIsSubsumed(MExp, rM1Exp)
+//                                                        val isEntailed = false
+                                                        if (isEntailed) {
+                                                            complexSubsumers.add(restriction)
+                                                            //everything in place, this is valid rule application
+                                                            //update entry with final value
+                                                            newTable.set(entry, result);
+                                                            return@tailsets
+                                                        }
+                                                        else {
+                                                            eliminatedSets.add(restriction);
                                                         }
                                                     }
                                                 }
