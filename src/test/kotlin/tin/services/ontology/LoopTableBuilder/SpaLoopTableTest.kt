@@ -114,5 +114,65 @@ class SpaLoopTableTest {
 
     }
 
+    @Test
+    fun benchmarkLoopTableConstruction(){
+        val manager = loadExampleOntology();
+
+
+
+        val query = readQueryWithFileReaderService("spaCalculation/table/test1.txt")
+        val transducer = readTransducerWithFileReaderService("spaCalculation/table/test1.txt")
+
+        val iterationLimit = 2000
+
+        val timeSource = TimeSource.Monotonic
+
+
+        val builder = SPALoopTableBuilder(query.graph, transducer.graph, manager);
+        val builderWithCache = SPALoopTableBuilder(query.graph, transducer.graph, manager);
+        val v2Builder = SPALoopTableBuilder(query.graph, transducer.graph, manager);
+
+        val initialTime = timeSource.markNow()
+
+        builderWithCache.prewarmSubsumptionCahce();
+
+
+        val startTime = timeSource.markNow()
+        builder.calculateFullTable();
+        val endTime1 = timeSource.markNow()
+        builderWithCache.calculateFullTable();
+        val endTime2 = timeSource.markNow();
+        v2Builder.calculateFullTableV2();
+        val endTime3 = timeSource.markNow();
+
+
+        val totalTime = endTime2 - initialTime;
+        val prewarmTime = startTime - initialTime;
+        val time1 = endTime1 - startTime;
+        val time2 = endTime2 - endTime1;
+        val time3 = endTime3 - endTime2;
+
+        println("Total computation time: " + totalTime)
+        println("Cache prewarming: " + prewarmTime)
+        println("Build without prewarmed caches: " + time1)
+        println("Build with prewarmed caches: " + time2)
+        println("V2 Builder: " + time3)
+
+        println("Superclass Cache Size: " + builder.getExecutionContext().dlReasoner.superClassCache.size)
+        println("Superclass Cache Hits: " + builder.getExecutionContext().dlReasoner.superClassCacheHitCounter)
+
+        println("Equiv Node Cache Size: " + builder.getExecutionContext().dlReasoner.equivalentClassCache.size)
+        println("Superclass Cache Hits: " + builder.getExecutionContext().dlReasoner.equivNodeCacheHitCounter)
+
+        println("SubClasses Cache Size: " + builder.getExecutionContext().dlReasoner.subClassCache.size)
+        println("SubClasses Cache Hits: " + builder.getExecutionContext().dlReasoner.subClassCacheHitCounter)
+
+        println("Entailment Check Cache Size: " + builder.getExecutionContext().dlReasoner.entailmentCache.size)
+        println("Entailment Cache Hits: " + builder.getExecutionContext().dlReasoner.entailmentCacheHitCounter)
+        println("Entailment Cache Misses: " + builder.getExecutionContext().dlReasoner.entailmentCacheMissCounter)
+
+
+    }
+
 
 }
