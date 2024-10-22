@@ -1,16 +1,19 @@
 package tin.services.ontology.loopTable.LoopTableBuilder.ruleCalculators
 
+import org.semanticweb.owlapi.model.OWLClass
 import tin.model.v2.genericGraph.*
 import tin.model.v2.query.QueryGraph
 import tin.model.v2.graph.Node
 import tin.model.v2.transducer.TransducerGraph
+import tin.services.ontology.OntologyExecutionContext.ExecutionContext
 import tin.services.ontology.OntologyExecutionContext.OntologyExecutionContext
 import tin.services.ontology.loopTable.LoopTableEntryRestriction.ConceptNameRestriction
+import tin.services.ontology.loopTable.LoopTableEntryRestriction.LoopTableEntryRestriction
 import tin.services.ontology.loopTable.SPALoopTable
 import tin.services.ontology.loopTable.loopTableEntry.SPALoopTableEntry
 
 class SpaS3Calculator(
-    private val ec: OntologyExecutionContext,
+    private val ec: ExecutionContext,
     private val queryGraph: QueryGraph,
     private val transducerGraph: TransducerGraph
     ) {
@@ -79,7 +82,7 @@ class SpaS3Calculator(
         val updateMap: MutableMap<SPALoopTableEntry, Int> = mutableMapOf();
 
         //build a graph for each M
-        val graphMap: HashMap<ConceptNameRestriction, GenericGraph> = hashMapOf()
+        val graphMap: HashMap<LoopTableEntryRestriction<OWLClass>, GenericGraph> = hashMapOf()
 
         val pairNodes: MutableList<PairNode> = mutableListOf();
 

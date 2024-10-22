@@ -21,6 +21,8 @@ class ELHIExecutionContext(private val manager: OntologyManager) : ExecutionCont
 
     val tailsetMaximum: ULong = pow(2, classes.size);
 
+    override val tailsetSize = tailsetMaximum;
+
     fun prepareForLoopTableConstruction(prewarmCaches: Boolean = false){
         if(prewarmCaches) {
             prewarmSubsumptionCache();
@@ -41,7 +43,7 @@ class ELHIExecutionContext(private val manager: OntologyManager) : ExecutionCont
         }
     }
 
-    fun prewarmSubsumptionCache(){
+    override fun prewarmSubsumptionCache(){
         println("ExecutionContext: Prewarming subsumption Cache...")
         //prewarm property subsumption cache
         for (i in 1UL..tailsetMaximum)

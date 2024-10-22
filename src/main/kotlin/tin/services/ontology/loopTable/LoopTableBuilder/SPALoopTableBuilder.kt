@@ -3,6 +3,7 @@ package tin.services.ontology.loopTable.LoopTableBuilder
 import tin.model.v2.query.QueryGraph
 import tin.model.v2.graph.Node
 import tin.model.v2.transducer.TransducerGraph
+import tin.services.ontology.OntologyExecutionContext.ExecutionContext
 import tin.services.ontology.OntologyExecutionContext.ExecutionContextType
 import tin.services.ontology.OntologyExecutionContext.OntologyExecutionContext
 import tin.services.ontology.OntologyManager
@@ -20,7 +21,7 @@ class SPALoopTableBuilder (
     private var table: SPALoopTable = SPALoopTable();
     private var updateTable: SPALoopTable = SPALoopTable();
     // prepare ontology execution context
-    private val ec = ontologyManager.createExecutionContext(ExecutionContextType.LOOPTABLE, false);
+    private val ec = ontologyManager.createExecutionContext(ExecutionContextType.ELHI, false);
     private val dlReasoner = ec.dlReasoner;
     private val expressionBuilder = ec.expressionBuilder;
     private val queryParser = ec.parser;
@@ -30,8 +31,7 @@ class SPALoopTableBuilder (
 
     private val finished: Boolean = false;
 
-    private val pairsAvailable = mutableSetOf<Pair<Node, Node>>();
-    private val tailsets = ec.tailsets!!;
+    private val pairsAvailable = mutableSetOf<Pair<Node, Node>>()
 
     private val s1Calculator = SpaS1Calculator(ec, queryGraph, transducerGraph)
     private val s2Calculator = SpaS2Calculator(ec, queryGraph, transducerGraph)
@@ -52,7 +52,7 @@ class SPALoopTableBuilder (
     private fun calculateMaxIterationDepth() : Int {
         //calculate iteration depth based on ontology signature
         val queryTransSize = queryGraph.nodes.size * transducerGraph.nodes.size;
-        return queryTransSize * queryTransSize * ec.tailsets!!.size;
+        return queryTransSize * queryTransSize * ec.tailsetSize.toInt();
     }
 
     private fun initializeTable(){
@@ -185,7 +185,7 @@ class SPALoopTableBuilder (
         return updatedMap;
     }
 
-    public fun getExecutionContext(): OntologyExecutionContext {
+    public fun getExecutionContext(): ExecutionContext {
         return ec;
     }
 }

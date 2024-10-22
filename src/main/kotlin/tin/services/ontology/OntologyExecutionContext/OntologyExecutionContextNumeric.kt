@@ -21,6 +21,7 @@ class OntologyExecutionContextNumeric(private val manager: OntologyManager) {
 
     var tailsets: HashSet<HashSet<String>>? = hashSetOf();
     var tailsetsAsClasses: HashSet<HashSet<OWLClass>> = hashSetOf();
+
     fun prepareForLoopTableConstruction(prewarmCaches: Boolean = false){
         //create a new instance
         tailsets = computeTailSets();

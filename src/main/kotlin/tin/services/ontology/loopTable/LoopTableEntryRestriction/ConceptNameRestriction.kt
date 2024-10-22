@@ -21,11 +21,19 @@ class ConceptNameRestriction() : SetLoopTableEntryRestriction<OWLClass> {
         return value.contains(element);
     }
 
-    fun containsElementFromSet(set: Set<OWLClass>) : Boolean {
+    override fun containsElementFromSet(set: Set<OWLClass>) : Boolean {
         return value.any { o -> set.contains(o) };
     }
 
-    fun containsAllElementsFromSet(set: Set<ConceptNameRestriction>) : Boolean {
+    override fun containsAllElementsFromSet(set: Set<OWLClass>) : Boolean {
+        set.forEach set@{ owlClass ->
+            if(!this.containsElement(owlClass)) return@set;
+            return true;
+        }
+        return false;
+    }
+
+    override fun containsAllElementsFromOneOf(set: Set<LoopTableEntryRestriction<OWLClass>>) : Boolean {
         set.forEach set@{ res ->
             if(res == this) return true;
             res.asSet().forEach { owlClass ->
@@ -39,18 +47,20 @@ class ConceptNameRestriction() : SetLoopTableEntryRestriction<OWLClass> {
     /**
      * returns true if this is a subset of the given restriction
      */
-    fun isSubsetOf(restriction: ConceptNameRestriction) : Boolean {
+    override fun isSubsetOf(restriction: LoopTableEntryRestriction<OWLClass>) : Boolean {
+        if(restriction !is ConceptNameRestriction) throw Error("Unable to perform this operation on objects other than ConceptNameRestriction!")
         return restriction.value.containsAll(this.value);
     }
 
     /**
      * returns true if this is a superset of the given restriction
      */
-    fun isSupersetOf(restriction: ConceptNameRestriction) : Boolean {
+    override fun isSupersetOf(restriction: LoopTableEntryRestriction<OWLClass>) : Boolean {
+        if(restriction !is ConceptNameRestriction) throw Error("Unable to perform this operation on objects other than ConceptNameRestriction!")
         return value.containsAll(restriction.value)
     }
 
-    fun addElement(element: OWLClass): Boolean {
+    override fun addElement(element: OWLClass): Boolean {
         return value.add(element);
     }
 

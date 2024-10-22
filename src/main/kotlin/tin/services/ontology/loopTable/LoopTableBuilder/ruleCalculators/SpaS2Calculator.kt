@@ -5,12 +5,13 @@ import tin.model.v2.query.QueryGraph
 import tin.model.v2.query.QueryEdgeLabel
 import tin.model.v2.transducer.TransducerEdge
 import tin.model.v2.transducer.TransducerGraph
+import tin.services.ontology.OntologyExecutionContext.ExecutionContext
 import tin.services.ontology.OntologyExecutionContext.OntologyExecutionContext
 import tin.services.ontology.loopTable.SPALoopTable
 import tin.services.ontology.loopTable.loopTableEntry.SPALoopTableEntry
 
 class SpaS2Calculator(
-    private val ec: OntologyExecutionContext,
+    private val ec: ExecutionContext,
     private val queryGraph: QueryGraph,
     private val transducerGraph: TransducerGraph
     ) {
@@ -21,8 +22,6 @@ class SpaS2Calculator(
     private val expressionBuilder = ec.expressionBuilder;
     private val dlReasoner = ec.dlReasoner;
     private val manchesterShortFormProvider = ec.manchesterShortFormProvider;
-    private val tailsets = ec.tailsets!!;
-
 
     /**
      * calculates the updated value for an entry spa[(s,t),(s',t'),M]
@@ -128,8 +127,8 @@ class SpaS2Calculator(
 
                             var validClassNames = candidateTransducerEdges.map{it.label.outgoing}.distinct()
 
-                            tailsets.forEach tailsets@{ tailset ->
-                                val restriction = restrictionBuilder.createConceptNameRestrictionFromStringSet(tailset)
+                            ec.forEachTailset tailsets@{ tailset ->
+                                val restriction = tailset
                                 val MClassExp = restrictionBuilder.asClassExpression(restriction);
                                 val MExp = expressionBuilder.createELHIExpression(MClassExp);
 

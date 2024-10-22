@@ -23,6 +23,10 @@ interface ExecutionContext {
     val manchesterShortFormProvider: ManchesterOWLSyntaxPrefixNameShortFormProvider
     val restrictionBuilder: RestrictionBuilderInterface
 
+    val tailsetSize: ULong
+
+    fun prewarmSubsumptionCache();
+
     fun getClasses(): Set<OWLEntity>
 
     fun getClassAmount(): Int

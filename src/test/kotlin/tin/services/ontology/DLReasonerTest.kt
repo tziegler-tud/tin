@@ -309,8 +309,6 @@ class DLReasonerTest {
         val r2Exp = expressionBuilder.createExistentialRestriction(role, class2)
         val atomicSubClasses2 = dlReasoner.calculateSubClasses(expressionBuilder.createELHIExpression(r2Exp))
 
-
-        val r1111 = parser.getOWLObjectProperty("r1111")!!;
         val s = parser.getOWLObjectProperty("s")!!;
         val t = parser.getOWLObjectProperty("t")!!;
 

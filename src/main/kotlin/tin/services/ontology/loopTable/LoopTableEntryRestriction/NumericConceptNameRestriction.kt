@@ -27,33 +27,47 @@ class NumericConceptNameRestriction(
         return numericSetUtility.containsElement(value, element);
     }
 
-    fun containsElementFromSet(set: Set<OWLClass>) : Boolean {
+    override fun containsElementFromSet(set: Set<OWLClass>) : Boolean {
         set.forEach { owlClass ->
             if(containsElement(owlClass)) return true;
         }
         return false;
     }
 
-    fun containsAllElementsFromSet(set: Set<OWLClass>) : Boolean {
+    override fun containsAllElementsFromSet(set: Set<OWLClass>) : Boolean {
         val repr = numericSetUtility.getSetAsSetRepresentation(set);
         return numericSetUtility.containsElement(value, repr);
+    }
+
+    override fun containsAllElementsFromOneOf(set: Set<LoopTableEntryRestriction<OWLClass>>) : Boolean {
+        //TODO: Implement this in a performant way
+        set.forEach set@{ res ->
+            if(res == this) return true;
+            res.asSet().forEach { owlClass ->
+                if(!this.containsElement(owlClass)) return@set;
+            }
+            return true;
+        }
+        return false;
     }
 
     /**
      * returns true if this is a subset of the given restriction
      */
-    fun isSubsetOf(restriction: NumericConceptNameRestriction) : Boolean {
+    override fun isSubsetOf(restriction: LoopTableEntryRestriction<OWLClass>) : Boolean {
+        if(restriction !is NumericConceptNameRestriction) throw Error("Unable to perform this operation on objects other than NumericConceptNameRestriction!")
         return numericSetUtility.containsElement(restriction.value, value);
     }
 
     /**
      * returns true if this is a superset of the given restriction
      */
-    fun isSupersetOf(restriction: NumericConceptNameRestriction) : Boolean {
+    override fun isSupersetOf(restriction: LoopTableEntryRestriction<OWLClass>) : Boolean {
+        if(restriction !is NumericConceptNameRestriction) throw Error("Unable to perform this operation on objects other than NumericConceptNameRestriction!")
         return numericSetUtility.containsElement(value, restriction.value);
     }
 
-    fun addElement(element: OWLClass): Boolean {
+    override fun addElement(element: OWLClass): Boolean {
         val ojVal = value;
         value = numericSetUtility.addElement(value, element)
         return ojVal != value;

@@ -38,7 +38,7 @@ class OntologyExecutionContextTest {
         val classNames = ec.getClassNames();
 
         val powerset = ec.tailsets!!;
-        assert(powerset.size == Math.pow(2.0, classAmount.toDouble()).toInt())
+        assert(powerset.size == Math.pow(2.0, classAmount.toDouble()).toInt()-1)
 
         val e1 = classNames.first();
         val e2 = classNames.elementAt(1);

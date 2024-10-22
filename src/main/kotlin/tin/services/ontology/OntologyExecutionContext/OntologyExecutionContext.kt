@@ -24,6 +24,9 @@ class OntologyExecutionContext(private val manager: OntologyManager) : Execution
     var tailsets: HashSet<HashSet<String>>? = hashSetOf();
     var tailsetsAsClasses: HashSet<HashSet<OWLClass>> = hashSetOf();
 
+    override var tailsetSize = 0UL
+
+
     override fun forEachTailset(action: (LoopTableEntryRestriction<OWLClass>) -> Unit) {
         tailsetsAsClasses.forEach { tailset ->
             action(restrictionBuilder.createConceptNameRestriction(tailset))
@@ -35,13 +38,14 @@ class OntologyExecutionContext(private val manager: OntologyManager) : Execution
         tailsets = computeTailSets();
         tailsetsAsClasses = computeTailSetsAsOWLClass();
         //nothing to do for now
+        tailsetSize = tailsets!!.size.toULong();
 
         if(prewarmCaches) {
             prewarmSubsumptionCache();
         }
     }
 
-    fun prewarmSubsumptionCache(){
+    override fun prewarmSubsumptionCache(){
         println("ExecutionContext: Prewarming subsumption Cache...")
         //prewarm property subsumption cache
         tailsetsAsClasses.forEach { tailset ->
