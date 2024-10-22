@@ -1,7 +1,7 @@
 package tin.services.ontology.loopTable.LoopTableEntryRestriction
 
 interface NumericLoopTableEntryRestriction<DataType> {
-    val value: Long
+    val value: ULong
 
     fun isEmpty(): Boolean;
 
