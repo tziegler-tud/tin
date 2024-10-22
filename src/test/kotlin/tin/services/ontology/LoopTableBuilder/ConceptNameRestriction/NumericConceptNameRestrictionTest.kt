@@ -10,15 +10,13 @@ import tin.model.v2.query.QueryGraph
 import tin.model.v2.transducer.TransducerGraph
 import tin.services.internal.fileReaders.*
 import tin.services.internal.fileReaders.fileReaderResult.FileReaderResult
-import tin.services.ontology.DLReasoner
+import tin.services.ontology.Reasoner.SimpleDLReasoner
 import tin.services.ontology.OntologyExecutionContext.ExecutionContextType
 import tin.services.ontology.OntologyManager
-import tin.services.ontology.loopTable.LoopTableBuilder.SPALoopTableBuilder
 import tin.services.ontology.loopTable.LoopTableEntryRestriction.NumericConceptNameRestriction
 import tin.services.ontology.loopTable.LoopTableEntryRestriction.NumericRestrictionBuilder
 import tin.services.technical.SystemConfigurationService
 import java.io.File
-import kotlin.time.TimeSource
 
 @SpringBootTest
 @TestConfiguration
@@ -59,14 +57,14 @@ class NumericConceptNameRestrictionTest {    @Autowired
 
         val parser = ec.parser;
         val expressionBuilder = manager.getExpressionBuilder();
-        val dlReasoner = DLReasoner(reasoner, expressionBuilder);
+        val dlReasoner = SimpleDLReasoner(reasoner, expressionBuilder);
         val restrictionBuilder = ec.restrictionBuilder;
 
 
         val query = readQueryWithFileReaderService("test1.txt")
         val transducer = readTransducerWithFileReaderService("test1.txt")
 
-        val numericRestrictionBuilder: NumericRestrictionBuilder = NumericRestrictionBuilder(manager, ec.parser, ec.shortFormProvider );
+        val numericRestrictionBuilder: NumericRestrictionBuilder = NumericRestrictionBuilder(manager.classes, ec.parser );
 
         val pasta = parser.getOWLClass("Pasta")!!;
         val bread = parser.getOWLClass("Bread")!!;

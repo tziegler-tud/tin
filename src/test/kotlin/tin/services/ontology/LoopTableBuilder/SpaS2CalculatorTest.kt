@@ -9,7 +9,7 @@ import tin.model.v2.query.QueryGraph
 import tin.model.v2.transducer.TransducerGraph
 import tin.services.internal.fileReaders.*
 import tin.services.internal.fileReaders.fileReaderResult.FileReaderResult
-import tin.services.ontology.DLReasoner
+import tin.services.ontology.Reasoner.SimpleDLReasoner
 import tin.services.ontology.OntologyExecutionContext.ExecutionContextType
 import tin.services.ontology.OntologyManager
 import tin.services.ontology.loopTable.LoopTableBuilder.ruleCalculators.SpaS2Calculator
@@ -17,7 +17,6 @@ import tin.services.ontology.loopTable.SPALoopTable
 import tin.services.ontology.loopTable.loopTableEntry.SPALoopTableEntry
 import tin.services.technical.SystemConfigurationService
 import java.io.File
-import kotlin.time.ExperimentalTime
 import kotlin.time.TimeSource
 
 @SpringBootTest
@@ -55,7 +54,7 @@ class SpaS2CalculatorTest {
         val manager = loadExampleOntology();
         val reasoner = manager.createReasoner(OntologyManager.BuildInReasoners.HERMIT)
         val expressionBuilder = manager.getExpressionBuilder();
-        val dlReasoner = DLReasoner(reasoner, expressionBuilder);
+        val dlReasoner = SimpleDLReasoner(reasoner, expressionBuilder);
 
         val query = readQueryWithFileReaderService("spaCalculation/S2/test_spaS2_1.txt")
         val transducer = readTransducerWithFileReaderService("spaCalculation/S2/test_spaS2_1.txt")
@@ -107,7 +106,7 @@ class SpaS2CalculatorTest {
         val manager = OntologyManager(exampleFile);
         val reasoner = manager.createReasoner(OntologyManager.BuildInReasoners.HERMIT)
         val expressionBuilder = manager.getExpressionBuilder();
-        val dlReasoner = DLReasoner(reasoner, expressionBuilder);
+        val dlReasoner = SimpleDLReasoner(reasoner, expressionBuilder);
 
         val query = readQueryWithFileReaderService("spaCalculation/S2/test_spaS2_1.txt")
         val transducer = readTransducerWithFileReaderService("spaCalculation/S2/test_spaS2_1.txt")

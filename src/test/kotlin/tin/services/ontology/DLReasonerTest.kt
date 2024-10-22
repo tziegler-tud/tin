@@ -1,17 +1,16 @@
 package tin.services.ontology
 
 import org.junit.jupiter.api.Test
-import org.semanticweb.owlapi.model.OWLClassExpression
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.context.TestConfiguration
 import tin.services.internal.fileReaders.OntologyReaderService
 import tin.services.internal.fileReaders.fileReaderResult.FileReaderResult
-import tin.services.ontology.Expressions.DLExpressionBuilder
 import tin.services.ontology.OntologyExecutionContext.ExecutionContextType
+import tin.services.ontology.Reasoner.SimpleDLReasoner
+import tin.services.ontology.loopTable.LoopTableEntryRestriction.RestrictionBuilder
 import tin.services.technical.SystemConfigurationService
 import java.io.File
-import kotlin.math.exp
 
 @SpringBootTest
 @TestConfiguration
@@ -116,7 +115,7 @@ class DLReasonerTest {
         val manager = loadExampleOntology("propertyTest2.rdf");
         val reasoner = manager.createReasoner(OntologyManager.BuildInReasoners.HERMIT)
         val expressionBuilder = manager.getExpressionBuilder();
-        val dlReasoner = DLReasoner(reasoner, expressionBuilder);
+        val dlReasoner = SimpleDLReasoner(reasoner, expressionBuilder);
 
         val parser = manager.getQueryParser();
 
@@ -154,7 +153,7 @@ class DLReasonerTest {
         val manager = loadExampleOntology("propertyTest2.rdf");
         val reasoner = manager.createReasoner(OntologyManager.BuildInReasoners.HERMIT)
         val expressionBuilder = manager.getExpressionBuilder();
-        val dlReasoner = DLReasoner(reasoner, expressionBuilder);
+        val dlReasoner = SimpleDLReasoner(reasoner, expressionBuilder);
 
         val parser = manager.getQueryParser();
 
@@ -213,7 +212,7 @@ class DLReasonerTest {
         val manager = loadExampleOntology("propertyTest2.rdf");
         val reasoner = manager.createReasoner(OntologyManager.BuildInReasoners.HERMIT)
         val expressionBuilder = manager.getExpressionBuilder();
-        val dlReasoner = DLReasoner(reasoner, expressionBuilder);
+        val dlReasoner = SimpleDLReasoner(reasoner, expressionBuilder);
 
         val parser = manager.getQueryParser();
 
@@ -266,8 +265,8 @@ class DLReasonerTest {
         val manager = loadExampleOntology("propertyTest2.rdf");
         val reasoner = manager.createReasoner(OntologyManager.BuildInReasoners.HERMIT)
         val expressionBuilder = manager.getExpressionBuilder();
-        val restrictionBuilder = manager.getRestrictionBuilder();
-        val dlReasoner = DLReasoner(reasoner, expressionBuilder);
+        val restrictionBuilder = RestrictionBuilder(manager.getQueryParser(), manager.getShortFormProvider())
+        val dlReasoner = SimpleDLReasoner(reasoner, expressionBuilder);
 
         val parser = manager.getQueryParser();
 

@@ -8,8 +8,7 @@ import tin.model.v2.query.QueryGraph
 import tin.model.v2.transducer.TransducerGraph
 import tin.services.internal.fileReaders.*
 import tin.services.internal.fileReaders.fileReaderResult.FileReaderResult
-import tin.services.ontology.DLReasoner
-import tin.services.ontology.OntologyExecutionContext.ExecutionContextType
+import tin.services.ontology.Reasoner.SimpleDLReasoner
 import tin.services.ontology.OntologyManager
 import tin.services.ontology.loopTable.LoopTableBuilder.SPALoopTableBuilder
 import tin.services.technical.SystemConfigurationService
@@ -52,7 +51,7 @@ class SpaLoopTableTest {
         val manager = loadExampleOntology();
         val reasoner = manager.createReasoner(OntologyManager.BuildInReasoners.HERMIT)
         val expressionBuilder = manager.getExpressionBuilder();
-        val dlReasoner = DLReasoner(reasoner, expressionBuilder);
+        val dlReasoner = SimpleDLReasoner(reasoner, expressionBuilder);
 
         val query = readQueryWithFileReaderService("test1.txt")
         val transducer = readTransducerWithFileReaderService("test1.txt")
@@ -130,7 +129,6 @@ class SpaLoopTableTest {
 
         val builder = SPALoopTableBuilder(query.graph, transducer.graph, manager);
         val builderWithCache = SPALoopTableBuilder(query.graph, transducer.graph, manager);
-        val v2Builder = SPALoopTableBuilder(query.graph, transducer.graph, manager);
 
         val initialTime = timeSource.markNow()
 
@@ -142,21 +140,17 @@ class SpaLoopTableTest {
         val endTime1 = timeSource.markNow()
         builderWithCache.calculateFullTable();
         val endTime2 = timeSource.markNow();
-        v2Builder.calculateFullTableV2();
-        val endTime3 = timeSource.markNow();
 
 
         val totalTime = endTime2 - initialTime;
         val prewarmTime = startTime - initialTime;
         val time1 = endTime1 - startTime;
         val time2 = endTime2 - endTime1;
-        val time3 = endTime3 - endTime2;
 
         println("Total computation time: " + totalTime)
         println("Cache prewarming: " + prewarmTime)
         println("Build without prewarmed caches: " + time1)
         println("Build with prewarmed caches: " + time2)
-        println("V2 Builder: " + time3)
 
         println("Superclass Cache Size: " + builder.getExecutionContext().dlReasoner.superClassCache.size)
         println("Superclass Cache Hits: " + builder.getExecutionContext().dlReasoner.superClassCacheHitCounter)

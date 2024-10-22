@@ -8,7 +8,6 @@ import tin.model.v2.query.QueryGraph
 import tin.model.v2.transducer.TransducerGraph
 import tin.services.internal.fileReaders.*
 import tin.services.internal.fileReaders.fileReaderResult.FileReaderResult
-import tin.services.ontology.DLReasoner
 import tin.services.ontology.OntologyExecutionContext.ExecutionContextType
 import tin.services.ontology.OntologyManager
 import tin.services.ontology.loopTable.LoopTableBuilder.ruleCalculators.SpaS1Calculator
