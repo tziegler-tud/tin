@@ -12,9 +12,6 @@ import tin.services.ontology.loopTable.LoopTableBuilder.ruleCalculators.SpaS1Cal
 import tin.services.ontology.loopTable.LoopTableBuilder.ruleCalculators.SpaS2Calculator
 import tin.services.ontology.loopTable.LoopTableBuilder.ruleCalculators.SpaS3Calculator
 
-import tin.services.ontology.loopTable.LoopTableBuilder.ruleCalculators.v2.SpaS1Calculator as SpaS1CalculatorV2;
-
-
 class SPALoopTableBuilder (
     private val queryGraph: QueryGraph,
     private val transducerGraph: TransducerGraph,
@@ -37,7 +34,6 @@ class SPALoopTableBuilder (
     private val tailsets = ec.tailsets!!;
 
     private val s1Calculator = SpaS1Calculator(ec, queryGraph, transducerGraph)
-    private val s1CalculatorV2 = SpaS1CalculatorV2(ec, queryGraph, transducerGraph)
     private val s2Calculator = SpaS2Calculator(ec, queryGraph, transducerGraph)
     private val s3Calculator = SpaS3Calculator(ec, queryGraph, transducerGraph)
 
@@ -105,23 +101,6 @@ class SPALoopTableBuilder (
         }
     }
 
-    fun calculateFirstIterationV2(){
-;
-        updateTable = calculateS1V2(true);
-        updateTable.map.forEach { (entry, value) ->
-            table.set(entry, value);
-        }
-
-        val updateMap = calculateS3();
-        updateMap.forEach { (entry, value) ->
-            val current = table.get(entry)
-            if(current == null || value < current) {
-                updateTable.set(entry, value)
-                table.set(entry, value);
-            };
-        }
-    }
-
     fun calculateNextIteration() : Boolean {
 
         var counter : Int;
@@ -134,27 +113,6 @@ class SPALoopTableBuilder (
         //if nothing changed, no need to run S3 rule again
         //TODO: do we even have to continue in this case? Is one iteration without changes enough to abort?
         //TODO: This is important!
-        if(updateTable.map.isEmpty()) return false
-
-        val updateMap = calculateS3();
-        updateMap.forEach { (entry, value) ->
-            val current = table.get(entry)
-            if(current == null || value < current) {
-                updateTable.set(entry, value)
-                table.set(entry, value);
-            };
-        }
-        return true;
-    }
-
-    fun calculateNextIterationV2() : Boolean {
-        updateTable = calculateS1V2(false);
-        updateTable.map.forEach { (entry, value) ->
-            table.set(entry, value);
-        }
-
-        //if nothing changed, no need to run S3 rule again
-        //return false to signal that the calculation can be terminated
         if(updateTable.map.isEmpty()) return false
 
         val updateMap = calculateS3();
@@ -190,28 +148,6 @@ class SPALoopTableBuilder (
         return table;
     }
 
-    fun calculateFullTableV2(): SPALoopTable {
-        //iterate until max iterations are reached
-        initializeTable();
-
-        calculateInitialStep();
-
-        //depth 0
-
-        updateTable = SPALoopTable(table.map);
-        println("Calculating iteration 1 / ${maxIterationDepth}")
-        calculateFirstIterationV2();
-
-
-        for(i in 2..maxIterationDepth) {
-            println("Calculating iteration ${i} / ${maxIterationDepth}")
-            val hasChanged = calculateNextIterationV2();
-            if(!hasChanged) return table;
-        }
-
-        return table;
-    }
-
     fun calculateWithDepthLimit(limit: Int): SPALoopTable {
         //iterate until max iterations are reached
         println("Calculating loop table for paths up to depth ${limit}...")
@@ -234,11 +170,6 @@ class SPALoopTableBuilder (
 
     private fun calculateS1(isInitialIteration: Boolean) : SPALoopTable {
         val result = s1Calculator.calculateAllV2(table, updateTable, isInitialIteration);
-        return result;
-    }
-
-    private fun calculateS1V2(isInitialIteration: Boolean) : SPALoopTable {
-        val result = s1CalculatorV2.calculateAll(table, updateTable, isInitialIteration);
         return result;
     }
 
