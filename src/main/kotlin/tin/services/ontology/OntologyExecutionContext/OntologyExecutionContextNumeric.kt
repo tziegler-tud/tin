@@ -3,33 +3,24 @@ package tin.services.ontology.OntologyExecutionContext
 import org.semanticweb.owlapi.model.*
 import tin.services.ontology.Reasoner.CachingDLReasoner
 import tin.services.ontology.OntologyManager
-import tin.services.ontology.loopTable.LoopTableEntryRestriction.LoopTableEntryRestriction
 import tin.services.ontology.loopTable.LoopTableEntryRestriction.NumericRestrictionBuilder
-import tin.services.ontology.loopTable.LoopTableEntryRestriction.RestrictionBuilder
 import kotlin.math.pow
 
-class OntologyExecutionContext(private val manager: OntologyManager) : ExecutionContext {
+class OntologyExecutionContextNumeric(private val manager: OntologyManager) {
 
     private var ontology = manager.getOntology();
     private var classes = manager.classes;
     private var properties = manager.properties;
-    override val dlReasoner = CachingDLReasoner(manager.createReasoner(OntologyManager.BuildInReasoners.HERMIT), manager.getExpressionBuilder())
-    override val expressionBuilder = manager.getExpressionBuilder();
-    override val parser = manager.getQueryParser();
-    override val shortFormProvider = manager.getShortFormProvider();
-    override val manchesterShortFormProvider = manager.manchesterShortFormProvider;
-    override val restrictionBuilder = RestrictionBuilder(parser, shortFormProvider);
+    val dlReasoner = CachingDLReasoner(manager.createReasoner(OntologyManager.BuildInReasoners.HERMIT), manager.getExpressionBuilder())
+    val expressionBuilder = manager.getExpressionBuilder();
+    val parser = manager.getQueryParser();
+    val shortFormProvider = manager.getShortFormProvider();
+    val manchesterShortFormProvider = manager.manchesterShortFormProvider;
+    val restrictionBuilder = NumericRestrictionBuilder(classes, parser);
 
 
     var tailsets: HashSet<HashSet<String>>? = hashSetOf();
     var tailsetsAsClasses: HashSet<HashSet<OWLClass>> = hashSetOf();
-
-    override fun forEachTailset(action: (LoopTableEntryRestriction<OWLClass>) -> Unit) {
-        tailsetsAsClasses.forEach { tailset ->
-            action(restrictionBuilder.createConceptNameRestriction(tailset))
-        }
-    }
-
     fun prepareForLoopTableConstruction(prewarmCaches: Boolean = false){
         //create a new instance
         tailsets = computeTailSets();
@@ -54,50 +45,6 @@ class OntologyExecutionContext(private val manager: OntologyManager) : Execution
             }
         }
         println("ExecutionContext: Prewarming subsumption Cache finished. Cache size: ${dlReasoner.subClassCache.size}");
-    }
-
-
-
-    private fun powerSet(originalSet: Set<OWLClass>): HashSet<HashSet<OWLClass>> {
-        // Start with the empty set
-        val powerSet = HashSet<HashSet<OWLClass>>()
-        powerSet.add(HashSet())
-
-        // Iterate over each element in the original set
-        for (element in originalSet) {
-            val newSubsets = HashSet<HashSet<OWLClass>>()
-
-            // For each subset in the current powerSet, add the current element
-            for (subset in powerSet) {
-                val newSubset = HashSet(subset)
-                newSubset.add(element)
-                newSubsets.add(newSubset)
-            }
-
-            // Add the newly created subsets to the powerset
-            powerSet.addAll(newSubsets)
-        }
-        return powerSet
-    }
-
-    override fun getClasses(): Set<OWLEntity> {
-        return classes;
-    }
-
-    override fun getClassAmount(): Int {
-        return classes.size;
-    }
-
-    override fun getClassNames(): HashSet<String> {
-        return manager.getClassNames();
-    }
-
-    override fun getRoleNames(): HashSet<String> {
-        return manager.getRoleNames();
-    }
-
-    override fun getRoles(): Set<OWLObjectProperty> {
-        return manager.getRoles();
     }
 
     private fun computeTailSets(): HashSet<HashSet<String>>{
@@ -143,5 +90,48 @@ class OntologyExecutionContext(private val manager: OntologyManager) : Execution
         }
         return powerSet
     }
+
+    private fun powerSet(originalSet: Set<OWLClass>): HashSet<HashSet<OWLClass>> {
+        // Start with the empty set
+        val powerSet = HashSet<HashSet<OWLClass>>()
+        powerSet.add(HashSet())
+
+        // Iterate over each element in the original set
+        for (element in originalSet) {
+            val newSubsets = HashSet<HashSet<OWLClass>>()
+
+            // For each subset in the current powerSet, add the current element
+            for (subset in powerSet) {
+                val newSubset = HashSet(subset)
+                newSubset.add(element)
+                newSubsets.add(newSubset)
+            }
+
+            // Add the newly created subsets to the powerset
+            powerSet.addAll(newSubsets)
+        }
+        return powerSet
+    }
+
+    fun getClasses(): Set<OWLEntity> {
+        return classes;
+    }
+
+    fun getClassAmount(): Int {
+        return classes.size;
+    }
+
+    fun getClassNames(): HashSet<String> {
+        return manager.getClassNames();
+    }
+
+    fun getRoleNames(): HashSet<String> {
+        return manager.getRoleNames();
+    }
+
+    fun getRoles(): Set<OWLObjectProperty> {
+        return manager.getRoles();
+    }
+
 
 }

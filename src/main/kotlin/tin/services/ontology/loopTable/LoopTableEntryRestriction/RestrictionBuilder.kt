@@ -12,9 +12,12 @@ import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl
 import uk.ac.manchester.cs.owl.owlapi.OWLObjectIntersectionOfImpl
 import uk.ac.manchester.cs.owl.owlapi.OWLObjectUnionOfImpl
 
-class RestrictionBuilder(private val queryParser: DLQueryParser, private val shortFormProvider: ShortFormProvider) {
+class RestrictionBuilder(
+    private val queryParser: DLQueryParser,
+    private val shortFormProvider: ShortFormProvider
+) : RestrictionBuilderInterface{
 
-    fun createConceptNameRestrictionFromStringSet(values: Set<String>): ConceptNameRestriction {
+    override fun createConceptNameRestrictionFromStringSet(values: Set<String>): ConceptNameRestriction {
         val restriction = ConceptNameRestriction();
         for (value in values) {
             val exp = queryParser.getOWLClass(value);
@@ -25,7 +28,13 @@ class RestrictionBuilder(private val queryParser: DLQueryParser, private val sho
         return restriction
     }
 
-    fun createConceptNameRestriction(values: Set<OWLClass>): ConceptNameRestriction {
+    override fun createConceptNameRestriction(element: OWLClass): LoopTableEntryRestriction<OWLClass> {
+        val restriction = ConceptNameRestriction()
+        restriction.addElement(element);
+        return restriction;
+    }
+
+    override fun createConceptNameRestriction(values: Set<OWLClass>): ConceptNameRestriction {
         val restriction = ConceptNameRestriction();
         for (value in values) {
             restriction.addElement(value);
@@ -33,13 +42,13 @@ class RestrictionBuilder(private val queryParser: DLQueryParser, private val sho
         return restriction
     }
 
-    fun createConceptNameRestriction(vararg n: OWLClass): ConceptNameRestriction {
+    override fun createConceptNameRestriction(vararg n: OWLClass): ConceptNameRestriction {
         val values = hashSetOf(*n);
         return createConceptNameRestriction(values)
     }
 
 
-    fun createConceptNameRestriction(vararg n: String): ConceptNameRestriction {
+    override fun createConceptNameRestriction(vararg n: String): ConceptNameRestriction {
         val values = hashSetOf(*n);
         return createConceptNameRestrictionFromStringSet(values)
     }
@@ -58,14 +67,15 @@ class RestrictionBuilder(private val queryParser: DLQueryParser, private val sho
 //        return restriction;
 //    }
 
-    fun asClassExpression(conceptNameRestriction: ConceptNameRestriction) : OWLClassExpression {
-        if(conceptNameRestriction.isEmpty()) {
+    override fun asClassExpression(restriction: LoopTableEntryRestriction<OWLClass>) : OWLClassExpression {
+        if(restriction.isEmpty()) {
             throw Error("Cannot create class Expression from empty restriction.")
         }
-        if(conceptNameRestriction.value.size == 1) {
-            return conceptNameRestriction.value.first();
+        val set = restriction.asSet()
+        if(set.size == 1) {
+            return set.first();
         }
-        return OWLObjectIntersectionOfImpl(conceptNameRestriction.asList());
+        return OWLObjectIntersectionOfImpl(restriction.asList());
     }
 
     fun testUnion(conceptNameRestriction: ConceptNameRestriction) : OWLClassExpression {

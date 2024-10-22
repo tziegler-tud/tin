@@ -1,13 +1,5 @@
 package tin.services.ontology.loopTable.LoopTableEntryRestriction
 
-interface NumericLoopTableEntryRestriction<DataType> {
-    val value: ULong
-
-    fun isEmpty(): Boolean;
-
-    fun asSet(): Set<DataType>;
-
-    fun asList(): List<DataType>;
-
-    fun containsElement(element: DataType): Boolean;
+interface NumericLoopTableEntryRestriction<DataType> : LoopTableEntryRestriction<DataType> {
+    override val value: ULong
 }

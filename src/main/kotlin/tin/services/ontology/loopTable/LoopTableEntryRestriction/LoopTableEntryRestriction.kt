@@ -1,7 +1,7 @@
 package tin.services.ontology.loopTable.LoopTableEntryRestriction
 
 interface LoopTableEntryRestriction<DataType> {
-    val value: Set<DataType>
+    val value: Any
 
     fun isEmpty(): Boolean;
 

@@ -1,14 +1,12 @@
-package tin.services.ontology
+package tin.services.ontology.Reasoner
 
 import org.semanticweb.owlapi.model.OWLClass
-import org.semanticweb.owlapi.model.OWLObjectProperty
 import org.semanticweb.owlapi.model.OWLObjectPropertyExpression
 import org.semanticweb.owlapi.model.OWLPropertyExpression
 import org.semanticweb.owlapi.reasoner.Node
 import org.semanticweb.owlapi.reasoner.NodeSet
 import org.semanticweb.owlapi.reasoner.OWLReasoner
 import org.semanticweb.owlapi.reasoner.impl.OWLClassNodeSet
-import org.semanticweb.owlapi.reasoner.impl.OWLObjectPropertyNode
 import org.semanticweb.owlapi.reasoner.impl.OWLObjectPropertyNodeSet
 import tin.services.ontology.Expressions.DLExpression
 import tin.services.ontology.Expressions.DLExpressionBuilder
@@ -20,7 +18,7 @@ import kotlin.streams.toList
 class CachingDLReasoner(
     val reasoner: OWLReasoner,
     private val expressionBuilder: DLExpressionBuilder
-) {
+) : DLReasoner {
     public val superClassCache: HashMap<DLExpression, NodeSet<OWLClass>> = hashMapOf()
     public val equivalentClassCache: HashMap<DLExpression, Node<OWLClass>> = hashMapOf()
     public val subClassCache: HashMap<DLExpression, HashSet<OWLClass>> = hashMapOf()
@@ -34,7 +32,7 @@ class CachingDLReasoner(
     public var entailmentCacheHitCounter = 0;
     public var entailmentCacheMissCounter = 0;
 
-    public fun checkIsSubsumed(expr: DLExpression, superExpression: DLExpression): Boolean {
+    override fun checkIsSubsumed(expr: DLExpression, superExpression: DLExpression): Boolean {
         val cacheEntry = entailmentCache[Pair(expr, superExpression)];
         if(cacheEntry != null){
             entailmentCacheHitCounter++;
@@ -47,7 +45,7 @@ class CachingDLReasoner(
         return isEntailed;
     }
 
-    public fun checkPropertySubsumption(property: OWLObjectPropertyExpression, superProperty: OWLObjectPropertyExpression): Boolean {
+    override fun checkPropertySubsumption(property: OWLObjectPropertyExpression, superProperty: OWLObjectPropertyExpression): Boolean {
         val cacheEntry = propertySubsumptionCache[Pair(property, superProperty)];
         if(cacheEntry != null){
             propertySubsumptionCacheHitCounter++;
@@ -59,22 +57,22 @@ class CachingDLReasoner(
         return isEntailed;
     }
 
-    public fun calculateSuperProperties(property: OWLObjectPropertyExpression): NodeSet<OWLObjectPropertyExpression> {
+    override fun calculateSuperProperties(property: OWLObjectPropertyExpression): NodeSet<OWLObjectPropertyExpression> {
         val properties = reasoner.getSuperObjectProperties(property, false);
         return properties;
     }
 
 
-    public fun calculateSuperPropertiesMock(property: OWLObjectPropertyExpression): NodeSet<OWLObjectPropertyExpression> {
+    override fun calculateSuperPropertiesMock(property: OWLObjectPropertyExpression): NodeSet<OWLObjectPropertyExpression> {
         return OWLObjectPropertyNodeSet(property)
     }
 
-    public fun calculateSubProperties(property: OWLObjectPropertyExpression): NodeSet<OWLObjectPropertyExpression> {
+    override fun calculateSubProperties(property: OWLObjectPropertyExpression): NodeSet<OWLObjectPropertyExpression> {
         val properties = reasoner.getSubObjectProperties(property, false);
         return properties;
     }
 
-    public fun calculateSubClasses(expr: DLExpression): HashSet<OWLClass> {
+    override fun calculateSubClasses(expr: DLExpression): HashSet<OWLClass> {
         val cacheEntry = subClassCache[expr];
         if(cacheEntry != null){
             subClassCacheHitCounter++;
@@ -91,15 +89,15 @@ class CachingDLReasoner(
         return hashSet;
     }
 
-    fun getTopClassNode(): Node<OWLClass> {
+    override fun getTopClassNode(): Node<OWLClass> {
         return reasoner.topClassNode;
     }
 
-    fun getBottomClassNode(): Node<OWLClass> {
+    override fun getBottomClassNode(): Node<OWLClass> {
         return reasoner.bottomClassNode;
     }
 
-    fun calculateSuperClasses(expr: DLExpression, includeEquivalent: Boolean): NodeSet<OWLClass> {
+    override fun calculateSuperClasses(expr: DLExpression, includeEquivalent: Boolean): NodeSet<OWLClass> {
         val strictSuperClasses: NodeSet<OWLClass>;
         if(superClassCache.containsKey(expr)) {
             strictSuperClasses = superClassCache[expr]!!;
@@ -126,7 +124,7 @@ class CachingDLReasoner(
         return strictSuperClasses;
     }
 
-    fun calculateEquivalentClasses(expr: DLExpression): Node<OWLClass> {
+    override fun calculateEquivalentClasses(expr: DLExpression): Node<OWLClass> {
         return reasoner.getEquivalentClasses(expr.getClassExpression());
     }
 

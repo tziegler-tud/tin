@@ -29,10 +29,9 @@ class OntologyManager(val file: File) {
     private val manager = OWLManager.createOWLOntologyManager();
     private val ontology: OWLOntology = manager.loadOntologyFromOntologyDocument(file);
     private val shortFormProvider: ShortFormProvider = SimpleShortFormProvider()
-    val manchesterShortFormProvider: ShortFormProvider = ManchesterOWLSyntaxPrefixNameShortFormProvider(ontology);
+    val manchesterShortFormProvider: ManchesterOWLSyntaxPrefixNameShortFormProvider = ManchesterOWLSyntaxPrefixNameShortFormProvider(ontology);
     private val executionContextFactory = OntologyExecutionContextFactory();
     private var parser: DLQueryParser = DLQueryParser(ontology, shortFormProvider);
-    private var restrictionBuilder = RestrictionBuilder(parser, shortFormProvider);
 
     private val expressionBuilder = DLExpressionBuilder(this);
 
@@ -114,10 +113,6 @@ class OntologyManager(val file: File) {
 
     fun getQueryParser(): DLQueryParser {
         return parser;
-    }
-
-    fun getRestrictionBuilder() : RestrictionBuilder{
-        return restrictionBuilder;
     }
 
     fun getOntologyInfo(): OntologyInfoData {

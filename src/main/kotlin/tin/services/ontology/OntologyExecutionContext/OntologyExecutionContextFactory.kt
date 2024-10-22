@@ -11,6 +11,12 @@ class OntologyExecutionContextFactory {
                 ec.prepareForLoopTableConstruction(prewarmCaches)
                 return ec;
             }
+
+            ExecutionContextType.LOOPTABLE_NUMERIC -> {
+                val ec = OntologyExecutionContext(manager);
+                ec.prepareForLoopTableConstruction(prewarmCaches)
+                return ec;
+            }
         }
     }
 }
