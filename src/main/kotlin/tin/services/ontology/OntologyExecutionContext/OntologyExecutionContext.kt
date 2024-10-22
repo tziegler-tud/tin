@@ -34,19 +34,23 @@ class OntologyExecutionContext(private val manager: OntologyManager) {
         //nothing to do for now
 
         if(prewarmCaches) {
-            println("ExecutionContext: Prewarming subsumption Cache...")
-            //prewarm property subsumption cache
-            tailsetsAsClasses.forEach { tailset ->
-                properties.forEach { property ->
-                    val restriction = restrictionBuilder.createConceptNameRestriction(tailset)
-                    val classExp = restrictionBuilder.asClassExpression(restriction)
-                    val rM1 = expressionBuilder.createExistentialRestriction(property, classExp)
-                    val rM1Exp = expressionBuilder.createELHIExpression(rM1);
-                    dlReasoner.calculateSubClasses(rM1Exp)
-                }
-            }
-            println("ExecutionContext: Prewarming subsumption Cache finished. Cache size: ${dlReasoner.subClassCache.size}");
+            prewarmSubsumptionCache();
         }
+    }
+
+    fun prewarmSubsumptionCache(){
+        println("ExecutionContext: Prewarming subsumption Cache...")
+        //prewarm property subsumption cache
+        tailsetsAsClasses.forEach { tailset ->
+            properties.forEach { property ->
+                val restriction = restrictionBuilder.createConceptNameRestriction(tailset)
+                val classExp = restrictionBuilder.asClassExpression(restriction)
+                val rM1 = expressionBuilder.createExistentialRestriction(property, classExp)
+                val rM1Exp = expressionBuilder.createELHIExpression(rM1);
+                dlReasoner.calculateSubClasses(rM1Exp)
+            }
+        }
+        println("ExecutionContext: Prewarming subsumption Cache finished. Cache size: ${dlReasoner.subClassCache.size}");
     }
 
     private fun computeTailSets(): HashSet<HashSet<String>>{
