@@ -1,24 +1,18 @@
-package tin.services.ontology.loopTable.LoopTableBuilder.old.okt1824.ruleCalculators.v2
+package tin.services.ontology.loopTable.old.okt1824.LoopTableBuilder.ruleCalculators.v2
 
 import org.semanticweb.owlapi.model.*
-import org.semanticweb.owlapi.reasoner.impl.OWLClassNode
-import org.semanticweb.owlapi.reasoner.impl.OWLClassNodeSet
 import tin.model.v2.query.QueryGraph
 import tin.model.v2.graph.Node
 import tin.model.v2.query.QueryEdge
 import tin.model.v2.query.QueryEdgeLabel
 import tin.model.v2.transducer.TransducerEdge
 import tin.model.v2.transducer.TransducerGraph
-import tin.services.ontology.DLReasoner
 import tin.services.ontology.Expressions.DLExpression
-import tin.services.ontology.Expressions.DLExpressionBuilder
 import tin.services.ontology.OntologyExecutionContext.OntologyExecutionContext
 import tin.services.ontology.loopTable.LoopTableEntryRestriction.ConceptNameRestriction
-import tin.services.ontology.loopTable.LoopTableEntryRestriction.RestrictionBuilder
 import tin.services.ontology.loopTable.SPALoopTable
 import tin.services.ontology.loopTable.loopTableEntry.SPALoopTableEntry
 import java.util.*
-import kotlin.math.min
 
 class SpaS1Calculator(
     private val ec: OntologyExecutionContext,

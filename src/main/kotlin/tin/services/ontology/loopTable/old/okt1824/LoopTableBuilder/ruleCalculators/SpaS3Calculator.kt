@@ -1,4 +1,4 @@
-package tin.services.ontology.loopTable.LoopTableBuilder.old.okt1824.ruleCalculators
+package tin.services.ontology.loopTable.old.okt1824.LoopTableBuilder.ruleCalculators
 
 import tin.model.v2.genericGraph.*
 import tin.model.v2.query.QueryGraph

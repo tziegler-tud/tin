@@ -1,4 +1,4 @@
-package tin.services.ontology.loopTable.LoopTableBuilder.old.okt1824
+package tin.services.ontology.loopTable.old.okt1824.LoopTableBuilder
 
 import tin.model.v2.query.QueryGraph
 import tin.model.v2.graph.Node
