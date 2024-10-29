@@ -1,17 +1,9 @@
-package tin.services.ontology.loopTable.LoopTableEntryRestriction
+package tin.services.ontology.loopTable.LoopTableEntryRestriction.spa
 
-import com.google.common.collect.ImmutableList
 import org.semanticweb.owlapi.model.OWLClass
 import org.semanticweb.owlapi.model.OWLClassExpression
-import org.semanticweb.owlapi.model.OWLOntology
-import org.semanticweb.owlapi.reasoner.impl.OWLClassNode
-import org.semanticweb.owlapi.util.ShortFormProvider
-import tin.model.v2.graph.Node
 import tin.services.ontology.DLQueryParser
-import tin.services.ontology.OntologyManager
-import uk.ac.manchester.cs.owl.owlapi.OWLAnonymousClassExpressionImpl
-import uk.ac.manchester.cs.owl.owlapi.OWLClassExpressionImpl
-import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl
+import tin.services.ontology.loopTable.LoopTableEntryRestriction.LoopTableEntryRestriction
 import uk.ac.manchester.cs.owl.owlapi.OWLObjectIntersectionOfImpl
 import uk.ac.manchester.cs.owl.owlapi.OWLObjectUnionOfImpl
 import kotlin.math.pow
@@ -22,7 +14,7 @@ import kotlin.math.pow
 class NumericRestrictionBuilder(
     private val classes: Set<OWLClass>,
     private val queryParser: DLQueryParser
-) : RestrictionBuilderInterface
+) : MultiClassRestrictionBuilderInterface
 {
     /**
      * 
@@ -38,6 +30,10 @@ class NumericRestrictionBuilder(
         classIndexList.forEachIndexed { index, owlClass ->
             classIndexMap[index] = owlClass;
         }
+    }
+
+    override fun createRestriction(element: OWLClass): LoopTableEntryRestriction<OWLClass> {
+        return createRestriction(element);
     }
 
     fun createConceptNameRestriction(base: ULong) : NumericConceptNameRestriction {
@@ -80,12 +76,21 @@ class NumericRestrictionBuilder(
         return restriction
     }
 
-    override fun asClassExpression(restriction: LoopTableEntryRestriction<OWLClass>) : OWLClassExpression {
+    fun asClassExpression(restriction: NumericConceptNameRestriction): OWLClassExpression {
         if(restriction.isEmpty()) {
             throw Error("Cannot create class Expression from empty restriction.")
         }
         return OWLObjectIntersectionOfImpl(restriction.asList());
     }
+
+    override fun asClassExpression(restriction: MultiClassLoopTableEntryRestriction) : OWLClassExpression {
+        if(restriction.isEmpty()) {
+            throw Error("Cannot create class Expression from empty restriction.")
+        }
+        return OWLObjectIntersectionOfImpl(restriction.asList());
+    }
+
+
 
     fun testUnion(conceptNameRestriction: ConceptNameRestriction) : OWLClassExpression {
         return OWLObjectUnionOfImpl(conceptNameRestriction.asList());

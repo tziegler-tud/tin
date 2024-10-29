@@ -10,7 +10,7 @@ import tin.services.internal.fileReaders.*
 import tin.services.internal.fileReaders.fileReaderResult.FileReaderResult
 import tin.services.ontology.Reasoner.SimpleDLReasoner
 import tin.services.ontology.OntologyManager
-import tin.services.ontology.loopTable.LoopTableBuilder.SPALoopTableBuilder
+import tin.services.ontology.loopTable.LoopTableBuilder.ELHI.ELHISPALoopTableBuilder
 import tin.services.technical.SystemConfigurationService
 import java.io.File
 import kotlin.time.TimeSource
@@ -56,7 +56,7 @@ class SpaLoopTableTest {
         val query = readQueryWithFileReaderService("test1.txt")
         val transducer = readTransducerWithFileReaderService("test1.txt")
 
-        val builder = SPALoopTableBuilder(query.graph, transducer.graph, manager);
+        val builder = ELHISPALoopTableBuilder(query.graph, transducer.graph, manager);
         builder.calculateInitialStep();
         assert(true)
     }
@@ -75,7 +75,7 @@ class SpaLoopTableTest {
         val timeSource = TimeSource.Monotonic
         val initialTime = timeSource.markNow()
 
-        val builder = SPALoopTableBuilder(query.graph, transducer.graph, manager);
+        val builder = ELHISPALoopTableBuilder(query.graph, transducer.graph, manager);
 
         val startTime = timeSource.markNow()
 
@@ -127,8 +127,8 @@ class SpaLoopTableTest {
         val timeSource = TimeSource.Monotonic
 
 
-        val builder = SPALoopTableBuilder(query.graph, transducer.graph, manager);
-        val builderWithCache = SPALoopTableBuilder(query.graph, transducer.graph, manager);
+        val builder = ELHISPALoopTableBuilder(query.graph, transducer.graph, manager);
+        val builderWithCache = ELHISPALoopTableBuilder(query.graph, transducer.graph, manager);
 
         val initialTime = timeSource.markNow()
 

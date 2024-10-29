@@ -77,4 +77,8 @@ class SimpleDLReasoner(
     override fun calculateEquivalentClasses(expr: DLExpression): Node<OWLClass> {
         return reasoner.getEquivalentClasses(expr.getClassExpression());
     }
+
+    override fun getStats() : Map<String, Int> {
+        return mapOf<String, Int>();
+    }
 }

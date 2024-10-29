@@ -1,13 +1,19 @@
-package tin.services.ontology.OntologyExecutionContext
+package tin.services.ontology.OntologyExecutionContext.ELHI
 
 import org.semanticweb.owlapi.model.*
+import tin.services.ontology.OntologyExecutionContext.ExecutionContext
 import tin.services.ontology.Reasoner.CachingDLReasoner
 import tin.services.ontology.OntologyManager
 import tin.services.ontology.loopTable.LoopTableEntryRestriction.LoopTableEntryRestriction
-import tin.services.ontology.loopTable.LoopTableEntryRestriction.NumericRestrictionBuilder
+import tin.services.ontology.loopTable.LoopTableEntryRestriction.RestrictionBuilderInterface
+import tin.services.ontology.loopTable.LoopTableEntryRestriction.sp.IndividualRestrictionBuilder
+import tin.services.ontology.loopTable.LoopTableEntryRestriction.spa.MultiClassLoopTableEntryRestriction
+import tin.services.ontology.loopTable.LoopTableEntryRestriction.spa.MultiClassRestrictionBuilderInterface
+import tin.services.ontology.loopTable.LoopTableEntryRestriction.spa.NumericConceptNameRestriction
+import tin.services.ontology.loopTable.LoopTableEntryRestriction.spa.NumericRestrictionBuilder
 import kotlin.math.pow
 
-class ELHIExecutionContext(private val manager: OntologyManager) : ExecutionContext {
+class ELHINumericExecutionContext(private val manager: OntologyManager) : ELHIExecutionContext {
 
     private var ontology = manager.getOntology();
     private var classes = manager.classes;
@@ -17,7 +23,8 @@ class ELHIExecutionContext(private val manager: OntologyManager) : ExecutionCont
     override val parser = manager.getQueryParser();
     override val shortFormProvider = manager.getShortFormProvider();
     override val manchesterShortFormProvider = manager.manchesterShortFormProvider;
-    override val restrictionBuilder = NumericRestrictionBuilder(classes, parser);
+    override val spaRestrictionBuilder = NumericRestrictionBuilder(classes, parser);
+    override val spRestrictionBuilder = IndividualRestrictionBuilder(parser, shortFormProvider)
 
     val tailsetMaximum: ULong = pow(2, classes.size);
 
@@ -29,17 +36,25 @@ class ELHIExecutionContext(private val manager: OntologyManager) : ExecutionCont
         }
     }
 
-    override fun forEachTailset(action: (LoopTableEntryRestriction<OWLClass>) -> Unit) {
+    override fun forEachTailset(action: (MultiClassLoopTableEntryRestriction) -> Unit) {
         for (i in 1UL..tailsetMaximum)
         {
-            action(restrictionBuilder.createConceptNameRestriction(i));
+            action(spaRestrictionBuilder.createConceptNameRestriction(i));
         }
     }
 
-    fun forEachTailsetDescending(action: (LoopTableEntryRestriction<OWLClass>) -> Unit) {
+    override fun getSpaRestrictionBuilder(): MultiClassRestrictionBuilderInterface {
+        return spaRestrictionBuilder;
+    }
+
+    override fun getSpRestrictionBuilder(): RestrictionBuilderInterface<OWLIndividual> {
+        return spRestrictionBuilder;
+    }
+
+    fun forEachTailsetDescending(action: (NumericConceptNameRestriction) -> Unit) {
         for (i in tailsetMaximum downTo 1UL)
         {
-            action(restrictionBuilder.createConceptNameRestriction(i));
+            action(spaRestrictionBuilder.createConceptNameRestriction(i));
         }
     }
 
@@ -49,8 +64,8 @@ class ELHIExecutionContext(private val manager: OntologyManager) : ExecutionCont
         for (i in 1UL..tailsetMaximum)
         {
             properties.forEach { property ->
-                val restriction = restrictionBuilder.createConceptNameRestriction(i)
-                val classExp = restrictionBuilder.asClassExpression(restriction)
+                val restriction = spaRestrictionBuilder.createConceptNameRestriction(i)
+                val classExp = spaRestrictionBuilder.asClassExpression(restriction)
                 val rM1 = expressionBuilder.createExistentialRestriction(property, classExp)
                 val rM1Exp = expressionBuilder.createELHIExpression(rM1);
                 dlReasoner.calculateSubClasses(rM1Exp)

@@ -29,4 +29,6 @@ interface DLReasoner {
     fun calculateSuperClasses(expr: DLExpression, includeEquivalent: Boolean): NodeSet<OWLClass>
 
     fun calculateEquivalentClasses(expr: DLExpression): Node<OWLClass>
+
+    fun getStats() : Map<String, Int>
 }

@@ -1,35 +1,26 @@
-package tin.services.ontology.loopTable.LoopTableBuilder
+package tin.services.ontology.loopTable.LoopTableBuilder.ELHI
 
 import tin.model.v2.query.QueryGraph
 import tin.model.v2.graph.Node
 import tin.model.v2.transducer.TransducerGraph
 import tin.services.ontology.OntologyExecutionContext.ExecutionContext
 import tin.services.ontology.OntologyExecutionContext.ExecutionContextType
-import tin.services.ontology.OntologyExecutionContext.OntologyExecutionContext
 import tin.services.ontology.OntologyManager
-import tin.services.ontology.loopTable.SPALoopTable
-import tin.services.ontology.loopTable.loopTableEntry.SPALoopTableEntry
-import tin.services.ontology.loopTable.LoopTableBuilder.ruleCalculators.SpaS1Calculator
-import tin.services.ontology.loopTable.LoopTableBuilder.ruleCalculators.SpaS2Calculator
-import tin.services.ontology.loopTable.LoopTableBuilder.ruleCalculators.SpaS3Calculator
+import tin.services.ontology.loopTable.ELHISPALoopTable
+import tin.services.ontology.loopTable.LoopTableBuilder.ELHI.ruleCalculators.SpaS1Calculator
+import tin.services.ontology.loopTable.LoopTableBuilder.ELHI.ruleCalculators.SpaS2Calculator
+import tin.services.ontology.loopTable.LoopTableBuilder.ELHI.ruleCalculators.SpaS3Calculator
+import tin.services.ontology.loopTable.loopTableEntry.ELHISPALoopTableEntry
 
-class SPALoopTableBuilder (
+class ELHISPALoopTableBuilder (
     private val queryGraph: QueryGraph,
     private val transducerGraph: TransducerGraph,
     private val ontologyManager: OntologyManager)
 {
-    private var table: SPALoopTable = SPALoopTable();
-    private var updateTable: SPALoopTable = SPALoopTable();
+    private var table: ELHISPALoopTable = ELHISPALoopTable();
+    private var updateTable: ELHISPALoopTable = ELHISPALoopTable();
     // prepare ontology execution context
-    private val ec = ontologyManager.createExecutionContext(ExecutionContextType.ELHI, false);
-    private val dlReasoner = ec.dlReasoner;
-    private val expressionBuilder = ec.expressionBuilder;
-    private val queryParser = ec.parser;
-    private val shortFormProvider = ec.shortFormProvider;
-
-    private val restrictionBuilder = ec.restrictionBuilder;
-
-    private val finished: Boolean = false;
+    private val ec = ontologyManager.createELHIExecutionContext(ExecutionContextType.ELHI, false);
 
     private val pairsAvailable = mutableSetOf<Pair<Node, Node>>()
 
@@ -38,12 +29,6 @@ class SPALoopTableBuilder (
     private val s3Calculator = SpaS3Calculator(ec, queryGraph, transducerGraph)
 
     public val maxIterationDepth = calculateMaxIterationDepth();
-
-
-    init {
-
-
-    }
 
     fun prewarmSubsumptionCahce(){
         ec.prewarmSubsumptionCache();
@@ -68,14 +53,14 @@ class SPALoopTableBuilder (
         }
     }
 
-    fun calculateInitialS2(): SPALoopTable {
+    fun calculateInitialS2(): ELHISPALoopTable {
         //apply S2 to all (q x t)^2 x M
         table = s2Calculator.calculateAll(table);
         return table;
     }
 
 
-    fun calculateInitialStep(): SPALoopTable {
+    fun calculateInitialStep(): ELHISPALoopTable {
         calculateInitialS2();
         //apply S3
         calculateS3();
@@ -126,7 +111,7 @@ class SPALoopTableBuilder (
         return true;
     }
 
-    fun calculateFullTable(): SPALoopTable {
+    fun calculateFullTable(): ELHISPALoopTable {
         //iterate until max iterations are reached
         initializeTable();
 
@@ -134,7 +119,7 @@ class SPALoopTableBuilder (
 
         //depth 0
 
-        updateTable = SPALoopTable(table.map);
+        updateTable = ELHISPALoopTable(table.map);
         println("Calculating iteration 1 / ${maxIterationDepth}")
         calculateFirstIteration();
 
@@ -148,14 +133,14 @@ class SPALoopTableBuilder (
         return table;
     }
 
-    fun calculateWithDepthLimit(limit: Int): SPALoopTable {
+    fun calculateWithDepthLimit(limit: Int): ELHISPALoopTable {
         //iterate until max iterations are reached
         println("Calculating loop table for paths up to depth ${limit}...")
         initializeTable();
 
         calculateInitialStep();
 
-        updateTable = SPALoopTable(table.map);
+        updateTable = ELHISPALoopTable(table.map);
         //depth 0
 
         println("Calculating iteration 1 / ${maxIterationDepth}")
@@ -168,18 +153,18 @@ class SPALoopTableBuilder (
         return table;
     }
 
-    private fun calculateS1(isInitialIteration: Boolean) : SPALoopTable {
-        val result = s1Calculator.calculateAllV2(table, updateTable, isInitialIteration);
+    private fun calculateS1(isInitialIteration: Boolean) : ELHISPALoopTable {
+        val result = s1Calculator.calculateAll(table, updateTable, isInitialIteration);
         return result;
     }
 
-    private fun calculateS2(spaLoopTableEntry: SPALoopTableEntry) : Int? {
+    private fun calculateS2(spaLoopTableEntry: ELHISPALoopTableEntry) : Int? {
 
         val result = s2Calculator.calculate(spaLoopTableEntry, table)
         return result;
     }
 
-    private fun calculateS3(): Map<SPALoopTableEntry, Int> {
+    private fun calculateS3(): Map<ELHISPALoopTableEntry, Int> {
         val updatedMap = s3Calculator.calculateAllV2(table);
         //contains <spaEntry , Int> pairs that need to be updated in the loop table
         return updatedMap;

@@ -3,7 +3,7 @@ package tin.services.ontology.OntologyExecutionContext
 import org.semanticweb.owlapi.model.*
 import tin.services.ontology.Reasoner.CachingDLReasoner
 import tin.services.ontology.OntologyManager
-import tin.services.ontology.loopTable.LoopTableEntryRestriction.NumericRestrictionBuilder
+import tin.services.ontology.loopTable.LoopTableEntryRestriction.spa.NumericRestrictionBuilder
 import kotlin.math.pow
 
 class OntologyExecutionContextNumeric(private val manager: OntologyManager) {

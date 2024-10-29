@@ -1,24 +1,26 @@
-package tin.services.ontology.loopTable.LoopTableBuilder.ruleCalculators
+package tin.services.ontology.loopTable.LoopTableBuilder.ELHI.ruleCalculators
 
 import org.semanticweb.owlapi.model.OWLClass
 import tin.model.v2.query.QueryGraph
 import tin.model.v2.query.QueryEdgeLabel
 import tin.model.v2.transducer.TransducerEdge
 import tin.model.v2.transducer.TransducerGraph
+import tin.services.ontology.OntologyExecutionContext.ELHI.ELHIExecutionContext
 import tin.services.ontology.OntologyExecutionContext.ExecutionContext
-import tin.services.ontology.OntologyExecutionContext.OntologyExecutionContext
+import tin.services.ontology.loopTable.ELHISPALoopTable
 import tin.services.ontology.loopTable.SPALoopTable
+import tin.services.ontology.loopTable.loopTableEntry.ELHISPALoopTableEntry
 import tin.services.ontology.loopTable.loopTableEntry.SPALoopTableEntry
 
 class SpaS2Calculator(
-    private val ec: ExecutionContext,
+    private val ec: ELHIExecutionContext,
     private val queryGraph: QueryGraph,
     private val transducerGraph: TransducerGraph
     ) {
 
     private val shortFormProvider = ec.shortFormProvider;
     private val queryParser = ec.parser;
-    private val restrictionBuilder = ec.restrictionBuilder;
+    private val restrictionBuilder = ec.spaRestrictionBuilder;
     private val expressionBuilder = ec.expressionBuilder;
     private val dlReasoner = ec.dlReasoner;
     private val manchesterShortFormProvider = ec.manchesterShortFormProvider;
@@ -26,7 +28,7 @@ class SpaS2Calculator(
     /**
      * calculates the updated value for an entry spa[(s,t),(s',t'),M]
      */
-    fun calculate(spaLoopTableEntry: SPALoopTableEntry, table: SPALoopTable): Int? {
+    fun calculate(spaLoopTableEntry: ELHISPALoopTableEntry, table: ELHISPALoopTable): Int? {
         val source = spaLoopTableEntry.source;
         val target = spaLoopTableEntry.target;
         val M = spaLoopTableEntry.restriction;
@@ -91,7 +93,7 @@ class SpaS2Calculator(
     /**
      * optimised version to calculate S2 for all (s,t),(s',t'),M . About 6x faster than the original implementation
      */
-    fun calculateAll(table: SPALoopTable) : SPALoopTable {
+    fun calculateAll(table: ELHISPALoopTable) : ELHISPALoopTable {
             queryGraph.nodes.forEach { querySource ->
                 transducerGraph.nodes.forEach { transducerSource ->
                     queryGraph.nodes.forEach { queryTarget ->
@@ -132,7 +134,7 @@ class SpaS2Calculator(
                                 val MClassExp = restrictionBuilder.asClassExpression(restriction);
                                 val MExp = expressionBuilder.createELHIExpression(MClassExp);
 
-                                val entry = SPALoopTableEntry(
+                                val entry = ELHISPALoopTableEntry(
                                     Pair(querySource, transducerSource),
                                     Pair(queryTarget, transducerTarget),
                                     restriction

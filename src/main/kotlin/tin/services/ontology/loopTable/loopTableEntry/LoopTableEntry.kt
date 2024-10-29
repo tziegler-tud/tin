@@ -7,7 +7,7 @@ import tin.services.ontology.loopTable.LoopTableEntryRestriction.LoopTableEntryR
 interface LoopTableEntry {
     val source: Pair<Node, Node>;
     val target: Pair<Node, Node>
-    val restriction: LoopTableEntryRestriction<OWLClass>
+    val restriction: LoopTableEntryRestriction
 
     fun hasEqualSourceAndTarget() : Boolean
 }

@@ -1,33 +1,36 @@
-package tin.services.ontology.loopTable.LoopTableBuilder.ruleCalculators
+package tin.services.ontology.loopTable.LoopTableBuilder.ELHI.ruleCalculators
 
 import org.semanticweb.owlapi.model.OWLClass
 import tin.model.v2.genericGraph.*
 import tin.model.v2.query.QueryGraph
 import tin.model.v2.graph.Node
 import tin.model.v2.transducer.TransducerGraph
+import tin.services.ontology.OntologyExecutionContext.ELHI.ELHIExecutionContext
 import tin.services.ontology.OntologyExecutionContext.ExecutionContext
-import tin.services.ontology.OntologyExecutionContext.OntologyExecutionContext
-import tin.services.ontology.loopTable.LoopTableEntryRestriction.ConceptNameRestriction
+import tin.services.ontology.loopTable.ELHISPALoopTable
+import tin.services.ontology.loopTable.LoopTableEntryRestriction.spa.ConceptNameRestriction
 import tin.services.ontology.loopTable.LoopTableEntryRestriction.LoopTableEntryRestriction
+import tin.services.ontology.loopTable.LoopTableEntryRestriction.spa.MultiClassLoopTableEntryRestriction
 import tin.services.ontology.loopTable.SPALoopTable
+import tin.services.ontology.loopTable.loopTableEntry.ELHISPALoopTableEntry
 import tin.services.ontology.loopTable.loopTableEntry.SPALoopTableEntry
 
 class SpaS3Calculator(
-    private val ec: ExecutionContext,
+    private val ec: ELHIExecutionContext,
     private val queryGraph: QueryGraph,
     private val transducerGraph: TransducerGraph
     ) {
 
     private val shortFormProvider = ec.shortFormProvider;
     private val queryParser = ec.parser;
-    private val restrictionBuilder = ec.restrictionBuilder;
+    private val restrictionBuilder = ec.spaRestrictionBuilder;
     private val expressionBuilder = ec.expressionBuilder;
     private val dlReasoner = ec.dlReasoner;
     private val manchesterShortFormProvider = ec.manchesterShortFormProvider;
 
 
     //use Floyd Warshall to calculate all possible updates in one step
-    fun calculateAll(M: ConceptNameRestriction, table: SPALoopTable): Map<SPALoopTableEntry, Int> {
+    fun calculateAll(M: ConceptNameRestriction, table: ELHISPALoopTable): Map<ELHISPALoopTableEntry, Int> {
 
         //prefilter table
         val tableFragment = table.getWithRestriction(M)
@@ -35,7 +38,7 @@ class SpaS3Calculator(
         val graph = GenericGraph();
 
         val pairNodes: MutableList<PairNode> = mutableListOf();
-        val updateMap: MutableMap<SPALoopTableEntry, Int> = mutableMapOf();
+        val updateMap: MutableMap<ELHISPALoopTableEntry, Int> = mutableMapOf();
 
         queryGraph.nodes.forEach { queryNode ->
             transducerGraph.nodes.forEach { transducerNode ->
@@ -66,7 +69,7 @@ class SpaS3Calculator(
             val targetPairNode = pairNodes.find { it.identifier == targetNode.identifier }!!
 
             //build SPALoopTableEntry
-            val entry = SPALoopTableEntry(sourcePairNode.getQueryNode(), sourcePairNode.getTransducerNode(), targetPairNode.getQueryNode(), targetPairNode.getTransducerNode(), M);
+            val entry = ELHISPALoopTableEntry(sourcePairNode.getQueryNode(), sourcePairNode.getTransducerNode(), targetPairNode.getQueryNode(), targetPairNode.getTransducerNode(), M);
 
             updateMap[entry] = distance;
         }
@@ -74,15 +77,15 @@ class SpaS3Calculator(
     }
 
     //use Floyd Warshall to calculate all possible updates in one step
-    fun calculateAllV2(table: SPALoopTable): Map<SPALoopTableEntry, Int> {
+    fun calculateAllV2(table: ELHISPALoopTable): Map<ELHISPALoopTableEntry, Int> {
 
         //build graph structure
         val graph = GenericGraph();
 
-        val updateMap: MutableMap<SPALoopTableEntry, Int> = mutableMapOf();
+        val updateMap: MutableMap<ELHISPALoopTableEntry, Int> = mutableMapOf();
 
         //build a graph for each M
-        val graphMap: HashMap<LoopTableEntryRestriction<OWLClass>, GenericGraph> = hashMapOf()
+        val graphMap: HashMap<MultiClassLoopTableEntryRestriction, GenericGraph> = hashMapOf()
 
         val pairNodes: MutableList<PairNode> = mutableListOf();
 
@@ -129,7 +132,7 @@ class SpaS3Calculator(
                 val targetPairNode = pairNodes.find { it.identifier == targetNode.identifier }!!
 
                 //build SPALoopTableEntry
-                val entry = SPALoopTableEntry(sourcePairNode.getQueryNode(), sourcePairNode.getTransducerNode(), targetPairNode.getQueryNode(), targetPairNode.getTransducerNode(), restriction);
+                val entry = ELHISPALoopTableEntry(sourcePairNode.getQueryNode(), sourcePairNode.getTransducerNode(), targetPairNode.getQueryNode(), targetPairNode.getTransducerNode(), restriction);
 
                 updateMap[entry] = distance;
             }

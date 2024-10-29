@@ -1,21 +1,17 @@
-package tin.services.ontology.loopTable.LoopTableEntryRestriction
+package tin.services.ontology.loopTable.LoopTableEntryRestriction.spa
 
 import org.semanticweb.owlapi.model.OWLClass
 import org.semanticweb.owlapi.model.OWLClassExpression
-import org.semanticweb.owlapi.reasoner.impl.OWLClassNode
 import org.semanticweb.owlapi.util.ShortFormProvider
-import tin.model.v2.graph.Node
 import tin.services.ontology.DLQueryParser
-import uk.ac.manchester.cs.owl.owlapi.OWLAnonymousClassExpressionImpl
-import uk.ac.manchester.cs.owl.owlapi.OWLClassExpressionImpl
-import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl
+import tin.services.ontology.loopTable.LoopTableEntryRestriction.LoopTableEntryRestriction
 import uk.ac.manchester.cs.owl.owlapi.OWLObjectIntersectionOfImpl
 import uk.ac.manchester.cs.owl.owlapi.OWLObjectUnionOfImpl
 
 class RestrictionBuilder(
     private val queryParser: DLQueryParser,
     private val shortFormProvider: ShortFormProvider
-) : RestrictionBuilderInterface{
+) : MultiClassRestrictionBuilderInterface {
 
     override fun createConceptNameRestrictionFromStringSet(values: Set<String>): ConceptNameRestriction {
         val restriction = ConceptNameRestriction();
@@ -28,7 +24,7 @@ class RestrictionBuilder(
         return restriction
     }
 
-    override fun createConceptNameRestriction(element: OWLClass): LoopTableEntryRestriction<OWLClass> {
+    override fun createConceptNameRestriction(element: OWLClass): MultiClassLoopTableEntryRestriction {
         val restriction = ConceptNameRestriction()
         restriction.addElement(element);
         return restriction;
@@ -67,7 +63,7 @@ class RestrictionBuilder(
 //        return restriction;
 //    }
 
-    override fun asClassExpression(restriction: LoopTableEntryRestriction<OWLClass>) : OWLClassExpression {
+    override fun asClassExpression(restriction: MultiClassLoopTableEntryRestriction) : OWLClassExpression {
         if(restriction.isEmpty()) {
             throw Error("Cannot create class Expression from empty restriction.")
         }
@@ -76,6 +72,10 @@ class RestrictionBuilder(
             return set.first();
         }
         return OWLObjectIntersectionOfImpl(restriction.asList());
+    }
+
+    override fun createRestriction(element: OWLClass): LoopTableEntryRestriction<OWLClass> {
+        return createRestriction(element);
     }
 
     fun testUnion(conceptNameRestriction: ConceptNameRestriction) : OWLClassExpression {

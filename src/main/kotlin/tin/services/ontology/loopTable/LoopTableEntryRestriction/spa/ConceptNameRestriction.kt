@@ -1,7 +1,8 @@
-package tin.services.ontology.loopTable.LoopTableEntryRestriction
+package tin.services.ontology.loopTable.LoopTableEntryRestriction.spa
 import org.semanticweb.owlapi.model.OWLClass
+import tin.services.ontology.loopTable.LoopTableEntryRestriction.LoopTableEntryRestriction
 
-class ConceptNameRestriction() : SetLoopTableEntryRestriction<OWLClass> {
+class ConceptNameRestriction() : SetLoopTableEntryRestriction {
 
     override val value: MutableSet<OWLClass> = hashSetOf();
 

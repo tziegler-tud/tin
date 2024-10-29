@@ -8,7 +8,7 @@ import tin.services.internal.fileReaders.OntologyReaderService
 import tin.services.internal.fileReaders.fileReaderResult.FileReaderResult
 import tin.services.ontology.OntologyExecutionContext.ExecutionContextType
 import tin.services.ontology.Reasoner.SimpleDLReasoner
-import tin.services.ontology.loopTable.LoopTableEntryRestriction.RestrictionBuilder
+import tin.services.ontology.loopTable.LoopTableEntryRestriction.spa.RestrictionBuilder
 import tin.services.technical.SystemConfigurationService
 import java.io.File
 
@@ -37,7 +37,7 @@ class DLReasonerTest {
 
         val dlReasoner = ec.dlReasoner;
         val expressionBuilder = ec.expressionBuilder;
-        val restrictionBuilder = ec.restrictionBuilder;
+        val restrictionBuilder = ec.spaRestrictionBuilder;
         val parser = ec.parser;
 
         val l1 = expressionBuilder.createELHExpressionFromString("Bread")
@@ -55,9 +55,9 @@ class DLReasonerTest {
     fun testSubsumptionCheckTopElement(){
         val manager = loadExampleOntology("pizza2.rdf");
         val reasoner = manager.createReasoner(OntologyManager.BuildInReasoners.HERMIT)
-        val ec = manager.createExecutionContext(ExecutionContextType.LOOPTABLE);
+        val ec = manager.createELHIExecutionContext(ExecutionContextType.ELHI);
         val expressionBuilder = ec.expressionBuilder;
-        val restrictionBuilder = ec.restrictionBuilder;
+        val restrictionBuilder = ec.spaRestrictionBuilder;
         val parser = ec.parser
         val dlReasoner = ec.dlReasoner;
 
@@ -289,10 +289,10 @@ class DLReasonerTest {
     @Test
     fun testCalculateClassSubsumees() {
         val manager = loadExampleOntology("pizza2_test.rdf");
-        val ec = manager.createExecutionContext(ExecutionContextType.LOOPTABLE)
+        val ec = manager.createELHIExecutionContext(ExecutionContextType.ELHI)
         val dlReasoner = ec.dlReasoner;
         val expressionBuilder = ec.expressionBuilder
-        val restrictionBuilder = ec.restrictionBuilder
+        val restrictionBuilder = ec.spaRestrictionBuilder
         val queryParser = ec.parser
 
         val parser = manager.getQueryParser();
@@ -320,16 +320,14 @@ class DLReasonerTest {
     @Test
     fun testCachePrewarming() {
         val manager = loadExampleOntology("pizza2_test.rdf");
-        val ec = manager.createExecutionContext(ExecutionContextType.LOOPTABLE, true);
+        val ec = manager.createELHIExecutionContext(ExecutionContextType.ELHI, true);
 
         val dlReasoner = ec.dlReasoner;
-        val expressionBuilder = ec.expressionBuilder
-        val restrictionBuilder = ec.restrictionBuilder
-        val queryParser = ec.parser
+        val stats = dlReasoner.getStats()
 
         //cache size should be |roles| x |tailsets|
-        assert(dlReasoner.subClassCache.size == ec.getRoles().size * ec.tailsetsAsClasses.size);
+        assert(stats["subClassCache"]!! == ec.getRoles().size * ec.tailsetSize.toInt());
         //cache hits should be 0
-        assert(dlReasoner.subClassCacheHitCounter == 0);
+        assert(stats["subClassCacheHitCounter"]!! == 0);
     }
 }

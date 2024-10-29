@@ -17,11 +17,11 @@ import org.semanticweb.owlapi.util.ShortFormProvider
 import org.semanticweb.owlapi.util.SimpleShortFormProvider
 import tin.model.v1.alphabet.Alphabet
 import tin.services.ontology.Expressions.DLExpressionBuilder
+import tin.services.ontology.OntologyExecutionContext.EL.ELExecutionContext
+import tin.services.ontology.OntologyExecutionContext.ELHI.ELHIExecutionContext
 import tin.services.ontology.OntologyExecutionContext.ExecutionContext
 import tin.services.ontology.OntologyExecutionContext.ExecutionContextType
-import tin.services.ontology.OntologyExecutionContext.OntologyExecutionContext
 import tin.services.ontology.OntologyExecutionContext.OntologyExecutionContextFactory
-import tin.services.ontology.loopTable.LoopTableEntryRestriction.RestrictionBuilder
 import java.io.File
 
 
@@ -158,5 +158,13 @@ class OntologyManager(val file: File) {
 
     fun createExecutionContext(executionContextType: ExecutionContextType, prewarmCaches: Boolean = false) : ExecutionContext {
         return executionContextFactory.create(executionContextType, this, prewarmCaches);
+    }
+
+    fun createELHIExecutionContext(executionContextType: ExecutionContextType, prewarmCaches: Boolean = false) : ELHIExecutionContext {
+        return executionContextFactory.createELHIContext(executionContextType, this, prewarmCaches);
+    }
+
+    fun createELExecutionContext(executionContextType: ExecutionContextType, prewarmCaches: Boolean = false) : ELExecutionContext {
+        return executionContextFactory.createELContext(executionContextType, this, prewarmCaches);
     }
 }

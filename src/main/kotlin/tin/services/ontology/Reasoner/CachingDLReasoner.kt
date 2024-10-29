@@ -135,4 +135,23 @@ class CachingDLReasoner(
         propertySubsumptionCache.clear();
         entailmentCache.clear();
     }
+
+    override fun getStats(): Map<String, Int> {
+        val map = mutableMapOf<String, Int>();
+        map["superClassCache"] = superClassCache.size;
+        map["equivalentClassCache"] = equivalentClassCache.size;
+        map["subClassCache"] = subClassCache.size;
+        map["propertySubsumptionCache"] = propertySubsumptionCache.size;
+        map["entailmentCache"] = entailmentCache.size;
+
+        map["superClassCacheHitCounter"] = superClassCacheHitCounter
+        map["equivNodeCacheHitCounter"] = equivNodeCacheHitCounter
+        map["subClassCacheHitCounter"] = subClassCacheHitCounter
+        map["propertySubsumptionCacheHitCounter"] = propertySubsumptionCacheHitCounter
+        map["entailmentCacheHitCounter"] = entailmentCacheHitCounter;
+        map["entailmentCacheMissCounter"] = entailmentCacheMissCounter;
+
+        return map;
+    }
+
 }

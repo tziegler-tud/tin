@@ -2,17 +2,16 @@ package tin.services.ontology.loopTable.loopTableEntry
 
 import org.semanticweb.owlapi.model.OWLClass
 import tin.model.v2.graph.Node
-import tin.model.v2.query.QueryGraph
-import tin.services.ontology.loopTable.LoopTableEntryRestriction.ConceptNameRestriction
 import tin.services.ontology.loopTable.LoopTableEntryRestriction.LoopTableEntryRestriction
+import tin.services.ontology.loopTable.LoopTableEntryRestriction.spa.ConceptNameRestriction
 
-class SPALoopTableEntry(
+abstract class SPALoopTableEntry(
     override val source: Pair<Node, Node>,
     override val target: Pair<Node, Node>,
-    override val restriction: LoopTableEntryRestriction<OWLClass>,
-    ) : LoopTableEntry {
+    override val restriction: LoopTableEntryRestriction,
+) : LoopTableEntry {
 
-    constructor(querySource: Node, transducerSource: Node, queryTarget: Node, transducerTarget: Node, restriction: LoopTableEntryRestriction<OWLClass>)
+    constructor(querySource: Node, transducerSource: Node, queryTarget: Node, transducerTarget: Node, restriction: LoopTableEntryRestriction)
             : this(Pair(querySource, transducerSource), Pair(queryTarget, transducerTarget), restriction)
 
     override fun hasEqualSourceAndTarget(): Boolean {

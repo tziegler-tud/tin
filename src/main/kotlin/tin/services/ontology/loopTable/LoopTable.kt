@@ -3,7 +3,7 @@ package tin.services.ontology.loopTable
 import tin.services.ontology.loopTable.loopTableEntry.LoopTableEntry
 import tin.services.ontology.loopTable.loopTableEntry.SPALoopTableEntry
 
-interface LoopTable<entryType: LoopTableEntry> {
+interface LoopTable<entryType> {
     /*
     loop tables have the following properties:
      [(s,t),(s',t'), M]: Long for spa, M is a set of concept names

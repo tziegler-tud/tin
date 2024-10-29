@@ -13,7 +13,7 @@ import java.io.File
 
 @SpringBootTest
 @TestConfiguration
-class OntologyExecutionContextTest {
+class ELHISetExecutionContextTest {
     @Autowired
     lateinit var systemConfigurationService: SystemConfigurationService;
 

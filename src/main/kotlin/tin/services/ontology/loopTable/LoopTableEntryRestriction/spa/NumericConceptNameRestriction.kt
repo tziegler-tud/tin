@@ -1,13 +1,12 @@
-package tin.services.ontology.loopTable.LoopTableEntryRestriction
+package tin.services.ontology.loopTable.LoopTableEntryRestriction.spa
 import org.semanticweb.owlapi.model.OWLClass
-import java.math.BigInteger
-import kotlin.math.pow
+import tin.services.ontology.loopTable.LoopTableEntryRestriction.LoopTableEntryRestriction
 
 class NumericConceptNameRestriction(
     private val numericSetUtility: NumericSetUtility,
     override var value: ULong = 0UL
 
-) : NumericLoopTableEntryRestriction<OWLClass> {
+) : NumericLoopTableEntryRestriction {
 
     constructor(res: NumericConceptNameRestriction) : this(res.numericSetUtility, res.value)
 

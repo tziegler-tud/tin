@@ -13,8 +13,8 @@ import tin.services.internal.fileReaders.fileReaderResult.FileReaderResult
 import tin.services.ontology.Reasoner.SimpleDLReasoner
 import tin.services.ontology.OntologyExecutionContext.ExecutionContextType
 import tin.services.ontology.OntologyManager
-import tin.services.ontology.loopTable.LoopTableEntryRestriction.NumericConceptNameRestriction
-import tin.services.ontology.loopTable.LoopTableEntryRestriction.NumericRestrictionBuilder
+import tin.services.ontology.loopTable.LoopTableEntryRestriction.spa.NumericConceptNameRestriction
+import tin.services.ontology.loopTable.LoopTableEntryRestriction.spa.NumericRestrictionBuilder
 import tin.services.technical.SystemConfigurationService
 import java.io.File
 

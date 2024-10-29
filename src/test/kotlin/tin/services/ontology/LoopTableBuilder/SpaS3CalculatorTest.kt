@@ -11,7 +11,7 @@ import tin.services.internal.fileReaders.fileReaderResult.FileReaderResult
 import tin.services.ontology.Reasoner.SimpleDLReasoner
 import tin.services.ontology.OntologyExecutionContext.ExecutionContextType
 import tin.services.ontology.OntologyManager
-import tin.services.ontology.loopTable.LoopTableBuilder.ruleCalculators.SpaS3Calculator
+import tin.services.ontology.loopTable.LoopTableBuilder.ELHI.ruleCalculators.SpaS3Calculator
 import tin.services.ontology.loopTable.SPALoopTable
 import tin.services.ontology.loopTable.loopTableEntry.SPALoopTableEntry
 import tin.services.technical.SystemConfigurationService

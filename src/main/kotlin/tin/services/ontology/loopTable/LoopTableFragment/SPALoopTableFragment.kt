@@ -1,18 +1,17 @@
 package tin.services.ontology.loopTable.LoopTableFragment
 import tin.services.ontology.loopTable.LoopTable
-import tin.services.ontology.loopTable.LoopTableEntryRestriction.ConceptNameRestriction
+import tin.services.ontology.loopTable.LoopTableEntryRestriction.spa.ConceptNameRestriction
+import tin.services.ontology.loopTable.loopTableEntry.LoopTableEntry
 import tin.services.ontology.loopTable.loopTableEntry.SPALoopTableEntry
 
-class SPALoopTableFragment(
-    override val map: HashMap<SPALoopTableEntry, Int>,
-    val restriction: ConceptNameRestriction,
+open class SPALoopTableFragment<entryType: SPALoopTableEntry>(
+    override val map: HashMap<entryType, Int>,
 )
-    : LoopTable<SPALoopTableEntry> {
+    : LoopTableFragment<entryType> {
 
-    constructor(): this(HashMap(), ConceptNameRestriction());
-    constructor(map: Map<SPALoopTableEntry, Int>, restriction: ConceptNameRestriction): this(HashMap(map), restriction);
-    constructor(map: Map<SPALoopTableEntry, Int>): this(HashMap(map), ConceptNameRestriction());
-    override fun get(entry: SPALoopTableEntry): Int? {
+    constructor(): this(HashMap());
+    constructor(map: Map<entryType, Int>): this(HashMap(map));
+    override fun get(entry: entryType): Int? {
         //[p,p,M] = 0
         if(entry.hasEqualSourceAndTarget()){
             return 0;
@@ -21,7 +20,7 @@ class SPALoopTableFragment(
         return map[entry];
     }
 
-    override fun set(entry: SPALoopTableEntry, value: Int) {
+    override fun set(entry: entryType, value: Int) {
         map[entry] = value;
     }
 }

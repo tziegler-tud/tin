@@ -1,4 +1,4 @@
-package tin.services.ontology.loopTable.LoopTableEntryRestriction
+package tin.services.ontology.loopTable.LoopTableEntryRestriction.spa
 
 import org.semanticweb.owlapi.model.OWLClass
 import java.math.BigInteger
