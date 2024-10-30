@@ -30,7 +30,7 @@ class ELHINumericExecutionContext(private val manager: OntologyManager) : ELHIEx
 
     override val tailsetSize = tailsetMaximum;
 
-    fun prepareForLoopTableConstruction(prewarmCaches: Boolean = false){
+    override fun prepareForLoopTableConstruction(prewarmCaches: Boolean){
         if(prewarmCaches) {
             prewarmSubsumptionCache();
         }
@@ -41,14 +41,6 @@ class ELHINumericExecutionContext(private val manager: OntologyManager) : ELHIEx
         {
             action(spaRestrictionBuilder.createConceptNameRestriction(i));
         }
-    }
-
-    override fun getSpaRestrictionBuilder(): MultiClassRestrictionBuilderInterface {
-        return spaRestrictionBuilder;
-    }
-
-    override fun getSpRestrictionBuilder(): RestrictionBuilderInterface<OWLIndividual> {
-        return spRestrictionBuilder;
     }
 
     fun forEachTailsetDescending(action: (NumericConceptNameRestriction) -> Unit) {

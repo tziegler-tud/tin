@@ -24,7 +24,7 @@ class RestrictionBuilder(
         return restriction
     }
 
-    override fun createConceptNameRestriction(element: OWLClass): MultiClassLoopTableEntryRestriction {
+    override fun createConceptNameRestriction(element: OWLClass): ConceptNameRestriction {
         val restriction = ConceptNameRestriction()
         restriction.addElement(element);
         return restriction;
@@ -74,7 +74,7 @@ class RestrictionBuilder(
         return OWLObjectIntersectionOfImpl(restriction.asList());
     }
 
-    override fun createRestriction(element: OWLClass): LoopTableEntryRestriction<OWLClass> {
+    override fun createRestriction(element: OWLClass): LoopTableEntryRestriction {
         return createRestriction(element);
     }
 

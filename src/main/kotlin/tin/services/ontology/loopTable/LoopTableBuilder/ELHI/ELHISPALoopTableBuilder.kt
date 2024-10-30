@@ -20,7 +20,7 @@ class ELHISPALoopTableBuilder (
     private var table: ELHISPALoopTable = ELHISPALoopTable();
     private var updateTable: ELHISPALoopTable = ELHISPALoopTable();
     // prepare ontology execution context
-    private val ec = ontologyManager.createELHIExecutionContext(ExecutionContextType.ELHI, false);
+    private val ec = ontologyManager.createELHIExecutionContext(ExecutionContextType.ELHI_NUMERIC, false);
 
     private val pairsAvailable = mutableSetOf<Pair<Node, Node>>()
 

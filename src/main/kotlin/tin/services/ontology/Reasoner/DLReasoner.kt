@@ -31,4 +31,6 @@ interface DLReasoner {
     fun calculateEquivalentClasses(expr: DLExpression): Node<OWLClass>
 
     fun getStats() : Map<String, Int>
+
+    fun clearCache();
 }

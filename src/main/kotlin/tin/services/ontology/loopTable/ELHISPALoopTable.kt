@@ -1,6 +1,7 @@
 package tin.services.ontology.loopTable
 import tin.model.v2.graph.Node
 import tin.services.ontology.loopTable.LoopTableEntryRestriction.spa.ConceptNameRestriction
+import tin.services.ontology.loopTable.LoopTableEntryRestriction.spa.MultiClassLoopTableEntryRestriction
 import tin.services.ontology.loopTable.LoopTableFragment.SPALoopTableFragment
 import tin.services.ontology.loopTable.loopTableEntry.ELHISPALoopTableEntry
 import tin.services.ontology.loopTable.loopTableEntry.SPALoopTableEntry
@@ -38,7 +39,7 @@ class ELHISPALoopTable(
      * returns a HashMap <spaLoopTableEntry, Int> containing all entries that use the given restriction.
      * If limit is given, only return entries with value BELOW (< ) the given limit.
      */
-    fun getWithRestriction(restriction: ConceptNameRestriction, limit: Int? = null) : SPALoopTableFragment<ELHISPALoopTableEntry> {
+    fun getWithRestriction(restriction: MultiClassLoopTableEntryRestriction, limit: Int? = null) : SPALoopTableFragment<ELHISPALoopTableEntry> {
         return SPALoopTableFragment(map.filter{it.key.restriction == restriction && if (limit == null) true else it.value < limit});
     }
 
@@ -46,7 +47,7 @@ class ELHISPALoopTable(
         return SPALoopTableFragment(map.filter { it.key.source == source && it.key.target == target && if (limit == null) true else it.value < limit});
     }
 
-    fun getWithSourceAndRestriction(source: Pair<Node, Node>, restriction: ConceptNameRestriction) : SPALoopTableFragment<ELHISPALoopTableEntry> {
+    fun getWithSourceAndRestriction(source: Pair<Node, Node>, restriction: MultiClassLoopTableEntryRestriction) : SPALoopTableFragment<ELHISPALoopTableEntry> {
         return SPALoopTableFragment(map.filter { it.key.restriction == restriction && it.key.source == source });
     }
 

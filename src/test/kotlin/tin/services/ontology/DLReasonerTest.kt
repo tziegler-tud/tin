@@ -33,7 +33,7 @@ class DLReasonerTest {
     @Test
     fun testSubsumptionCheck(){
         val manager = loadExampleOntology("pizza2.rdf");
-        val ec = manager.createExecutionContext(ExecutionContextType.LOOPTABLE);
+        val ec = manager.createELHIExecutionContext(ExecutionContextType.ELHI);
 
         val dlReasoner = ec.dlReasoner;
         val expressionBuilder = ec.expressionBuilder;

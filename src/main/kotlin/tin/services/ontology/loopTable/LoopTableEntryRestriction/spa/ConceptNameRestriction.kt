@@ -34,7 +34,7 @@ class ConceptNameRestriction() : SetLoopTableEntryRestriction {
         return false;
     }
 
-    override fun containsAllElementsFromOneOf(set: Set<LoopTableEntryRestriction<OWLClass>>) : Boolean {
+    override fun containsAllElementsFromOneOf(set: Set<MultiClassLoopTableEntryRestriction>) : Boolean {
         set.forEach set@{ res ->
             if(res == this) return true;
             res.asSet().forEach { owlClass ->
@@ -48,7 +48,7 @@ class ConceptNameRestriction() : SetLoopTableEntryRestriction {
     /**
      * returns true if this is a subset of the given restriction
      */
-    override fun isSubsetOf(restriction: LoopTableEntryRestriction<OWLClass>) : Boolean {
+    override fun isSubsetOf(restriction: MultiClassLoopTableEntryRestriction) : Boolean {
         if(restriction !is ConceptNameRestriction) throw Error("Unable to perform this operation on objects other than ConceptNameRestriction!")
         return restriction.value.containsAll(this.value);
     }
@@ -56,7 +56,7 @@ class ConceptNameRestriction() : SetLoopTableEntryRestriction {
     /**
      * returns true if this is a superset of the given restriction
      */
-    override fun isSupersetOf(restriction: LoopTableEntryRestriction<OWLClass>) : Boolean {
+    override fun isSupersetOf(restriction: MultiClassLoopTableEntryRestriction) : Boolean {
         if(restriction !is ConceptNameRestriction) throw Error("Unable to perform this operation on objects other than ConceptNameRestriction!")
         return value.containsAll(restriction.value)
     }

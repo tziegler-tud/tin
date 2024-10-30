@@ -30,7 +30,7 @@ class SpaS3Calculator(
 
 
     //use Floyd Warshall to calculate all possible updates in one step
-    fun calculateAll(M: ConceptNameRestriction, table: ELHISPALoopTable): Map<ELHISPALoopTableEntry, Int> {
+    fun calculateAll(M: MultiClassLoopTableEntryRestriction, table: ELHISPALoopTable): Map<ELHISPALoopTableEntry, Int> {
 
         //prefilter table
         val tableFragment = table.getWithRestriction(M)

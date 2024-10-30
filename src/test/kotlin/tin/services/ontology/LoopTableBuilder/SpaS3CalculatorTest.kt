@@ -11,8 +11,10 @@ import tin.services.internal.fileReaders.fileReaderResult.FileReaderResult
 import tin.services.ontology.Reasoner.SimpleDLReasoner
 import tin.services.ontology.OntologyExecutionContext.ExecutionContextType
 import tin.services.ontology.OntologyManager
+import tin.services.ontology.loopTable.ELHISPALoopTable
 import tin.services.ontology.loopTable.LoopTableBuilder.ELHI.ruleCalculators.SpaS3Calculator
 import tin.services.ontology.loopTable.SPALoopTable
+import tin.services.ontology.loopTable.loopTableEntry.ELHISPALoopTableEntry
 import tin.services.ontology.loopTable.loopTableEntry.SPALoopTableEntry
 import tin.services.technical.SystemConfigurationService
 import java.io.File
@@ -57,10 +59,10 @@ class SpaS3CalculatorTest {
         val query = readQueryWithFileReaderService("spaCalculation/S3/test_spaS3_1.txt")
         val transducer = readTransducerWithFileReaderService("spaCalculation/S3/test_spaS3_1.txt")
 
-        val ec = manager.createExecutionContext(ExecutionContextType.LOOPTABLE);
+        val ec = manager.createELHIExecutionContext(ExecutionContextType.ELHI);
         val queryParser = ec.parser;
         val shortFormProvider = ec.shortFormProvider;
-        val restrictionBuilder = ec.restrictionBuilder;
+        val restrictionBuilder = ec.spaRestrictionBuilder;
 
 
 
@@ -76,26 +78,26 @@ class SpaS3CalculatorTest {
 
         val M = restrictionBuilder.createConceptNameRestriction("Egg")
 
-        val s0t0s0t0 = SPALoopTableEntry(Pair(s0,t0), Pair(s0,t0),M);
-        val s0t1s0t1 = SPALoopTableEntry(Pair(s0,t1), Pair(s0,t1),M);
-        val s1t0s1t0 = SPALoopTableEntry(Pair(s1,t0), Pair(s1,t0),M);
-        val s1t1s1t1 = SPALoopTableEntry(Pair(s1,t1), Pair(s1,t1),M);
+        val s0t0s0t0 = ELHISPALoopTableEntry(Pair(s0,t0), Pair(s0,t0),M);
+        val s0t1s0t1 = ELHISPALoopTableEntry(Pair(s0,t1), Pair(s0,t1),M);
+        val s1t0s1t0 = ELHISPALoopTableEntry(Pair(s1,t0), Pair(s1,t0),M);
+        val s1t1s1t1 = ELHISPALoopTableEntry(Pair(s1,t1), Pair(s1,t1),M);
 
-        val s0t0s0t1 = SPALoopTableEntry(Pair(s0,t0), Pair(s0,t1),M);
-        val s0t0s1t0 = SPALoopTableEntry(Pair(s0,t0), Pair(s1,t0),M);
-        val s0t0s1t1 = SPALoopTableEntry(Pair(s0,t0), Pair(s1,t1),M);
-        val s0t1s0t0 = SPALoopTableEntry(Pair(s0,t1), Pair(s0,t0),M);
+        val s0t0s0t1 = ELHISPALoopTableEntry(Pair(s0,t0), Pair(s0,t1),M);
+        val s0t0s1t0 = ELHISPALoopTableEntry(Pair(s0,t0), Pair(s1,t0),M);
+        val s0t0s1t1 = ELHISPALoopTableEntry(Pair(s0,t0), Pair(s1,t1),M);
+        val s0t1s0t0 = ELHISPALoopTableEntry(Pair(s0,t1), Pair(s0,t0),M);
 
-        val s0t1s1t0 = SPALoopTableEntry(Pair(s0,t1), Pair(s1,t0),M);
-        val s0t1s1t1 = SPALoopTableEntry(Pair(s0,t1), Pair(s1,t1),M);
-        val s1t0s0t0 = SPALoopTableEntry(Pair(s1,t0), Pair(s0,t0),M);
-        val s1t0s0t1 = SPALoopTableEntry(Pair(s1,t0), Pair(s0,t1),M);
-        val s1t0s1t1 = SPALoopTableEntry(Pair(s1,t0), Pair(s1,t1),M);
-        val s1t1s0t0 = SPALoopTableEntry(Pair(s1,t1), Pair(s0,t0),M);
-        val s1t1s0t1 = SPALoopTableEntry(Pair(s1,t1), Pair(s0,t1),M);
-        val s1t1s1t0 = SPALoopTableEntry(Pair(s1,t1), Pair(s1,t0),M);
+        val s0t1s1t0 = ELHISPALoopTableEntry(Pair(s0,t1), Pair(s1,t0),M);
+        val s0t1s1t1 = ELHISPALoopTableEntry(Pair(s0,t1), Pair(s1,t1),M);
+        val s1t0s0t0 = ELHISPALoopTableEntry(Pair(s1,t0), Pair(s0,t0),M);
+        val s1t0s0t1 = ELHISPALoopTableEntry(Pair(s1,t0), Pair(s0,t1),M);
+        val s1t0s1t1 = ELHISPALoopTableEntry(Pair(s1,t0), Pair(s1,t1),M);
+        val s1t1s0t0 = ELHISPALoopTableEntry(Pair(s1,t1), Pair(s0,t0),M);
+        val s1t1s0t1 = ELHISPALoopTableEntry(Pair(s1,t1), Pair(s0,t1),M);
+        val s1t1s1t0 = ELHISPALoopTableEntry(Pair(s1,t1), Pair(s1,t0),M);
         //create empty loop table
-        val table: SPALoopTable = SPALoopTable();
+        val table: ELHISPALoopTable = ELHISPALoopTable();
 
 
         /***********************************************
@@ -178,10 +180,10 @@ class SpaS3CalculatorTest {
         val query = readQueryWithFileReaderService("spaCalculation/S3/test_spaS3_1.txt")
         val transducer = readTransducerWithFileReaderService("spaCalculation/S3/test_spaS3_1.txt")
 
-        val ec = manager.createExecutionContext(ExecutionContextType.LOOPTABLE);
+        val ec = manager.createELHIExecutionContext(ExecutionContextType.ELHI);
         val queryParser = ec.parser;
         val shortFormProvider = ec.shortFormProvider;
-        val restrictionBuilder = ec.restrictionBuilder;
+        val restrictionBuilder = ec.spaRestrictionBuilder;
 
 
 
@@ -197,26 +199,26 @@ class SpaS3CalculatorTest {
 
         val M = restrictionBuilder.createConceptNameRestriction("Egg")
 
-        val s0t0s0t0 = SPALoopTableEntry(Pair(s0,t0), Pair(s0,t0),M);
-        val s0t1s0t1 = SPALoopTableEntry(Pair(s0,t1), Pair(s0,t1),M);
-        val s1t0s1t0 = SPALoopTableEntry(Pair(s1,t0), Pair(s1,t0),M);
-        val s1t1s1t1 = SPALoopTableEntry(Pair(s1,t1), Pair(s1,t1),M);
+        val s0t0s0t0 = ELHISPALoopTableEntry(Pair(s0,t0), Pair(s0,t0),M);
+        val s0t1s0t1 = ELHISPALoopTableEntry(Pair(s0,t1), Pair(s0,t1),M);
+        val s1t0s1t0 = ELHISPALoopTableEntry(Pair(s1,t0), Pair(s1,t0),M);
+        val s1t1s1t1 = ELHISPALoopTableEntry(Pair(s1,t1), Pair(s1,t1),M);
 
-        val s0t0s0t1 = SPALoopTableEntry(Pair(s0,t0), Pair(s0,t1),M);
-        val s0t0s1t0 = SPALoopTableEntry(Pair(s0,t0), Pair(s1,t0),M);
-        val s0t0s1t1 = SPALoopTableEntry(Pair(s0,t0), Pair(s1,t1),M);
-        val s0t1s0t0 = SPALoopTableEntry(Pair(s0,t1), Pair(s0,t0),M);
+        val s0t0s0t1 = ELHISPALoopTableEntry(Pair(s0,t0), Pair(s0,t1),M);
+        val s0t0s1t0 = ELHISPALoopTableEntry(Pair(s0,t0), Pair(s1,t0),M);
+        val s0t0s1t1 = ELHISPALoopTableEntry(Pair(s0,t0), Pair(s1,t1),M);
+        val s0t1s0t0 = ELHISPALoopTableEntry(Pair(s0,t1), Pair(s0,t0),M);
 
-        val s0t1s1t0 = SPALoopTableEntry(Pair(s0,t1), Pair(s1,t0),M);
-        val s0t1s1t1 = SPALoopTableEntry(Pair(s0,t1), Pair(s1,t1),M);
-        val s1t0s0t0 = SPALoopTableEntry(Pair(s1,t0), Pair(s0,t0),M);
-        val s1t0s0t1 = SPALoopTableEntry(Pair(s1,t0), Pair(s0,t1),M);
-        val s1t0s1t1 = SPALoopTableEntry(Pair(s1,t0), Pair(s1,t1),M);
-        val s1t1s0t0 = SPALoopTableEntry(Pair(s1,t1), Pair(s0,t0),M);
-        val s1t1s0t1 = SPALoopTableEntry(Pair(s1,t1), Pair(s0,t1),M);
-        val s1t1s1t0 = SPALoopTableEntry(Pair(s1,t1), Pair(s1,t0),M);
+        val s0t1s1t0 = ELHISPALoopTableEntry(Pair(s0,t1), Pair(s1,t0),M);
+        val s0t1s1t1 = ELHISPALoopTableEntry(Pair(s0,t1), Pair(s1,t1),M);
+        val s1t0s0t0 = ELHISPALoopTableEntry(Pair(s1,t0), Pair(s0,t0),M);
+        val s1t0s0t1 = ELHISPALoopTableEntry(Pair(s1,t0), Pair(s0,t1),M);
+        val s1t0s1t1 = ELHISPALoopTableEntry(Pair(s1,t0), Pair(s1,t1),M);
+        val s1t1s0t0 = ELHISPALoopTableEntry(Pair(s1,t1), Pair(s0,t0),M);
+        val s1t1s0t1 = ELHISPALoopTableEntry(Pair(s1,t1), Pair(s0,t1),M);
+        val s1t1s1t0 = ELHISPALoopTableEntry(Pair(s1,t1), Pair(s1,t0),M);
         //create empty loop table
-        val table: SPALoopTable = SPALoopTable();
+        val table: ELHISPALoopTable = ELHISPALoopTable();
 
 
         /***********************************************

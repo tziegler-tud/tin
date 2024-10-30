@@ -21,7 +21,7 @@ class IndividualRestrictionBuilder(
         return AnonymousIndividualRestriction(element)
     }
 
-    override fun createRestriction(element: OWLIndividual): LoopTableEntryRestriction<OWLIndividual> {
+    override fun createRestriction(element: OWLIndividual): LoopTableEntryRestriction {
         return createRestriction(element);
     }
 }

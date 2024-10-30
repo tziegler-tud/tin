@@ -97,18 +97,20 @@ class SpaLoopTableTest {
         println("Time per iteration: " + timePerIteration)
         println("Estimated time to build complete table: " + estimatedTotalTime)
 
-        println("Superclass Cache Size: " + builder.getExecutionContext().dlReasoner.superClassCache.size)
-        println("Superclass Cache Hits: " + builder.getExecutionContext().dlReasoner.superClassCacheHitCounter)
+        val stats = builder.getExecutionContext().dlReasoner.getStats();
 
-        println("Equiv Node Cache Size: " + builder.getExecutionContext().dlReasoner.equivalentClassCache.size)
-        println("Superclass Cache Hits: " + builder.getExecutionContext().dlReasoner.equivNodeCacheHitCounter)
+        println("Superclass Cache Size: " + stats["superClassCache"])
+        println("Superclass Cache Hits: " + stats["superClassCacheHitCounter"])
 
-        println("SubClasses Cache Size: " + builder.getExecutionContext().dlReasoner.subClassCache.size)
-        println("SubClasses Cache Hits: " + builder.getExecutionContext().dlReasoner.subClassCacheHitCounter)
+        println("Equiv Node Cache Size: " + stats["equivalentClassCache"])
+        println("Equiv Node Cache Hits: " + stats["equivNodeCacheHitCounter"])
 
-        println("Entailment Check Cache Size: " + builder.getExecutionContext().dlReasoner.entailmentCache.size)
-        println("Entailment Cache Hits: " + builder.getExecutionContext().dlReasoner.entailmentCacheHitCounter)
-        println("Entailment Cache Misses: " + builder.getExecutionContext().dlReasoner.entailmentCacheMissCounter)
+        println("SubClasses Cache Size: " + stats["subClassCache"])
+        println("SubClasses Cache Hits: " + stats["subClassCacheHitCounter"])
+
+        println("Entailment Check Cache Size: " + stats["entailmentCache"])
+        println("Entailment Cache Hits: " + stats["entailmentCacheHitCounter"])
+        println("Entailment Cache Misses: " + stats["entailmentCacheMissCounter"])
 
 
     }
@@ -121,8 +123,6 @@ class SpaLoopTableTest {
 
         val query = readQueryWithFileReaderService("spaCalculation/table/test1.txt")
         val transducer = readTransducerWithFileReaderService("spaCalculation/table/test1.txt")
-
-        val iterationLimit = 2000
 
         val timeSource = TimeSource.Monotonic
 
@@ -152,18 +152,20 @@ class SpaLoopTableTest {
         println("Build without prewarmed caches: " + time1)
         println("Build with prewarmed caches: " + time2)
 
-        println("Superclass Cache Size: " + builder.getExecutionContext().dlReasoner.superClassCache.size)
-        println("Superclass Cache Hits: " + builder.getExecutionContext().dlReasoner.superClassCacheHitCounter)
+        val stats = builder.getExecutionContext().dlReasoner.getStats();
 
-        println("Equiv Node Cache Size: " + builder.getExecutionContext().dlReasoner.equivalentClassCache.size)
-        println("Superclass Cache Hits: " + builder.getExecutionContext().dlReasoner.equivNodeCacheHitCounter)
+        println("Superclass Cache Size: " + stats["superClassCache"])
+        println("Superclass Cache Hits: " + stats["superClassCacheHitCounter"])
 
-        println("SubClasses Cache Size: " + builder.getExecutionContext().dlReasoner.subClassCache.size)
-        println("SubClasses Cache Hits: " + builder.getExecutionContext().dlReasoner.subClassCacheHitCounter)
+        println("Equiv Node Cache Size: " + stats["equivalentClassCache"])
+        println("Equiv Node Cache Hits: " + stats["equivNodeCacheHitCounter"])
 
-        println("Entailment Check Cache Size: " + builder.getExecutionContext().dlReasoner.entailmentCache.size)
-        println("Entailment Cache Hits: " + builder.getExecutionContext().dlReasoner.entailmentCacheHitCounter)
-        println("Entailment Cache Misses: " + builder.getExecutionContext().dlReasoner.entailmentCacheMissCounter)
+        println("SubClasses Cache Size: " + stats["subClassCache"])
+        println("SubClasses Cache Hits: " + stats["subClassCacheHitCounter"])
+
+        println("Entailment Check Cache Size: " + stats["entailmentCache"])
+        println("Entailment Cache Hits: " + stats["entailmentCacheHitCounter"])
+        println("Entailment Cache Misses: " + stats["entailmentCacheMissCounter"])
 
 
     }

@@ -38,7 +38,7 @@ class ELHISetExecutionContext(private val manager: OntologyManager) : ELHIExecut
         }
     }
 
-    fun prepareForLoopTableConstruction(prewarmCaches: Boolean = false){
+    override fun prepareForLoopTableConstruction(prewarmCaches: Boolean){
         //create a new instance
         tailsets = computeTailSets();
         tailsetsAsClasses = computeTailSetsAsOWLClass();
@@ -107,14 +107,6 @@ class ELHISetExecutionContext(private val manager: OntologyManager) : ELHIExecut
 
     override fun getRoles(): Set<OWLObjectProperty> {
         return manager.getRoles();
-    }
-
-    override fun getSpaRestrictionBuilder(): MultiClassRestrictionBuilderInterface {
-        return spaRestrictionBuilder;
-    }
-
-    override fun getSpRestrictionBuilder(): RestrictionBuilderInterface<OWLIndividual> {
-        return spRestrictionBuilder;
     }
 
     private fun computeTailSets(): HashSet<HashSet<String>>{

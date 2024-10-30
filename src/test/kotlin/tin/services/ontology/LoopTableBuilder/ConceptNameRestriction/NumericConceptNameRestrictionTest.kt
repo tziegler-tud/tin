@@ -53,12 +53,12 @@ class NumericConceptNameRestrictionTest {    @Autowired
         val manager = loadExampleOntology();
         val reasoner = manager.createReasoner(OntologyManager.BuildInReasoners.HERMIT)
 
-        val ec = manager.createExecutionContext(ExecutionContextType.LOOPTABLE);
+        val ec = manager.createELHIExecutionContext(ExecutionContextType.ELHI);
 
         val parser = ec.parser;
         val expressionBuilder = manager.getExpressionBuilder();
         val dlReasoner = SimpleDLReasoner(reasoner, expressionBuilder);
-        val restrictionBuilder = ec.restrictionBuilder;
+        val restrictionBuilder = ec.spaRestrictionBuilder;
 
 
         val query = readQueryWithFileReaderService("test1.txt")

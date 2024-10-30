@@ -32,8 +32,8 @@ class NumericRestrictionBuilder(
         }
     }
 
-    override fun createRestriction(element: OWLClass): LoopTableEntryRestriction<OWLClass> {
-        return createRestriction(element);
+    override fun createRestriction(element: OWLClass): LoopTableEntryRestriction {
+        return createConceptNameRestriction(element);
     }
 
     fun createConceptNameRestriction(base: ULong) : NumericConceptNameRestriction {

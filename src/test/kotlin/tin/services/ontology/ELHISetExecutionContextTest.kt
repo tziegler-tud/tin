@@ -6,6 +6,7 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.context.TestConfiguration
 import tin.services.internal.fileReaders.OntologyReaderService
 import tin.services.internal.fileReaders.fileReaderResult.FileReaderResult
+import tin.services.ontology.OntologyExecutionContext.ELHI.ELHISetExecutionContext
 import tin.services.ontology.OntologyExecutionContext.ExecutionContextType
 import tin.services.technical.SystemConfigurationService
 import java.io.File
@@ -32,13 +33,16 @@ class ELHISetExecutionContextTest {
     @Test
     fun testPowersetConstruction(){
         val manager = loadExampleOntology();
-        val ec = manager.createExecutionContext(ExecutionContextType.LOOPTABLE);
-        ec.prepareForLoopTableConstruction();
+
+        val ec = ELHISetExecutionContext(manager);
+        ec.prepareForLoopTableConstruction(false)
+
         val classAmount = ec.getClassAmount();
         val classNames = ec.getClassNames();
 
         val powerset = ec.tailsets!!;
-        assert(powerset.size == Math.pow(2.0, classAmount.toDouble()).toInt()-1)
+
+        assert(ec.tailsetSize.toInt() == Math.pow(2.0, classAmount.toDouble()).toInt()-1)
 
         val e1 = classNames.first();
         val e2 = classNames.elementAt(1);

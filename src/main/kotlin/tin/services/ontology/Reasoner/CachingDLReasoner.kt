@@ -18,7 +18,7 @@ import kotlin.streams.toList
 class CachingDLReasoner(
     val reasoner: OWLReasoner,
     private val expressionBuilder: DLExpressionBuilder
-) : DLReasoner {
+) : AbstractReasoner() {
     public val superClassCache: HashMap<DLExpression, NodeSet<OWLClass>> = hashMapOf()
     public val equivalentClassCache: HashMap<DLExpression, Node<OWLClass>> = hashMapOf()
     public val subClassCache: HashMap<DLExpression, HashSet<OWLClass>> = hashMapOf()
@@ -128,7 +128,7 @@ class CachingDLReasoner(
         return reasoner.getEquivalentClasses(expr.getClassExpression());
     }
 
-    fun clearCache() {
+    override fun clearCache() {
         superClassCache.clear();
         equivalentClassCache.clear();
         subClassCache.clear();

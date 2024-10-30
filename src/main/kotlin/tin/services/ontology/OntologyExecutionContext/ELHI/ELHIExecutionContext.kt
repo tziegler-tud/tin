@@ -25,6 +25,5 @@ interface ELHIExecutionContext : ExecutionContext {
 
     fun forEachTailset(action: (MultiClassLoopTableEntryRestriction) -> Unit)
 
-    fun getSpaRestrictionBuilder() : MultiClassRestrictionBuilderInterface
-    fun getSpRestrictionBuilder() : RestrictionBuilderInterface<OWLIndividual>
+    fun prepareForLoopTableConstruction(prewarmCaches: Boolean = false)
 }

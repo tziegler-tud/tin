@@ -38,7 +38,7 @@ class NumericConceptNameRestriction(
         return numericSetUtility.containsElement(value, repr);
     }
 
-    override fun containsAllElementsFromOneOf(set: Set<LoopTableEntryRestriction<OWLClass>>) : Boolean {
+    override fun containsAllElementsFromOneOf(set: Set<MultiClassLoopTableEntryRestriction>) : Boolean {
         //TODO: Implement this in a performant way
         set.forEach set@{ res ->
             if(res == this) return true;
@@ -53,7 +53,7 @@ class NumericConceptNameRestriction(
     /**
      * returns true if this is a subset of the given restriction
      */
-    override fun isSubsetOf(restriction: LoopTableEntryRestriction<OWLClass>) : Boolean {
+    override fun isSubsetOf(restriction: MultiClassLoopTableEntryRestriction) : Boolean {
         if(restriction !is NumericConceptNameRestriction) throw Error("Unable to perform this operation on objects other than NumericConceptNameRestriction!")
         return numericSetUtility.containsElement(restriction.value, value);
     }
@@ -61,7 +61,7 @@ class NumericConceptNameRestriction(
     /**
      * returns true if this is a superset of the given restriction
      */
-    override fun isSupersetOf(restriction: LoopTableEntryRestriction<OWLClass>) : Boolean {
+    override fun isSupersetOf(restriction: MultiClassLoopTableEntryRestriction) : Boolean {
         if(restriction !is NumericConceptNameRestriction) throw Error("Unable to perform this operation on objects other than NumericConceptNameRestriction!")
         return numericSetUtility.containsElement(value, restriction.value);
     }

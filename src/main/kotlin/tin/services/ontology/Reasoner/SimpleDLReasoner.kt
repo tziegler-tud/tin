@@ -17,7 +17,7 @@ import kotlin.streams.toList
 class SimpleDLReasoner(
     val reasoner: OWLReasoner,
     private val expressionBuilder: DLExpressionBuilder
-) : DLReasoner {
+) : AbstractReasoner() {
 
     override fun checkIsSubsumed(expr: DLExpression, superExpression: DLExpression): Boolean {
         val subex = expressionBuilder.createSubsumptionExpression(expr, superExpression);
@@ -76,9 +76,5 @@ class SimpleDLReasoner(
 
     override fun calculateEquivalentClasses(expr: DLExpression): Node<OWLClass> {
         return reasoner.getEquivalentClasses(expr.getClassExpression());
-    }
-
-    override fun getStats() : Map<String, Int> {
-        return mapOf<String, Int>();
     }
 }

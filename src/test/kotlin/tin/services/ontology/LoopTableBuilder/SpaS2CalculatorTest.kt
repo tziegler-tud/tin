@@ -12,9 +12,13 @@ import tin.services.internal.fileReaders.fileReaderResult.FileReaderResult
 import tin.services.ontology.Reasoner.SimpleDLReasoner
 import tin.services.ontology.OntologyExecutionContext.ExecutionContextType
 import tin.services.ontology.OntologyManager
+import tin.services.ontology.loopTable.ELHISPALoopTable
 import tin.services.ontology.loopTable.LoopTableBuilder.ELHI.ruleCalculators.SpaS2Calculator
+import tin.services.ontology.loopTable.LoopTableEntryRestriction.spa.RestrictionBuilder
 import tin.services.ontology.loopTable.SPALoopTable
+import tin.services.ontology.loopTable.loopTableEntry.ELHISPALoopTableEntry
 import tin.services.ontology.loopTable.loopTableEntry.SPALoopTableEntry
+import tin.services.ontology.loopTable.loopTableEntry.SPASetLoopTableEntry
 import tin.services.technical.SystemConfigurationService
 import java.io.File
 import kotlin.time.TimeSource
@@ -59,14 +63,17 @@ class SpaS2CalculatorTest {
         val query = readQueryWithFileReaderService("spaCalculation/S2/test_spaS2_1.txt")
         val transducer = readTransducerWithFileReaderService("spaCalculation/S2/test_spaS2_1.txt")
 
-        val ec = manager.createExecutionContext(ExecutionContextType.LOOPTABLE);
+        val ec = manager.createELHIExecutionContext(ExecutionContextType.ELHI);
         val queryParser = ec.parser;
         val shortFormProvider = ec.shortFormProvider;
-        val restrictionBuilder = ec.restrictionBuilder;
+        val restrictionBuilder = ec.spaRestrictionBuilder;
 
 
 
         val s2Calculator = SpaS2Calculator(ec, query.graph, transducer.graph);
+
+        val testRestrictionBuilder = RestrictionBuilder(queryParser, shortFormProvider)
+
 
         //calculate s1 for a non-trivial entry
 
@@ -77,12 +84,12 @@ class SpaS2CalculatorTest {
 
         val t0 = transducer.graph.getNode("t0")!!
 
-        val M = restrictionBuilder.createConceptNameRestriction("Egg")
+        val M = testRestrictionBuilder.createConceptNameRestriction("Egg")
 
-        val entry = SPALoopTableEntry(Pair(s1,t0), Pair(s2,t0),M);
-        val entry2 = SPALoopTableEntry(Pair(s2,t0), Pair(s3,t0),M);
+        val entry = SPASetLoopTableEntry(Pair(s1,t0), Pair(s2,t0),M);
+        val entry2 = SPASetLoopTableEntry(Pair(s2,t0), Pair(s3,t0),M);
         //create empty loop table
-        val table: SPALoopTable = SPALoopTable();
+        val table: ELHISPALoopTable = ELHISPALoopTable();
 
         //calculate spa[(s1,t0),(s2,t0),{Egg}]
         val result = s2Calculator.calculate(entry, table);
@@ -111,10 +118,13 @@ class SpaS2CalculatorTest {
         val query = readQueryWithFileReaderService("spaCalculation/S2/test_spaS2_1.txt")
         val transducer = readTransducerWithFileReaderService("spaCalculation/S2/test_spaS2_1.txt")
 
-        val ec = manager.createExecutionContext(ExecutionContextType.LOOPTABLE);
+        val ec = manager.createELHIExecutionContext(ExecutionContextType.ELHI);
         val queryParser = ec.parser;
         val shortFormProvider = ec.shortFormProvider;
-        val restrictionBuilder = ec.restrictionBuilder;
+        val restrictionBuilder = ec.spaRestrictionBuilder;
+
+        val testRestrictionBuilder = RestrictionBuilder(queryParser, shortFormProvider)
+
 
 
 
@@ -131,33 +141,33 @@ class SpaS2CalculatorTest {
 
         val classNames = ec.getClassNames();
 
-        val M = restrictionBuilder.createConceptNameRestriction("Egg")
+        val M = testRestrictionBuilder.createConceptNameRestriction("Egg")
 
         //create empty loop table
-        val table: SPALoopTable = SPALoopTable();
+        val table: ELHISPALoopTable = ELHISPALoopTable();
         //calculate spa[(s1,t0),(s2,t0),{Egg}]
         val table2 = s2Calculator.calculateAll(table);
         //use s1->Chicken?->s2 with t0-Chicken?|Egg?|2->t0
         val filtered = table2.getWithRestriction(M);
 
-        for (tailset in ec.tailsets!!) {
-            if(dlReasoner.checkIsSubsumed(expressionBuilder.createELHIExpression(queryParser.fromClassNames(tailset)), expressionBuilder.createELHExpressionFromString("Egg"))) {
-                assert(table2.get(SPALoopTableEntry(Pair(s1,t0), Pair(s2,t0),restrictionBuilder.createConceptNameRestrictionFromStringSet(tailset))) == 2)
+        ec.forEachTailset {tailset ->
+            if(dlReasoner.checkIsSubsumed(expressionBuilder.createELHIExpression(testRestrictionBuilder.asClassExpression(tailset)), expressionBuilder.createELHExpressionFromString("Egg"))) {
+                assert(table2.get(ELHISPALoopTableEntry(Pair(s1,t0), Pair(s2,t0),tailset)) == 2)
             }
             else {
-                if(dlReasoner.checkIsSubsumed(expressionBuilder.createELHIExpression(queryParser.fromClassNames(tailset)), expressionBuilder.createELHExpressionFromString("Ingredients"))) {
-                    assert(table2.get(SPALoopTableEntry(Pair(s0,t0), Pair(s1,t0),restrictionBuilder.createConceptNameRestrictionFromStringSet(tailset))) == 6)
-                    assert(table2.get(SPALoopTableEntry(Pair(s2,t0), Pair(s3,t0),restrictionBuilder.createConceptNameRestrictionFromStringSet(tailset))) == 6)
+                if(dlReasoner.checkIsSubsumed(expressionBuilder.createELHIExpression(testRestrictionBuilder.asClassExpression(tailset)), expressionBuilder.createELHExpressionFromString("Ingredients"))) {
+                    assert(table2.get(ELHISPALoopTableEntry(Pair(s0,t0), Pair(s1,t0),tailset)) == 6)
+                    assert(table2.get(ELHISPALoopTableEntry(Pair(s2,t0), Pair(s3,t0),tailset)) == 6)
                 }
                 else {
-                    assert(table2.get(SPALoopTableEntry(Pair(s0,t0), Pair(s1,t0),restrictionBuilder.createConceptNameRestrictionFromStringSet(tailset))) == null)
-                    assert(table2.get(SPALoopTableEntry(Pair(s1,t0), Pair(s2,t0),restrictionBuilder.createConceptNameRestrictionFromStringSet(tailset))) == null)
-                    assert(table2.get(SPALoopTableEntry(Pair(s2,t0), Pair(s3,t0),restrictionBuilder.createConceptNameRestrictionFromStringSet(tailset))) == null)
+                    assert(table2.get(ELHISPALoopTableEntry(Pair(s0,t0), Pair(s1,t0), tailset)) == null)
+                    assert(table2.get(ELHISPALoopTableEntry(Pair(s1,t0), Pair(s2,t0), tailset)) == null)
+                    assert(table2.get(ELHISPALoopTableEntry(Pair(s2,t0), Pair(s3,t0), tailset)) == null)
                 }
             }
-            assert(table2.get(SPALoopTableEntry(Pair(s0,t0), Pair(s2,t0),restrictionBuilder.createConceptNameRestrictionFromStringSet(tailset))) == null)
-            assert(table2.get(SPALoopTableEntry(Pair(s0,t0), Pair(s3,t0),restrictionBuilder.createConceptNameRestrictionFromStringSet(tailset))) == null)
-            assert(table2.get(SPALoopTableEntry(Pair(s1,t0), Pair(s3,t0),restrictionBuilder.createConceptNameRestrictionFromStringSet(tailset))) == null)
+            assert(table2.get(ELHISPALoopTableEntry(Pair(s0,t0), Pair(s2,t0), tailset)) == null)
+            assert(table2.get(ELHISPALoopTableEntry(Pair(s0,t0), Pair(s3,t0), tailset)) == null)
+            assert(table2.get(ELHISPALoopTableEntry(Pair(s1,t0), Pair(s3,t0), tailset)) == null)
         }
     }
 
@@ -167,18 +177,16 @@ class SpaS2CalculatorTest {
         val query = readQueryWithFileReaderService("spaCalculation/S2/test_spaS2_1.txt")
         val transducer = readTransducerWithFileReaderService("spaCalculation/S2/test_spaS2_2.txt")
 
-        val ec = manager.createExecutionContext(ExecutionContextType.LOOPTABLE);
+        val ec = manager.createELHIExecutionContext(ExecutionContextType.ELHI);
         val dlReasoner = ec.dlReasoner;
         val queryParser = ec.parser;
         val shortFormProvider = ec.shortFormProvider;
-        val restrictionBuilder = ec.restrictionBuilder;
+        val restrictionBuilder = ec.spaRestrictionBuilder;
 
         val pairsAvailable = mutableSetOf<Pair<Node, Node>>();
-        val tailsets = ec.tailsets!!;
-
         val s2Calculator = SpaS2Calculator(ec, query.graph, transducer.graph);
 
-        val table: SPALoopTable = SPALoopTable();
+        val table: ELHISPALoopTable = ELHISPALoopTable();
 
         val timeSource = TimeSource.Monotonic
 
@@ -192,10 +200,10 @@ class SpaS2CalculatorTest {
         pairsAvailable.forEach{ source ->
             pairsAvailable.forEach target@{ target ->
                 if(source.first == target.first && source.second == target.second) return@target;
-                tailsets.forEach tailset@{ tailset ->
+                ec.forEachTailset tailset@{ tailset ->
                     //foreach (p,q,M) do:
-                    val restriction = restrictionBuilder.createConceptNameRestrictionFromStringSet(tailset)
-                    val entry = SPALoopTableEntry(source, target, restriction)
+                    val restriction = tailset
+                    val entry = ELHISPALoopTableEntry(source, target, restriction)
                     // dont add table entries (q,t)(q,t),_
                     val updatedValue = s2Calculator.calculate(entry, table)
                     if(updatedValue !== null) {
@@ -217,19 +225,18 @@ class SpaS2CalculatorTest {
         val query = readQueryWithFileReaderService("spaCalculation/S2/test_spaS2_3.txt")
         val transducer = readTransducerWithFileReaderService("spaCalculation/S2/test_spaS2_3.txt")
 
-        val ec = manager.createExecutionContext(ExecutionContextType.LOOPTABLE);
+        val ec = manager.createELHIExecutionContext(ExecutionContextType.ELHI);
         val dlReasoner = ec.dlReasoner;
         val queryParser = ec.parser;
         val shortFormProvider = ec.shortFormProvider;
-        val restrictionBuilder = ec.restrictionBuilder;
+        val restrictionBuilder = ec.spaRestrictionBuilder;
 
         val pairsAvailable = mutableSetOf<Pair<Node, Node>>();
-        val tailsets = ec.tailsets!!;
 
         val s2Calculator = SpaS2Calculator(ec, query.graph, transducer.graph);
 
-        val table: SPALoopTable = SPALoopTable();
-        var table2: SPALoopTable = SPALoopTable();
+        val table: ELHISPALoopTable = ELHISPALoopTable();
+        var table2: ELHISPALoopTable = ELHISPALoopTable();
 
         val timeSource = TimeSource.Monotonic
 
@@ -243,10 +250,10 @@ class SpaS2CalculatorTest {
         pairsAvailable.forEach{ source ->
             pairsAvailable.forEach target@{ target ->
                 if(source.first == target.first && source.second == target.second) return@target;
-                tailsets.forEach tailset@{ tailset ->
+                ec.forEachTailset tailset@{ tailset ->
                     //foreach (p,q,M) do:
-                    val restriction = restrictionBuilder.createConceptNameRestrictionFromStringSet(tailset)
-                    val entry = SPALoopTableEntry(source, target, restriction)
+                    val restriction = tailset
+                    val entry = ELHISPALoopTableEntry(source, target, restriction)
                     // dont add table entries (q,t)(q,t),_
                     val updatedValue = s2Calculator.calculate(entry, table)
                     if(updatedValue !== null) {
