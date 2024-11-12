@@ -38,6 +38,10 @@ class ELHISetExecutionContext(private val manager: OntologyManager) : ELHIExecut
         }
     }
 
+    override fun forEachTailsetDescending(action: (MultiClassLoopTableEntryRestriction) -> Unit) {
+        forEachTailset(action)
+    }
+
     override fun prepareForLoopTableConstruction(prewarmCaches: Boolean){
         //create a new instance
         tailsets = computeTailSets();
@@ -89,7 +93,7 @@ class ELHISetExecutionContext(private val manager: OntologyManager) : ELHIExecut
         return powerSet
     }
 
-    override fun getClasses(): Set<OWLEntity> {
+    override fun getClasses(): Set<OWLClass> {
         return classes;
     }
 

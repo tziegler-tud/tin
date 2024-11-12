@@ -26,7 +26,7 @@ interface ExecutionContext {
 
     fun prewarmSubsumptionCache();
 
-    fun getClasses(): Set<OWLEntity>
+    fun getClasses(): Set<OWLClass>
 
     fun getClassAmount(): Int
 

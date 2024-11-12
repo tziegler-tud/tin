@@ -3,6 +3,7 @@ package tin.services.ontology.loopTable.LoopTableBuilder.ELHI
 import tin.model.v2.query.QueryGraph
 import tin.model.v2.graph.Node
 import tin.model.v2.transducer.TransducerGraph
+import tin.services.ontology.OntologyExecutionContext.ELHI.ELHIExecutionContext
 import tin.services.ontology.OntologyExecutionContext.ExecutionContext
 import tin.services.ontology.OntologyExecutionContext.ExecutionContextType
 import tin.services.ontology.OntologyManager
@@ -15,12 +16,14 @@ import tin.services.ontology.loopTable.loopTableEntry.ELHISPALoopTableEntry
 class ELHISPALoopTableBuilder (
     private val queryGraph: QueryGraph,
     private val transducerGraph: TransducerGraph,
-    private val ontologyManager: OntologyManager)
+    private val ontologyManager: OntologyManager,
+    private val ec: ELHIExecutionContext)
 {
     private var table: ELHISPALoopTable = ELHISPALoopTable();
     private var updateTable: ELHISPALoopTable = ELHISPALoopTable();
     // prepare ontology execution context
-    private val ec = ontologyManager.createELHIExecutionContext(ExecutionContextType.ELHI_NUMERIC, false);
+//    private val ec = ontologyManager.createELHIExecutionContext(ExecutionContextType.ELHI, false);
+//    private val ec = ontologyManager.createELHIExecutionContext(ExecutionContextType.ELHI_NUMERIC, false);
 
     private val pairsAvailable = mutableSetOf<Pair<Node, Node>>()
 
@@ -30,14 +33,14 @@ class ELHISPALoopTableBuilder (
 
     public val maxIterationDepth = calculateMaxIterationDepth();
 
-    fun prewarmSubsumptionCahce(){
+    fun prewarmSubsumptionCache(){
         ec.prewarmSubsumptionCache();
     }
 
-    private fun calculateMaxIterationDepth() : Int {
+    private fun calculateMaxIterationDepth() : ULong {
         //calculate iteration depth based on ontology signature
         val queryTransSize = queryGraph.nodes.size * transducerGraph.nodes.size;
-        return queryTransSize * queryTransSize * ec.tailsetSize.toInt();
+        return queryTransSize.toULong() * queryTransSize.toULong() * ec.tailsetSize;
     }
 
     private fun initializeTable(){
@@ -124,7 +127,7 @@ class ELHISPALoopTableBuilder (
         calculateFirstIteration();
 
 
-        for(i in 2..maxIterationDepth) {
+        for(i in 2UL..maxIterationDepth) {
             println("Calculating iteration ${i} / ${maxIterationDepth}")
             val hasChanged = calculateNextIteration();
             if(!hasChanged) return table;

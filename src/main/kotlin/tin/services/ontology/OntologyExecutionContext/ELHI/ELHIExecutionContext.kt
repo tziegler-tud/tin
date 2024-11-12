@@ -25,5 +25,7 @@ interface ELHIExecutionContext : ExecutionContext {
 
     fun forEachTailset(action: (MultiClassLoopTableEntryRestriction) -> Unit)
 
+    fun forEachTailsetDescending(action: (MultiClassLoopTableEntryRestriction) -> Unit);
+
     fun prepareForLoopTableConstruction(prewarmCaches: Boolean = false)
 }

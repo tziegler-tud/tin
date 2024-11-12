@@ -26,7 +26,7 @@ class ELHINumericExecutionContext(private val manager: OntologyManager) : ELHIEx
     override val spaRestrictionBuilder = NumericRestrictionBuilder(classes, parser);
     override val spRestrictionBuilder = IndividualRestrictionBuilder(parser, shortFormProvider)
 
-    val tailsetMaximum: ULong = pow(2, classes.size);
+    val tailsetMaximum: ULong = pow(2, classes.size)- 1UL;
 
     override val tailsetSize = tailsetMaximum;
 
@@ -43,7 +43,7 @@ class ELHINumericExecutionContext(private val manager: OntologyManager) : ELHIEx
         }
     }
 
-    fun forEachTailsetDescending(action: (NumericConceptNameRestriction) -> Unit) {
+    override fun forEachTailsetDescending(action: (MultiClassLoopTableEntryRestriction) -> Unit) {
         for (i in tailsetMaximum downTo 1UL)
         {
             action(spaRestrictionBuilder.createConceptNameRestriction(i));
@@ -66,7 +66,7 @@ class ELHINumericExecutionContext(private val manager: OntologyManager) : ELHIEx
         println("ExecutionContext: Prewarming subsumption Cache finished. Cache size: ${dlReasoner.subClassCache.size}");
     }
 
-    override fun getClasses(): Set<OWLEntity> {
+    override fun getClasses(): Set<OWLClass> {
         return classes;
     }
 
