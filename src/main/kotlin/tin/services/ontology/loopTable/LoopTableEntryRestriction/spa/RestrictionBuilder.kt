@@ -2,6 +2,7 @@ package tin.services.ontology.loopTable.LoopTableEntryRestriction.spa
 
 import org.semanticweb.owlapi.model.OWLClass
 import org.semanticweb.owlapi.model.OWLClassExpression
+import org.semanticweb.owlapi.model.OWLEntity
 import org.semanticweb.owlapi.util.ShortFormProvider
 import tin.services.ontology.DLQueryParser
 import tin.services.ontology.loopTable.LoopTableEntryRestriction.LoopTableEntryRestriction
@@ -34,6 +35,14 @@ class RestrictionBuilder(
         val restriction = ConceptNameRestriction();
         for (value in values) {
             restriction.addElement(value);
+        }
+        return restriction
+    }
+
+    override fun createConceptNameRestrictionFromEntities(values: Set<OWLEntity>): ConceptNameRestriction {
+        val restriction = ConceptNameRestriction();
+        for (value in values) {
+            restriction.addElement(value.asOWLClass());
         }
         return restriction
     }

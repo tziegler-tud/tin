@@ -2,6 +2,7 @@ package tin.services.ontology.loopTable.LoopTableEntryRestriction.spa
 
 import org.semanticweb.owlapi.model.OWLClass
 import org.semanticweb.owlapi.model.OWLClassExpression
+import org.semanticweb.owlapi.model.OWLEntity
 import tin.services.ontology.DLQueryParser
 import tin.services.ontology.loopTable.LoopTableEntryRestriction.LoopTableEntryRestriction
 import uk.ac.manchester.cs.owl.owlapi.OWLObjectIntersectionOfImpl
@@ -50,6 +51,14 @@ class NumericRestrictionBuilder(
         val restriction = NumericConceptNameRestriction(numbericSetUtility);
         for (value in values) {
             restriction.addElement(value);
+        }
+        return restriction
+    }
+
+    override fun createConceptNameRestrictionFromEntities(values: Set<OWLEntity>): NumericConceptNameRestriction {
+        val restriction = NumericConceptNameRestriction(numbericSetUtility);
+        for (value in values) {
+            restriction.addElement(value.asOWLClass());
         }
         return restriction
     }

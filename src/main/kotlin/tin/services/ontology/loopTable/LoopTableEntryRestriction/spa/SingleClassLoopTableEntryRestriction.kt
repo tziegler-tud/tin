@@ -7,10 +7,10 @@ interface SingleClassLoopTableEntryRestriction : LoopTableEntryRestriction {
 
     override var value: OWLClass;
 
-    fun isElement(owlClass: OWLClass)
+    fun isElement(owlClass: OWLClass): Boolean
 
     fun isContainedInSet(set: Set<OWLClass>): Boolean
 
-    fun setElement(owlClass: OWLClass) : Boolean;
+    fun setElement(owlClass: OWLClass);
 
 }

@@ -55,7 +55,8 @@ class NumericConceptNameRestriction(
      */
     override fun isSubsetOf(restriction: MultiClassLoopTableEntryRestriction) : Boolean {
         if(restriction !is NumericConceptNameRestriction) throw Error("Unable to perform this operation on objects other than NumericConceptNameRestriction!")
-        return numericSetUtility.containsElement(restriction.value, value);
+        val res = numericSetUtility.containsElement(restriction.value, value);
+        return res;
     }
 
     /**

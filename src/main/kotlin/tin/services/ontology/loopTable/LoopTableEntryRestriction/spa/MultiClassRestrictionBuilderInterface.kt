@@ -2,6 +2,7 @@ package tin.services.ontology.loopTable.LoopTableEntryRestriction.spa
 
 import org.semanticweb.owlapi.model.OWLClass
 import org.semanticweb.owlapi.model.OWLClassExpression
+import org.semanticweb.owlapi.model.OWLEntity
 import tin.services.ontology.loopTable.LoopTableEntryRestriction.RestrictionBuilderInterface
 
 interface MultiClassRestrictionBuilderInterface : RestrictionBuilderInterface<OWLClass> {
@@ -9,6 +10,8 @@ interface MultiClassRestrictionBuilderInterface : RestrictionBuilderInterface<OW
     fun createConceptNameRestriction(element: OWLClass): MultiClassLoopTableEntryRestriction
 
     fun createConceptNameRestriction(values: Set<OWLClass>): MultiClassLoopTableEntryRestriction
+
+    fun createConceptNameRestrictionFromEntities(values: Set<OWLEntity>): MultiClassLoopTableEntryRestriction
 
     fun createConceptNameRestriction(vararg n: OWLClass): MultiClassLoopTableEntryRestriction
 

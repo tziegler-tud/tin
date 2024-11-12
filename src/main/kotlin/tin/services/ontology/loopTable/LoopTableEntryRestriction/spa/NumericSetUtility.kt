@@ -62,11 +62,15 @@ class NumericSetUtility(
     }
 
     fun containsElement(base: ULong, element: ULong) : Boolean {
-        return base and element == element;
+        return (base and element) == element;
     }
 
     fun containsElement(base: ULong, element: OWLClass) : Boolean {
-        val repr = classReprList[classIndexList.indexOf(element)];
+        val index = classIndexList.indexOf(element);
+        if(index == -1) {
+            return false;
+        }
+        val repr = classReprList[index];
         return containsElement(base, repr);
     }
 

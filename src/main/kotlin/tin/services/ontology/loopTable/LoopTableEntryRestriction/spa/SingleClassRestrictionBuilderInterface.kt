@@ -6,4 +6,10 @@ import tin.services.ontology.loopTable.LoopTableEntryRestriction.RestrictionBuil
 
 interface SingleClassRestrictionBuilderInterface : RestrictionBuilderInterface<OWLClass> {
 
+    fun createConceptNameRestriction(element: OWLClass): SingleClassLoopTableEntryRestriction
+
+    fun createConceptNameRestriction(className: String): SingleClassLoopTableEntryRestriction
+
+    fun asClassExpression(restriction: SingleClassLoopTableEntryRestriction) : OWLClassExpression
+
 }
