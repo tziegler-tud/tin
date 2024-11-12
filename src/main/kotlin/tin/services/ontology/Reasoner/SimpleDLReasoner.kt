@@ -44,11 +44,14 @@ class SimpleDLReasoner(
         return properties;
     }
 
-    override fun calculateSubClasses(expr: DLExpression): HashSet<OWLClass> {
+    override fun calculateSubClasses(expr: DLExpression, includeNothing: Boolean): HashSet<OWLClass> {
         var classes = reasoner.getSubClasses(expr.getClassExpression(), false)
         //remove owl:Nothing
-        if(classes.isBottomSingleton) {
+        if(!includeNothing && classes.isBottomSingleton) {
             classes = OWLClassNodeSet();
+        }
+        if(!includeNothing) {
+            classes.removeAll { it.isBottomNode }
         }
         val hashSet = classes.entities().toList().toHashSet()
         return hashSet;

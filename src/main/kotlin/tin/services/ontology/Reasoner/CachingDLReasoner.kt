@@ -72,16 +72,20 @@ class CachingDLReasoner(
         return properties;
     }
 
-    override fun calculateSubClasses(expr: DLExpression): HashSet<OWLClass> {
+    override fun calculateSubClasses(expr: DLExpression, includeNothing: Boolean): HashSet<OWLClass> {
         val cacheEntry = subClassCache[expr];
         if(cacheEntry != null){
             subClassCacheHitCounter++;
             return cacheEntry
         }
-        var classes = reasoner.getSubClasses(expr.getClassExpression(), false)
+        val exp = expr.getClassExpression()
+        var classes = reasoner.getSubClasses(exp, false)
         //remove owl:Nothing
-        if(classes.isBottomSingleton) {
+        if(!includeNothing && classes.isBottomSingleton) {
             classes = OWLClassNodeSet();
+        }
+        if(!includeNothing) {
+            classes.removeAll { it.isBottomNode }
         }
 
         val hashSet = classes.entities().toList().toHashSet()

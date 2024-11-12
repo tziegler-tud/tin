@@ -20,7 +20,7 @@ interface DLReasoner {
 
     fun calculateSubProperties(property: OWLObjectPropertyExpression): NodeSet<OWLObjectPropertyExpression>
 
-    fun calculateSubClasses(expr: DLExpression): HashSet<OWLClass>
+    fun calculateSubClasses(expr: DLExpression, includeNothing: Boolean =false): HashSet<OWLClass>
 
     fun getTopClassNode(): Node<OWLClass>
 
