@@ -132,6 +132,13 @@ class NumericConceptNameRestrictionTest {    @Autowired
                                 val set: Set<OWLClass> = setOf(owlClass, owlClass2, owlClass3, owlClass4, owlClass5, owlClass6)
                                 val joinedRes = numericRestrictionBuilder.createConceptNameRestriction(owlClass, owlClass2, owlClass3, owlClass4, owlClass5, owlClass6);
                                 val joinedRes2 = numericRestrictionBuilder.createConceptNameRestriction(set)
+                                assert(seqRes.isSubsetOf(res6))
+                                assert(res2.isSubsetOf(res6))
+                                assert(res3.isSubsetOf(res6))
+                                assert(res4.isSubsetOf(res6))
+                                assert(res5.isSubsetOf(res6))
+                                assert(res6.isSubsetOf(res6))
+
                                 assert(res6 == joinedRes);
                                 assert(res6 == joinedRes2);
                                 assert(joinedRes == joinedRes2);

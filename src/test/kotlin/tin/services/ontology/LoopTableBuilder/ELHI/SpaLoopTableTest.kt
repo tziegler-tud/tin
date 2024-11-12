@@ -1,4 +1,4 @@
-package tin.services.ontology.LoopTableBuilder
+package tin.services.ontology.LoopTableBuilder.ELHI
 
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -8,6 +8,7 @@ import tin.model.v2.query.QueryGraph
 import tin.model.v2.transducer.TransducerGraph
 import tin.services.internal.fileReaders.*
 import tin.services.internal.fileReaders.fileReaderResult.FileReaderResult
+import tin.services.ontology.OntologyExecutionContext.ExecutionContextType
 import tin.services.ontology.Reasoner.SimpleDLReasoner
 import tin.services.ontology.OntologyManager
 import tin.services.ontology.loopTable.LoopTableBuilder.ELHI.ELHISPALoopTableBuilder
@@ -46,6 +47,13 @@ class SpaLoopTableTest {
         return manager
     }
 
+    fun loadExampleOntologyLarge() : OntologyManager {
+        val exampleFile = readWithFileReaderService("pizza3.rdf").get()
+//        val exampleFile = readWithFileReaderService("univ-bench.owl.rdf").get()
+        val manager = OntologyManager(exampleFile);
+        return manager
+    }
+
     @Test
     fun testLoopTableInitialStep() {
         val manager = loadExampleOntology();
@@ -56,14 +64,16 @@ class SpaLoopTableTest {
         val query = readQueryWithFileReaderService("test1.txt")
         val transducer = readTransducerWithFileReaderService("test1.txt")
 
-        val builder = ELHISPALoopTableBuilder(query.graph, transducer.graph, manager);
+
+        val ec = manager.createELHIExecutionContext(ExecutionContextType.ELHI, false);
+        val builder = ELHISPALoopTableBuilder(query.graph, transducer.graph, manager, ec);
         builder.calculateInitialStep();
         assert(true)
     }
 
     @Test
     fun testLoopTableConstruction(){
-        val manager = loadExampleOntology();
+        val manager = loadExampleOntologyLarge();
 
 
 
@@ -74,8 +84,9 @@ class SpaLoopTableTest {
 
         val timeSource = TimeSource.Monotonic
         val initialTime = timeSource.markNow()
-
-        val builder = ELHISPALoopTableBuilder(query.graph, transducer.graph, manager);
+        val ec = manager.createELHIExecutionContext(ExecutionContextType.ELHI_NUMERIC, false);
+//        ec.prewarmSubsumptionCache()
+        val builder = ELHISPALoopTableBuilder(query.graph, transducer.graph, manager, ec);
 
         val startTime = timeSource.markNow()
 
@@ -89,13 +100,13 @@ class SpaLoopTableTest {
         val timePerIteration = iterationTime / iterationLimit;
         val totalTime = endTime - initialTime;
 
-        val estimatedTotalTime = timePerIteration * builder.maxIterationDepth;
+//        val estimatedTotalTime = timePerIteration * builder.maxIterationDepth;
 
         println("Total computation time: " + totalTime)
         println("Cache prewarming: " + prewarmTime)
         println("Iteration computation time: " + iterationTime)
         println("Time per iteration: " + timePerIteration)
-        println("Estimated time to build complete table: " + estimatedTotalTime)
+//        println("Estimated time to build complete table: " + estimatedTotalTime)
 
         val stats = builder.getExecutionContext().dlReasoner.getStats();
 
@@ -126,13 +137,24 @@ class SpaLoopTableTest {
 
         val timeSource = TimeSource.Monotonic
 
+        val ec = manager.createELHIExecutionContext(ExecutionContextType.ELHI, false);
+        val ecNumeric = manager.createELHIExecutionContext(ExecutionContextType.ELHI_NUMERIC, false);
 
-        val builder = ELHISPALoopTableBuilder(query.graph, transducer.graph, manager);
-        val builderWithCache = ELHISPALoopTableBuilder(query.graph, transducer.graph, manager);
+
+
+        val builder = ELHISPALoopTableBuilder(query.graph, transducer.graph, manager, ec);
+        val builderWithCache = ELHISPALoopTableBuilder(query.graph, transducer.graph, manager, ec);
+
+        val numericBuilder = ELHISPALoopTableBuilder(query.graph, transducer.graph, manager, ecNumeric);
+        val numericBuilderWithCache = ELHISPALoopTableBuilder(query.graph, transducer.graph, manager, ecNumeric);
 
         val initialTime = timeSource.markNow()
 
-        builderWithCache.prewarmSubsumptionCahce();
+        builderWithCache.prewarmSubsumptionCache();
+        val prewarm1 = timeSource.markNow()
+        numericBuilderWithCache.prewarmSubsumptionCache();
+        val prewarm2 = timeSource.markNow()
+
 
 
         val startTime = timeSource.markNow()
@@ -140,17 +162,27 @@ class SpaLoopTableTest {
         val endTime1 = timeSource.markNow()
         builderWithCache.calculateFullTable();
         val endTime2 = timeSource.markNow();
+        numericBuilder.calculateFullTable();
+        val endTime3 = timeSource.markNow();
+        numericBuilderWithCache.calculateFullTable();
+        val endTime4 = timeSource.markNow();
 
 
         val totalTime = endTime2 - initialTime;
-        val prewarmTime = startTime - initialTime;
+        val prewarmTime1 = prewarm1 - initialTime;
+        val prewarmTime2 = prewarm2 - prewarm1;
         val time1 = endTime1 - startTime;
         val time2 = endTime2 - endTime1;
+        val time3 = endTime3 - endTime2;
+        val time4 = endTime4 - endTime3;
 
         println("Total computation time: " + totalTime)
-        println("Cache prewarming: " + prewarmTime)
-        println("Build without prewarmed caches: " + time1)
-        println("Build with prewarmed caches: " + time2)
+        println("Cache prewarming (set builder): " + prewarmTime1)
+        println("Cache prewarming (numeric builder): " + prewarmTime2)
+        println("Set Build without prewarmed caches: " + time1)
+        println("Set Build with prewarmed caches: " + time2)
+        println("Numeric Build with prewarmed caches: " + time3)
+        println("Numeric Build with prewarmed caches: " + time4)
 
         val stats = builder.getExecutionContext().dlReasoner.getStats();
 

@@ -1,4 +1,4 @@
-package tin.services.ontology.LoopTableBuilder
+package tin.services.ontology.LoopTableBuilder.ELH
 
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -11,12 +11,11 @@ import tin.services.internal.fileReaders.fileReaderResult.FileReaderResult
 import tin.services.ontology.OntologyExecutionContext.ExecutionContextType
 import tin.services.ontology.OntologyManager
 import tin.services.ontology.loopTable.ELHISPALoopTable
-import tin.services.ontology.loopTable.LoopTableBuilder.ELHI.ruleCalculators.SpaS1Calculator
+import tin.services.ontology.loopTable.ELSPALoopTable
+import tin.services.ontology.loopTable.LoopTableBuilder.ELH.ruleCalculators.SpaS1Calculator
 import tin.services.ontology.loopTable.LoopTableEntryRestriction.spa.RestrictionBuilder
-import tin.services.ontology.loopTable.SPALoopTable
-import tin.services.ontology.loopTable.loopTableEntry.ELHISPALoopTableEntry
-import tin.services.ontology.loopTable.loopTableEntry.SPALoopTableEntry
-import tin.services.ontology.loopTable.loopTableEntry.SPASetLoopTableEntry
+import tin.services.ontology.loopTable.LoopTableEntryRestriction.spa.SingleClassRestrictionBuilder
+import tin.services.ontology.loopTable.loopTableEntry.ELSPALoopTableEntry
 import tin.services.technical.SystemConfigurationService
 import java.io.File
 
@@ -50,61 +49,6 @@ class SpaS1CalculatorTest {
         return manager
     }
 
-//    @Test
-//    fun testCalculation(){
-//        val manager = loadExampleOntology();
-//
-//        val query = readQueryWithFileReaderService("spaCalculation/S1/test_spaS1_1.txt")
-//        val transducer = readTransducerWithFileReaderService("spaCalculation/S1/test_spaS1_1.txt")
-//
-//        val ec = manager.createELHIExecutionContext(ExecutionContextType.ELHI);
-//
-//        val dlReasoner = ec.dlReasoner
-//        val expressionBuilder = ec.expressionBuilder
-//        val queryParser = ec.parser;
-//        val shortFormProvider = ec.shortFormProvider;
-//        val restrictionBuilder = ec.spaRestrictionBuilder;
-//
-//
-//
-//        val s1Calculator = SpaS1Calculator(ec, query.graph, transducer.graph);
-//
-//        //calculate s1 for a non-trivial entry
-//
-//        val s0 = query.graph.getNode("s0")!!
-//        val s1 = query.graph.getNode("s1")!!
-//        val s2 = query.graph.getNode("s2")!!
-//        val s3 = query.graph.getNode("s3")!!
-//
-//        val t0 = transducer.graph.getNode("t0")!!
-//        val M = restrictionBuilder.createConceptNameRestriction("Bread")
-//        val entry = SPASetLoopTableEntry(Pair(s0,t0), Pair(s3,t0),M);
-//
-//        val entry2 = SPASetLoopTableEntry(Pair(s0,t0), Pair(s2,t0),M);
-//        val entry3 = SPASetLoopTableEntry(Pair(s1,t0), Pair(s3,t0),M);
-//
-//
-//        //create empty loop table
-//        val table: SPALoopTable = SPALoopTable();
-//        //fill with non-trivial candidates for testing
-//        val M1 = restrictionBuilder.createConceptNameRestriction("Flour");
-//        table.set(SPASetLoopTableEntry(Pair(s1,t0),Pair(s2,t0), M1), 2)
-//
-//        val result = s1Calculator.calculate(entry, table);
-//        assert(result == 7); // 2 + 2 + 3
-//        table.set(entry, result!!);
-//
-//        assert(table.get(entry) == result)
-//
-//        val result2 = s1Calculator.calculate(entry2, table);
-//        assert(result2 == null); // no path found
-//        assert(table.get(entry2) == result2)
-//
-//        val result3 = s1Calculator.calculate(entry3, table);
-//        assert(result3 == null); // 3 + 0 + 4
-//        assert(table.get(entry3) == result3)
-//    }
-
     @Test
     fun testCalculationV2(){
         val manager = loadExampleOntology();
@@ -112,15 +56,12 @@ class SpaS1CalculatorTest {
         val query = readQueryWithFileReaderService("spaCalculation/S1/test_spaS1_1.txt")
         val transducer = readTransducerWithFileReaderService("spaCalculation/S1/test_spaS1_1.txt")
 
-        val ec = manager.createELHIExecutionContext(ExecutionContextType.ELHI);
+        val ec = manager.createELExecutionContext(ExecutionContextType.ELH);
 
-        val dlReasoner = ec.dlReasoner
-        val expressionBuilder = ec.expressionBuilder
         val queryParser = ec.parser;
         val shortFormProvider = ec.shortFormProvider;
-        val restrictionBuilder = ec.spaRestrictionBuilder;
 
-        val testRestrictionBuilder = RestrictionBuilder(queryParser, shortFormProvider)
+        val testRestrictionBuilder = SingleClassRestrictionBuilder(queryParser)
 
 
 
@@ -135,17 +76,17 @@ class SpaS1CalculatorTest {
 
         val t0 = transducer.graph.getNode("t0")!!
         val M = testRestrictionBuilder.createConceptNameRestriction("Bread")
-        val entry = ELHISPALoopTableEntry(Pair(s0,t0), Pair(s3,t0),M);
+        val entry = ELSPALoopTableEntry(Pair(s0,t0), Pair(s3,t0),M);
 
-        val entry2 = ELHISPALoopTableEntry(Pair(s0,t0), Pair(s2,t0),M);
-        val entry3 = ELHISPALoopTableEntry(Pair(s1,t0), Pair(s3,t0),M);
+        val entry2 = ELSPALoopTableEntry(Pair(s0,t0), Pair(s2,t0),M);
+        val entry3 = ELSPALoopTableEntry(Pair(s1,t0), Pair(s3,t0),M);
 
 
         //create empty loop table
-        val table: ELHISPALoopTable = ELHISPALoopTable();
+        val table: ELSPALoopTable = ELSPALoopTable();
         //fill with non-trivial candidates for testing
         val M1 = testRestrictionBuilder.createConceptNameRestriction("Flour");
-        table.set(ELHISPALoopTableEntry(Pair(s1,t0),Pair(s2,t0), M1), 2)
+        table.set(ELSPALoopTableEntry(Pair(s1,t0),Pair(s2,t0), M1), 2)
 
         val resultTable = s1Calculator.calculateAll(table, table, true);
         assert(resultTable.get(entry) == 7); // 2 + 2 + 3

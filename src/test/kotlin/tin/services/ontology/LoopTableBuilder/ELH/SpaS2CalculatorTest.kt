@@ -1,4 +1,4 @@
-package tin.services.ontology.LoopTableBuilder
+package tin.services.ontology.LoopTableBuilder.ELH
 
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -15,9 +15,7 @@ import tin.services.ontology.OntologyManager
 import tin.services.ontology.loopTable.ELHISPALoopTable
 import tin.services.ontology.loopTable.LoopTableBuilder.ELHI.ruleCalculators.SpaS2Calculator
 import tin.services.ontology.loopTable.LoopTableEntryRestriction.spa.RestrictionBuilder
-import tin.services.ontology.loopTable.SPALoopTable
 import tin.services.ontology.loopTable.loopTableEntry.ELHISPALoopTableEntry
-import tin.services.ontology.loopTable.loopTableEntry.SPALoopTableEntry
 import tin.services.ontology.loopTable.loopTableEntry.SPASetLoopTableEntry
 import tin.services.technical.SystemConfigurationService
 import java.io.File
