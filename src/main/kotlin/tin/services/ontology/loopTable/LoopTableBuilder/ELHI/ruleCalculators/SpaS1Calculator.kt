@@ -460,6 +460,12 @@ class SpaS1Calculator(
 
         var costCutoff: Int? = null;
 
+        /**
+         * debug line
+         */
+        var elimSetHits = 0
+        var superSetHits = 0
+
         queryGraph.nodes.forEach { querySource ->
             transducerGraph.nodes.forEach { transducerSource ->
                 queryGraph.nodes.forEach { queryTarget ->
@@ -580,7 +586,7 @@ class SpaS1Calculator(
                                         //otherwise, reject candidate entry
                                         val resultList: MutableMap<OWLObjectProperty, Int> = mutableMapOf();
                                         candidateEdgeMap.forEach candidateEdges@ { (role, pairOfEdges) ->
-                                            var tcCounter = 0;
+                                            var csCounter = 0;
                                             val edgeCost: Int = pairOfEdges.first.label.cost + pairOfEdges.second.label.cost;
 
                                             candidateResultList.forEach candidates@{ candidateResultPair ->
@@ -593,8 +599,8 @@ class SpaS1Calculator(
                                                 /**
                                                  * debug line
                                                  */
-                                                tcCounter++;
-//                                                println("Calculating candidate set " + tcCounter + "/ " + candidateResultList.size);
+                                                csCounter++;
+                                                println("Calculating candidate set " + csCounter + "/ " + candidateResultList.size);
 //                                                if(tcCounter == 10) return@candidateEdges
 
                                                 //calculate basic class that are subsumed by A <= €R.M1
@@ -611,10 +617,7 @@ class SpaS1Calculator(
                                                     /**
                                                      * Test: build restriction consisting of all concept names
                                                      */
-                                                    val allClasses: ConceptNameRestriction = ConceptNameRestriction();
-                                                    ec.getClasses().forEach { owlClass ->
-                                                        allClasses.addElement(owlClass.asOWLClass());
-                                                    }
+                                                    val allClasses: MultiClassLoopTableEntryRestriction = restrictionBuilder.createConceptNameRestrictionFromEntities(ec.getClasses())
 
                                                     val allClassExpr = expressionBuilder.createELHIExpression(restrictionBuilder.asClassExpression(allClasses))
                                                     val isEntailed = dlReasoner.checkIsSubsumed(allClassExpr, rM1Exp)
@@ -625,9 +628,16 @@ class SpaS1Calculator(
                                                     if(eliminatedSets.isNotEmpty()) return@candidates;
                                                 }
 
+                                                var tcCounter = 0;
 
-                                                ec.forEachTailset tailsets@{  tailset ->
+                                                ec.forEachTailsetDescending tailsets@{  tailset ->
 //                                                ec.tailsetsAsClasses.forEach { tailset ->
+
+                                                    /**
+                                                     * debug line
+                                                     */
+                                                    tcCounter++;
+//                                                    println("Calculating tailset " + tcCounter + "/ " + ec.tailsetSize);
 
                                                     val restriction = tailset
 
@@ -653,6 +663,10 @@ class SpaS1Calculator(
                                                         //if M is a subset of an element in eliminatedSets, it cannot be entailed
                                                         eliminatedSets.forEach { set ->
                                                             if(restriction.isSubsetOf(set)) {
+                                                                /**
+                                                                 * debug line
+                                                                 */
+                                                                elimSetHits++;
                                                                 return@tailsets
                                                             }
                                                         }
@@ -660,12 +674,17 @@ class SpaS1Calculator(
                                                         //if all A € M and A in atomicSubsumers, so is M
                                                         var isSuperSet: Boolean = false;
                                                         isSuperSet = restriction.containsElementFromSet(atomicSubsumers)
-                                                        val isComplexSuperSet = restriction.containsAllElementsFromOneOf(complexSubsumers);
+//                                                        val isComplexSuperSet = restriction.containsAllElementsFromOneOf(complexSubsumers);
 
-                                                        if (isSuperSet || isComplexSuperSet) {
+//                                                        if (isSuperSet || isComplexSuperSet) {
+                                                        if (isSuperSet) {
                                                             //everything in place, this is valid rule application
                                                             //update entry with final value
                                                             newTable.set(entry, result);
+                                                            /**
+                                                             * debug line
+                                                             */
+                                                            superSetHits++;
                                                             return@tailsets
                                                         }
 
@@ -700,6 +719,12 @@ class SpaS1Calculator(
                 }
             }
         }
+        /**
+         * debug line
+         */
+        println("eliminated set hits: " + elimSetHits);
+        println("superset hits: " + superSetHits);
+
         return newTable;
     }
 
