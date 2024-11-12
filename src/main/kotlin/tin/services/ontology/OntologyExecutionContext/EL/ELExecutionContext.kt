@@ -15,10 +15,20 @@ import tin.services.ontology.OntologyExecutionContext.ExecutionContext
 import tin.services.ontology.Reasoner.DLReasoner
 import tin.services.ontology.loopTable.LoopTableEntryRestriction.LoopTableEntryRestriction
 import tin.services.ontology.loopTable.LoopTableEntryRestriction.RestrictionBuilderInterface
+import tin.services.ontology.loopTable.LoopTableEntryRestriction.spa.MultiClassLoopTableEntryRestriction
 import tin.services.ontology.loopTable.LoopTableEntryRestriction.spa.MultiClassRestrictionBuilderInterface
+import tin.services.ontology.loopTable.LoopTableEntryRestriction.spa.SingleClassLoopTableEntryRestriction
 import tin.services.ontology.loopTable.LoopTableEntryRestriction.spa.SingleClassRestrictionBuilderInterface
 
 interface ELExecutionContext : ExecutionContext {
     override val spaRestrictionBuilder: SingleClassRestrictionBuilderInterface
     override val spRestrictionBuilder: RestrictionBuilderInterface<OWLIndividual>
+
+    val tailsetSize: Int
+
+
+    fun forEachConcept(action: (SingleClassLoopTableEntryRestriction) -> Unit)
+
+    fun prepareForLoopTableConstruction(prewarmCaches: Boolean = false)
+
 }

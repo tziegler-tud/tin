@@ -1,6 +1,7 @@
 package tin.services.ontology.OntologyExecutionContext
 
 import tin.services.ontology.OntologyExecutionContext.EL.ELExecutionContext
+import tin.services.ontology.OntologyExecutionContext.EL.ELSetExecutionContext
 import tin.services.ontology.OntologyExecutionContext.ELHI.ELHIExecutionContext
 import tin.services.ontology.OntologyExecutionContext.ELHI.ELHINumericExecutionContext
 import tin.services.ontology.OntologyExecutionContext.ELHI.ELHISetExecutionContext
@@ -27,6 +28,12 @@ class OntologyExecutionContextFactory {
                 ec.prepareForLoopTableConstruction(prewarmCaches)
                 return ec;
             }
+
+            ExecutionContextType.ELH -> {
+                val ec = ELSetExecutionContext(manager);
+                ec.prepareForLoopTableConstruction(prewarmCaches)
+                return ec;
+            }
         }
     }
 
@@ -47,11 +54,20 @@ class OntologyExecutionContextFactory {
                 ec.prepareForLoopTableConstruction(prewarmCaches)
                 return ec;
             }
+
+            ExecutionContextType.ELH -> {
+                throw Error("Unsupported execution context type");
+            }
         }
     }
 
     fun createELContext(executionContextType: ExecutionContextType, manager: OntologyManager, prewarmCaches: Boolean = false): ELExecutionContext {
         when(executionContextType) {
+            ExecutionContextType.ELH -> {
+                val ec = ELSetExecutionContext(manager);
+                ec.prepareForLoopTableConstruction(prewarmCaches)
+                return ec;
+            }
             else -> {
                 throw Error("Unsupported execution context type");
             }
