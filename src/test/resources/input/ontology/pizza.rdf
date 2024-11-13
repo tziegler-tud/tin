@@ -1,0 +1,259 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="http://www.semanticweb.org/tindl/examples/1/pizza/"
+     xml:base="http://www.semanticweb.org/tindl/examples/1/pizza/"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:pizza="http://www.semanticweb.org/tindl/examples/1/pizza#"
+     xmlns:untitled-ontology-9="http://www.semanticweb.org/tom/ontologies/2024/3/untitled-ontology-9#">
+    <owl:Ontology rdf:about="http://www.semanticweb.org/tindl/examples/1/pizza"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.semanticweb.org/tindl/examples/1/pizza#contains -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/tindl/examples/1/pizza#contains">
+        <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2002/07/owl#topObjectProperty"/>
+        <owl:inverseOf rdf:resource="http://www.semanticweb.org/tindl/examples/1/pizza#is_contained"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#InverseFunctionalProperty"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/tindl/examples/1/pizza#is_contained -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/tindl/examples/1/pizza#is_contained">
+        <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2002/07/owl#topObjectProperty"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#InverseFunctionalProperty"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/tindl/examples/1/pizza#serves -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/tindl/examples/1/pizza#serves">
+        <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2002/07/owl#topObjectProperty"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.semanticweb.org/tindl/examples/1/pizza#Bread -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/tindl/examples/1/pizza#Bread">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/tindl/examples/1/pizza#Ingredients"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.semanticweb.org/tindl/examples/1/pizza#contains"/>
+                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/tindl/examples/1/pizza#Flour"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/tindl/examples/1/pizza#Bruschetta -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/tindl/examples/1/pizza#Bruschetta">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/tindl/examples/1/pizza#Meal"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.semanticweb.org/tindl/examples/1/pizza#contains"/>
+                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/tindl/examples/1/pizza#Bread"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/tindl/examples/1/pizza#Carbonara -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/tindl/examples/1/pizza#Carbonara">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/tindl/examples/1/pizza#Meal"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.semanticweb.org/tindl/examples/1/pizza#contains"/>
+                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/tindl/examples/1/pizza#Egg"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.semanticweb.org/tindl/examples/1/pizza#contains"/>
+                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/tindl/examples/1/pizza#Pasta"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/tindl/examples/1/pizza#Chicken -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/tindl/examples/1/pizza#Chicken">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/tindl/examples/1/pizza#Ingredients"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.semanticweb.org/tindl/examples/1/pizza#contains"/>
+                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/tindl/examples/1/pizza#Egg"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/tindl/examples/1/pizza#Egg -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/tindl/examples/1/pizza#Egg">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/tindl/examples/1/pizza#Ingredients"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.semanticweb.org/tindl/examples/1/pizza#contains"/>
+                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/tindl/examples/1/pizza#Chicken"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/tindl/examples/1/pizza#Flour -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/tindl/examples/1/pizza#Flour">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/tindl/examples/1/pizza#Ingredients"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.semanticweb.org/tindl/examples/1/pizza#contains"/>
+                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/tindl/examples/1/pizza#Gluten"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/tindl/examples/1/pizza#Gluten -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/tindl/examples/1/pizza#Gluten">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/tindl/examples/1/pizza#Ingredients"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/tindl/examples/1/pizza#Ingredients -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/tindl/examples/1/pizza#Ingredients"/>
+    
+
+
+    <!-- http://www.semanticweb.org/tindl/examples/1/pizza#Meal -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/tindl/examples/1/pizza#Meal"/>
+    
+
+
+    <!-- http://www.semanticweb.org/tindl/examples/1/pizza#Pasta -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/tindl/examples/1/pizza#Pasta">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/tindl/examples/1/pizza#Ingredients"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.semanticweb.org/tindl/examples/1/pizza#contains"/>
+                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/tindl/examples/1/pizza#Flour"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/tindl/examples/1/pizza#Restaurant -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/tindl/examples/1/pizza#Restaurant"/>
+    
+
+
+    <!-- http://www.semanticweb.org/tindl/examples/1/pizza#Vegan -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/tindl/examples/1/pizza#Vegan">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/tindl/examples/1/pizza#Meal"/>
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/tindl/examples/1/pizza#Vegan"/>
+    </owl:Class>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Individuals
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.semanticweb.org/tindl/examples/1/pizza#bruschetta -->
+
+    <owl:NamedIndividual rdf:about="http://www.semanticweb.org/tindl/examples/1/pizza#bruschetta">
+        <rdf:type rdf:resource="http://www.semanticweb.org/tindl/examples/1/pizza#Bruschetta"/>
+        <rdf:type rdf:resource="http://www.semanticweb.org/tindl/examples/1/pizza#Vegan"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.semanticweb.org/tindl/examples/1/pizza#carbonara -->
+
+    <owl:NamedIndividual rdf:about="http://www.semanticweb.org/tindl/examples/1/pizza#carbonara">
+        <rdf:type rdf:resource="http://www.semanticweb.org/tindl/examples/1/pizza#Carbonara"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.semanticweb.org/tindl/examples/1/pizza#r -->
+
+    <owl:NamedIndividual rdf:about="http://www.semanticweb.org/tindl/examples/1/pizza#r">
+        <rdf:type rdf:resource="http://www.semanticweb.org/tindl/examples/1/pizza#Restaurant"/>
+        <pizza:serves rdf:resource="http://www.semanticweb.org/tindl/examples/1/pizza#bruschetta"/>
+        <pizza:serves rdf:resource="http://www.semanticweb.org/tindl/examples/1/pizza#carbonara"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // General axioms
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    <owl:Restriction>
+        <owl:onProperty rdf:resource="http://www.semanticweb.org/tindl/examples/1/pizza#is_contained"/>
+        <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/tindl/examples/1/pizza#Vegan"/>
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/tindl/examples/1/pizza#Vegan"/>
+    </owl:Restriction>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 4.5.29.2024-05-13T12:11:03Z) https://github.com/owlcs/owlapi -->
+

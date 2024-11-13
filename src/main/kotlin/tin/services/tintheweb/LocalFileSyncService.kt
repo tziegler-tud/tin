@@ -1,8 +1,8 @@
 package tin.services.tintheweb
 
 import org.springframework.stereotype.Service
-import tin.model.tintheweb.FileRepository
-import tin.model.tintheweb.FileType
+import tin.model.v1.tintheweb.FileRepository
+import tin.model.v1.tintheweb.FileType
 import java.io.File
 import java.util.*
 
@@ -19,7 +19,7 @@ class LocalFileSyncService(
     fun syncRegularPathQueryFiles() {
         val folderPath = "src/main/resources/input/queries"
         val folder = File(folderPath)
-        var preSyncRepositoryEntities = mutableListOf<tin.model.tintheweb.File>()
+        var preSyncRepositoryEntities = mutableListOf<tin.model.v1.tintheweb.File>()
 
         preSyncRepositoryEntities = fileRepository.findAllByFiletype(FileType.RegularPathQuery).toMutableList()
 
@@ -34,7 +34,7 @@ class LocalFileSyncService(
             // if it doesn't -> add it to the repo.
             if (existingRepoFile == null) {
                 fileRepository.save(
-                    tin.model.tintheweb.File(
+                    tin.model.v1.tintheweb.File(
                         filename,
                         FileType.RegularPathQuery,
                         filelength,
@@ -59,7 +59,7 @@ class LocalFileSyncService(
 
         val folderPath = "src/main/resources/input/conjunctiveQueries"
         val folder = File(folderPath)
-        var preSyncRepositoryEntities = mutableListOf<tin.model.tintheweb.File>()
+        var preSyncRepositoryEntities = mutableListOf<tin.model.v1.tintheweb.File>()
 
         preSyncRepositoryEntities = fileRepository.findAllByFiletype(FileType.ConjunctivePathQuery).toMutableList()
 
@@ -74,7 +74,7 @@ class LocalFileSyncService(
             // if it doesn't -> add it to the repo.
             if (existingRepoFile == null) {
                 fileRepository.save(
-                    tin.model.tintheweb.File(
+                    tin.model.v1.tintheweb.File(
                         filename,
                         FileType.ConjunctivePathQuery,
                         filelength,
@@ -99,7 +99,7 @@ class LocalFileSyncService(
     fun syncDatabaseFiles() {
         val folderPath = "src/main/resources/input/databases"
         val folder = File(folderPath)
-        var preSyncRepositoryEntities = mutableListOf<tin.model.tintheweb.File>()
+        var preSyncRepositoryEntities = mutableListOf<tin.model.v1.tintheweb.File>()
 
         preSyncRepositoryEntities = fileRepository.findAllByFiletype(FileType.Database).toMutableList()
 
@@ -115,7 +115,7 @@ class LocalFileSyncService(
             // if it doesn't -> add it to the repo.
             if (existingRepoFile == null) {
                 fileRepository.save(
-                    tin.model.tintheweb.File(
+                    tin.model.v1.tintheweb.File(
                         filename,
                         FileType.Database,
                         filelength,
@@ -138,7 +138,7 @@ class LocalFileSyncService(
     fun syncTransducerFiles() {
         val folderPath = "src/main/resources/input/transducers"
         val folder = File(folderPath)
-        var preSyncRepositoryEntities = mutableListOf<tin.model.tintheweb.File>()
+        var preSyncRepositoryEntities = mutableListOf<tin.model.v1.tintheweb.File>()
 
         preSyncRepositoryEntities = fileRepository.findAllByFiletype(FileType.Transducer).toMutableList()
 
@@ -154,7 +154,7 @@ class LocalFileSyncService(
             // if it doesn't -> add it to the repo.
             if (existingRepoFile == null) {
                 fileRepository.save(
-                    tin.model.tintheweb.File(
+                    tin.model.v1.tintheweb.File(
                         filename,
                         FileType.Transducer,
                         filelength,

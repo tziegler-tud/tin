@@ -18,10 +18,12 @@ class SystemConfigurationService {
     private var queryFilesDirName: String = "/queries";
     private var conjunctiveQueryFilesDirName: String = "/conjunctiveQueries";
     private var transducerFilesDirName: String = "/transducers";
+    private var ontologyFilesDirName: String = "/ontology";
 
     private var databaseSizeLimit: Int = 1024000
     private var querySizeLimit: Int = 12800024
     private var transducerSizeLimit: Int = 128000
+    private var ontologySizeLimit: Int = 512000
 
 
 //
@@ -68,6 +70,10 @@ class SystemConfigurationService {
         return Path.of(this.projectRoot + this.fileDir + this.transducerFilesDirName).toString();
     }
 
+    fun getOntologyPath():String{
+        return Path.of(this.projectRoot + this.fileDir + this.ontologyFilesDirName).toString();
+    }
+
     fun getDatabaseSizeLimit():Int {
         return this.databaseSizeLimit;
     }
@@ -90,6 +96,14 @@ class SystemConfigurationService {
 
     fun setTransducerSizeLimit(limit: Int) {
         this.transducerSizeLimit = limit;
+    }
+
+    fun getOntologySizeLimit():Int {
+        return this.ontologySizeLimit;
+    }
+
+    fun setOntologySizeLimit(limit: Int) {
+        this.ontologySizeLimit = limit;
     }
 
 

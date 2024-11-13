@@ -1,9 +1,9 @@
 package tin.services.tintheweb
 
 import org.springframework.stereotype.Service
-import tin.model.tintheweb.File
-import tin.model.tintheweb.FileRepository
-import tin.model.tintheweb.FileType
+import tin.model.v1.tintheweb.File
+import tin.model.v1.tintheweb.FileRepository
+import tin.model.v1.tintheweb.FileType
 
 @Service
 class FileOverviewService(

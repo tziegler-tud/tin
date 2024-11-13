@@ -1,19 +1,12 @@
 package tin.services.internal.utils
 
 import org.junit.jupiter.api.Test
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.context.TestConfiguration
-import org.springframework.stereotype.Service
-import tin.model.alphabet.Alphabet
-import tin.model.query.QueryEdge
-import tin.model.query.QueryGraph
-import tin.model.query.QueryNode
-import tin.model.transducer.TransducerEdge
-import tin.model.transducer.TransducerGraph
-import tin.model.transducer.TransducerNode
-import tin.services.technical.SystemConfigurationService
-import java.nio.file.Path
+import tin.model.v1.alphabet.Alphabet
+import tin.model.v1.transducer.TransducerEdge
+import tin.model.v1.transducer.TransducerGraph
+import tin.model.v1.transducer.TransducerNode
 
 @SpringBootTest
 @TestConfiguration

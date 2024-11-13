@@ -1,7 +1,7 @@
 package tin.data.tintheweb.queryTask
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import tin.model.queryTask.ComputationProperties
+import tin.model.v1.queryTask.ComputationProperties
 
 class ComputationPropertiesData(
     @JsonProperty("id") val id: Long,

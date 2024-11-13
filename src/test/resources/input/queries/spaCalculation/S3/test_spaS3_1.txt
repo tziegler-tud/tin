@@ -1,0 +1,7 @@
+nodes
+s0, true,  false
+s1, false, false
+edges
+s0, s1, contains
+s0, s1, Chicken?
+s1, s1, contains

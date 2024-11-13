@@ -1,0 +1,11 @@
+//comments are ignored
+nodes
+s0, true, false
+s1,false,false
+ s2, false, true
+  s3, false, false
+edges
+s0, s1, S
+s1, s0,  inverse(R)
+s1,s2,prop1?
+s2,s3,inverse(  S    )

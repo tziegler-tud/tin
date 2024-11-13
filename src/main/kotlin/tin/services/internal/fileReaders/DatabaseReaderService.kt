@@ -1,9 +1,9 @@
 package tin.services.internal.fileReaders
 
 import org.springframework.stereotype.Service
-import tin.model.alphabet.Alphabet
-import tin.model.database.DatabaseGraph
-import tin.model.database.DatabaseNode
+import tin.model.v1.alphabet.Alphabet
+import tin.model.v1.database.DatabaseGraph
+import tin.model.v1.database.DatabaseNode
 import tin.services.internal.fileReaders.fileReaderResult.FileReaderResult
 import tin.services.technical.SystemConfigurationService
 import java.io.BufferedReader

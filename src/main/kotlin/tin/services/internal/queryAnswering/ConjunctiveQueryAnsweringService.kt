@@ -4,22 +4,24 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import tin.data.internal.ConjunctiveComputationStatisticsData
-import tin.model.alphabet.Alphabet
-import tin.model.dataProvider.ConjunctiveQueryDataProvider
-import tin.model.dataProvider.RegularPathQueryDataProvider
-import tin.model.productAutomaton.ProductAutomatonGraph
-import tin.model.queryResult.*
-import tin.model.queryResult.computationStatistics.ConjunctiveComputationStatistics
-import tin.model.queryResult.computationStatistics.RegularPathComputationStatistics
-import tin.model.queryResult.conjunctiveQueryResult.ConjunctiveQueryAnswerMapping
-import tin.model.queryResult.conjunctiveQueryResult.ConjunctiveQueryAnswerMappingRepository
-import tin.model.queryResult.conjunctiveQueryResult.ConjunctiveQueryResult
-import tin.model.queryTask.ComputationProperties
-import tin.model.queryTask.QueryTask
-import tin.model.queryTask.QueryTaskRepository
-import tin.model.tintheweb.FileRepository
-import tin.model.transducer.TransducerGraph
-import tin.model.utils.ProductAutomatonTuple
+import tin.model.v1.alphabet.Alphabet
+import tin.model.v1.dataProvider.ConjunctiveQueryDataProvider
+import tin.model.v1.dataProvider.RegularPathQueryDataProvider
+import tin.model.v1.productAutomaton.ProductAutomatonGraph
+import tin.model.v1.queryResult.computationStatistics.ConjunctiveComputationStatistics
+import tin.model.v1.queryResult.computationStatistics.RegularPathComputationStatistics
+import tin.model.v1.queryResult.conjunctiveQueryResult.ConjunctiveQueryAnswerMapping
+import tin.model.v1.queryResult.conjunctiveQueryResult.ConjunctiveQueryAnswerMappingRepository
+import tin.model.v1.queryResult.conjunctiveQueryResult.ConjunctiveQueryResult
+import tin.model.v1.queryTask.ComputationProperties
+import tin.model.v1.queryTask.QueryTask
+import tin.model.v1.queryTask.QueryTaskRepository
+import tin.model.v1.queryResult.QueryResultRepository
+import tin.model.v1.tintheweb.FileRepository
+import tin.model.v1.transducer.TransducerGraph
+import tin.model.v1.utils.ProductAutomatonTuple
+import tin.model.v1.queryResult.QueryResultStatus
+import tin.model.v1.queryResult.RegularPathQueryResult
 import tin.services.internal.ProductAutomatonService
 import tin.services.internal.dijkstra.DijkstraQueryAnsweringUtils
 import tin.services.internal.dijkstra.algorithms.Dijkstra
@@ -138,7 +140,7 @@ class ConjunctiveQueryAnsweringService(
     private fun buildDataProvider(data: QueryTask): ConjunctiveQueryDataProvider {
 
         val queryFileDb = fileRepository.findByIdentifier(data.queryFileIdentifier)
-        val databaseFileDb = fileRepository.findByIdentifier(data.databaseFileIdentifier)
+        val databaseFileDb = fileRepository.findByIdentifier(data.dataSourceFileIdentifier)
 
         val queryFileReaderResult = conjunctiveQueryReaderService.read(
             systemConfigurationService.getConjunctiveQueryPath(),
@@ -253,7 +255,7 @@ class ConjunctiveQueryAnsweringService(
                                 localPostProcessingTime,
                                 combinedProcessingTimes
                             ),
-                            QueryResult.QueryResultStatus.NoError,
+                            QueryResultStatus.NoError,
                             it.key,
                             transformedAnswerSet
                         )
@@ -288,7 +290,7 @@ class ConjunctiveQueryAnsweringService(
         val conjunctiveQueryResult = ConjunctiveQueryResult(
             queryTask = queryTask,
             computationStatistics = null,
-            queryResultStatus = QueryResult.QueryResultStatus.NoError,
+            queryResultStatus = QueryResultStatus.NoError,
             variableMappings = emptySet(),
             regularPathQueryResults = regularPathQueryResultSet
         )
@@ -389,7 +391,7 @@ class ConjunctiveQueryAnsweringService(
                                 localPostProcessingTime,
                                 combinedProcessingTimes
                             ),
-                            QueryResult.QueryResultStatus.NoError,
+                            QueryResultStatus.NoError,
                             it.key,
                             transformedAnswerSet
                         )
@@ -424,7 +426,7 @@ class ConjunctiveQueryAnsweringService(
         val conjunctiveQueryResult = ConjunctiveQueryResult(
             queryTask = queryTask,
             computationStatistics = null,
-            queryResultStatus = QueryResult.QueryResultStatus.NoError,
+            queryResultStatus = QueryResultStatus.NoError,
             variableMappings = emptySet(),
             regularPathQueryResults = regularPathQueryResultSet
         )
@@ -528,7 +530,7 @@ class ConjunctiveQueryAnsweringService(
                                 localPostProcessingTime,
                                 combinedProcessingTimes
                             ),
-                            QueryResult.QueryResultStatus.NoError,
+                            QueryResultStatus.NoError,
                             it.key,
                             transformedAnswerSet
                         )
@@ -563,7 +565,7 @@ class ConjunctiveQueryAnsweringService(
         val conjunctiveQueryResult = ConjunctiveQueryResult(
             queryTask = queryTask,
             computationStatistics = null,
-            queryResultStatus = QueryResult.QueryResultStatus.NoError,
+            queryResultStatus = QueryResultStatus.NoError,
             variableMappings = emptySet(),
             regularPathQueryResults = regularPathQueryResultSet
         )
@@ -603,7 +605,7 @@ class ConjunctiveQueryAnsweringService(
             ConjunctiveQueryResult(
                 queryTask,
                 null,
-                QueryResult.QueryResultStatus.ErrorInComputationMode,
+                QueryResultStatus.ErrorInComputationMode,
                 emptySet(),
                 emptySet()
             ), null

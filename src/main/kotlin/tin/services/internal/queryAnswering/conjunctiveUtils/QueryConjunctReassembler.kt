@@ -3,10 +3,10 @@ package tin.services.internal.queryAnswering.conjunctiveUtils
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import tin.model.ConjunctiveFormula
-import tin.model.dataProvider.ConjunctiveQueryDataProvider
-import tin.model.queryResult.QueryResultRepository
-import tin.model.queryResult.RegularPathQueryResult
-import tin.model.queryTask.QueryTask
+import tin.model.v1.dataProvider.ConjunctiveQueryDataProvider
+import tin.model.v1.queryResult.QueryResultRepository
+import tin.model.v1.queryResult.RegularPathQueryResult
+import tin.model.v1.queryTask.QueryTask
 import java.lang.Exception
 import java.util.HashSet
 

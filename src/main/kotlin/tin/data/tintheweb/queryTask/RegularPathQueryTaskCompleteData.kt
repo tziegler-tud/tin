@@ -2,8 +2,8 @@ package tin.data.tintheweb.queryTask
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import tin.data.tintheweb.queryResult.RegularPathQueryResultData
-import tin.model.queryResult.RegularPathQueryResult
-import tin.model.queryTask.QueryTask
+import tin.model.v1.queryResult.RegularPathQueryResult
+import tin.model.v1.queryTask.QueryTask
 import java.util.*
 
 class RegularPathQueryTaskCompleteData(
@@ -21,7 +21,7 @@ class RegularPathQueryTaskCompleteData(
         computationProperties = ComputationPropertiesData(model.computationProperties),
         queryFileIdentifier = model.queryFileIdentifier,
         transducerFileIdentifier = model.transducerFileIdentifier,
-        databaseFileIdentifier = model.databaseFileIdentifier,
+        databaseFileIdentifier = model.dataSourceFileIdentifier,
         queryStatus = model.queryStatus,
         queryResult = model.queryResult?.let { RegularPathQueryResultData(it.first() as RegularPathQueryResult) },
         createdAt = model.createdAt
@@ -39,7 +39,7 @@ class QueryTaskCreateData(
         computationProperties = ComputationPropertiesData(model.computationProperties),
         queryFileIdentifier = model.queryFileIdentifier,
         transducerFileIdentifier = model.transducerFileIdentifier,
-        databaseFileIdentifier = model.databaseFileIdentifier,
+        databaseFileIdentifier = model.dataSourceFileIdentifier,
     )
 
 }

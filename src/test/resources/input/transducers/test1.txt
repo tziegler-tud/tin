@@ -1,0 +1,6 @@
+// most simple, answer preserving transducer for test case 1
+nodes
+t0, true, true
+edges
+t0, t0, serves, serves, 0
+t0, t0, Vegan?, Vegan?, 0

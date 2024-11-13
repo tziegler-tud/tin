@@ -1,8 +1,8 @@
 package tin.services.internal.dijkstra.algorithms
 
-import tin.model.utils.ProductAutomatonTuple
-import tin.model.productAutomaton.ProductAutomatonGraph
-import tin.model.productAutomaton.ProductAutomatonNode
+import tin.model.v1.utils.ProductAutomatonTuple
+import tin.model.v1.productAutomaton.ProductAutomatonGraph
+import tin.model.v1.productAutomaton.ProductAutomatonNode
 
 import java.util.*
 

@@ -2,7 +2,7 @@ package tin.data.tintheweb.queryResult
 
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
-import tin.model.queryResult.RegularPathQueryResult
+import tin.model.v1.queryResult.RegularPathQueryResult
 
 data class AnswerTripletData @JsonCreator constructor(
     @JsonProperty("source") val source: String,
