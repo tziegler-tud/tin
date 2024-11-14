@@ -33,19 +33,21 @@ class NumericConceptNameRestriction(
         return false;
     }
 
+    /**
+     * returns true if this is a superset of the given set of OWL Classes
+     */
     override fun containsAllElementsFromSet(set: Set<OWLClass>) : Boolean {
         val repr = numericSetUtility.getSetAsSetRepresentation(set);
         return numericSetUtility.containsElement(value, repr);
     }
 
+    /**
+     * returns true if any of the restrictions in the set is a subset of this restriction
+     */
     override fun containsAllElementsFromOneOf(set: Set<MultiClassLoopTableEntryRestriction>) : Boolean {
         //TODO: Implement this in a performant way
         set.forEach set@{ res ->
-            if(res == this) return true;
-            res.asSet().forEach { owlClass ->
-                if(!this.containsElement(owlClass)) return@set;
-            }
-            return true;
+            if(res == this || this.isSupersetOf(res)) return true
         }
         return false;
     }
