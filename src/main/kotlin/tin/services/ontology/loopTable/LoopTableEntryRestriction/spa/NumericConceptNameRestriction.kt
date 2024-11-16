@@ -6,7 +6,7 @@ class NumericConceptNameRestriction(
     private val numericSetUtility: NumericSetUtility,
     override var value: ULong = 0UL
 
-) : NumericLoopTableEntryRestriction {
+) : MultiClassLoopTableEntryRestriction {
 
     constructor(res: NumericConceptNameRestriction) : this(res.numericSetUtility, res.value)
 
@@ -42,12 +42,21 @@ class NumericConceptNameRestriction(
     }
 
     /**
-     * returns true if any of the restrictions in the set is a subset of this restriction
+     * returns true if any of the restrictions in the set is a SUBset of this restriction
      */
     override fun containsAllElementsFromOneOf(set: Set<MultiClassLoopTableEntryRestriction>) : Boolean {
-        //TODO: Implement this in a performant way
         set.forEach set@{ res ->
             if(res == this || this.isSupersetOf(res)) return true
+        }
+        return false;
+    }
+
+    /**
+     * returns true if any of the restrictions in the set is a SUPERset of this restriction
+     */
+    override fun containsOnlyElementsFromOneOf(set: Set<MultiClassLoopTableEntryRestriction>) : Boolean {
+        set.forEach set@{ res ->
+            if(res == this || this.isSubsetOf(res)) return true
         }
         return false;
     }
@@ -90,6 +99,10 @@ class NumericConceptNameRestriction(
 
     override fun hashCode(): Int {
         return value.hashCode();
+    }
+
+    override fun getSize(): Int {
+        return value.countOneBits();
     }
 
 

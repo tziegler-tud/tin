@@ -72,4 +72,8 @@ class ELSetExecutionContext(private val manager: OntologyManager) : ELExecutionC
         return manager.getRoles();
     }
 
+    override fun getManager() : OntologyManager {
+        return manager;
+    }
+
 }

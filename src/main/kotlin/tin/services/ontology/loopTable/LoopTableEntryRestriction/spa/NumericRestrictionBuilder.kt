@@ -13,6 +13,8 @@ import kotlin.math.pow
  * Builds restrictions using long ints to represent OWLClasses
  */
 class NumericRestrictionBuilder(
+    private val topClass: OWLClass,
+    private val bottomClass: OWLClass,
     private val classes: Set<OWLClass>,
     private val queryParser: DLQueryParser
 ) : MultiClassRestrictionBuilderInterface
@@ -23,14 +25,17 @@ class NumericRestrictionBuilder(
     private val maxNumber: Long = 2.0.pow(classes.size.toDouble()).toLong();
 
     private val classIndexMap: HashMap<Int, OWLClass> = hashMapOf()
-    private val classIndexList: List<OWLClass> = classes.toList();
+    private val classIndexList: MutableList<OWLClass> = classes.toList().toMutableList()
 
-    private val numbericSetUtility: NumericSetUtility = NumericSetUtility(classIndexList);
+    private lateinit var numericSetUtility: NumericSetUtility;
 
     init {
+        classIndexList.add(topClass);
+        classIndexList.add(bottomClass);
         classIndexList.forEachIndexed { index, owlClass ->
             classIndexMap[index] = owlClass;
         }
+        numericSetUtility = NumericSetUtility(classIndexList);
     }
 
     override fun createRestriction(element: OWLClass): LoopTableEntryRestriction {
@@ -38,17 +43,17 @@ class NumericRestrictionBuilder(
     }
 
     fun createConceptNameRestriction(base: ULong) : NumericConceptNameRestriction {
-        return NumericConceptNameRestriction(numbericSetUtility, base);
+        return NumericConceptNameRestriction(numericSetUtility, base);
     }
 
     override fun createConceptNameRestriction(element: OWLClass): NumericConceptNameRestriction {
-        val restriction = NumericConceptNameRestriction(numbericSetUtility);
+        val restriction = NumericConceptNameRestriction(numericSetUtility);
         restriction.addElement(element);
         return restriction;
     }
 
     override fun createConceptNameRestriction(values: Set<OWLClass>): NumericConceptNameRestriction {
-        val restriction = NumericConceptNameRestriction(numbericSetUtility);
+        val restriction = NumericConceptNameRestriction(numericSetUtility);
         for (value in values) {
             restriction.addElement(value);
         }
@@ -56,7 +61,7 @@ class NumericRestrictionBuilder(
     }
 
     override fun createConceptNameRestrictionFromEntities(values: Set<OWLEntity>): NumericConceptNameRestriction {
-        val restriction = NumericConceptNameRestriction(numbericSetUtility);
+        val restriction = NumericConceptNameRestriction(numericSetUtility);
         for (value in values) {
             restriction.addElement(value.asOWLClass());
         }
@@ -75,7 +80,7 @@ class NumericRestrictionBuilder(
     }
 
     override fun createConceptNameRestrictionFromStringSet(values: Set<String>): NumericConceptNameRestriction {
-        val restriction = NumericConceptNameRestriction(numbericSetUtility);
+        val restriction = NumericConceptNameRestriction(numericSetUtility);
         for (value in values) {
             val exp = queryParser.getOWLClass(value);
             if(exp !== null) {
@@ -89,6 +94,7 @@ class NumericRestrictionBuilder(
         if(restriction.isEmpty()) {
             throw Error("Cannot create class Expression from empty restriction.")
         }
+        if(restriction.getSize() == 1) return restriction.asList().first();
         return OWLObjectIntersectionOfImpl(restriction.asList());
     }
 
@@ -96,6 +102,7 @@ class NumericRestrictionBuilder(
         if(restriction.isEmpty()) {
             throw Error("Cannot create class Expression from empty restriction.")
         }
+        if(restriction.getSize() == 1) return restriction.asList().first();
         return OWLObjectIntersectionOfImpl(restriction.asList());
     }
 

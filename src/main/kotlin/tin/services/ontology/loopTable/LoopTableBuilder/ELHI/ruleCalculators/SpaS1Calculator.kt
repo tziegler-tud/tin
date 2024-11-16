@@ -460,6 +460,10 @@ class SpaS1Calculator(
 
         var costCutoff: Int? = null;
 
+        val allClasses: MultiClassLoopTableEntryRestriction = restrictionBuilder.createConceptNameRestrictionFromEntities(ec.getClasses())
+
+        val allClassExpr = expressionBuilder.createELHIExpression(restrictionBuilder.asClassExpression(allClasses))
+
         /**
          * debug line
          */
@@ -510,15 +514,17 @@ class SpaS1Calculator(
                                         val candidateTransducerEdgesUp = candidateEdgesUp.second;
                                         val sortedTransducerEdgesUp = candidateTransducerEdgesUp.sortedBy { it.label.cost }
 
-                                        var candidateResultList: List<Pair<OWLClassExpression, Int>> = mutableListOf();
+                                        var candidateResultList: List<Pair<MultiClassLoopTableEntryRestriction, Int>>
 
                                         //only add (s,t,)(s,t),0 candidates for initial iteration (cannot be improved later on)
                                         if(isInitialIteration && candidateQuerySource == candidateQueryTarget && candidateTransducerSource == candidateTransducerTarget) {
-                                            val mutableList: MutableList<Pair<OWLClassExpression, Int>> = mutableListOf()
-                                            ec.forEachTailset { tailset ->
-                                                mutableList.add(Pair(restrictionBuilder.asClassExpression(tailset), 0))
-                                            }
-                                            candidateResultList = mutableList;
+//                                            val mutableList: MutableList<Pair<OWLClassExpression, Int>> = mutableListOf()
+//                                            ec.forEachTailset { tailset ->
+//                                                mutableList.add(Pair(restrictionBuilder.asClassExpression(tailset), 0))
+//                                            }
+
+                                            //just check the restriction containing all concepts
+                                            candidateResultList = mutableListOf(Pair(owlTopClassRestriction, 0))
                                         }
                                         else {
                                             val candidateMap = updateTable.getWithSourceAndTarget(
@@ -528,7 +534,7 @@ class SpaS1Calculator(
 
                                             //create optimized map to use from here. We only need class expression and value
                                             candidateResultList = candidateMap.map { (entry, v) ->
-                                                Pair(restrictionBuilder.asClassExpression(entry.restriction), v)
+                                                Pair(entry.restriction, v)
                                             }.sortedBy{it.second}
                                         }
 
@@ -589,18 +595,41 @@ class SpaS1Calculator(
                                             var csCounter = 0;
                                             val edgeCost: Int = pairOfEdges.first.label.cost + pairOfEdges.second.label.cost;
 
-                                            candidateResultList.forEach candidates@{ candidateResultPair ->
+                                            val eliminatedCandidatesMap: MutableMap<MultiClassLoopTableEntryRestriction, Int> = mutableMapOf();
+
+                                            //start with the least specific candidateSet.
+                                            //keep more specific sets ONLY if they have associated lower cost
+
+
+                                            //sort candidateResultList by length of restriction ASCENDING ( == from less specific to more specific)
+                                            var sortedCandidateResultList = candidateResultList.sortedBy { pair ->
+                                                pair.first.getSize()
+                                            }
+
+                                            sortedCandidateResultList.forEach candidates@{ candidateResultPair ->
                                                 //build class expressions
-                                                val M1ClassExp = candidateResultPair.first;
+                                                val M1Restriction = candidateResultPair.first
+                                                val M1ClassExp = restrictionBuilder.asClassExpression(M1Restriction);
                                                 val candidateCost = candidateResultPair.second;
                                                 val rM1 = expressionBuilder.createExistentialRestriction(role, M1ClassExp)
                                                 val rM1Exp = expressionBuilder.createELHIExpression(rM1);
+
+
+                                                //only process candidate if there is no eliminated (=already processed) set that is a subset and has the same or lower cost
+//                                                eliminatedCandidatesMap.forEach { (elimRestriction, cost) ->
+//                                                    if(cost <= candidateCost && elimRestriction.isSubsetOf(M1Restriction) ) return@candidates
+//                                                }
+                                                val found = eliminatedCandidatesMap.firstNotNullOfOrNull { (elimRestriction, cost) ->
+                                                   cost <= candidateCost && elimRestriction.isSubsetOf(M1Restriction)
+                                                }
+                                                if(found != null) return@candidates
+                                                eliminatedCandidatesMap[M1Restriction] = candidateCost;
 
                                                 /**
                                                  * debug line
                                                  */
                                                 csCounter++;
-                                                println("Calculating candidate set " + csCounter + "/ " + candidateResultList.size);
+                                                println("Calculating candidate set " + csCounter + "/ " + sortedCandidateResultList.size);
 //                                                if(tcCounter == 10) return@candidateEdges
 
                                                 //calculate basic class that are subsumed by A <= €R.M1
@@ -617,15 +646,10 @@ class SpaS1Calculator(
                                                     /**
                                                      * Test: build restriction consisting of all concept names
                                                      */
-                                                    val allClasses: MultiClassLoopTableEntryRestriction = restrictionBuilder.createConceptNameRestrictionFromEntities(ec.getClasses())
 
-                                                    val allClassExpr = expressionBuilder.createELHIExpression(restrictionBuilder.asClassExpression(allClasses))
+
                                                     val isEntailed = dlReasoner.checkIsSubsumed(allClassExpr, rM1Exp)
-                                                    if(!isEntailed) {
-                                                        eliminatedSets.add(allClasses)
-                                                    };
-
-                                                    if(eliminatedSets.isNotEmpty()) return@candidates;
+                                                    if(!isEntailed) return@candidates;
                                                 }
 
                                                 var tcCounter = 0;

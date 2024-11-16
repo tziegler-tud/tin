@@ -113,6 +113,10 @@ class ELHISetExecutionContext(private val manager: OntologyManager) : ELHIExecut
         return manager.getRoles();
     }
 
+    override fun getManager() : OntologyManager {
+        return manager;
+    }
+
     private fun computeTailSets(): HashSet<HashSet<String>>{
         //powerset of all concept names in the ontology
         val classes = manager.getClassNames();

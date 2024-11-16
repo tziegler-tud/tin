@@ -27,4 +27,8 @@ class FileOverviewService(
         return fileRepository.findAllByFiletype(FileType.Transducer)
     }
 
+    fun getAllOntologyFiles(): List<File> {
+        return fileRepository.findAllByFiletype(FileType.Ontology)
+    }
+
 }

@@ -2,7 +2,7 @@ package tin.services.ontology.loopTable.LoopTableEntryRestriction.spa
 import org.semanticweb.owlapi.model.OWLClass
 import tin.services.ontology.loopTable.LoopTableEntryRestriction.LoopTableEntryRestriction
 
-class ConceptNameRestriction() : SetLoopTableEntryRestriction {
+class ConceptNameRestriction() : MultiClassLoopTableEntryRestriction {
 
     override val value: MutableSet<OWLClass> = hashSetOf();
 
@@ -36,11 +36,14 @@ class ConceptNameRestriction() : SetLoopTableEntryRestriction {
 
     override fun containsAllElementsFromOneOf(set: Set<MultiClassLoopTableEntryRestriction>) : Boolean {
         set.forEach set@{ res ->
-            if(res == this) return true;
-            res.asSet().forEach { owlClass ->
-                if(!this.containsElement(owlClass)) return@set;
-            }
-            return true;
+            if(res == this || this.isSupersetOf(res)) return true
+        }
+        return false;
+    }
+
+    override fun containsOnlyElementsFromOneOf(set: Set<MultiClassLoopTableEntryRestriction>) : Boolean {
+        set.forEach set@{ res ->
+            if(res == this || this.isSubsetOf(res)) return true
         }
         return false;
     }
@@ -63,6 +66,10 @@ class ConceptNameRestriction() : SetLoopTableEntryRestriction {
 
     override fun addElement(element: OWLClass): Boolean {
         return value.add(element);
+    }
+
+    override fun getSize(): Int {
+        return value.size;
     }
 
     override fun equals(other: Any?): Boolean {

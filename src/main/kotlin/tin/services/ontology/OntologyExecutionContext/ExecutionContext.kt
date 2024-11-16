@@ -10,6 +10,7 @@ import org.semanticweb.owlapi.model.OWLObjectProperty
 import org.semanticweb.owlapi.util.ShortFormProvider
 import tin.services.ontology.DLQueryParser
 import tin.services.ontology.Expressions.DLExpressionBuilder
+import tin.services.ontology.OntologyManager
 import tin.services.ontology.Reasoner.DLReasoner
 import tin.services.ontology.loopTable.LoopTableEntryRestriction.LoopTableEntryRestriction
 import tin.services.ontology.loopTable.LoopTableEntryRestriction.RestrictionBuilderInterface
@@ -35,4 +36,6 @@ interface ExecutionContext {
     fun getRoleNames(): HashSet<String>
 
     fun getRoles(): Set<OWLObjectProperty>
+
+    fun getManager(): OntologyManager
 }
