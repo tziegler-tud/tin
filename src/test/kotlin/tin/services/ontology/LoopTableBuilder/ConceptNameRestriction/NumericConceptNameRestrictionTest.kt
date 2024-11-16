@@ -53,7 +53,7 @@ class NumericConceptNameRestrictionTest {    @Autowired
         val manager = loadExampleOntology();
         val reasoner = manager.createReasoner(OntologyManager.BuildInReasoners.HERMIT)
 
-        val ec = manager.createELHIExecutionContext(ExecutionContextType.ELHI);
+        val ec = manager.createELHIExecutionContext(ExecutionContextType.ELHI_NUMERIC);
 
         val parser = ec.parser;
         val expressionBuilder = manager.getExpressionBuilder();
@@ -64,7 +64,7 @@ class NumericConceptNameRestrictionTest {    @Autowired
         val query = readQueryWithFileReaderService("test1.txt")
         val transducer = readTransducerWithFileReaderService("test1.txt")
 
-        val numericRestrictionBuilder: NumericRestrictionBuilder = NumericRestrictionBuilder(manager.classes, ec.parser );
+        val numericRestrictionBuilder: NumericRestrictionBuilder = NumericRestrictionBuilder(dlReasoner.getTopClassNode().representativeElement, dlReasoner.getBottomClassNode().representativeElement, manager.classes, ec.parser );
 
         val pasta = parser.getOWLClass("Pasta")!!;
         val bread = parser.getOWLClass("Bread")!!;
