@@ -26,6 +26,15 @@ class ELHISPALoopTable(
         map[entry] = value;
     }
 
+    override fun setIfLower(entry: ELHISPALoopTableEntry, value: Int) : Boolean {
+        if(entry.hasEqualSourceAndTarget()) return false;
+        if(map[entry] == null || value < map[entry]!!) {
+            map[entry] = value
+            return true;
+        }
+        return false
+    }
+
     /**
      * returns a HashMap <spaLoopTableEntry, Int> containing all entries that have value BELOW (< ) the given limit
      * If null is given, returns all entries.

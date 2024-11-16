@@ -1,5 +1,6 @@
 package tin.services.ontology.loopTable
 
+import tin.services.ontology.loopTable.loopTableEntry.ELHISPALoopTableEntry
 import tin.services.ontology.loopTable.loopTableEntry.LoopTableEntry
 import tin.services.ontology.loopTable.loopTableEntry.SPALoopTableEntry
 
@@ -19,5 +20,11 @@ interface LoopTable<entryType> {
     fun get(entry: entryType): Int?
 
     fun set(entry: entryType, value: Int)
+
+    /**
+     * updates the entry with the given value IF the current value is null or greater than the given value.
+     * Returns true if the value was updated, false otherwise
+     */
+    fun setIfLower(entry: entryType, value: Int) : Boolean
 
 }

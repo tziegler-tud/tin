@@ -2,6 +2,7 @@ package tin.services.ontology.loopTable
 import tin.model.v2.graph.Node
 import tin.services.ontology.loopTable.LoopTableEntryRestriction.spa.ConceptNameRestriction
 import tin.services.ontology.loopTable.LoopTableFragment.SPALoopTableFragment
+import tin.services.ontology.loopTable.loopTableEntry.ELHISPALoopTableEntry
 import tin.services.ontology.loopTable.loopTableEntry.SPALoopTableEntry
 
 open class SPALoopTable(
@@ -22,6 +23,15 @@ open class SPALoopTable(
     override fun set(entry: SPALoopTableEntry, value: Int) {
         if(entry.hasEqualSourceAndTarget()) return;
         map[entry] = value;
+    }
+
+    override fun setIfLower(entry: SPALoopTableEntry, value: Int) : Boolean {
+        if(entry.hasEqualSourceAndTarget()) return false;
+        if(map[entry] == null || value < map[entry]!!) {
+            map[entry] = value
+            return true;
+        }
+        return false
     }
 
     /**
