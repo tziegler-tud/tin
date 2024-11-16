@@ -92,6 +92,10 @@ class DLQueryParser(private val ontology: OWLOntology, shortFormProvider: ShortF
         return getOWLClass("owl:Thing")!!;
     }
 
+    fun getBottomOWLClass(): OWLClass {
+        return getOWLClass("owl:Nothing")!!;
+    }
+
     fun getTopOWLProperty() : OWLObjectProperty {
         return getOWLObjectProperty("owl:topObjectProperty")!!;
     }
