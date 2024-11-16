@@ -4,6 +4,7 @@ import org.semanticweb.owlapi.model.*
 import tin.services.ontology.OntologyExecutionContext.ExecutionContext
 import tin.services.ontology.Reasoner.CachingDLReasoner
 import tin.services.ontology.OntologyManager
+import tin.services.ontology.Reasoner.DLReasoner
 import tin.services.ontology.loopTable.LoopTableEntryRestriction.LoopTableEntryRestriction
 import tin.services.ontology.loopTable.LoopTableEntryRestriction.RestrictionBuilderInterface
 import tin.services.ontology.loopTable.LoopTableEntryRestriction.sp.IndividualRestrictionBuilder
@@ -23,12 +24,20 @@ class ELHINumericExecutionContext(private val manager: OntologyManager) : ELHIEx
     override val parser = manager.getQueryParser();
     override val shortFormProvider = manager.getShortFormProvider();
     override val manchesterShortFormProvider = manager.manchesterShortFormProvider;
-    override val spaRestrictionBuilder = NumericRestrictionBuilder(classes, parser);
+
+    val topClass = dlReasoner.getTopClassNode();
+    val bottomClass = dlReasoner.getBottomClassNode();
+
+    override val spaRestrictionBuilder = NumericRestrictionBuilder(topClass.representativeElement, bottomClass.representativeElement, classes, parser);
     override val spRestrictionBuilder = IndividualRestrictionBuilder(parser, shortFormProvider)
 
     val tailsetMaximum: ULong = pow(2, classes.size)- 1UL;
 
     override val tailsetSize = tailsetMaximum;
+
+    override fun getManager() : OntologyManager {
+        return manager;
+    }
 
     override fun prepareForLoopTableConstruction(prewarmCaches: Boolean){
         if(prewarmCaches) {

@@ -5,7 +5,6 @@ import tin.services.ontology.loopTable.LoopTableEntryRestriction.LoopTableEntryR
 
 interface MultiClassLoopTableEntryRestriction : LoopTableEntryRestriction {
 
-
     fun asSet(): Set<OWLClass>;
 
     fun asList(): List<OWLClass>;
@@ -16,7 +15,15 @@ interface MultiClassLoopTableEntryRestriction : LoopTableEntryRestriction {
 
     fun containsAllElementsFromSet(set: Set<OWLClass>) : Boolean
 
+    /**
+     * returns true if any of the restrictions in the set is a SUBSET of this restriction
+     */
     fun containsAllElementsFromOneOf(set: Set<MultiClassLoopTableEntryRestriction>) : Boolean
+
+    /**
+     * returns true if any of the restrictions in the set is a SUPERSET of this restriction
+     */
+    fun containsOnlyElementsFromOneOf(set: Set<MultiClassLoopTableEntryRestriction>) : Boolean
 
     /**
      * returns true if this is a subset of the given restriction
@@ -29,4 +36,6 @@ interface MultiClassLoopTableEntryRestriction : LoopTableEntryRestriction {
     fun isSupersetOf(restriction: MultiClassLoopTableEntryRestriction) : Boolean
 
     fun addElement(element: OWLClass): Boolean
+
+    fun getSize(): Int;
 }
