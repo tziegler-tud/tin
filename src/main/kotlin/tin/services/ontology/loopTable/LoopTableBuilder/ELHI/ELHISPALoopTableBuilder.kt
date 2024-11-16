@@ -48,10 +48,6 @@ class ELHISPALoopTableBuilder (
         queryGraph.nodes.forEach { node ->
             transducerGraph.nodes.forEach { transducerNode ->
                 pairsAvailable.add(Pair(node, transducerNode))
-//                ec.tailsets!!.forEach { tailset ->
-//                    val restriction = restrictionBuilder.createConceptNameRestriction(tailset);
-//                    table.set(SPALoopTableEntry(node, transducerNode, node, transducerNode, restriction), 0);
-//                }
             }
         }
     }
@@ -158,12 +154,6 @@ class ELHISPALoopTableBuilder (
 
     private fun calculateS1(isInitialIteration: Boolean) : ELHISPALoopTable {
         val result = s1Calculator.calculateAll(table, updateTable, isInitialIteration);
-        return result;
-    }
-
-    private fun calculateS2(spaLoopTableEntry: ELHISPALoopTableEntry) : Int? {
-
-        val result = s2Calculator.calculate(spaLoopTableEntry, table)
         return result;
     }
 
