@@ -31,7 +31,7 @@ class TransducerReaderServiceV2Test {
         val e0 = TransducerEdge(t0, t1, "R", "R", 0)
         val e1 = TransducerEdge(t1, t2, "T", "S", 2)
         val e2 = TransducerEdge(t0, t2, "prop1?", "prop2?", 2)
-        val e3 = TransducerEdge(t2, t2, "R", "prop1?", 4)
+        val e3 = TransducerEdge(t2, t2, "R", "prop1?", 11)
 
         val comparisonGraph = TransducerGraph();
         comparisonGraph.addNodes(t0,t1,t2);

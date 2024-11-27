@@ -53,6 +53,12 @@ class SpaLoopTableTest {
         val manager = OntologyManager(exampleFile);
         return manager
     }
+    fun loadExampleOntologyLarge2() : OntologyManager {
+        val exampleFile = readWithFileReaderService("pizza_4.rdf").get()
+//        val exampleFile = readWithFileReaderService("univ-bench.owl.rdf").get()
+        val manager = OntologyManager(exampleFile);
+        return manager
+    }
 
     fun loadExampleOntologyUnivbench() : OntologyManager {
         val exampleFile = readWithFileReaderService("univ-bench.owl.rdf").get()

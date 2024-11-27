@@ -4,10 +4,12 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.context.TestConfiguration
+import org.springframework.boot.web.client.RestTemplateBuilder
 import tin.services.internal.fileReaders.OntologyReaderService
 import tin.services.internal.fileReaders.fileReaderResult.FileReaderResult
 import tin.services.ontology.OntologyExecutionContext.ExecutionContextType
 import tin.services.ontology.Reasoner.SimpleDLReasoner
+import tin.services.ontology.loopTable.LoopTableEntryRestriction.spa.MultiClassLoopTableEntryRestriction
 import tin.services.ontology.loopTable.LoopTableEntryRestriction.spa.RestrictionBuilder
 import tin.services.technical.SystemConfigurationService
 import java.io.File
@@ -15,6 +17,9 @@ import java.io.File
 @SpringBootTest
 @TestConfiguration
 class DLReasonerTest {
+    @Autowired
+    private lateinit var restTemplateBuilder: RestTemplateBuilder
+
     @Autowired
     lateinit var systemConfigurationService: SystemConfigurationService;
 
@@ -329,5 +334,35 @@ class DLReasonerTest {
         assert(stats["subClassCache"]!! == ec.getRoles().size * ec.tailsetSize.toInt());
         //cache hits should be 0
         assert(stats["subClassCacheHitCounter"]!! == 0);
+    }
+
+    @Test
+    fun testGetIndividualClasses() {
+        val manager = loadExampleOntology("pizza_4.rdf");
+        val ec = manager.createELHIExecutionContext(ExecutionContextType.ELHI_NUMERIC, false);
+        val dlReasoner = ec.dlReasoner;
+
+        ec.forEachIndividual { individual ->
+            val classes = dlReasoner.getClasses(individual)
+            var stringNames: MutableSet<String> = mutableSetOf()
+            val combinedRestriction = ec.spaRestrictionBuilder.createConceptNameRestriction(setOf());
+
+            classes.forEach { className ->
+                className.entities().forEach{
+                    combinedRestriction.addElement(it);
+                    stringNames.add(ec.shortFormProvider.getShortForm(it));
+                }
+            }
+            println("Individual ${ec.shortFormProvider.getShortForm(individual)}: " + stringNames)
+
+            //verify
+            ec.getClasses().forEach { owlClass ->
+                val restriction = ec.spaRestrictionBuilder.createConceptNameRestriction(combinedRestriction.asSet())
+                if(restriction.containsElement(owlClass)) return@forEach
+                restriction.addElement(owlClass);
+                val isSubsumed  = dlReasoner.checkIndividualEntailment(individual, ec.expressionBuilder.createELHIExpression(ec.spaRestrictionBuilder.asClassExpression(restriction)))
+                assert(!isSubsumed);
+            }
+        }
     }
 }

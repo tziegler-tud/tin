@@ -14,12 +14,13 @@ import tin.services.ontology.OntologyExecutionContext.ExecutionContext
 import tin.services.ontology.Reasoner.DLReasoner
 import tin.services.ontology.loopTable.LoopTableEntryRestriction.LoopTableEntryRestriction
 import tin.services.ontology.loopTable.LoopTableEntryRestriction.RestrictionBuilderInterface
+import tin.services.ontology.loopTable.LoopTableEntryRestriction.sp.IndividualRestrictionBuilder
 import tin.services.ontology.loopTable.LoopTableEntryRestriction.spa.MultiClassLoopTableEntryRestriction
 import tin.services.ontology.loopTable.LoopTableEntryRestriction.spa.MultiClassRestrictionBuilderInterface
 
 interface ELHIExecutionContext : ExecutionContext {
     override val spaRestrictionBuilder: MultiClassRestrictionBuilderInterface
-    override val spRestrictionBuilder: RestrictionBuilderInterface<OWLIndividual>
+    override val spRestrictionBuilder: IndividualRestrictionBuilder
 
     val tailsetSize: ULong
 
@@ -28,4 +29,5 @@ interface ELHIExecutionContext : ExecutionContext {
     fun forEachTailsetDescending(action: (MultiClassLoopTableEntryRestriction) -> Unit);
 
     fun prepareForLoopTableConstruction(prewarmCaches: Boolean = false)
+
 }

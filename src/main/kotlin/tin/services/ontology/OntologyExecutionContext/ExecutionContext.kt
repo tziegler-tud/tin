@@ -14,6 +14,7 @@ import tin.services.ontology.OntologyManager
 import tin.services.ontology.Reasoner.DLReasoner
 import tin.services.ontology.loopTable.LoopTableEntryRestriction.LoopTableEntryRestriction
 import tin.services.ontology.loopTable.LoopTableEntryRestriction.RestrictionBuilderInterface
+import tin.services.ontology.loopTable.LoopTableEntryRestriction.spa.MultiClassLoopTableEntryRestriction
 
 interface ExecutionContext {
 
@@ -23,7 +24,8 @@ interface ExecutionContext {
     val shortFormProvider: ShortFormProvider
     val manchesterShortFormProvider: ManchesterOWLSyntaxPrefixNameShortFormProvider
     val spaRestrictionBuilder: RestrictionBuilderInterface<OWLClass>
-    val spRestrictionBuilder: RestrictionBuilderInterface<OWLIndividual>
+    val spRestrictionBuilder: RestrictionBuilderInterface<OWLNamedIndividual>
+    val individuals: Set<OWLNamedIndividual>
 
     fun prewarmSubsumptionCache();
 
@@ -38,4 +40,7 @@ interface ExecutionContext {
     fun getRoles(): Set<OWLObjectProperty>
 
     fun getManager(): OntologyManager
+
+    fun forEachIndividual(action: (OWLNamedIndividual) -> Unit)
+
 }

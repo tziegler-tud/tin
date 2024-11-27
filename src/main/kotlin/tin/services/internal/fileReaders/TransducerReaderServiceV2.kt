@@ -53,7 +53,7 @@ class TransducerReaderServiceV2 (
 
         // this should be the correct regex, that allows negative incoming and or outgoing labels; this is not tested extensively thus we keep the old regex as a quick backup
 //        val anyEdgeRegex = Regex("\\w(\\w|-\\w)*\\s*,\\s*\\w(\\w|-\\w)*\\s*,\\s*[\\w-](\\w|-\\w)*\\??\\s*,\\s*[\\w-](\\w|-\\w)*\\??\\s*,\\s*\\d")
-        val anyEdgeRegex = Regex("\\w(\\w|-\\w)*\\s*,\\s*\\w(\\w|-\\w)*\\s*,\\s*(inverse\\()?\\s*\\w(\\w|-\\w)*(\\s*\\)|\\?)?\\s*,\\s*(inverse\\()?\\s*\\w(\\w|-\\w)*(\\s*\\)|\\?)?\\s*,\\s*\\d")
+        val anyEdgeRegex = Regex("\\w(\\w|-\\w)*\\s*,\\s*\\w(\\w|-\\w)*\\s*,\\s*(inverse\\()?\\s*\\w(\\w|-\\w)*(\\s*\\)|\\?)?\\s*,\\s*(inverse\\()?\\s*\\w(\\w|-\\w)*(\\s*\\)|\\?)?\\s*,\\s*\\d+")
 
         var currentLineIndex: Int = 0
         while (currentLineIndex < inputFileMaxLines) {

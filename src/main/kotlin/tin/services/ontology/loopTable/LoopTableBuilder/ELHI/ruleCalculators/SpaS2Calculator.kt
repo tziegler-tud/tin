@@ -69,7 +69,23 @@ class SpaS2Calculator(
 
                         val sortedTransducerEdges = candidateTransducerEdges.sortedBy { it.label.cost }
 
+                        /**
+                         * debug line
+                         */
+                        var tcCounter = 0;
+                        var lastPercentVal = 0UL;
+
                         ec.forEachTailsetDescending tailsets@{ tailset ->
+
+                            /**
+                             * debug line
+                             */
+                            tcCounter++;
+                            val percent = ((tcCounter*100).toULong() / (ec.tailsetSize) )
+                            if(percent != lastPercentVal) {
+                                println("Calculating tailsets: $percent%");
+                                lastPercentVal = percent;
+                            };
 
                             val entry = ELHISPALoopTableEntry(
                                 Pair(querySource, transducerSource),

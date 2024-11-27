@@ -7,12 +7,12 @@ import tin.services.ontology.loopTable.LoopTableEntryRestriction.LoopTableEntryR
 
 interface IndividualLoopTableEntryRestriction : LoopTableEntryRestriction {
 
-    override var value: OWLIndividual;
+    override var value: OWLNamedIndividual;
 
-    fun isElement(owlIndividual: OWLIndividual) : Boolean
+    fun isElement(owlIndividual: OWLNamedIndividual) : Boolean
 
-    fun isContainedInSet(set: Set<OWLIndividual>): Boolean
+    fun isContainedInSet(set: Set<OWLNamedIndividual>): Boolean
 
-    fun setElement(owlIndividual: OWLIndividual) : Boolean;
+    fun setElement(owlIndividual: OWLNamedIndividual) : Boolean;
 
 }

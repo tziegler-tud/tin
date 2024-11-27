@@ -22,7 +22,7 @@ import tin.services.ontology.loopTable.LoopTableEntryRestriction.spa.SingleClass
 
 interface ELExecutionContext : ExecutionContext {
     override val spaRestrictionBuilder: SingleClassRestrictionBuilderInterface
-    override val spRestrictionBuilder: RestrictionBuilderInterface<OWLIndividual>
+    override val spRestrictionBuilder: RestrictionBuilderInterface<OWLNamedIndividual>
 
     val tailsetSize: Int
 

@@ -25,6 +25,9 @@ class ELHISetExecutionContext(private val manager: OntologyManager) : ELHIExecut
     override val spaRestrictionBuilder = RestrictionBuilder(parser, shortFormProvider);
     override val spRestrictionBuilder = IndividualRestrictionBuilder(parser, shortFormProvider)
 
+    override val individuals = manager.individuals;
+
+
 
     var tailsets: HashSet<HashSet<String>>? = hashSetOf();
     var tailsetsAsClasses: HashSet<HashSet<OWLClass>> = hashSetOf();
@@ -40,6 +43,12 @@ class ELHISetExecutionContext(private val manager: OntologyManager) : ELHIExecut
 
     override fun forEachTailsetDescending(action: (MultiClassLoopTableEntryRestriction) -> Unit) {
         forEachTailset(action)
+    }
+
+    override fun forEachIndividual(action: (OWLNamedIndividual) -> Unit) {
+        for (individual in individuals) {
+            action(individual);
+        }
     }
 
     override fun prepareForLoopTableConstruction(prewarmCaches: Boolean){

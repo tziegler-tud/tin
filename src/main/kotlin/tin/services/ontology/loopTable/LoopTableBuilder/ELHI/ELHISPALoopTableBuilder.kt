@@ -60,8 +60,11 @@ class ELHISPALoopTableBuilder (
 
 
     fun calculateInitialStep(): ELHISPALoopTable {
+        println("Calculating initial S2 rule applications...")
+
         calculateInitialS2();
         //apply S3
+        println("Calculating initial S3 rule applications...")
         calculateS3();
         return table;
     }
@@ -113,6 +116,9 @@ class ELHISPALoopTableBuilder (
     fun calculateFullTable(): ELHISPALoopTable {
         //iterate until max iterations are reached
         initializeTable();
+
+
+        println("Calculating initial S2 and S3...")
 
         calculateInitialStep();
 

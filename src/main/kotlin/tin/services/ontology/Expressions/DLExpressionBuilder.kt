@@ -1,6 +1,8 @@
 package tin.services.ontology.Expressions
 
 import org.semanticweb.owlapi.model.*
+import org.semanticweb.owlapi.reasoner.Node
+import org.semanticweb.owlapi.reasoner.NodeSet
 import tin.services.ontology.OntologyManager
 import uk.ac.manchester.cs.owl.owlapi.OWLObjectIntersectionOfImpl
 import uk.ac.manchester.cs.owl.owlapi.OWLObjectSomeValuesFromImpl
@@ -37,6 +39,14 @@ class DLExpressionBuilder(private val manager: OntologyManager) {
         return create(classExpression, ExpressionTypes.ELHI);
     }
 
+    fun createELHIExpression(nodeset: NodeSet<OWLClass>): DLExpression {
+        val classes: MutableSet<OWLClass> = mutableSetOf();
+        nodeset.forEach { node: Node<OWLClass> ->
+            classes.add(node.representativeElement)
+        }
+        return create(createClassExpression(classes), ExpressionTypes.ELHI);
+    }
+
     fun createELHExpressionFromString(expressionString: String) : DLExpression{
         return createFromString(expressionString, ExpressionTypes.ELH)
     }
@@ -63,7 +73,7 @@ class DLExpressionBuilder(private val manager: OntologyManager) {
         return OWLSubObjectPropertyOfAxiomImpl(property, superProperty, HashSet<OWLAnnotation>())
     }
 
-    fun createClassExpression(classSet: HashSet<OWLClass>): OWLClassExpression {
+    fun createClassExpression(classSet: Set<OWLClass>): OWLClassExpression {
         return OWLObjectIntersectionOfImpl(classSet.toList());
     }
 }
