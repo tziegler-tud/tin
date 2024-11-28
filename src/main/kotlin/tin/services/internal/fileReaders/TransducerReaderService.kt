@@ -64,6 +64,9 @@ class TransducerReaderService (
             currentLine = currentLine.replace(Regex("^\\s*"), "")
             currentLine = currentLine.replace(Regex("\\s*$"), "")
 
+            //ignore empty lines
+            if(currentLine.isEmpty()) continue
+
             //lines starting with // are ignored
             if(commentLineRegex.matchEntire(currentLine) !== null){
                 continue
