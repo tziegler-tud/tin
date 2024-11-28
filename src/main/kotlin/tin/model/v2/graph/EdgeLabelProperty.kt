@@ -47,9 +47,16 @@ class EdgeLabelProperty(
     fun isInverse(): Boolean {
         return inverse;
     }
+
     fun getLabel(): String {
         return label;
     }
+
+    fun getInverseAsNewProperty(): EdgeLabelProperty {
+        if(isConceptAssertion()) EdgeLabelProperty(label, inverse = false, conceptAssertion = true, empty = empty);
+        return EdgeLabelProperty(label, !inverse, conceptAssertion, empty);
+    }
+
     override fun toString(): String {
         return if(inverse) {
             Alphabet.transformToInverseRoleName(label);
