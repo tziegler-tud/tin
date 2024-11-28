@@ -107,7 +107,9 @@ class SpaS2CalculatorTest {
 
     @Test
     fun testCalculationV2(){
-        val exampleFile = readWithFileReaderService("pizza_small.rdf").get()
+        val skipComparison = true;
+
+        val exampleFile = readWithFileReaderService("pizza3.rdf").get()
         val manager = OntologyManager(exampleFile);
         val reasoner = manager.createReasoner(OntologyManager.BuildInReasoners.HERMIT)
         val expressionBuilder = manager.getExpressionBuilder();
@@ -122,6 +124,8 @@ class SpaS2CalculatorTest {
         val restrictionBuilder = ec.spaRestrictionBuilder;
 
         val testRestrictionBuilder = RestrictionBuilder(queryParser, shortFormProvider)
+
+        val timeSource = TimeSource.Monotonic
 
 
 
@@ -144,29 +148,44 @@ class SpaS2CalculatorTest {
         //create empty loop table
         val table: ELHISPALoopTable = ELHISPALoopTable();
         //calculate spa[(s1,t0),(s2,t0),{Egg}]
+
+        val startTime = timeSource.markNow()
         val table2 = s2Calculator.calculateAll(table);
+        val endTime = timeSource.markNow()
+
         //use s1->Chicken?->s2 with t0-Chicken?|Egg?|2->t0
         val filtered = table2.getWithRestriction(M);
 
-        ec.forEachTailset {tailset ->
-            if(dlReasoner.checkIsSubsumed(expressionBuilder.createELHIExpression(testRestrictionBuilder.asClassExpression(tailset)), expressionBuilder.createELHExpressionFromString("Egg"))) {
-                assert(table2.get(ELHISPALoopTableEntry(Pair(s1,t0), Pair(s2,t0),tailset)) == 2)
-            }
-            else {
-                if(dlReasoner.checkIsSubsumed(expressionBuilder.createELHIExpression(testRestrictionBuilder.asClassExpression(tailset)), expressionBuilder.createELHExpressionFromString("Ingredients"))) {
-                    assert(table2.get(ELHISPALoopTableEntry(Pair(s0,t0), Pair(s1,t0),tailset)) == 6)
-                    assert(table2.get(ELHISPALoopTableEntry(Pair(s2,t0), Pair(s3,t0),tailset)) == 6)
+        val totalTime = endTime - startTime;
+        val timePerSet = totalTime.div((ec.tailsetSize/1000UL).toInt())
+
+        println("Tailsets computed: " + ec.tailsetSize)
+        println("Total computation time: " + totalTime)
+        println("Time per tailsetx1000: " + timePerSet)
+
+        if(!skipComparison) {
+            println("Calculating comparison results...")
+            ec.forEachTailset {tailset ->
+                if(dlReasoner.checkIsSubsumed(expressionBuilder.createELHIExpression(testRestrictionBuilder.asClassExpression(tailset)), expressionBuilder.createELHExpressionFromString("Egg"))) {
+                    assert(table2.get(ELHISPALoopTableEntry(Pair(s1,t0), Pair(s2,t0),tailset)) == 2)
                 }
                 else {
-                    assert(table2.get(ELHISPALoopTableEntry(Pair(s0,t0), Pair(s1,t0), tailset)) == null)
-                    assert(table2.get(ELHISPALoopTableEntry(Pair(s1,t0), Pair(s2,t0), tailset)) == null)
-                    assert(table2.get(ELHISPALoopTableEntry(Pair(s2,t0), Pair(s3,t0), tailset)) == null)
+                    if(dlReasoner.checkIsSubsumed(expressionBuilder.createELHIExpression(testRestrictionBuilder.asClassExpression(tailset)), expressionBuilder.createELHExpressionFromString("Ingredients"))) {
+                        assert(table2.get(ELHISPALoopTableEntry(Pair(s0,t0), Pair(s1,t0),tailset)) == 6)
+                        assert(table2.get(ELHISPALoopTableEntry(Pair(s2,t0), Pair(s3,t0),tailset)) == 6)
+                    }
+                    else {
+                        assert(table2.get(ELHISPALoopTableEntry(Pair(s0,t0), Pair(s1,t0), tailset)) == null)
+                        assert(table2.get(ELHISPALoopTableEntry(Pair(s1,t0), Pair(s2,t0), tailset)) == null)
+                        assert(table2.get(ELHISPALoopTableEntry(Pair(s2,t0), Pair(s3,t0), tailset)) == null)
+                    }
                 }
+                assert(table2.get(ELHISPALoopTableEntry(Pair(s0,t0), Pair(s2,t0), tailset)) == null)
+                assert(table2.get(ELHISPALoopTableEntry(Pair(s0,t0), Pair(s3,t0), tailset)) == null)
+                assert(table2.get(ELHISPALoopTableEntry(Pair(s1,t0), Pair(s3,t0), tailset)) == null)
             }
-            assert(table2.get(ELHISPALoopTableEntry(Pair(s0,t0), Pair(s2,t0), tailset)) == null)
-            assert(table2.get(ELHISPALoopTableEntry(Pair(s0,t0), Pair(s3,t0), tailset)) == null)
-            assert(table2.get(ELHISPALoopTableEntry(Pair(s1,t0), Pair(s3,t0), tailset)) == null)
         }
+
     }
 
     @Test
@@ -181,39 +200,6 @@ class SpaS2CalculatorTest {
         val shortFormProvider = ec.shortFormProvider;
         val restrictionBuilder = ec.spaRestrictionBuilder;
 
-        val pairsAvailable = mutableSetOf<Pair<Node, Node>>();
-        val s2Calculator = SpaS2Calculator(ec, query.graph, transducer.graph);
-
-        val table: ELHISPALoopTable = ELHISPALoopTable();
-
-        val timeSource = TimeSource.Monotonic
-
-        query.graph.nodes.forEach { node ->
-            transducer.graph.nodes.forEach { transducerNode ->
-                pairsAvailable.add(Pair(node, transducerNode))
-            }
-        }
-
-        val v1StartTime = timeSource.markNow()
-        pairsAvailable.forEach{ source ->
-            pairsAvailable.forEach target@{ target ->
-                if(source.first == target.first && source.second == target.second) return@target;
-                ec.forEachTailset tailset@{ tailset ->
-                    //foreach (p,q,M) do:
-                    val restriction = tailset
-                    val entry = ELHISPALoopTableEntry(source, target, restriction)
-                    // dont add table entries (q,t)(q,t),_
-                    val updatedValue = s2Calculator.calculate(entry, table)
-                    if(updatedValue !== null) {
-                        table.set(entry, updatedValue );
-                    }
-                }
-            }
-        };
-
-        val v1EndTime = timeSource.markNow()
-        val v1Time = v1EndTime - v1StartTime;
-        println("V1 Time: " + v1Time)
 
     }
 

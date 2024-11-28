@@ -89,7 +89,7 @@ class SpLoopTableTest {
 
     @Test
     fun testLoopTableConstruction(){
-        val manager = loadExampleOntologyLarge();
+        val manager = loadExampleOntologyLarge2();
 
         val query = readQueryWithFileReaderService("spaCalculation/table/test_comp1.txt")
         val transducer = readTransducerWithFileReaderService("spaCalculation/table/test_comp1.txt")

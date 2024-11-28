@@ -98,6 +98,10 @@ class NumericConceptNameRestriction(
         return value == other.value;
     }
 
+    fun equals(other: NumericConceptNameRestriction): Boolean {
+        return value == other.value;
+    }
+
     override fun hashCode(): Int {
         return value.hashCode();
     }
