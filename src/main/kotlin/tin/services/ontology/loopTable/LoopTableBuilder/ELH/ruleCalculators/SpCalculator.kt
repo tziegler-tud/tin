@@ -62,17 +62,6 @@ class SpCalculator(
                                     transducerGraph.nodes.forEach candidateTransducerTarget@{ candidateTransducerTarget ->
 
                                         /**
-                                         * debug line
-                                         */
-                                        if(querySource.identifier == "s0" && queryTarget.identifier == "s2" &&
-                                            transducerSource.identifier == "t0" && transducerTarget.identifier == "t2" &&
-                                            candidateQuerySource.identifier == "s1" && candidateQueryTarget.identifier == "s2" &&
-                                            candidateTransducerSource.identifier == "t2" && candidateTransducerTarget.identifier == "t2" ) {
-                                            println("here!")
-                                        }
-
-
-                                        /**
                                          * Upwards transition
                                          */
                                         val candidateEdgesUp =

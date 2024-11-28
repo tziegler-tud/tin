@@ -47,15 +47,6 @@ class SpaS2Calculator(
                             var candidateTransducerEdges = transducerGraph.getEdgesWithSourceAndTarget(transducerSource, transducerTarget);
                             // keep only those that have matching u for some A? s.t. (s,u,s') € query and (t,u,A?,w,t') € trans
 
-                            /**
-                             * debug line
-                             */
-                            if(querySource.identifier == "s1" && queryTarget.identifier == "s2" &&
-                                transducerSource.identifier == "t0" && transducerTarget.identifier == "t2") {
-                                println("here!")
-                            }
-
-
                             candidateTransducerEdges = candidateTransducerEdges.filter { transEdge ->
                                 candidateQueryTransitions.contains(QueryEdgeLabel(transEdge.label.incoming)) &&
                                         queryParser.getOWLClass(transEdge.label.outgoing) !== null
