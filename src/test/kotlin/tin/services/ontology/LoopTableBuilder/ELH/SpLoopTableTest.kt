@@ -14,6 +14,8 @@ import tin.services.ontology.OntologyManager
 import tin.services.ontology.loopTable.LoopTableBuilder.ELH.ELSPALoopTableBuilder
 import tin.services.ontology.loopTable.LoopTableBuilder.ELH.ELSPLoopTableBuilder
 import tin.services.ontology.loopTable.LoopTableBuilder.ELHI.ELHISPALoopTableBuilder
+import tin.services.ontology.loopTable.loopTableEntry.ELH.ELSPALoopTableEntry
+import tin.services.ontology.loopTable.loopTableEntry.ELH.ELSPLoopTableEntry
 import tin.services.ontology.loopTable.loopTableEntry.ELHI.ELHISPALoopTableEntry
 import tin.services.ontology.loopTable.loopTableEntry.IndividualLoopTableEntry
 import tin.services.technical.SystemConfigurationService
@@ -86,10 +88,10 @@ class SpLoopTableTest {
         assert(true)
     }
 
-    @Test
-    fun multiTestRuner(){
-        testPaperExample();
-    }
+//    @Test
+//    fun multiTestRuner(){
+//        runPaperExample();
+//    }
 
     @Test
     fun testLoopTableConstruction(){
@@ -161,7 +163,12 @@ class SpLoopTableTest {
 
     }
 
+    @Test
     fun testPaperExample(){
+        runPaperExample()
+    }
+
+    fun runPaperExample(){
         val manager = loadOntologyWithFilename("ELH/test_paper1.rdf");
 
         val query = readQueryWithFileReaderService("test_paper1.txt")
@@ -227,6 +234,20 @@ class SpLoopTableTest {
         val s1 = query.graph.getNode("s1")!!
         val s2 = query.graph.getNode("s2")!!
         val t0 = transducer.graph.getNode("t0")!!
+        val t1 = transducer.graph.getNode("t1")!!
+        val t2 = transducer.graph.getNode("t2")!!
+
+        val carRes = ec.spaRestrictionBuilder.createConceptNameRestriction("Car");
+
+        val a = manager.getQueryParser().getNamedIndividual("a")!!
+        val b = manager.getQueryParser().getNamedIndividual("b")!!
+        val g = manager.getQueryParser().getNamedIndividual("g")!!
+
+
+        assert(spTable.get(ELSPLoopTableEntry(Pair(s0,t2),Pair(s2,t2),carRes)) == 0)
+        assert(spTable.get(ELSPLoopTableEntry(Pair(s0,t0),Pair(s2,t2),carRes)) == 0)
+
+        assert(spTable.map.size == 2)
 
     }
 }
