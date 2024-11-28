@@ -308,18 +308,14 @@ class DLReasonerTest {
         val class1 = restrictionBuilder.asClassExpression(res1);
         val r1Exp = expressionBuilder.createExistentialRestriction(role, class1)
         val atomicSubClasses = dlReasoner.calculateSubClasses(expressionBuilder.createELHIExpression(r1Exp))
+        assert(atomicSubClasses.isEmpty());
 
         val res2 = restrictionBuilder.createConceptNameRestriction("Flour","Egg");
         val class2 = restrictionBuilder.asClassExpression(res2);
         val r2Exp = expressionBuilder.createExistentialRestriction(role, class2)
         val atomicSubClasses2 = dlReasoner.calculateSubClasses(expressionBuilder.createELHIExpression(r2Exp))
-
-        val s = parser.getOWLObjectProperty("s")!!;
-        val t = parser.getOWLObjectProperty("t")!!;
-
-
-
-
+        assert(atomicSubClasses2.size == 1)
+        assert(atomicSubClasses2.contains(queryParser.getOWLClass("Pasta")))
     }
 
     @Test

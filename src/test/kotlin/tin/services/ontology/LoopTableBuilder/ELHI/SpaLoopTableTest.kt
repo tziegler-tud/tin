@@ -139,61 +139,6 @@ class SpaLoopTableTest {
     }
 
     @Test
-    fun testLoopTableConstructionUnivBench(){
-        val manager = loadExampleOntologyUnivbench()
-
-
-
-        val query = readQueryWithFileReaderService("spaCalculation/table/univbench-test1.txt")
-        val transducer = readTransducerWithFileReaderService("spaCalculation/table/univbench-test1.txt")
-
-        val iterationLimit = 2000
-
-        val timeSource = TimeSource.Monotonic
-        val initialTime = timeSource.markNow()
-        val ec = manager.createELHIExecutionContext(ExecutionContextType.ELHI_NUMERIC, false);
-//        ec.prewarmSubsumptionCache()
-        val builder = ELHISPALoopTableBuilder(query.graph, transducer.graph, manager, ec);
-
-        val startTime = timeSource.markNow()
-
-//        builder.calculateWithDepthLimit(iterationLimit);
-        builder.calculateFullTable();
-
-        val endTime = timeSource.markNow()
-
-        val prewarmTime = startTime - initialTime;
-        val iterationTime = endTime - startTime;
-        val timePerIteration = iterationTime / iterationLimit;
-        val totalTime = endTime - initialTime;
-
-//        val estimatedTotalTime = timePerIteration * builder.maxIterationDepth;
-
-        println("Total computation time: " + totalTime)
-        println("Cache prewarming: " + prewarmTime)
-        println("Iteration computation time: " + iterationTime)
-        println("Time per iteration: " + timePerIteration)
-//        println("Estimated time to build complete table: " + estimatedTotalTime)
-
-        val stats = builder.getExecutionContext().dlReasoner.getStats();
-
-        println("Superclass Cache Size: " + stats["superClassCache"])
-        println("Superclass Cache Hits: " + stats["superClassCacheHitCounter"])
-
-        println("Equiv Node Cache Size: " + stats["equivalentClassCache"])
-        println("Equiv Node Cache Hits: " + stats["equivNodeCacheHitCounter"])
-
-        println("SubClasses Cache Size: " + stats["subClassCache"])
-        println("SubClasses Cache Hits: " + stats["subClassCacheHitCounter"])
-
-        println("Entailment Check Cache Size: " + stats["entailmentCache"])
-        println("Entailment Cache Hits: " + stats["entailmentCacheHitCounter"])
-        println("Entailment Cache Misses: " + stats["entailmentCacheMissCounter"])
-
-
-    }
-
-    @Test
     fun benchmarkLoopTableConstruction(){
         val manager = loadExampleOntology();
 
