@@ -9,6 +9,7 @@ import tin.services.ontology.OntologyExecutionContext.ELHI.ELHIExecutionContext
 import tin.services.ontology.OntologyManager
 import tin.services.ontology.Reasoner.SimpleDLReasoner
 import tin.services.ontology.loopTable.LoopTable.ELHI.ELHISPALoopTable
+import tin.services.ontology.loopTable.LoopTableEntryRestriction.spa.MultiClassLoopTableEntryRestriction
 import tin.services.ontology.loopTable.loopTableEntry.ELHI.ELHISPALoopTableEntry
 
 class SpaS2Calculator(
@@ -64,41 +65,76 @@ class SpaS2Calculator(
 
                         val sortedTransducerEdges = candidateTransducerEdges.sortedBy { it.label.cost }
 
-                        /**
-                         * debug line
-                         */
-                        var tcCounter = 0;
-                        var lastPercentVal = 0UL;
 
-                        ec.forEachTailsetDescending tailsets@{ tailset ->
+                        var edgecount = 0;
+
+                        sortedTransducerEdges.forEach edgeCheck@{ transducerEdge ->
+                            edgecount++;
+                            println("Calculating trans edge: ${edgecount}/${sortedTransducerEdges.size}");
+
+
+                            val inLabel = transducerEdge.label.incoming;
+                            val outLabel = transducerEdge.label.outgoing;
+                            val cost = transducerEdge.label.cost
+                            // try to match edge label to concept assertion. outgoing label must be a concept assertion
+                            //if no property could be obtained, there is no way to continue - this also means our transducer uses class names which are not part of our ontology.
+                            var edgeClass: OWLClass = queryParser.getOWLClass(outLabel) ?: return@edgeCheck;
+
+                            val edgeClassRestriction = ec.spaRestrictionBuilder.createConceptNameRestriction(edgeClass)
+
+                            val eliminatedSets: MutableSet<MultiClassLoopTableEntryRestriction> = mutableSetOf();
+                            val positiveSets: MutableSet<MultiClassLoopTableEntryRestriction> = mutableSetOf();
+
+                            val basicSubsumers = dlReasoner.calculateSubClasses(expressionBuilder.createELHIExpression(edgeClass))
+                            val basicSubsumerRestrictions = basicSubsumers.map { ec.spaRestrictionBuilder.createConceptNameRestriction(it) }
+
+                            positiveSets.addAll(basicSubsumerRestrictions)
 
                             /**
                              * debug line
                              */
-                            tcCounter++;
-                            val percent = ((tcCounter*100).toULong() / (ec.tailsetSize) )
-                            if(percent != lastPercentVal) {
-                                println("Calculating tailsets: $percent%");
-                                lastPercentVal = percent;
-                            };
+                            var tcCounter = 0;
+                            var lastPercentVal = 0;
 
-                            val entry = ELHISPALoopTableEntry(
-                                Pair(querySource, transducerSource),
-                                Pair(queryTarget, transducerTarget),
-                                tailset
-                            )
+                            ec.forEachTailsetDescending tailsets@{ tailset ->
 
-                            sortedTransducerEdges.forEach edgeCheck@{ transducerEdge ->
-                                val inLabel = transducerEdge.label.incoming;
-                                val outLabel = transducerEdge.label.outgoing;
-                                val cost = transducerEdge.label.cost
-                                // try to match edge label to concept assertion. outgoing label must be a concept assertion
-                                //if no property could be obtained, there is no way to continue - this also means our transducer uses class names which are not part of our ontology.
-                                var edgeClass: OWLClass = queryParser.getOWLClass(outLabel) ?: return@edgeCheck;
+                                /**
+                                 * debug line
+                                 */
+                                tcCounter++;
+                                val percent = ((tcCounter).toULong() / (ec.tailsetSize/100UL) ).toInt()
+//                                println("Calculating tailsets: $tcCounter / ${ec.tailsetSize}");
+
+                                if(percent != lastPercentVal) {
+                                    println("Calculating tailsets: $percent%");
+                                    lastPercentVal = percent;
+                                };
+
+                                val entry = ELHISPALoopTableEntry(
+                                    Pair(querySource, transducerSource),
+                                    Pair(queryTarget, transducerTarget),
+                                    tailset
+                                )
 
                                 //handle trivial cases A^B... c A ?
-                                if (tailset.containsElement(edgeClass)) {
-                                    table.set(entry, cost );
+//                                if (tailset.containsElement(edgeClass)) {
+                                if (tailset.isSupersetOf(edgeClassRestriction)) {
+                                    table.setIfLower(entry, cost );
+                                    return@tailsets
+                                }
+
+//                                //handle trivial cases B^C... c A ?  for some B c A
+//                                if (tailset.containsElementFromSet(basicSubsumers)) {
+//                                    table.setIfLower(entry, cost );
+//                                    return@tailsets
+//                                }
+
+                                if(tailset.containsOnlyElementsFromOneOf(eliminatedSets)) {
+                                    return@tailsets;
+                                }
+
+                                if(tailset.containsAllElementsFromOneOf(positiveSets)) {
+                                    table.setIfLower(entry, cost );
                                     return@tailsets
                                 }
 
@@ -108,11 +144,15 @@ class SpaS2Calculator(
                                 //create subsumption expression
                                 val classExp = expressionBuilder.createELHIExpression(edgeClass);
                                 //check if entailed
-                                val isEntailed = dlReasoner.checkIsSubsumed(MExp, classExp);
+                                val isEntailed = simpleReasoner.checkIsSubsumed(MExp, classExp);
                                 if (isEntailed) {
-                                    table.set(entry, cost );
+                                    table.setIfLower(entry, cost );
+                                    //positiveSets.add(tailset)
                                     return@tailsets
-                                };
+                                }
+                                else {
+                                    eliminatedSets.add(tailset)
+                                }
                             }
                         }
                     }
