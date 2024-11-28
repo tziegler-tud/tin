@@ -1,0 +1,10 @@
+nodes
+s0, true, false
+s1, false, false
+s2, false, true
+
+edges
+s0, s0, has-part
+s0, s1, has-part
+s1, s2, Motor?
+s2, s2, inverse(has-part)

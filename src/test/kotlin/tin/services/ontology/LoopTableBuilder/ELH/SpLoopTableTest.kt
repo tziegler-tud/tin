@@ -1,4 +1,4 @@
-package tin.services.ontology.LoopTableBuilder.ELHI
+package tin.services.ontology.LoopTableBuilder.ELH
 
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -11,8 +11,9 @@ import tin.services.internal.fileReaders.fileReaderResult.FileReaderResult
 import tin.services.ontology.OntologyExecutionContext.ExecutionContextType
 import tin.services.ontology.Reasoner.SimpleDLReasoner
 import tin.services.ontology.OntologyManager
+import tin.services.ontology.loopTable.LoopTableBuilder.ELH.ELSPALoopTableBuilder
+import tin.services.ontology.loopTable.LoopTableBuilder.ELH.ELSPLoopTableBuilder
 import tin.services.ontology.loopTable.LoopTableBuilder.ELHI.ELHISPALoopTableBuilder
-import tin.services.ontology.loopTable.LoopTableBuilder.ELHI.ELHISPLoopTableBuilder
 import tin.services.ontology.loopTable.loopTableEntry.ELHI.ELHISPALoopTableEntry
 import tin.services.ontology.loopTable.loopTableEntry.IndividualLoopTableEntry
 import tin.services.technical.SystemConfigurationService
@@ -25,43 +26,41 @@ class SpLoopTableTest {
     @Autowired
     lateinit var systemConfigurationService: SystemConfigurationService;
 
-    fun readWithFileReaderService(fileName: String, breakOnError: Boolean = false) : FileReaderResult<File> {
+    fun readWithFileReaderService(fileName: String, breakOnError: Boolean = false, path: String = "") : FileReaderResult<File> {
         var fileReaderService: OntologyReaderService = OntologyReaderService(systemConfigurationService);
-        val testFilePath = systemConfigurationService.getOntologyPath();
+        val testFilePath = systemConfigurationService.getOntologyPath() + path;
         return fileReaderService.read(testFilePath, fileName, breakOnError);
     }
 
-    private fun readQueryWithFileReaderService(fileName: String, breakOnError: Boolean = false) : FileReaderResult<QueryGraph> {
+    private fun readQueryWithFileReaderService(fileName: String, breakOnError: Boolean = false, path: String = "") : FileReaderResult<QueryGraph> {
         var fileReaderService: QueryReaderServiceV2 = QueryReaderServiceV2(systemConfigurationService);
-        val testFilePath = systemConfigurationService.getQueryPath();
+        val testFilePath = systemConfigurationService.getQueryPath() + path;
         return fileReaderService.read(testFilePath, fileName, breakOnError);
     }
 
-    private fun readTransducerWithFileReaderService(fileName: String, breakOnError: Boolean = false) : FileReaderResult<TransducerGraph> {
+    private fun readTransducerWithFileReaderService(fileName: String, breakOnError: Boolean = false, path: String = "") : FileReaderResult<TransducerGraph> {
         var fileReaderService: TransducerReaderServiceV2 = TransducerReaderServiceV2(systemConfigurationService);
-        val testFilePath = systemConfigurationService.getTransducerPath();
+        val testFilePath = systemConfigurationService.getTransducerPath() + path;
         return fileReaderService.read(testFilePath, fileName, breakOnError);
+    }
+
+    fun loadOntologyWithFilename(filename: String, path: String = ""): OntologyManager {
+        val exampleFile = readWithFileReaderService(filename, false, path).get()
+        val manager = OntologyManager(exampleFile);
+        return manager
     }
 
     fun loadExampleOntology() : OntologyManager {
-        val exampleFile = readWithFileReaderService("pizza2.rdf").get()
-//        val exampleFile = readWithFileReaderService("univ-bench.owl.rdf").get()
-        val manager = OntologyManager(exampleFile);
-        return manager
+        return loadOntologyWithFilename("pizza2.rdf")
     }
 
     fun loadExampleOntologyLarge() : OntologyManager {
-        val exampleFile = readWithFileReaderService("pizza3_1.rdf").get()
-//        val exampleFile = readWithFileReaderService("univ-bench.owl.rdf").get()
-        val manager = OntologyManager(exampleFile);
-        return manager
+        return loadOntologyWithFilename("pizza3_1.rdf")
+
     }
 
     fun loadExampleOntologyLarge2() : OntologyManager {
-        val exampleFile = readWithFileReaderService("pizza_4.rdf").get()
-//        val exampleFile = readWithFileReaderService("univ-bench.owl.rdf").get()
-        val manager = OntologyManager(exampleFile);
-        return manager
+        return loadOntologyWithFilename("pizza_4.rdf")
     }
 
     fun loadExampleOntologyUnivbench() : OntologyManager {
@@ -88,6 +87,11 @@ class SpLoopTableTest {
     }
 
     @Test
+    fun multiTestRuner(){
+        testPaperExample();
+    }
+
+    @Test
     fun testLoopTableConstruction(){
         val manager = loadExampleOntologyLarge();
 
@@ -98,10 +102,10 @@ class SpLoopTableTest {
 
         val timeSource = TimeSource.Monotonic
         val initialTime = timeSource.markNow()
-        val ec = manager.createELHIExecutionContext(ExecutionContextType.ELHI_NUMERIC, false);
+        val ec = manager.createELExecutionContext(ExecutionContextType.ELH, false);
 //        ec.prewarmSubsumptionCache()
-        val builder = ELHISPALoopTableBuilder(query.graph, transducer.graph, manager, ec);
-        val spBuilder = ELHISPLoopTableBuilder(query.graph, transducer.graph, manager, ec);
+        val builder = ELSPALoopTableBuilder(query.graph, transducer.graph, manager, ec);
+        val spBuilder = ELSPLoopTableBuilder(query.graph, transducer.graph, manager, ec);
 
         val startTime = timeSource.markNow()
 
@@ -155,26 +159,74 @@ class SpLoopTableTest {
         val s2 = query.graph.getNode("s2")!!
         val t0 = transducer.graph.getNode("t0")!!
 
+    }
 
-        val r1 = ec.spaRestrictionBuilder.createConceptNameRestriction("Bruschetta", "Vegan");
+    fun testPaperExample(){
+        val manager = loadOntologyWithFilename("ELH/test_paper1.rdf");
+
+        val query = readQueryWithFileReaderService("test_paper1.txt")
+        val transducer = readTransducerWithFileReaderService("test_paper1.txt")
+
+        val iterationLimit = 2000
+
+        val timeSource = TimeSource.Monotonic
+        val initialTime = timeSource.markNow()
+        val ec = manager.createELExecutionContext(ExecutionContextType.ELH, false);
+//        ec.prewarmSubsumptionCache()
+        val builder = ELSPALoopTableBuilder(query.graph, transducer.graph, manager, ec);
+        val spBuilder = ELSPLoopTableBuilder(query.graph, transducer.graph, manager, ec);
+
+        val startTime = timeSource.markNow()
+
+//        builder.calculateWithDepthLimit(iterationLimit);
+        println("Calculating spa table...")
+
+        val spaTable = builder.calculateFullTable();
+
+        val spaEndTime = timeSource.markNow()
+        println("Calculating sp table...")
+        val spTable = spBuilder.calculateFullTable(spaTable);
+        val spEndTime = timeSource.markNow()
 
 
-        val entry1 = ELHISPALoopTableEntry(Pair(s1,t0), Pair(s0,t0), r1);
+        val prewarmTime = startTime - initialTime;
+        val spaTime = spaEndTime - startTime;
+        val spTime = spEndTime - spaEndTime;
+        val totalTime = spEndTime - initialTime;
 
-        val bruschetta = manager.getQueryParser().getNamedIndividual("bruschetta")!!
-        val carbonara = manager.getQueryParser().getNamedIndividual("carbonara")!!
 
-        val bruschettaRes = ec.spRestrictionBuilder.createNamedIndividualRestriction(bruschetta)
-        val carbonaraRes = ec.spRestrictionBuilder.createNamedIndividualRestriction(carbonara)
+        println("Total computation time: " + totalTime)
+        println("Cache prewarming: " + prewarmTime)
+        println("SPA computation time: " + spaTime)
+        println("SP computation time: " + spTime)
 
-        assert(spTable.get(IndividualLoopTableEntry(Pair(s0,t0),Pair(s1,t0),bruschettaRes)) == 34)
-        assert(spTable.get(IndividualLoopTableEntry(Pair(s1,t0),Pair(s0,t0),bruschettaRes)) == 34)
-        assert(spTable.get(IndividualLoopTableEntry(Pair(s0,t0),Pair(s2,t0),bruschettaRes)) == 59)
-        assert(spTable.get(IndividualLoopTableEntry(Pair(s1,t0),Pair(s2,t0),bruschettaRes)) == 25)
+        val stats = builder.getExecutionContext().dlReasoner.getStats();
 
-        assert(spTable.get(IndividualLoopTableEntry(Pair(s0,t0),Pair(s1,t0),carbonaraRes)) == 34)
-        assert(spTable.get(IndividualLoopTableEntry(Pair(s1,t0),Pair(s0,t0),carbonaraRes)) == 34)
+        println("Superclass Cache Size: " + stats["superClassCache"])
+        println("Superclass Cache Hits: " + stats["superClassCacheHitCounter"])
 
-        assert(spTable.map.size == 6)
+        println("Equiv Node Cache Size: " + stats["equivalentClassCache"])
+        println("Equiv Node Cache Hits: " + stats["equivNodeCacheHitCounter"])
+
+        println("SubClasses Cache Size: " + stats["subClassCache"])
+        println("SubClasses Cache Hits: " + stats["subClassCacheHitCounter"])
+
+        println("Entailment Check Cache Size: " + stats["entailmentCache"])
+        println("Entailment Cache Hits: " + stats["entailmentCacheHitCounter"])
+        println("Entailment Cache Misses: " + stats["entailmentCacheMissCounter"])
+
+        println("Results:")
+        spTable.map.forEach { (key, value) ->
+            println(key.transformToString(ec.shortFormProvider) + ": " + value)
+        }
+
+        //debugging expressions:
+
+        //(s1,t0),(s0,t0), Bruschetta,Vegan
+        val s0 = query.graph.getNode("s0")!!
+        val s1 = query.graph.getNode("s1")!!
+        val s2 = query.graph.getNode("s2")!!
+        val t0 = transducer.graph.getNode("t0")!!
+
     }
 }

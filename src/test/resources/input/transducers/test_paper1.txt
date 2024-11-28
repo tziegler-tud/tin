@@ -1,0 +1,30 @@
+nodes
+t0, true, false
+t1, false, false
+t2, false, true
+t3, false, true
+t4, false, true
+
+edges
+t0, t1, has-part, has-part, 0
+
+t0, t2, has-part, inverse(is-part-of), 1
+t0, t2, has-part, has-part, 0
+t0, t2, Motor?, Motor?, 0
+//pseudo-epsilon edges (still require a transition, careful!)
+t0, t2, inverse(has-part), inverse(has-part), 0
+t0, t2, inverse(has-component), inverse(has-component), 0
+t0, t2, has-component, has-component, 0
+t0, t2, is-part-of, is-part-of, 0
+
+t0, t3, has-part, has-component, 3
+
+t1, t4, has-part, has-component, 2
+
+t2, t2, has-part, has-part, 0
+t2, t2, Motor?, Motor?, 0
+//pseudo-epsilon edges (still require a transition, careful!)
+t2, t2, inverse(has-part), inverse(has-part), 0
+t2, t2, inverse(has-component), inverse(has-component), 0
+t2, t2, has-component, has-component, 0
+t2, t2, is-part-of, is-part-of, 0
