@@ -10,12 +10,10 @@ import tin.services.internal.fileReaders.*
 import tin.services.internal.fileReaders.fileReaderResult.FileReaderResult
 import tin.services.ontology.OntologyExecutionContext.ExecutionContextType
 import tin.services.ontology.OntologyManager
-import tin.services.ontology.loopTable.ELHISPALoopTable
-import tin.services.ontology.loopTable.ELSPALoopTable
+import tin.services.ontology.loopTable.LoopTable.ELH.ELSPALoopTable
 import tin.services.ontology.loopTable.LoopTableBuilder.ELH.ruleCalculators.SpaS1Calculator
-import tin.services.ontology.loopTable.LoopTableEntryRestriction.spa.RestrictionBuilder
 import tin.services.ontology.loopTable.LoopTableEntryRestriction.spa.SingleClassRestrictionBuilder
-import tin.services.ontology.loopTable.loopTableEntry.ELSPALoopTableEntry
+import tin.services.ontology.loopTable.loopTableEntry.ELH.ELSPALoopTableEntry
 import tin.services.technical.SystemConfigurationService
 import java.io.File
 

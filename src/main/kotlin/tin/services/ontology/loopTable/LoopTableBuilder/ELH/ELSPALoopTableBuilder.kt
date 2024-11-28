@@ -6,11 +6,11 @@ import tin.model.v2.transducer.TransducerGraph
 import tin.services.ontology.OntologyExecutionContext.EL.ELExecutionContext
 import tin.services.ontology.OntologyExecutionContext.ExecutionContext
 import tin.services.ontology.OntologyManager
-import tin.services.ontology.loopTable.ELSPALoopTable
+import tin.services.ontology.loopTable.LoopTable.ELH.ELSPALoopTable
 import tin.services.ontology.loopTable.LoopTableBuilder.ELH.ruleCalculators.SpaS1Calculator
 import tin.services.ontology.loopTable.LoopTableBuilder.ELH.ruleCalculators.SpaS2Calculator
 import tin.services.ontology.loopTable.LoopTableBuilder.ELH.ruleCalculators.SpaS3Calculator
-import tin.services.ontology.loopTable.loopTableEntry.ELSPALoopTableEntry
+import tin.services.ontology.loopTable.loopTableEntry.ELH.ELSPALoopTableEntry
 
 class ELSPALoopTableBuilder (
     private val queryGraph: QueryGraph,

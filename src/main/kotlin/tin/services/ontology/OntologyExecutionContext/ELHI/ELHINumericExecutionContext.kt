@@ -25,6 +25,8 @@ class ELHINumericExecutionContext(private val manager: OntologyManager) : ELHIEx
     override val shortFormProvider = manager.getShortFormProvider();
     override val manchesterShortFormProvider = manager.manchesterShortFormProvider;
 
+    override val individuals = manager.individuals;
+
     val topClass = dlReasoner.getTopClassNode();
     val bottomClass = dlReasoner.getBottomClassNode();
 
@@ -56,6 +58,12 @@ class ELHINumericExecutionContext(private val manager: OntologyManager) : ELHIEx
         for (i in tailsetMaximum downTo 1UL)
         {
             action(spaRestrictionBuilder.createConceptNameRestriction(i));
+        }
+    }
+
+    override fun forEachIndividual(action: (OWLNamedIndividual) -> Unit) {
+        for (individual in individuals) {
+            action(individual);
         }
     }
 

@@ -1,5 +1,6 @@
 package tin.services.ontology.loopTable.LoopTableEntryRestriction.spa
 import org.semanticweb.owlapi.model.OWLClass
+import org.semanticweb.owlapi.util.ShortFormProvider
 import tin.services.ontology.loopTable.LoopTableEntryRestriction.LoopTableEntryRestriction
 
 class NumericConceptNameRestriction(
@@ -105,5 +106,12 @@ class NumericConceptNameRestriction(
         return value.countOneBits();
     }
 
-
+    override fun transformToString(shortFormProvider: ShortFormProvider): String {
+        if(isEmpty()) return "()";
+        var bits: MutableSet<String> = mutableSetOf()
+        this.asSet().forEach { owlClass ->
+            bits.add(shortFormProvider.getShortForm(owlClass));
+        }
+        return bits.joinToString();
+    }
 }

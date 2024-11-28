@@ -9,15 +9,10 @@ import tin.model.v2.transducer.TransducerEdge
 import tin.model.v2.transducer.TransducerGraph
 import tin.services.ontology.Expressions.DLExpression
 import tin.services.ontology.OntologyExecutionContext.ELHI.ELHIExecutionContext
-import tin.services.ontology.OntologyExecutionContext.ExecutionContext
-import tin.services.ontology.loopTable.ELHISPALoopTable
+import tin.services.ontology.loopTable.LoopTable.ELHI.ELHISPALoopTable
 import tin.services.ontology.loopTable.LoopTableBuilder.ELHI.SpaS1RuleCalculator
-import tin.services.ontology.loopTable.LoopTableEntryRestriction.spa.ConceptNameRestriction
-import tin.services.ontology.loopTable.LoopTableEntryRestriction.LoopTableEntryRestriction
 import tin.services.ontology.loopTable.LoopTableEntryRestriction.spa.MultiClassLoopTableEntryRestriction
-import tin.services.ontology.loopTable.SPALoopTable
-import tin.services.ontology.loopTable.loopTableEntry.ELHISPALoopTableEntry
-import tin.services.ontology.loopTable.loopTableEntry.SPALoopTableEntry
+import tin.services.ontology.loopTable.loopTableEntry.ELHI.ELHISPALoopTableEntry
 import java.util.*
 
 class SpaS1Calculator(
@@ -41,212 +36,24 @@ class SpaS1Calculator(
      * Time Complexity is EXP x |roles|.
      *
      */
-    fun calculateCandidateRoles(MExp: DLExpression, M1Exp: DLExpression, roles: Set<OWLObjectProperty>) : Set<OWLObjectProperty> {
-        //calculate candidate role names r s.t. M <= E r. M1
-        var candidateRoles: MutableSet<OWLObjectProperty> = hashSetOf();
-        //for each role, check if entailed
-        roles.forEach { role ->
-            //build class expressions
-            val M1ClassExp = M1Exp.getClassExpression();
-            val rM1 = expressionBuilder.createExistentialRestriction(role, M1ClassExp)
-            val rM1Exp = expressionBuilder.createELHIExpression(rM1);
-            //check if entailed
-            val isEntailed = dlReasoner.checkIsSubsumed(MExp, rM1Exp)
-            if(isEntailed) candidateRoles.add(role);
-        }
-        return candidateRoles
-    }
-
+//    fun calculateCandidateRoles(MExp: DLExpression, M1Exp: DLExpression, roles: Set<OWLObjectProperty>) : Set<OWLObjectProperty> {
+//        //calculate candidate role names r s.t. M <= E r. M1
+//        var candidateRoles: MutableSet<OWLObjectProperty> = hashSetOf();
+//        //for each role, check if entailed
+//        roles.forEach { role ->
+//            //build class expressions
+//            val M1ClassExp = M1Exp.getClassExpression();
+//            val rM1 = expressionBuilder.createExistentialRestriction(role, M1ClassExp)
+//            val rM1Exp = expressionBuilder.createELHIExpression(rM1);
+//            //check if entailed
+//            val isEntailed = dlReasoner.checkIsSubsumed(MExp, rM1Exp)
+//            if(isEntailed) candidateRoles.add(role);
+//        }
+//        return candidateRoles
+//    }
 
     /**
-     * calculates the updated value for an entry spa[(s,t),(s',t'),M]
-     */
-    /*fun calculate(spaLoopTableEntry: SPALoopTableEntry, table: SPALoopTable): Int? {
-        val source = spaLoopTableEntry.source;
-        val target = spaLoopTableEntry.target;
-        val M = spaLoopTableEntry.restriction;
-        val s = source.first;
-        val t = source.second;
-        val se = target.first;
-        val te = target.second;
-
-        val topClassNode = dlReasoner.getTopClassNode();
-        val owlTopClassRestriction = restrictionBuilder.createConceptNameRestriction(topClassNode.representativeElement)
-
-        val costCutoff = table.get(spaLoopTableEntry) //0, int val or null
-
-        if (costCutoff == 0) return 0; //we cannot improve an entry with cost 0
-
-        val MCLassExp = restrictionBuilder.asClassExpression(M);
-        val MExp = expressionBuilder.createELHIExpression(MCLassExp);
-
-        //list all entries < costCutoff
-        //these are the non-trivial candidate entries spa[(s1,t1),(s2,t2),M1] that need to be checked
-        val candidateMap = table.getWithCostLimit(costCutoff).toMutableMap()
-
-        //add one trivial entry for each s1,t1. M1 is arbitrary because spa[(s1,t1),(s1,t1),M1] = 0 for all M1
-//        queryGraph.nodes.forEach { queryNode ->
-//            transducerGraph.nodes.forEach { transducerNode ->
-//                candidateMap[SPALoopTableEntry(Pair(queryNode,transducerNode), Pair(queryNode,transducerNode), owlTopClassRestriction)] =
-//                    0
-//            }
-//        }
-
-        var candidateRolesFromTable: Set<OWLObjectProperty>
-        var candidateRolesSym: Set<OWLObjectProperty>;
-
-        var minimumCostCandidate : SPALoopTableEntry? = null;
-        var minimumCost: Int = -1;
-
-        val restrictions = candidateMap.map {
-            it.key.restriction
-        }.distinct()
-
-        //iterate through candidates and perform steps 2.1 - 2.6
-        candidateMap.forEach { (candidateEntry, candidateCost) ->
-            val s1: Node = candidateEntry.source.first;
-            val s2 = candidateEntry.target.first;
-            val t1 = candidateEntry.source.second;
-            val t2 = candidateEntry.target.second;
-            var M1 = candidateEntry.restriction;
-
-            val roleNames = ec.getRoleNames();
-            val roles = ec.getRoles();
-
-            val M1ClassExp = restrictionBuilder.asClassExpression(M1);
-            val M1Exp = expressionBuilder.createELHIExpression(M1ClassExp);
-
-            // calculate candidate roles that satisfy M <= E r. M1
-            //complexity is EXP x |roles in ontology|
-            candidateRolesFromTable = calculateCandidateRoles(MExp, M1Exp, roles);
-
-            candidateRolesFromTable.forEach lit@ { role ->
-
-                //for each r, calculate superclass r'
-                val superR = dlReasoner.calculateSuperProperties(role);
-//                val superR = dlReasoner.calculateSuperProperties(role);
-                //we need to add the role itself, as it is not included in the superroles calculated by the reasoner
-
-
-
-                /**
-                 * Downwards transition
-                 */
-                //get all edges (s,_,s1) € QueryGraph
-                var candidateQueryEdges = queryGraph.getEdgesWithSourceAndTarget(s,s1);
-                if(candidateQueryEdges.isEmpty()) {
-                    return@lit;
-                }
-                var candidateQueryTransitions = candidateQueryEdges.map{it.label}
-
-                //get all edges (t,_,_,_,t1) € TransducerGraph
-                var candidateTransducerEdgesDown = transducerGraph.getEdgesWithSourceAndTarget(t, t1);
-                if(candidateTransducerEdgesDown.isEmpty()) {
-                    return@lit;
-                }
-                val sortedTransducerEdgesDown = candidateTransducerEdgesDown.sortedBy { it.label.cost }
-
-                //find the minimal cost of an edge (t,u,R',w,t1) with:
-                //  u in candidateQueryTransitions
-                //  R' in superR
-
-                var minCostEdgeDown: TransducerEdge? = null;
-                val validEdges: MutableList<TransducerEdge> = mutableListOf()
-                sortedTransducerEdgesDown.forEach edgeCheck@ { transducerEdge ->
-                    val inLabel = transducerEdge.label.incoming;
-                    val outLabel = transducerEdge.label.outgoing;
-
-                    //outgoing label must be a role name, not a concept assertion;
-                    if(outLabel.isConceptAssertion()) return@edgeCheck;
-                    // try to match edge label to positive role name
-                    var edgeProperty: OWLObjectPropertyExpression = queryParser.getOWLObjectPropertyExpression(outLabel) ?: return@edgeCheck;
-                    //if no property could be obtained, there is no way to continue - this also means our transducer uses property names which are not part of our ontology.
-
-                    val isValidQueryTransition = candidateQueryTransitions.contains(QueryEdgeLabel(inLabel))
-                            && (superR.containsEntity(edgeProperty) || edgeProperty == role);
-                    if(isValidQueryTransition) {
-                        validEdges.add(transducerEdge)
-                        if (minCostEdgeDown == null || minCostEdgeDown!!.label.cost > transducerEdge.label.cost) {
-                            minCostEdgeDown = transducerEdge;
-                        }
-                    };
-                }
-
-                if(minCostEdgeDown == null) {
-                    return@lit;
-                }
-
-                /**
-                 * upwards transition
-                 */
-                //get all edges (s2,u',s') € QueryGraph
-                var candidateQueryEdgesUp = queryGraph.getEdgesWithSourceAndTarget(s2,se);
-                if(candidateQueryEdgesUp.isEmpty()) {
-                    return@lit;
-                }
-                var candidateQueryTransitionsUp = candidateQueryEdgesUp.map{it.label}
-                var candidateTransducerEdgesUp = transducerGraph.getEdgesWithSourceAndTarget(t2, te);
-                if(candidateTransducerEdgesUp.isEmpty()) {
-                    return@lit;
-                }
-
-                //now, we have to go back up with an inverse role from superR.
-                val sortedTransducerEdgesUp = candidateTransducerEdgesUp.sortedBy { it.label.cost }
-                var minCostEdgeUp: TransducerEdge? = null;
-                val validEdgesUp: MutableList<TransducerEdge> = mutableListOf()
-                sortedTransducerEdgesUp.forEach edgeCheck@ { transducerEdge ->
-                    val inLabel = transducerEdge.label.incoming;
-                    val outLabel = transducerEdge.label.outgoing;
-
-                    //outgoing label must be a role name, not a concept assertion;
-                    if(outLabel.isConceptAssertion()) return@edgeCheck;
-                    // try to match edge label to positive role name
-                    val edgeProperty: OWLObjectPropertyExpression = queryParser.getOWLObjectPropertyExpression(outLabel) ?: return@edgeCheck;
-                    //if no property could be obtained, there is no way to continue - this also means our transducer uses property names which are not part of our ontology.
-                    val inverseEdgeProperty = edgeProperty.inverseProperty;
-
-                    val isValidQueryTransition = candidateQueryTransitionsUp.contains(QueryEdgeLabel(inLabel))
-                            && (superR.containsEntity(inverseEdgeProperty) || inverseEdgeProperty == role);
-
-                    if(isValidQueryTransition) {
-                        validEdgesUp.add(transducerEdge)
-                        if (minCostEdgeUp == null || minCostEdgeUp!!.label.cost > transducerEdge.label.cost) {
-                            minCostEdgeUp = transducerEdge;
-                        }
-                    };
-
-                }
-                if(minCostEdgeUp == null) {
-                    return@lit;
-                }
-
-                val localCost = minCostEdgeDown!!.label.cost + candidateCost + minCostEdgeUp!!.label.cost
-                if (localCost < minimumCost || minimumCost == -1){
-                    minimumCost = localCost;
-                    minimumCostCandidate = candidateEntry;
-                }
-            }
-        }
-
-        if(minimumCost == -1) {
-            //we could not find an updated value that was smaller than the current value (cost cutoff)
-            return costCutoff;
-        }
-        else {
-            return minimumCost;
-        }
-
-//        queryGraph.nodes.forEach {
-//            transducerGraph.nodes.forEach { transducerNode ->
-//                tailsets.forEach { tailset ->
-//                    candidateRolesSym
-//                }
-//            }
-//        }
-    }
-    */
-
-    /**
+     * ARCHIVE:
      * calculates the updated value for all entries (s,t),(s',t'),M
      */
     /*
@@ -456,7 +263,7 @@ class SpaS1Calculator(
 
         val newTable = ELHISPALoopTable()
 
-        if(updateTable.map.isEmpty()) return newTable;
+        if(!isInitialIteration && updateTable.map.isEmpty()) return newTable;
 
         var costCutoff: Int? = null;
 

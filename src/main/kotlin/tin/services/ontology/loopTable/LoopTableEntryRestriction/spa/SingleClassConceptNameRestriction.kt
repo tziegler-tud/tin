@@ -1,5 +1,6 @@
 package tin.services.ontology.loopTable.LoopTableEntryRestriction.spa
 import org.semanticweb.owlapi.model.OWLClass
+import org.semanticweb.owlapi.util.ShortFormProvider
 
 class SingleClassConceptNameRestriction(
     override var value: OWLClass
@@ -18,7 +19,7 @@ class SingleClassConceptNameRestriction(
     }
 
     override fun isEmpty(): Boolean {
-        return value == null;
+        return false;
     }
 
     override fun equals(other: Any?): Boolean {
@@ -30,5 +31,9 @@ class SingleClassConceptNameRestriction(
 
     override fun hashCode(): Int {
         return value.hashCode();
+    }
+
+    override fun transformToString(shortFormProvider: ShortFormProvider): String {
+        return shortFormProvider.getShortForm(value)
     }
 }

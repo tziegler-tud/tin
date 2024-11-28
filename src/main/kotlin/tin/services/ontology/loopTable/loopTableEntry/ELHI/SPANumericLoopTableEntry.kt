@@ -1,4 +1,4 @@
-package tin.services.ontology.loopTable.loopTableEntry
+package tin.services.ontology.loopTable.loopTableEntry.ELHI
 
 import tin.model.v2.graph.Node
 import tin.services.ontology.loopTable.LoopTableEntryRestriction.spa.NumericConceptNameRestriction

@@ -5,10 +5,10 @@ import tin.model.v2.query.QueryGraph
 import tin.model.v2.graph.Node
 import tin.model.v2.transducer.TransducerGraph
 import tin.services.ontology.OntologyExecutionContext.EL.ELExecutionContext
-import tin.services.ontology.loopTable.ELSPALoopTable
+import tin.services.ontology.loopTable.LoopTable.ELH.ELSPALoopTable
+import tin.services.ontology.loopTable.LoopTableEntryRestriction.spa.MultiClassLoopTableEntryRestriction
 import tin.services.ontology.loopTable.LoopTableEntryRestriction.spa.SingleClassLoopTableEntryRestriction
-import tin.services.ontology.loopTable.loopTableEntry.ELHISPALoopTableEntry
-import tin.services.ontology.loopTable.loopTableEntry.ELSPALoopTableEntry
+import tin.services.ontology.loopTable.loopTableEntry.ELH.ELSPALoopTableEntry
 
 class SpaS3Calculator(
     private val ec: ELExecutionContext,

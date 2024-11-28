@@ -21,13 +21,22 @@ class ELSetExecutionContext(private val manager: OntologyManager) : ELExecutionC
     override val shortFormProvider = manager.getShortFormProvider();
     override val manchesterShortFormProvider = manager.manchesterShortFormProvider;
     override val spaRestrictionBuilder = SingleClassRestrictionBuilder(parser);
-    override val spRestrictionBuilder = IndividualRestrictionBuilder(parser, shortFormProvider)
+    override val spRestrictionBuilder = SingleClassRestrictionBuilder(parser)
+
+    override val individuals = manager.individuals;
+
 
     override var tailsetSize = classes.size;
 
     override fun forEachConcept(action: (SingleClassLoopTableEntryRestriction) -> Unit) {
         classes.forEach { owlClass ->
             action(spaRestrictionBuilder.createConceptNameRestriction(owlClass))
+        }
+    }
+
+    override fun forEachIndividual(action: (OWLNamedIndividual) -> Unit) {
+        for (individual in individuals) {
+            action(individual);
         }
     }
 

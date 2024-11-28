@@ -6,15 +6,10 @@ import tin.model.v2.query.QueryEdgeLabel
 import tin.model.v2.transducer.TransducerEdge
 import tin.model.v2.transducer.TransducerGraph
 import tin.services.ontology.OntologyExecutionContext.ELHI.ELHIExecutionContext
-import tin.services.ontology.OntologyExecutionContext.ExecutionContext
 import tin.services.ontology.OntologyManager
-import tin.services.ontology.Reasoner.CachingDLReasoner
 import tin.services.ontology.Reasoner.SimpleDLReasoner
-import tin.services.ontology.loopTable.ELHISPALoopTable
-import tin.services.ontology.loopTable.LoopTableEntryRestriction.spa.MultiClassLoopTableEntryRestriction
-import tin.services.ontology.loopTable.SPALoopTable
-import tin.services.ontology.loopTable.loopTableEntry.ELHISPALoopTableEntry
-import tin.services.ontology.loopTable.loopTableEntry.SPALoopTableEntry
+import tin.services.ontology.loopTable.LoopTable.ELHI.ELHISPALoopTable
+import tin.services.ontology.loopTable.loopTableEntry.ELHI.ELHISPALoopTableEntry
 
 class SpaS2Calculator(
     private val ec: ELHIExecutionContext,
@@ -69,7 +64,23 @@ class SpaS2Calculator(
 
                         val sortedTransducerEdges = candidateTransducerEdges.sortedBy { it.label.cost }
 
+                        /**
+                         * debug line
+                         */
+                        var tcCounter = 0;
+                        var lastPercentVal = 0UL;
+
                         ec.forEachTailsetDescending tailsets@{ tailset ->
+
+                            /**
+                             * debug line
+                             */
+                            tcCounter++;
+                            val percent = ((tcCounter*100).toULong() / (ec.tailsetSize) )
+                            if(percent != lastPercentVal) {
+                                println("Calculating tailsets: $percent%");
+                                lastPercentVal = percent;
+                            };
 
                             val entry = ELHISPALoopTableEntry(
                                 Pair(querySource, transducerSource),

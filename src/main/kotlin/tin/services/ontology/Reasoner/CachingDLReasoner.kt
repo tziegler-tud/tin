@@ -1,6 +1,7 @@
 package tin.services.ontology.Reasoner
 
 import org.semanticweb.owlapi.model.OWLClass
+import org.semanticweb.owlapi.model.OWLNamedIndividual
 import org.semanticweb.owlapi.model.OWLObjectPropertyExpression
 import org.semanticweb.owlapi.model.OWLPropertyExpression
 import org.semanticweb.owlapi.reasoner.Node
@@ -16,21 +17,21 @@ import kotlin.streams.toList
  * wrapper class to provide some high-level utility using the owl reasoner interface
  */
 class CachingDLReasoner(
-    val reasoner: OWLReasoner,
-    private val expressionBuilder: DLExpressionBuilder
-) : AbstractReasoner() {
-    public val superClassCache: HashMap<DLExpression, NodeSet<OWLClass>> = hashMapOf()
-    public val equivalentClassCache: HashMap<DLExpression, Node<OWLClass>> = hashMapOf()
-    public val subClassCache: HashMap<DLExpression, HashSet<OWLClass>> = hashMapOf()
-    public val propertySubsumptionCache: HashMap<Pair<OWLPropertyExpression, OWLPropertyExpression>, Boolean> = hashMapOf()
-    public val entailmentCache: HashMap<Pair<DLExpression, DLExpression>, Boolean> = hashMapOf()
+    reasoner: OWLReasoner,
+    expressionBuilder: DLExpressionBuilder
+) : AbstractReasoner(reasoner, expressionBuilder) {
+    val superClassCache: HashMap<DLExpression, NodeSet<OWLClass>> = hashMapOf()
+    val equivalentClassCache: HashMap<DLExpression, Node<OWLClass>> = hashMapOf()
+    val subClassCache: HashMap<DLExpression, HashSet<OWLClass>> = hashMapOf()
+    val propertySubsumptionCache: HashMap<Pair<OWLPropertyExpression, OWLPropertyExpression>, Boolean> = hashMapOf()
+    val entailmentCache: HashMap<Pair<DLExpression, DLExpression>, Boolean> = hashMapOf()
 
-    public var superClassCacheHitCounter = 0;
-    public var equivNodeCacheHitCounter = 0;
-    public var subClassCacheHitCounter = 0;
-    public var propertySubsumptionCacheHitCounter = 0;
-    public var entailmentCacheHitCounter = 0;
-    public var entailmentCacheMissCounter = 0;
+    var superClassCacheHitCounter = 0;
+    var equivNodeCacheHitCounter = 0;
+    var subClassCacheHitCounter = 0;
+    var propertySubsumptionCacheHitCounter = 0;
+    var entailmentCacheHitCounter = 0;
+    var entailmentCacheMissCounter = 0;
 
     override fun checkIsSubsumed(expr: DLExpression, superExpression: DLExpression): Boolean {
         val cacheEntry = entailmentCache[Pair(expr, superExpression)];
@@ -57,21 +58,6 @@ class CachingDLReasoner(
         return isEntailed;
     }
 
-    override fun calculateSuperProperties(property: OWLObjectPropertyExpression): NodeSet<OWLObjectPropertyExpression> {
-        val properties = reasoner.getSuperObjectProperties(property, false);
-        return properties;
-    }
-
-
-    override fun calculateSuperPropertiesMock(property: OWLObjectPropertyExpression): NodeSet<OWLObjectPropertyExpression> {
-        return OWLObjectPropertyNodeSet(property)
-    }
-
-    override fun calculateSubProperties(property: OWLObjectPropertyExpression): NodeSet<OWLObjectPropertyExpression> {
-        val properties = reasoner.getSubObjectProperties(property, false);
-        return properties;
-    }
-
     override fun calculateSubClasses(expr: DLExpression, includeNothing: Boolean): HashSet<OWLClass> {
         val cacheEntry = subClassCache[expr];
         if(cacheEntry != null){
@@ -91,14 +77,6 @@ class CachingDLReasoner(
         val hashSet = classes.entities().toList().toHashSet()
         subClassCache[expr] = hashSet;
         return hashSet;
-    }
-
-    override fun getTopClassNode(): Node<OWLClass> {
-        return reasoner.topClassNode;
-    }
-
-    override fun getBottomClassNode(): Node<OWLClass> {
-        return reasoner.bottomClassNode;
     }
 
     override fun calculateSuperClasses(expr: DLExpression, includeEquivalent: Boolean): NodeSet<OWLClass> {
@@ -126,10 +104,6 @@ class CachingDLReasoner(
             return setWithEquiv;
         }
         return strictSuperClasses;
-    }
-
-    override fun calculateEquivalentClasses(expr: DLExpression): Node<OWLClass> {
-        return reasoner.getEquivalentClasses(expr.getClassExpression());
     }
 
     override fun clearCache() {

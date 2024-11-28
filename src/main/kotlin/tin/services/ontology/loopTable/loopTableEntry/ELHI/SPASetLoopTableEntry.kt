@@ -1,9 +1,7 @@
-package tin.services.ontology.loopTable.loopTableEntry
+package tin.services.ontology.loopTable.loopTableEntry.ELHI
 
 import tin.model.v2.graph.Node
 import tin.services.ontology.loopTable.LoopTableEntryRestriction.spa.ConceptNameRestriction
-import tin.services.ontology.loopTable.LoopTableEntryRestriction.spa.MultiClassLoopTableEntryRestriction
-import tin.services.ontology.loopTable.LoopTableEntryRestriction.spa.NumericConceptNameRestriction
 
 class SPASetLoopTableEntry(
     override val source: Pair<Node, Node>,
