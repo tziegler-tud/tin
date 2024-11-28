@@ -11,14 +11,10 @@ import tin.services.ontology.loopTable.LoopTableEntryRestriction.RestrictionBuil
 class IndividualRestrictionBuilder(
     private val queryParser: DLQueryParser,
     private val shortFormProvider: ShortFormProvider
-) : RestrictionBuilderInterface<OWLNamedIndividual> {
+) : RestrictionBuilderInterface {
 
 
     fun createNamedIndividualRestriction(element: OWLNamedIndividual): NamedIndividualRestriction {
         return NamedIndividualRestriction(element)
-    }
-
-    override fun createRestriction(element: OWLNamedIndividual): LoopTableEntryRestriction {
-        return createRestriction(element);
     }
 }

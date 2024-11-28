@@ -5,13 +5,12 @@ import tin.model.v2.graph.Node
 import tin.model.v2.transducer.TransducerGraph
 import tin.services.ontology.OntologyExecutionContext.ELHI.ELHIExecutionContext
 import tin.services.ontology.OntologyExecutionContext.ExecutionContext
-import tin.services.ontology.OntologyExecutionContext.ExecutionContextType
 import tin.services.ontology.OntologyManager
-import tin.services.ontology.loopTable.ELHISPALoopTable
+import tin.services.ontology.loopTable.LoopTable.ELHI.ELHISPALoopTable
 import tin.services.ontology.loopTable.LoopTableBuilder.ELHI.ruleCalculators.SpaS1Calculator
 import tin.services.ontology.loopTable.LoopTableBuilder.ELHI.ruleCalculators.SpaS2Calculator
 import tin.services.ontology.loopTable.LoopTableBuilder.ELHI.ruleCalculators.SpaS3Calculator
-import tin.services.ontology.loopTable.loopTableEntry.ELHISPALoopTableEntry
+import tin.services.ontology.loopTable.loopTableEntry.ELHI.ELHISPALoopTableEntry
 
 class ELHISPALoopTableBuilder (
     private val queryGraph: QueryGraph,

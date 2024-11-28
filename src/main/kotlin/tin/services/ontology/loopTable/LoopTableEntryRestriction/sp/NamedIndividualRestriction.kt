@@ -1,7 +1,7 @@
 package tin.services.ontology.loopTable.LoopTableEntryRestriction.sp
 
-import org.semanticweb.owlapi.model.OWLIndividual
 import org.semanticweb.owlapi.model.OWLNamedIndividual
+import org.semanticweb.owlapi.util.ShortFormProvider
 
 class NamedIndividualRestriction(
     override var value: OWLNamedIndividual
@@ -33,4 +33,7 @@ class NamedIndividualRestriction(
         return value.hashCode()
     }
 
+    override fun transformToString(shortFormProvider: ShortFormProvider): String {
+        return shortFormProvider.getShortForm(value)
+    }
 }

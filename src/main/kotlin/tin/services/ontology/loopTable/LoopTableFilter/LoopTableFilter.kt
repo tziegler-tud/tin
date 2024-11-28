@@ -1,6 +1,6 @@
 package tin.services.ontology.loopTable.LoopTableFilter
 
-import tin.services.ontology.loopTable.LoopTableMap
+import tin.services.ontology.loopTable.LoopTable.LoopTableMap
 
 class LoopTableFilter {
 

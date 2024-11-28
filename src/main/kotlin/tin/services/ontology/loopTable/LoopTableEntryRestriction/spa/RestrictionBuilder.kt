@@ -94,9 +94,6 @@ class RestrictionBuilder(
         return OWLObjectIntersectionOfImpl(restriction.asList());
     }
 
-    override fun createRestriction(element: OWLClass): LoopTableEntryRestriction {
-        return createRestriction(element);
-    }
 
     fun testUnion(conceptNameRestriction: ConceptNameRestriction) : OWLClassExpression {
         return OWLObjectUnionOfImpl(conceptNameRestriction.asList());

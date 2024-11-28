@@ -1,4 +1,4 @@
-package tin.services.ontology.loopTable.LoopTableBuilder.ELHI.ruleCalculators
+package tin.services.ontology.loopTable.LoopTableBuilder.ELH.ruleCalculators
 
 import org.semanticweb.owlapi.model.*
 import tin.model.v2.query.QueryGraph
@@ -7,15 +7,16 @@ import tin.model.v2.query.QueryEdge
 import tin.model.v2.query.QueryEdgeLabel
 import tin.model.v2.transducer.TransducerEdge
 import tin.model.v2.transducer.TransducerGraph
-import tin.services.ontology.OntologyExecutionContext.ELHI.ELHIExecutionContext
-import tin.services.ontology.loopTable.LoopTable.ELHI.ELHISPALoopTable
-import tin.services.ontology.loopTable.LoopTable.ELHI.ELHISPLoopTable
-import tin.services.ontology.loopTable.LoopTableEntryRestriction.spa.MultiClassLoopTableEntryRestriction
+import tin.services.ontology.OntologyExecutionContext.EL.ELExecutionContext
+import tin.services.ontology.loopTable.LoopTable.ELH.ELSPALoopTable
+import tin.services.ontology.loopTable.LoopTable.ELH.ELSPLoopTable
+import tin.services.ontology.loopTable.LoopTableEntryRestriction.spa.SingleClassLoopTableEntryRestriction
+import tin.services.ontology.loopTable.loopTableEntry.ELH.ELSPALoopTableEntry
+import tin.services.ontology.loopTable.loopTableEntry.ELH.ELSPLoopTableEntry
 import tin.services.ontology.loopTable.loopTableEntry.IndividualLoopTableEntry
 
-
 class SpCalculator(
-    private val ec: ELHIExecutionContext,
+    private val ec: ELExecutionContext,
     private val queryGraph: QueryGraph,
     private val transducerGraph: TransducerGraph
     ) {
@@ -26,19 +27,14 @@ class SpCalculator(
     private val spRestrictionBuilder = ec.spRestrictionBuilder;
     private val expressionBuilder = ec.expressionBuilder;
     private val dlReasoner = ec.dlReasoner;
-    private val manchesterShortFormProvider = ec.manchesterShortFormProvider;
 
     /**
      * calculates the final value for all entries (s,t),(s',t'),a
      */
-    fun calculateAll(spaTable: ELHISPALoopTable): ELHISPLoopTable {
-
-        val topClassNode = dlReasoner.getTopClassNode();
-        val owlTopClassRestriction =
-            restrictionBuilder.createConceptNameRestriction(topClassNode.representativeElement)
+    fun calculateAll(spaTable: ELSPALoopTable): ELSPLoopTable {
 
         val roles = ec.getRoles();
-        val spTable = ELHISPLoopTable()
+        val table = ELSPLoopTable()
 
         queryGraph.nodes.forEach { querySource ->
             transducerGraph.nodes.forEach { transducerSource ->
@@ -55,6 +51,7 @@ class SpCalculator(
 //                                get all edges (s,_,s1) € QueryGraph
                                 val candidateEdgesDown =
                                     getCandidateEdges(querySource, candidateQuerySource, transducerSource, candidateTransducerSource, null)
+
                                 if (candidateEdgesDown == null) {
                                     return@candidateTransducerSource
                                 };
@@ -63,6 +60,17 @@ class SpCalculator(
 
                                 queryGraph.nodes.forEach { candidateQueryTarget ->
                                     transducerGraph.nodes.forEach candidateTransducerTarget@{ candidateTransducerTarget ->
+
+                                        /**
+                                         * debug line
+                                         */
+                                        if(querySource.identifier == "s0" && queryTarget.identifier == "s2" &&
+                                            transducerSource.identifier == "t0" && transducerTarget.identifier == "t2" &&
+                                            candidateQuerySource.identifier == "s1" && candidateQueryTarget.identifier == "s2" &&
+                                            candidateTransducerSource.identifier == "t2" && candidateTransducerTarget.identifier == "t2" ) {
+                                            println("here!")
+                                        }
+
 
                                         /**
                                          * Upwards transition
@@ -75,17 +83,20 @@ class SpCalculator(
                                         val candidateTransducerEdgesUp = candidateEdgesUp.second;
                                         val sortedTransducerEdgesUp = candidateTransducerEdgesUp.sortedBy { it.label.cost }
 
-                                        var candidateResultList: List<Pair<MultiClassLoopTableEntryRestriction, Int>>
+                                        var candidateResultList: List<Pair<SingleClassLoopTableEntryRestriction, Int>>
 
 
                                         if(candidateQuerySource == candidateQueryTarget && candidateTransducerSource == candidateTransducerTarget) {
-                                            candidateResultList = mutableListOf(Pair(owlTopClassRestriction, 0))
+                                            val mutableList: MutableList<Pair<SingleClassLoopTableEntryRestriction, Int>> = mutableListOf()
+                                            ec.forEachConcept { owlClass ->
+                                                mutableList.add(Pair(owlClass, 0))
+                                            }
+                                            candidateResultList = mutableList;
                                         }
                                         else {
                                             val candidateMap = spaTable.getWithSourceAndTarget(
                                                 Pair(candidateQuerySource, candidateTransducerSource), Pair(candidateQueryTarget, candidateTransducerTarget), null).map
                                             if(candidateMap.isEmpty()) return@candidateTransducerTarget
-
                                             //create optimized map to use from here. We only need class expression and value
                                             candidateResultList = candidateMap.map { (entry, v) ->
                                                 Pair(entry.restriction, v)
@@ -121,11 +132,18 @@ class SpCalculator(
 
                                             run upIterator@ {
                                                 sortedTransducerEdgesUp.forEach up@{ up ->
+                                                    //CAREFUL FOR ELH: This is required to be an inverse role
+                                                    val outgoingLabel = up.label.outgoing;
+                                                    if(!outgoingLabel.isInverse()) return@up;
+
+                                                    val nonInverseProperty = outgoingLabel.getInverseAsNewProperty()
+
                                                     val upProperty =
-                                                        queryParser.getOWLObjectPropertyExpression(up.label.outgoing)
+                                                        queryParser.getOWLObjectPropertyExpression(nonInverseProperty)
                                                             ?: return@up
+
                                                     val upEntailed = dlReasoner.checkPropertySubsumption(
-                                                        role.inverseProperty,
+                                                        role,
                                                         upProperty
                                                     )
                                                     if (upEntailed) {
@@ -141,72 +159,43 @@ class SpCalculator(
 
                                         if(candidateEdgeMap.isEmpty()) return@candidateTransducerTarget
 
-                                        //sort candidateResultList by length of restriction DESCENDING ( == from most specific to less specific)
-                                        var sortedCandidateResultList = candidateResultList.sortedBy { pair ->
-                                            pair.first.getSize()
-                                        }
+                                        //for each concept name C
+                                        //we have a set of candidate R associated with the best possible pair of trans edges
+                                        //now, we have to check if C <= €rA for some R in candidateEdgesMap
+                                        //otherwise, reject candidate entry
+                                        candidateEdgeMap.forEach candidateEdges@ { (role, pairOfEdges) ->
+                                            val edgeCost: Int = pairOfEdges.first.label.cost + pairOfEdges.second.label.cost;
 
-                                        //for each a € Ind(A), we have to find the best combination of M0 and M s.t.
-                                        //M0(a) is entailed, M0 c E R.M is entailed
-                                        ec.forEachIndividual individuals@ { individual ->
+                                            candidateResultList.forEach candidates@{ candidateResultPair ->
+                                                //build class expressions
+                                                val M1ClassExp = restrictionBuilder.asClassExpression(candidateResultPair.first);
+                                                val candidateCost = candidateResultPair.second;
+                                                val rM1 = expressionBuilder.createExistentialRestriction(role, M1ClassExp)
+                                                val rM1Exp = expressionBuilder.createELHIExpression(rM1);
 
-                                            val classes = dlReasoner.getClasses(individual)
-                                            val M0Exp = expressionBuilder.createELHIExpression(classes);
-
-                                            var minResult: Int? = null;
-                                            //we have a set of candidate R associated with the best possible pair of trans edges
-                                            //now, we have to check if M0 <= €rM1 for some R in candidateEdgesMap
-                                            //otherwise, reject candidate entry
-                                            candidateEdgeMap.forEach candidateEdges@ { (role, pairOfEdges) ->
-                                                val eliminatedSets: MutableSet<MultiClassLoopTableEntryRestriction> = mutableSetOf();
-                                                val resultSets: MutableSet<MultiClassLoopTableEntryRestriction> = mutableSetOf();
-                                                val resultMap: MutableMap<MultiClassLoopTableEntryRestriction, Int> = mutableMapOf();
-
-                                                var csCounter = 0;
-                                                val edgeCost: Int = pairOfEdges.first.label.cost + pairOfEdges.second.label.cost;
-
-
-                                                //start with the most specific candidateSet.
-                                                sortedCandidateResultList.forEach candidates@{ candidateResultPair ->
-
-                                                    //build class expressions
-                                                    val M1Restriction = candidateResultPair.first
-
-                                                    if(M1Restriction.containsAllElementsFromOneOf(eliminatedSets)) {
-                                                        return@candidates;
-                                                    }
-
-                                                    if(M1Restriction.containsOnlyElementsFromOneOf(resultSets)) {
-                                                        return@candidates;
-                                                    }
-
-                                                    val M1ClassExp =
-                                                        restrictionBuilder.asClassExpression(M1Restriction);
-                                                    val candidateCost = candidateResultPair.second;
-                                                    val rM1 =
-                                                        expressionBuilder.createExistentialRestriction(role, M1ClassExp)
-                                                    val rM1Exp = expressionBuilder.createELHIExpression(rM1);
-
-                                                    val isEntailed = dlReasoner.checkIsSubsumed(M0Exp, rM1Exp)
-
-                                                    if(!isEntailed) {
-                                                        eliminatedSets.add(M1Restriction)
-                                                    }
-                                                    else {
-                                                        val result = edgeCost + candidateCost
-                                                        if(minResult == null || result < minResult!!) minResult = result;
-                                                        resultSets.add(M1Restriction);
-                                                        resultMap[M1Restriction] = candidateCost;
-                                                    }
+                                                //calculate basic classes A that satisfy A <= €R.C
+                                                val atomicSubsumers = dlReasoner.calculateSubClasses(rM1Exp)
+                                                //if there are no atomic subsumers, exit and try next candidate
+                                                if (atomicSubsumers.isEmpty()) {
+                                                    return@candidates;
                                                 }
 
-                                            }
+                                                ec.forEachConcept tailsets@{  tailRestriction ->
 
-                                            //update entry for (s,s'),(t,t'),a if cost is not null (=+infinity)
-                                            if(minResult != null) {
-                                                val individualRestriction = spRestrictionBuilder.createNamedIndividualRestriction(individual)
-                                                val spEntry = IndividualLoopTableEntry(querySource, transducerSource, queryTarget, transducerTarget, individualRestriction)
-                                                spTable.setIfLower(spEntry, minResult!!);
+                                                    if(!tailRestriction.isContainedInSet(atomicSubsumers)) {
+                                                        return@tailsets;
+                                                    }
+
+                                                    val entry = ELSPLoopTableEntry(
+                                                        querySource,
+                                                        transducerSource,
+                                                        queryTarget,
+                                                        transducerTarget,
+                                                        tailRestriction
+                                                    )
+                                                    val result: Int = edgeCost + candidateCost
+                                                    table.setIfLower(entry, result);
+                                                }
                                             }
                                         }
                                     }
@@ -217,7 +206,7 @@ class SpCalculator(
                 }
             }
         }
-        return spTable;
+        return table;
     }
 
     private fun getCandidateEdges(querySource: Node, queryTarget: Node, transducerSource: Node, transducerTarget: Node, maxCost: Int?): Pair<List<QueryEdge>, List<TransducerEdge>>? {

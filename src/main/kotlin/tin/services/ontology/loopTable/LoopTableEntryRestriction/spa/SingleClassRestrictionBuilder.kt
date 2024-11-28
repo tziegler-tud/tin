@@ -31,9 +31,4 @@ class SingleClassRestrictionBuilder(
         return restriction.value
     }
 
-    override fun createRestriction(element: OWLClass): LoopTableEntryRestriction {
-        return createRestriction(element);
-    }
-
-
 }

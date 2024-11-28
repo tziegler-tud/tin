@@ -1,19 +1,13 @@
 package tin.services.ontology.loopTable.LoopTableBuilder.ELHI.ruleCalculators
 
-import org.semanticweb.owlapi.model.OWLClass
 import tin.model.v2.genericGraph.*
 import tin.model.v2.query.QueryGraph
 import tin.model.v2.graph.Node
 import tin.model.v2.transducer.TransducerGraph
 import tin.services.ontology.OntologyExecutionContext.ELHI.ELHIExecutionContext
-import tin.services.ontology.OntologyExecutionContext.ExecutionContext
-import tin.services.ontology.loopTable.ELHISPALoopTable
-import tin.services.ontology.loopTable.LoopTableEntryRestriction.spa.ConceptNameRestriction
-import tin.services.ontology.loopTable.LoopTableEntryRestriction.LoopTableEntryRestriction
+import tin.services.ontology.loopTable.LoopTable.ELHI.ELHISPALoopTable
 import tin.services.ontology.loopTable.LoopTableEntryRestriction.spa.MultiClassLoopTableEntryRestriction
-import tin.services.ontology.loopTable.SPALoopTable
-import tin.services.ontology.loopTable.loopTableEntry.ELHISPALoopTableEntry
-import tin.services.ontology.loopTable.loopTableEntry.SPALoopTableEntry
+import tin.services.ontology.loopTable.loopTableEntry.ELHI.ELHISPALoopTableEntry
 
 class SpaS3Calculator(
     private val ec: ELHIExecutionContext,

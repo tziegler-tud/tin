@@ -2,11 +2,7 @@ package tin.services.ontology.OntologyExecutionContext
 
 import org.apache.el.lang.ExpressionBuilder
 import org.semanticweb.owlapi.manchestersyntax.renderer.ManchesterOWLSyntaxPrefixNameShortFormProvider
-import org.semanticweb.owlapi.model.OWLClass
-import org.semanticweb.owlapi.model.OWLEntity
-import org.semanticweb.owlapi.model.OWLIndividual
-import org.semanticweb.owlapi.model.OWLNamedIndividual
-import org.semanticweb.owlapi.model.OWLObjectProperty
+import org.semanticweb.owlapi.model.*
 import org.semanticweb.owlapi.util.ShortFormProvider
 import tin.services.ontology.DLQueryParser
 import tin.services.ontology.Expressions.DLExpressionBuilder
@@ -23,8 +19,9 @@ interface ExecutionContext {
     val parser: DLQueryParser
     val shortFormProvider: ShortFormProvider
     val manchesterShortFormProvider: ManchesterOWLSyntaxPrefixNameShortFormProvider
-    val spaRestrictionBuilder: RestrictionBuilderInterface<OWLClass>
-    val spRestrictionBuilder: RestrictionBuilderInterface<OWLNamedIndividual>
+    val spaRestrictionBuilder: RestrictionBuilderInterface
+    val spRestrictionBuilder: RestrictionBuilderInterface
+
     val individuals: Set<OWLNamedIndividual>
 
     fun prewarmSubsumptionCache();

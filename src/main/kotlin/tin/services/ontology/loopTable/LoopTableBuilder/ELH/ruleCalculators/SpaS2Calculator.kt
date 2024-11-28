@@ -6,12 +6,8 @@ import tin.model.v2.query.QueryEdgeLabel
 import tin.model.v2.transducer.TransducerEdge
 import tin.model.v2.transducer.TransducerGraph
 import tin.services.ontology.OntologyExecutionContext.EL.ELExecutionContext
-import tin.services.ontology.OntologyExecutionContext.ELHI.ELHIExecutionContext
-import tin.services.ontology.OntologyExecutionContext.ExecutionContext
-import tin.services.ontology.loopTable.ELSPALoopTable
-import tin.services.ontology.loopTable.SPALoopTable
-import tin.services.ontology.loopTable.loopTableEntry.ELSPALoopTableEntry
-import tin.services.ontology.loopTable.loopTableEntry.SPALoopTableEntry
+import tin.services.ontology.loopTable.LoopTable.ELH.ELSPALoopTable
+import tin.services.ontology.loopTable.loopTableEntry.ELH.ELSPALoopTableEntry
 
 class SpaS2Calculator(
     private val ec: ELExecutionContext,
@@ -49,7 +45,17 @@ class SpaS2Calculator(
 
                             //get all edges (t,_,_,_,t1) € TransducerGraph
                             var candidateTransducerEdges = transducerGraph.getEdgesWithSourceAndTarget(transducerSource, transducerTarget);
-                            // keep only those that have matching u for some A? s.t. (s,u,s') € query and (t,u,A?,w.t') € trans
+                            // keep only those that have matching u for some A? s.t. (s,u,s') € query and (t,u,A?,w,t') € trans
+
+                            /**
+                             * debug line
+                             */
+                            if(querySource.identifier == "s1" && queryTarget.identifier == "s2" &&
+                                transducerSource.identifier == "t0" && transducerTarget.identifier == "t2") {
+                                println("here!")
+                            }
+
+
                             candidateTransducerEdges = candidateTransducerEdges.filter { transEdge ->
                                 candidateQueryTransitions.contains(QueryEdgeLabel(transEdge.label.incoming)) &&
                                         queryParser.getOWLClass(transEdge.label.outgoing) !== null

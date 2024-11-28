@@ -9,9 +9,8 @@ import tin.model.v2.transducer.TransducerEdge
 import tin.model.v2.transducer.TransducerGraph
 import tin.services.ontology.Expressions.DLExpression
 import tin.services.ontology.OntologyExecutionContext.EL.ELExecutionContext
-import tin.services.ontology.loopTable.ELSPALoopTable
-import tin.services.ontology.loopTable.loopTableEntry.ELSPALoopTableEntry
-import java.util.*
+import tin.services.ontology.loopTable.LoopTable.ELH.ELSPALoopTable
+import tin.services.ontology.loopTable.loopTableEntry.ELH.ELSPALoopTableEntry
 
 class SpaS1Calculator(
     private val ec: ELExecutionContext,
@@ -62,7 +61,7 @@ class SpaS1Calculator(
 
         val newTable = ELSPALoopTable()
 
-        if(updateTable.map.isEmpty()) return newTable;
+        if(!isInitialIteration && updateTable.map.isEmpty()) return newTable;
 
         var costCutoff: Int? = null;
 
@@ -96,6 +95,17 @@ class SpaS1Calculator(
 
                                 queryGraph.nodes.forEach { candidateQueryTarget ->
                                     transducerGraph.nodes.forEach candidateTransducerTarget@{ candidateTransducerTarget ->
+
+
+                                        /**
+                                         * debug line
+                                         */
+                                        if(querySource.identifier == "s0" && queryTarget.identifier == "s2" &&
+                                            transducerSource.identifier == "t0" && transducerTarget.identifier == "t2" &&
+                                            candidateQuerySource.identifier == "s1" && candidateQueryTarget.identifier == "s2" &&
+                                            candidateTransducerSource.identifier == "t2" && candidateTransducerTarget.identifier == "t2" ) {
+                                            println("here!")
+                                        }
 
                                         /**
                                          * Upwards transition
@@ -159,11 +169,19 @@ class SpaS1Calculator(
 
                                             run upIterator@ {
                                                 sortedTransducerEdgesUp.forEach up@{ up ->
+                                                    //CAREFUL FOR ELH: This is required to be an inverse role
+                                                    val outgoingLabel = up.label.outgoing;
+                                                    if(!outgoingLabel.isInverse()) return@up;
+
+                                                    val nonInverseProperty = outgoingLabel.getInverseAsNewProperty()
+
                                                     val upProperty =
-                                                        queryParser.getOWLObjectPropertyExpression(up.label.outgoing)
+                                                        queryParser.getOWLObjectPropertyExpression(nonInverseProperty)
                                                             ?: return@up
+
+
                                                     val upEntailed = dlReasoner.checkPropertySubsumption(
-                                                        role.inverseProperty,
+                                                        role,
                                                         upProperty
                                                     )
                                                     if (upEntailed) {
@@ -213,14 +231,8 @@ class SpaS1Calculator(
                                                         tailRestriction
                                                     )
 
-                                                    val costCutoff = table.get(entry)
-                                                    //check if the added weight of transducer edges is already higher than the current entry
-                                                    if (costCutoff !== null && costCutoff <= edgeCost) return@tailsets; //we cannot improve an entry with cost 0
-                                                    //0, int val or null
                                                     val result: Int = edgeCost + candidateCost
-                                                    if (costCutoff == null || costCutoff > result) {
-                                                        newTable.set(entry, result);
-                                                    }
+                                                    newTable.setIfLower(entry, result);
                                                 }
                                             }
                                         }

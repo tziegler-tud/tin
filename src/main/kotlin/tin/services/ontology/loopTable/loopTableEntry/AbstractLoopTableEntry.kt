@@ -1,17 +1,18 @@
 package tin.services.ontology.loopTable.loopTableEntry
 
-import org.semanticweb.owlapi.model.OWLNamedIndividual
+import org.semanticweb.owlapi.model.OWLClass
 import org.semanticweb.owlapi.util.ShortFormProvider
 import tin.model.v2.graph.Node
-import tin.services.ontology.loopTable.LoopTableEntryRestriction.sp.NamedIndividualRestriction
+import tin.services.ontology.loopTable.LoopTableEntryRestriction.LoopTableEntryRestriction
+import tin.services.ontology.loopTable.LoopTableEntryRestriction.spa.ConceptNameRestriction
 
-abstract class SPLoopTableEntry(
+abstract class AbstractLoopTableEntry(
     override val source: Pair<Node, Node>,
     override val target: Pair<Node, Node>,
-    override val restriction: NamedIndividualRestriction,
+    override val restriction: LoopTableEntryRestriction,
 ) : LoopTableEntry {
 
-    constructor(querySource: Node, transducerSource: Node, queryTarget: Node, transducerTarget: Node, restriction: NamedIndividualRestriction)
+    constructor(querySource: Node, transducerSource: Node, queryTarget: Node, transducerTarget: Node, restriction: LoopTableEntryRestriction)
             : this(Pair(querySource, transducerSource), Pair(queryTarget, transducerTarget), restriction)
 
     override fun hasEqualSourceAndTarget(): Boolean {
@@ -20,7 +21,7 @@ abstract class SPLoopTableEntry(
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
-        if (other !is SPLoopTableEntry) return false
+        if (other !is AbstractLoopTableEntry) return false
 
         return source == other.source && target == other.target && restriction == other.restriction;
     }
@@ -36,7 +37,8 @@ abstract class SPLoopTableEntry(
         return "[(${source.first}, ${source.second}), (${target.first}, ${target.second}), $restriction]"
     }
 
-    fun transformToString(shortFormProvider: ShortFormProvider): String {
-        return "[(${source.first}, ${source.second}), (${target.first}, ${target.second}), ${shortFormProvider.getShortForm(restriction.value)}]"
+
+    override fun transformToString(shortFormProvider: ShortFormProvider): String {
+        return "[(${source.first}, ${source.second}), (${target.first}, ${target.second}), ${restriction.transformToString(shortFormProvider)}]"
     }
 }
