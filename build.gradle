@@ -114,15 +114,15 @@ test {
 
 compileKotlin {
     kotlinOptions {
-        freeCompilerArgs = ['-Xjsr305=strict']
-        jvmTarget = '1.8'
+//        freeCompilerArgs = ['-Xjsr305=strict']
+        jvmTarget = '15'
     }
 }
 
 compileTestKotlin {
     kotlinOptions {
-        freeCompilerArgs = ['-Xjsr305=strict']
-        jvmTarget = '1.8'
+//        freeCompilerArgs = ['-Xjsr305=strict']
+        jvmTarget = '15'
     }
 }
 
@@ -135,6 +135,7 @@ tasks.withType(Test).configureEach {
         events "passed", "skipped", "failed"
     }
 }
+
 
 
 //publishing {
