@@ -19,6 +19,7 @@ import tin.model.v1.alphabet.Alphabet
 import tin.services.ontology.Expressions.DLExpressionBuilder
 import tin.services.ontology.OntologyExecutionContext.EL.ELExecutionContext
 import tin.services.ontology.OntologyExecutionContext.ELHI.ELHIExecutionContext
+import tin.services.ontology.OntologyExecutionContext.ELHI.ELHINumericExecutionContext
 import tin.services.ontology.OntologyExecutionContext.ExecutionContext
 import tin.services.ontology.OntologyExecutionContext.ExecutionContextType
 import tin.services.ontology.OntologyExecutionContext.OntologyExecutionContextFactory
@@ -162,6 +163,10 @@ class OntologyManager(val file: File) {
 
     fun createELHIExecutionContext(executionContextType: ExecutionContextType, prewarmCaches: Boolean = false) : ELHIExecutionContext {
         return executionContextFactory.createELHIContext(executionContextType, this, prewarmCaches);
+    }
+
+    fun createELHINumericExecutionContext(prewarmCaches: Boolean = false) : ELHINumericExecutionContext {
+        return ELHINumericExecutionContext(this);
     }
 
     fun createELExecutionContext(executionContextType: ExecutionContextType, prewarmCaches: Boolean = false) : ELExecutionContext {

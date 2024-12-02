@@ -112,13 +112,14 @@ class NumericRestrictionBuilder(
         return OWLObjectIntersectionOfImpl(restriction.asList());
     }
 
-
-
-    fun testUnion(conceptNameRestriction: ConceptNameRestriction) : OWLClassExpression {
-        return OWLObjectUnionOfImpl(conceptNameRestriction.asList());
-    }
-
-    fun testNoIntersect(conceptNameRestriction: ConceptNameRestriction): OWLClassExpression {
-        return conceptNameRestriction.asList().first();
+    fun getAllDirectSubsets(restriction: NumericConceptNameRestriction): Set<NumericConceptNameRestriction> {
+        val result: MutableSet<NumericConceptNameRestriction> = mutableSetOf()
+        val classes = restriction.asSet();
+        for(owlClass in classes) {
+            val new = NumericConceptNameRestriction(restriction);
+            new.removeElement(owlClass)
+            result.add(new);
+        }
+        return result;
     }
 }

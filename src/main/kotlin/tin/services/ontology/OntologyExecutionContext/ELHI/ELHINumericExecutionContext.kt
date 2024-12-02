@@ -61,6 +61,13 @@ class ELHINumericExecutionContext(private val manager: OntologyManager) : ELHIEx
         }
     }
 
+    fun forEachTailsetDescendingNumeric(action: (NumericConceptNameRestriction) -> Unit) {
+        for (i in tailsetMaximum downTo 1UL)
+        {
+            action(spaRestrictionBuilder.createConceptNameRestriction(i));
+        }
+    }
+
     override fun forEachIndividual(action: (OWLNamedIndividual) -> Unit) {
         for (individual in individuals) {
             action(individual);
