@@ -36,7 +36,7 @@ abstract class AbstractMutableLoopTable<T: AbstractLoopTableEntry, in R: LoopTab
      * returns a HashMap <spaLoopTableEntry, Int> containing all entries that have value BELOW (< ) the given limit
      * If null is given, returns all entries.
      */
-    fun getWithCostLimit(limit: Int?) : Map<T, Int> {
+    open fun getWithCostLimit(limit: Int?) : Map<T, Int> {
         if (limit == null) {return map}
         return map.filterValues { it < limit}
     }
@@ -45,15 +45,15 @@ abstract class AbstractMutableLoopTable<T: AbstractLoopTableEntry, in R: LoopTab
      * returns a HashMap <spaLoopTableEntry, Int> containing all entries that use the given restriction.
      * If limit is given, only return entries with value BELOW (< ) the given limit.
      */
-    fun getWithRestriction(restriction: R, limit: Int? = null) : SPALoopTableFragment<T> {
+    open fun getWithRestriction(restriction: R, limit: Int? = null) : SPALoopTableFragment<T> {
         return SPALoopTableFragment(map.filter{it.key.restriction == restriction && if (limit == null) true else it.value < limit});
     }
 
-    fun getWithSourceAndTarget(source: Pair<Node, Node>, target: Pair<Node, Node>, limit: Int? = null) : SPALoopTableFragment<T> {
+    open fun getWithSourceAndTarget(source: Pair<Node, Node>, target: Pair<Node, Node>, limit: Int? = null) : SPALoopTableFragment<T> {
         return SPALoopTableFragment(map.filter { it.key.source == source && it.key.target == target && if (limit == null) true else it.value < limit});
     }
 
-    fun getWithSourceAndRestriction(source: Pair<Node, Node>, restriction: R) : SPALoopTableFragment<T> {
+    open fun getWithSourceAndRestriction(source: Pair<Node, Node>, restriction: R) : SPALoopTableFragment<T> {
         return SPALoopTableFragment(map.filter { it.key.restriction == restriction && it.key.source == source });
     }
 

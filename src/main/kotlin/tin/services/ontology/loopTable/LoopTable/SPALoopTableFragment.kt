@@ -8,7 +8,7 @@ open class SPALoopTableFragment<entryType: AbstractLoopTableEntry>(
 
     constructor(): this(HashMap());
     constructor(map: Map<entryType, Int>): this(HashMap(map));
-    override fun get(entry: entryType): Int? {
+    override operator fun get(entry: entryType): Int? {
         //[p,p,M] = 0
         if(entry.hasEqualSourceAndTarget()){
             return 0;
