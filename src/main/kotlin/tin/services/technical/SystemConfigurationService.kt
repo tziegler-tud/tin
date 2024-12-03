@@ -14,6 +14,7 @@ class SystemConfigurationService {
 
     private var projectRoot: String?= null;
     private var fileDir: String?= null;
+    private var uploadDir: String?= null;
     private var databaseFilesDirName: String = "/databases";
     private var queryFilesDirName: String = "/queries";
     private var conjunctiveQueryFilesDirName: String = "/conjunctiveQueries";
@@ -55,6 +56,14 @@ class SystemConfigurationService {
         this.fileDir = string;
     }
 
+    fun getUploadDir():String? {
+        return this.uploadDir
+    }
+
+    fun setUploadDir(string: String) {
+        this.uploadDir = string;
+    }
+
     fun getDatabasePath():String {
         return Path.of(this.projectRoot + this.fileDir + this.databaseFilesDirName).toString();
     }
@@ -72,6 +81,22 @@ class SystemConfigurationService {
 
     fun getOntologyPath():String{
         return Path.of(this.projectRoot + this.fileDir + this.ontologyFilesDirName).toString();
+    }
+
+    fun getUploadParentPath():String{
+        return Path.of(this.projectRoot + this.uploadDir).toString();
+    }
+
+    fun getUploadQueryPath():String{
+        return Path.of(this.projectRoot + this.uploadDir + this.queryFilesDirName).toString();
+    }
+
+    fun getUploadTransducerPath():String{
+        return Path.of(this.projectRoot + this.uploadDir + this.transducerFilesDirName).toString();
+    }
+
+    fun getUploadOntologyPath():String{
+        return Path.of(this.projectRoot + this.uploadDir + this.ontologyFilesDirName).toString();
     }
 
     fun getDatabaseSizeLimit():Int {
