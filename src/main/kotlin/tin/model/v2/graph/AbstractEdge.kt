@@ -1,5 +1,6 @@
 package tin.model.v2.graph
 
+import tin.model.v2.ResultGraph.ResultEdge
 import tin.model.v2.genericGraph.GenericEdge
 import tin.model.v2.query.QueryEdge
 import tin.model.v2.query.QueryEdgeLabel
@@ -25,6 +26,10 @@ abstract class AbstractEdge(
     }
 
     override fun asTransducerEdge(): TransducerEdge? {
+        return null;
+    }
+
+    override fun asResultEdge(): ResultEdge? {
         return null;
     }
 

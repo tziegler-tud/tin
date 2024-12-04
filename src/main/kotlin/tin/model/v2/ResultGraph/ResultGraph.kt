@@ -1,0 +1,59 @@
+package tin.model.v2.ResultGraph
+
+import tin.model.v1.alphabet.Alphabet
+import tin.model.v2.graph.*
+
+class ResultGraph : AbstractGraph() {
+    override var nodes: NodeSet = NodeSet()
+    override var edges = ResultEdgeSet()
+    override var alphabet: Alphabet = Alphabet();
+
+    override fun addEdge(edge: Edge) : Boolean {
+        /**
+         * add nodes if not present
+         */
+        if (nodes.contains(edge.source)) {
+            nodes.add(edge.source)
+        }
+
+        if (nodes.contains(edge.target)) {
+            nodes.add(edge.target)
+        }
+        return edges.add(edge.asResultEdge()!!);
+    }
+
+    fun addEdge(source: Node, target: Node, label: ResultEdgeLabel) : Boolean {
+        return addEdge(ResultEdge(source, target, label));
+    }
+    fun addEdge(source: Node, target: Node, cost: Int) : Boolean {
+        return addEdge(ResultEdge(source, target, cost));
+    }
+
+    override fun containsEdge(edge: Edge) : Boolean {
+        val e = edge.asResultEdge() ?: return false;
+        return edges.contains(e)
+    }
+
+    override fun getEdgesWithSource(source: Node): List<ResultEdge> {
+        return edges.filterForSource(source);
+    }
+
+    override fun getEdgesWithTarget(target: Node): List<ResultEdge> {
+        return edges.filterForTarget(target);
+    }
+
+    override fun getEdgesWithSourceAndTarget(source: Node, target: Node): List<ResultEdge> {
+        return edges.filterForSourceAndTarget(source, target);
+    }
+
+    override fun getEdgesWithLabel(label: EdgeLabel): List<ResultEdge> {
+        return edges.filterForLabel(label);
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is ResultGraph) return false
+
+        return super.equals(other);
+    }
+}
