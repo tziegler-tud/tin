@@ -1,6 +1,7 @@
 package tin.model.v2.ResultGraph
 
 import org.semanticweb.owlapi.model.OWLNamedIndividual
+import tin.model.v2.genericGraph.PairNode
 import tin.model.v2.graph.Node
 
 class ResultNode(
@@ -21,9 +22,7 @@ class ResultNode(
 
         return queryNode == other.queryNode &&
                 transducerNode == other.transducerNode &&
-                individual == other.individual &&
-                isInitialState == other.isInitialState &&
-                isFinalState == other.isFinalState;
+                individual == other.individual
     }
 
     fun getQueryNode(): Node {
@@ -32,6 +31,14 @@ class ResultNode(
 
     fun getTransducerNode(): Node {
         return transducerNode;
+    }
+
+    fun getIndividual(): OWLNamedIndividual {
+        return individual;
+    }
+
+    override fun asResultNode(): ResultNode {
+        return this;
     }
 
     override fun hashCode(): Int {

@@ -2,8 +2,12 @@ package tin.model.v2.graph
 
 open class NodeSet : HashSet<Node>()
 {
+    fun contains(identifier: String): Boolean {
+        return find{it.identifier == identifier} != null;
+    }
+
     override fun contains(element: Node): Boolean {
-        return find{it.identifier == element.identifier} != null;
+        return find{it == element} != null;
     }
 
     override fun containsAll(elements: Collection<Node>): Boolean {

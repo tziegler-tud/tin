@@ -141,7 +141,7 @@ class SpCalculator(
 
                                         if(candidateEdgeMap.isEmpty()) return@candidateTransducerTarget
 
-                                        //sort candidateResultList by length of restriction DESCENDING ( == from most specific to less specific)
+                                        //sort candidateResultList by length of restriction ASCENDING ( == from less specific to most specific)
                                         var sortedCandidateResultList = candidateResultList.sortedBy { pair ->
                                             pair.first.getSize()
                                         }
@@ -166,7 +166,7 @@ class SpCalculator(
                                                 val edgeCost: Int = pairOfEdges.first.label.cost + pairOfEdges.second.label.cost;
 
 
-                                                //start with the most specific candidateSet.
+                                                //start with the least specific candidateSet.
                                                 sortedCandidateResultList.forEach candidates@{ candidateResultPair ->
 
                                                     //build class expressions

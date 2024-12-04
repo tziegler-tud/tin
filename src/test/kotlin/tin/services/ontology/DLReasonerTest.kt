@@ -1,6 +1,10 @@
 package tin.services.ontology
 
 import org.junit.jupiter.api.Test
+import org.semanticweb.owlapi.model.OWLNamedIndividual
+import org.semanticweb.owlapi.model.OWLObjectProperty
+import org.semanticweb.owlapi.model.OWLPropertyExpression
+import org.semanticweb.owlapi.reasoner.NodeSet
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.context.TestConfiguration
@@ -360,5 +364,25 @@ class DLReasonerTest {
                 assert(!isSubsumed);
             }
         }
+    }
+
+    @Test
+    fun testGetConnectedIndividuals() {
+        val manager = loadExampleOntology("pizza2.rdf");
+        val ec = manager.createELHIExecutionContext(ExecutionContextType.ELHI_NUMERIC, false);
+        val dlReasoner = ec.dlReasoner;
+
+        val resultMap: MutableMap<Pair<OWLNamedIndividual, OWLObjectProperty>, NodeSet<OWLNamedIndividual> > = hashMapOf();
+
+        ec.forEachIndividual { individual ->
+            ec.getRoles().forEach { owlObjectProperty ->
+                val result = dlReasoner.getConnectedIndividuals(owlObjectProperty, individual);
+                val pair = Pair(individual, owlObjectProperty);
+                resultMap[pair] = result
+            }
+        }
+
+        //verify
+        //TODO: add assertions
     }
 }

@@ -1,5 +1,8 @@
 package tin.model.v2.graph
 
+import tin.model.v2.ResultGraph.ResultNode
+import tin.model.v2.genericGraph.PairNode
+
 open class Node(
         var identifier: String,
         var isInitialState : Boolean = false,
@@ -29,5 +32,13 @@ open class Node(
 
     override fun toString(): String {
         return this.identifier;
+    }
+
+    open fun asPairNode(): PairNode? {
+        return null;
+    }
+
+    open fun asResultNode(): ResultNode? {
+        return null;
     }
 }
