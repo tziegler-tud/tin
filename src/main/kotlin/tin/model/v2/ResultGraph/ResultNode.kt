@@ -7,10 +7,13 @@ import tin.model.v2.graph.Node
 class ResultNode(
     private val queryNode: Node,
     private val transducerNode: Node,
-    private val individual: OWLNamedIndividual
-) : Node(queryNode.identifier+transducerNode.identifier+individual.toString(), false, false)
+    private val individual: OWLNamedIndividual,
+    isInitialState: Boolean,
+    isFinalState: Boolean,
+) : Node(queryNode.identifier+transducerNode.identifier+individual.toString(), isInitialState, isFinalState)
 
 {
+    constructor(queryNode: Node, transducerNode: Node, individual: OWLNamedIndividual) : this(queryNode, transducerNode, individual, false, false)
     /**
      * plain QueryNode.equals() and QueryEdge.equals() methods will cause a circular dependency and stack overflows.
      * It is more important to check here if edges set is equal since we have to trim the equals() method in the Edge class.

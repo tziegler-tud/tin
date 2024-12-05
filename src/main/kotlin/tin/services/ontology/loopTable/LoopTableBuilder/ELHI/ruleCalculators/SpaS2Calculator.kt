@@ -93,8 +93,9 @@ class SpaS2Calculator(
                             /**
                              * debug line
                              */
-                            var tcCounter = 0;
-                            var lastPercentVal = 0;
+                            var tcCounter = 0UL;
+                            var lastPercentVal = 0UL;
+                            val total = ec.tailsetSize
 
                             ec.forEachTailsetDescending tailsets@{ tailset ->
 
@@ -102,7 +103,7 @@ class SpaS2Calculator(
                                  * debug line
                                  */
                                 tcCounter++;
-                                val percent = ((tcCounter).toULong() / (ec.tailsetSize/100UL) ).toInt()
+                                val percent = (tcCounter /  ec.tailsetSize) * 100UL
 //                                println("Calculating tailsets: $tcCounter / ${ec.tailsetSize}");
 
                                 if(percent != lastPercentVal) {
