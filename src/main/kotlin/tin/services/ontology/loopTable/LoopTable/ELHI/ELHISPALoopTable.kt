@@ -10,6 +10,15 @@ class ELHISPALoopTable(
 
     constructor(): this(HashMap());
 
+    override fun get(entry: ELHISPALoopTableEntry): Int? {
+        //[p,p,M] = 0
+        if(entry.hasEqualSourceAndTarget()){
+            return 0;
+        }
+        // return null for +inf weights
+        return map[entry];
+    }
+
     override fun equals(other: Any?) : Boolean {
         if(other !is ELHISPALoopTable) return false;
         return map == other.map;

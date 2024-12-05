@@ -14,13 +14,13 @@ class TransducerEdgeSet : EdgeSet<TransducerEdge>() {
     }
 
     override fun filterForSource(source: Node): List<TransducerEdge> {
-        return filter{it.source === source};
+        return filter{it.source == source};
     }
     override fun filterForTarget(target: Node): List<TransducerEdge> {
-        return filter{it.target === target};
+        return filter{it.target == target};
     }
     override fun filterForSourceAndTarget(source: Node, target: Node): List<TransducerEdge> {
-        return filter{it.source === source && it.target === target};
+        return filter{it.source == source && it.target === target};
     }
     override fun filterForLabel(label: EdgeLabel): List<TransducerEdge> {
         return filter{it.label == label};

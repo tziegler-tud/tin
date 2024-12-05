@@ -1,0 +1,12 @@
+// most simple, answer preserving transducer for test case 1
+nodes
+t0, true, false
+t1, false, true
+edges
+t0, t0, serves, serves, 0
+t0, t0, inverse(serves), inverse(serves), 0
+t0, t0, contains, contains, 0
+t0, t1, Vegan?, Vegan?, 4
+t0, t1, contains, contains, 1
+t1, t1, inverse(contains), inverse(contains), 20
+t1, t1, serves, inverse(contains), 33

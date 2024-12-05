@@ -368,7 +368,7 @@ class DLReasonerTest {
 
     @Test
     fun testGetConnectedIndividuals() {
-        val manager = loadExampleOntology("pizza2.rdf");
+        val manager = loadExampleOntology("pizza_4.rdf");
         val ec = manager.createELHIExecutionContext(ExecutionContextType.ELHI_NUMERIC, false);
         val dlReasoner = ec.dlReasoner;
 
@@ -382,7 +382,32 @@ class DLReasonerTest {
             }
         }
 
+        val beer = ec.parser.getNamedIndividual("beer")!!;
+        val bruschetta = ec.parser.getNamedIndividual("bruschetta")!!;
+        val carbonara = ec.parser.getNamedIndividual("carbonara")!!;
+        val place1 = ec.parser.getNamedIndividual("place1")!!;
+        val place2 = ec.parser.getNamedIndividual("place2")!!;
+        val r = ec.parser.getNamedIndividual("r")!!;
+        val veganPlace = ec.parser.getNamedIndividual("VeganPlace")!!
+        val serves = ec.parser.getOWLObjectProperty("serves")!!
+        val serves_drink = ec.parser.getOWLObjectProperty("serves_drink")!!
+        val serves_meal = ec.parser.getOWLObjectProperty("serves_meal")!!
+
         //verify
-        //TODO: add assertions
+        assert(resultMap[Pair(place1, serves_drink)]!!.containsEntity(beer))
+        assert(resultMap[Pair(place1, serves_drink)]!!.isSingleton)
+
+        assert(resultMap[Pair(place1, serves_meal)]!!.containsEntity(carbonara) )
+        assert(resultMap[Pair(place1, serves_meal)]!!.isSingleton)
+
+        assert(resultMap[Pair(place1, serves)]!!.containsEntity(beer) )
+        assert(resultMap[Pair(place1, serves)]!!.containsEntity(carbonara) )
+
+        assert(resultMap[Pair(r, serves)]!!.containsEntity(bruschetta) )
+        assert(resultMap[Pair(r, serves)]!!.containsEntity(carbonara) )
+
+        assert(resultMap[Pair(veganPlace, serves)]!!.containsEntity(bruschetta) )
+
+
     }
 }

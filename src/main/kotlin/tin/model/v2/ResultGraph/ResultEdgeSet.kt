@@ -15,16 +15,16 @@ class ResultEdgeSet : EdgeSet<ResultEdge>() {
     }
 
     override fun filterForSource(source: Node): List<ResultEdge> {
-        return filter{it.source === source};
+        return filter{it.source == source};
     }
     override fun filterForTarget(target: Node): List<ResultEdge> {
-        return filter{it.target === target};
+        return filter{it.target == target};
     }
     override fun filterForSourceAndTarget(source: Node, target: Node): List<ResultEdge> {
-        return filter{it.source === source && it.target === target};
+        return filter{it.source == source && it.target === target};
     }
     override fun filterForLabel(label: EdgeLabel): List<ResultEdge> {
-        return filter{it.label === label};
+        return filter{it.label == label};
     }
     override fun containsEdge(edge: ResultEdge): Boolean {
         for (resultEdge in this) {

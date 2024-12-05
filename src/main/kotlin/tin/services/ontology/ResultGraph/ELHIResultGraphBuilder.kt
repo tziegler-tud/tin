@@ -10,22 +10,51 @@ import tin.model.v2.query.QueryGraph
 import tin.model.v2.transducer.TransducerEdge
 import tin.model.v2.transducer.TransducerGraph
 import tin.services.ontology.OntologyExecutionContext.ELHI.ELHIExecutionContext
+import tin.services.ontology.loopTable.LoopTable.ELHI.ELHISPLoopTable
+import tin.services.ontology.loopTable.loopTableEntry.IndividualLoopTableEntry
 
 class ELHIResultGraphBuilder(
     private val ec: ELHIExecutionContext,
     private val queryGraph: QueryGraph,
     private val transducerGraph: TransducerGraph,
 
-    ) : ResultGraphBuilder {
+    ) {
+
+    fun constructResultGraph(spTable: ELHISPLoopTable) : ResultGraph {
+        val resultGraph = constructRestrictedGraph();
+        queryGraph.nodes.forEach { queryNode ->
+            transducerGraph.nodes.forEach { transducerNode ->
+                queryGraph.nodes.forEach { targetQueryNode ->
+                    transducerGraph.nodes.forEach transducerTarget@{ targetTransducerNode ->
+                        ec.forEachIndividual { individual ->
+                            //get sp value
+                            val restriction = ec.spRestrictionBuilder.createNamedIndividualRestriction(individual);
+                            val entry = IndividualLoopTableEntry(
+                                Pair(queryNode, transducerNode),
+                                Pair(targetQueryNode, targetTransducerNode),
+                                restriction
+                            );
+                            val cost = spTable.get(entry);
+                            if (cost != null) {
+                                val sourceNode = ResultNode(queryNode, transducerNode, individual);
+                                val targetNode = ResultNode(targetQueryNode, targetTransducerNode, individual);
+                                val edge = ResultEdge(sourceNode, targetNode, cost)
+                                resultGraph.addEdge(edge);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return resultGraph
+    }
 
     /**
      * construct product graph restricted to nodes (s,t, a) a € Ind(A)
      *
      */
-    override fun constructRestrictedGraph() {
+    fun constructRestrictedGraph(): ResultGraph {
         val graph = ResultGraph();
-
-
         //construct nodes
         queryGraph.nodes.forEach { queryNode ->
             transducerGraph.nodes.forEach { transducerNode ->
@@ -95,6 +124,7 @@ class ELHIResultGraphBuilder(
                 }
             }
         }
+        return graph;
     }
 
     private fun getCandidateEdges(querySource: Node, queryTarget: Node, transducerSource: Node, transducerTarget: Node, requireConceptAssertion: Boolean): Pair<List<QueryEdge>, List<TransducerEdge>>? {

@@ -15,16 +15,16 @@ class QueryEdgeSet : EdgeSet<QueryEdge>() {
     }
 
     override fun filterForSource(source: Node): List<QueryEdge> {
-        return filter{it.source === source};
+        return filter{it.source == source};
     }
     override fun filterForTarget(target: Node): List<QueryEdge> {
-        return filter{it.target === target};
+        return filter{it.target == target};
     }
     override fun filterForSourceAndTarget(source: Node, target: Node): List<QueryEdge> {
-        return filter{it.source === source && it.target === target};
+        return filter{it.source == source && it.target === target};
     }
     override fun filterForLabel(label: EdgeLabel): List<QueryEdge> {
-        return filter{it.label === label};
+        return filter{it.label == label};
     }
     override fun containsEdge(edge: QueryEdge): Boolean {
         for (queryEdge in this) {
