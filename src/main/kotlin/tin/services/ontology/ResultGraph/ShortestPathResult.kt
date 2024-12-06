@@ -4,7 +4,7 @@ import org.semanticweb.owlapi.model.OWLNamedIndividual
 import tin.model.v2.ResultGraph.ResultNode
 
 class ShortestPathResult(
-    source: ResultNode,
-    target: ResultNode,
-    cost: Int,
+    private val source: ResultNode,
+    private val target: ResultNode,
+    private val cost: Int?,
 )
