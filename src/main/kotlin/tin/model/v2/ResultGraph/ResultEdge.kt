@@ -8,12 +8,12 @@ import tin.model.v2.query.QueryEdge
 import tin.model.v2.transducer.TransducerEdge
 
 class ResultEdge (
-    override val source: Node,
-    override val target: Node,
+    override val source: ResultNode,
+    override val target: ResultNode,
     override val label: ResultEdgeLabel
 ) : AbstractEdge(source, target, label) {
 
-    constructor(source: Node, target: Node, cost: Int) : this(source, target, ResultEdgeLabel(cost))
+    constructor(source: ResultNode, target: ResultNode, cost: Int) : this(source, target, ResultEdgeLabel(cost))
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

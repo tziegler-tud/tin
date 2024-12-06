@@ -13,6 +13,7 @@ import tin.services.internal.fileReaders.fileReaderResult.FileReaderResult
 import tin.services.ontology.OntologyExecutionContext.ExecutionContextType
 import tin.services.ontology.OntologyManager
 import tin.services.ontology.ResultGraph.ELHIResultGraphBuilder
+import tin.services.ontology.ResultGraph.ResultGraphSolver
 import tin.services.ontology.loopTable.LoopTableBuilder.ELHI.ELHISPALoopTableBuilder
 import tin.services.ontology.loopTable.LoopTableBuilder.ELHI.ELHISPLoopTableBuilder
 import tin.services.technical.SystemConfigurationService
@@ -96,6 +97,10 @@ class QueryAnsweringTest {
         println("ResultGraph computation time: " + resultGraphTime)
 
         val stats = builder.getExecutionContext().dlReasoner.getStats();
+
+        val solver = ResultGraphSolver(resultGraph);
+        val resultList = solver.getAllShortestPaths()
+        val resultMap = solver.getShortestPathMap();
 
     }
 }

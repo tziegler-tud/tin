@@ -4,7 +4,7 @@ import tin.model.v1.alphabet.Alphabet
 import tin.model.v2.graph.*
 
 class ResultGraph : AbstractGraph() {
-    override var nodes: NodeSet = NodeSet()
+    override var nodes: ResultNodeSet = ResultNodeSet()
     override var edges = ResultEdgeSet()
     override var alphabet: Alphabet = Alphabet();
 
@@ -22,10 +22,10 @@ class ResultGraph : AbstractGraph() {
         return edges.add(edge.asResultEdge()!!);
     }
 
-    fun addEdge(source: Node, target: Node, label: ResultEdgeLabel) : Boolean {
+    fun addEdge(source: ResultNode, target: ResultNode, label: ResultEdgeLabel) : Boolean {
         return addEdge(ResultEdge(source, target, label));
     }
-    fun addEdge(source: Node, target: Node, cost: Int) : Boolean {
+    fun addEdge(source: ResultNode, target: ResultNode, cost: Int) : Boolean {
         return addEdge(ResultEdge(source, target, cost));
     }
 
@@ -55,5 +55,9 @@ class ResultGraph : AbstractGraph() {
         if (other !is ResultGraph) return false
 
         return super.equals(other);
+    }
+
+    override fun hashCode(): Int {
+        return super.hashCode()
     }
 }
