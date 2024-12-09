@@ -41,6 +41,10 @@ interface Graph {
 
     fun getEdgesWithLabel(label: EdgeLabel): List<Edge>;
 
+    fun getInitialNodes() : List<Node>
+
+    fun getFinalNodes(): List<Node>
+
     override fun equals(other: Any?): Boolean;
 
     override fun hashCode(): Int;

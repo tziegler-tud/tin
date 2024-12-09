@@ -1,5 +1,6 @@
 package tin.model.v2.ResultGraph
 
+import org.semanticweb.owlapi.model.OWLNamedIndividual
 import tin.model.v1.alphabet.Alphabet
 import tin.model.v2.graph.*
 
@@ -27,6 +28,24 @@ class ResultGraph : AbstractGraph() {
     }
     fun addEdge(source: ResultNode, target: ResultNode, cost: Int) : Boolean {
         return addEdge(ResultEdge(source, target, cost));
+    }
+
+    fun getNodesWithIndividual(individual: OWLNamedIndividual) : List<Node> {
+        return this.nodes.filter { it.asResultNode()!!.getIndividual() == individual };
+    }
+
+    fun getInitialNodes(individual: OWLNamedIndividual) : List<Node> {
+        return this.nodes.filter {
+            it.asResultNode()!!.getIndividual() == individual
+                    && it.isInitialState;
+        };
+    }
+
+    fun getFinalNodes(individual: OWLNamedIndividual) : List<Node> {
+        return this.nodes.filter {
+            it.asResultNode()!!.getIndividual() == individual
+                    && it.isFinalState;
+        };
     }
 
     override fun containsEdge(edge: Edge) : Boolean {

@@ -10,10 +10,32 @@ import tin.model.v2.graph.Node
 class ResultGraphSolver(private val resultGraph: ResultGraph) {
     private var distanceMap: HashMap<Pair<ResultNode, ResultNode>, Int> = floydWarshall(resultGraph);
 
-    fun getShortestPath(sourceNode: ResultNode, targetNode: ResultNode) : ShortestPathResult
+
+    fun getShortestPath(source: OWLNamedIndividual, target: OWLNamedIndividual) : ShortestPathResult
     {
-        val result = distanceMap[Pair(sourceNode, targetNode)]
-        return ShortestPathResult(sourceNode, targetNode, result)
+        //get all initial nodes containing source
+        val sourceNodes = resultGraph.getInitialNodes(source);
+        val targetNodes = resultGraph.getFinalNodes(target);
+
+        val resultSet:  MutableSet<ShortestPathResult> = mutableSetOf();
+
+        sourceNodes.forEach { sourceNode ->
+            targetNodes.forEach { targetNode ->
+                //get distance
+                val distance = distanceMap[Pair(sourceNode.asResultNode()!!, targetNode.asResultNode()!!)];
+                if(distance != null) {
+                    val minCandidate = ShortestPathResult(sourceNode.asResultNode()!!, targetNode.asResultNode()!!, distance);
+                    resultSet.add(minCandidate);
+                }
+            }
+        }
+        resultSet.sortedBy { it.cost }
+        return resultSet.first();
+    }
+
+    fun getDistance(sourceNode: ResultNode, targetNode: ResultNode) : Int?
+    {
+        return distanceMap[Pair(sourceNode, targetNode)]
     }
 
     fun getAllShortestPaths() : List<ShortestPathResult> {
@@ -22,7 +44,7 @@ class ResultGraphSolver(private val resultGraph: ResultGraph) {
             val source: ResultNode = k.first;
             val target: ResultNode = k.second;
             val cost: Int = v;
-            resultList.add(ShortestPathResult(source, target, cost));
+            if(source.isInitialState && target.isFinalState)  resultList.add(ShortestPathResult(source, target, cost));
         }
         return resultList
     }

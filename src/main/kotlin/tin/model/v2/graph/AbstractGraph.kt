@@ -62,6 +62,14 @@ abstract class AbstractGraph : Graph {
         return edges.filterForLabel(label);
     }
 
+    override fun getInitialNodes() : List<Node> {
+        return this.nodes.filter { it.isInitialState };
+    }
+
+    override fun getFinalNodes(): List<Node> {
+        return this.nodes.filter { it.isFinalState };
+    }
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other !is Graph) return false
