@@ -4,9 +4,9 @@ import tin.model.v2.ResultGraph.ResultNode
 import tin.model.v2.genericGraph.PairNode
 
 open class Node(
-        var identifier: String,
-        var isInitialState : Boolean = false,
-        var isFinalState : Boolean = false,
+    var identifier: String,
+    open var isInitialState : Boolean = false,
+    open var isFinalState : Boolean = false,
     )
 {
     /**

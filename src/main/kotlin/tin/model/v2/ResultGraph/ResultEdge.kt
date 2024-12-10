@@ -42,8 +42,8 @@ class ResultEdge (
 
 
     override fun hashCode(): Int {
-        var result = source.identifier.hashCode()
-        result = 31 * result + target.identifier.hashCode()
+        var result = source.hashCode()
+        result = 31 * result + target.hashCode()
         result = 31 * result + label.hashCode()
         return result
     }

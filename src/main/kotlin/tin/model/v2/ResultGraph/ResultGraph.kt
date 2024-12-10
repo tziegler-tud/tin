@@ -13,14 +13,10 @@ class ResultGraph : AbstractGraph() {
         /**
          * add nodes if not present
          */
-        if (nodes.contains(edge.source)) {
-            nodes.add(edge.source)
+        if (nodes.containsWithoutState(edge.source.asResultNode()!!) && nodes.containsWithoutState(edge.target.asResultNode()!!) ) {
+            return edges.add(edge.asResultEdge()!!);
         }
-
-        if (nodes.contains(edge.target)) {
-            nodes.add(edge.target)
-        }
-        return edges.add(edge.asResultEdge()!!);
+        throw Error("Unable to add Edge: source or target node are not present in the graph.")
     }
 
     fun addEdge(source: ResultNode, target: ResultNode, label: ResultEdgeLabel) : Boolean {

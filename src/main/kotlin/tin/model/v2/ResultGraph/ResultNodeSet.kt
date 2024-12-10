@@ -14,6 +14,10 @@ class ResultNodeSet : NodeSet()
         return find{it == element} != null;
     }
 
+    fun containsWithoutState(element: ResultNode): Boolean {
+        return find{element.equalsWithoutState(it)} != null;
+    }
+
     override fun add(element: Node) : Boolean {
         val resultNodeElement = element.asResultNode() ?: return false
         if(!contains(resultNodeElement)){
