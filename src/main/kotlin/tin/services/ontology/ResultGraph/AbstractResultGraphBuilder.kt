@@ -30,20 +30,15 @@ open class AbstractResultGraphBuilder(
         //construct nodes
         queryGraph.nodes.forEach { queryNode ->
             transducerGraph.nodes.forEach { transducerNode ->
-                val isInitialState = queryNode.isInitialState && transducerNode.isInitialState;
-                val isFinalState = queryNode.isFinalState && transducerNode.isFinalState;
+
                 ec.forEachIndividual { individual ->
-                    val node = ResultNode(queryNode, transducerNode, individual, isInitialState, isFinalState);
+                    val node = ResultNode(queryNode, transducerNode, individual);
                     graph.addNode(node)
 
                     queryGraph.nodes.forEach { targetQueryNode ->
                         transducerGraph.nodes.forEach transducerTarget@ { targetTransducerNode ->
 
-                            val targetIsInitialState = targetQueryNode.isInitialState && targetTransducerNode.isInitialState;
-                            val targetIsFinalState = targetQueryNode.isFinalState && targetTransducerNode.isFinalState;
-
-
-                            var targetNodeSelf = ResultNode(targetQueryNode, targetTransducerNode, individual, targetIsInitialState, targetIsFinalState);
+                            var targetNodeSelf = ResultNode(targetQueryNode, targetTransducerNode, individual);
                             graph.addNode(targetNodeSelf)
 
                             //find edges where ind = ind and v = A?
