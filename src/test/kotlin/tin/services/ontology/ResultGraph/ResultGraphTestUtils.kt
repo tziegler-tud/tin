@@ -5,12 +5,13 @@ import tin.model.v2.ResultGraph.ResultNode
 import tin.model.v2.query.QueryGraph
 import tin.model.v2.transducer.TransducerGraph
 import tin.services.ontology.OntologyExecutionContext.ELHI.ELHIExecutionContext
+import tin.services.ontology.OntologyExecutionContext.ExecutionContext
 import tin.services.ontology.loopTable.LoopTable.ELHI.ELHISPLoopTable
 import tin.services.ontology.loopTable.loopTableEntry.IndividualLoopTableEntry
 
 class ResultGraphTestUtils {
 
-    fun buildComparisonGraphRestricted(ec: ELHIExecutionContext, queryGraph: QueryGraph, transducerGraph: TransducerGraph) : ResultGraph {
+    fun buildComparisonGraphRestricted(ec: ExecutionContext, queryGraph: QueryGraph, transducerGraph: TransducerGraph) : ResultGraph {
         //build comparison graph
         val comparisonGraph = ResultGraph()
 
@@ -37,15 +38,13 @@ class ResultGraphTestUtils {
             transducerGraph.nodes.forEach { transducerNode ->
                 var isInitialState = false;
                 var isFinalState = false;
-                if(queryNode == s0 && transducerNode == t0) isInitialState = true;
-                if(queryNode == s2 && transducerNode == t1) isFinalState = true;
-                comparisonGraph.addNode(ResultNode(queryNode,transducerNode,beer, isInitialState, isFinalState))
-                comparisonGraph.addNode(ResultNode(queryNode,transducerNode,bruschetta, isInitialState, isFinalState))
-                comparisonGraph.addNode(ResultNode(queryNode,transducerNode,carbonara, isInitialState, isFinalState))
-                comparisonGraph.addNode(ResultNode(queryNode,transducerNode,place1, isInitialState, isFinalState))
-                comparisonGraph.addNode(ResultNode(queryNode,transducerNode,place2, isInitialState, isFinalState))
-                comparisonGraph.addNode(ResultNode(queryNode,transducerNode,r, isInitialState, isFinalState))
-                comparisonGraph.addNode(ResultNode(queryNode,transducerNode,veganPlace,isInitialState, isFinalState))
+                comparisonGraph.addNode(ResultNode(queryNode,transducerNode,beer))
+                comparisonGraph.addNode(ResultNode(queryNode,transducerNode,bruschetta))
+                comparisonGraph.addNode(ResultNode(queryNode,transducerNode,carbonara))
+                comparisonGraph.addNode(ResultNode(queryNode,transducerNode,place1))
+                comparisonGraph.addNode(ResultNode(queryNode,transducerNode,place2))
+                comparisonGraph.addNode(ResultNode(queryNode,transducerNode,r))
+                comparisonGraph.addNode(ResultNode(queryNode,transducerNode,veganPlace))
             }
         }
 
@@ -75,7 +74,36 @@ class ResultGraphTestUtils {
         return comparisonGraph;
     }
 
-    fun generateTestTable(ec: ELHIExecutionContext, queryGraph: QueryGraph, transducerGraph: TransducerGraph) : ELHISPLoopTable {
+    fun buildComparisonGraph(ec: ExecutionContext, queryGraph: QueryGraph, transducerGraph: TransducerGraph) : ResultGraph {
+        val comparisonGraph = buildComparisonGraphRestricted(ec, queryGraph, transducerGraph);
+
+        val s0 = queryGraph.getNode("s0")!!
+        val s1 = queryGraph.getNode("s1")!!
+        val s2 = queryGraph.getNode("s2")!!
+
+        val t0 = transducerGraph.getNode("t0")!!
+        val t1 = transducerGraph.getNode("t1")!!
+
+        val beer = ec.parser.getNamedIndividual("beer")!!;
+        val bruschetta = ec.parser.getNamedIndividual("bruschetta")!!;
+        val carbonara = ec.parser.getNamedIndividual("carbonara")!!;
+        val place1 = ec.parser.getNamedIndividual("place1")!!;
+        val place2 = ec.parser.getNamedIndividual("place2")!!;
+        val r = ec.parser.getNamedIndividual("r")!!;
+        val veganPlace = ec.parser.getNamedIndividual("VeganPlace")!!
+        val serves = ec.parser.getOWLObjectProperty("serves")!!
+        val serves_drink = ec.parser.getOWLObjectProperty("serves_drink")!!
+        val serves_meal = ec.parser.getOWLObjectProperty("serves_meal")!!
+
+        comparisonGraph.addEdge(ResultNode(s0,t0,beer), ResultNode(s1,t0,beer), 4)
+        comparisonGraph.addEdge(ResultNode(s0,t1,beer), ResultNode(s1,t1,beer), 7)
+        comparisonGraph.addEdge(ResultNode(s0,t0,veganPlace), ResultNode(s1,t0,veganPlace), 13)
+
+        return comparisonGraph;
+
+    }
+
+    fun generateTestTableELHI(ec: ELHIExecutionContext, queryGraph: QueryGraph, transducerGraph: TransducerGraph) : ELHISPLoopTable {
         val spTable = ELHISPLoopTable();
 
         val s0 = queryGraph.getNode("s0")!!

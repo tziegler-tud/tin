@@ -119,7 +119,7 @@ class ELHIResultGraphBuilderTest {
         val serves_meal = ec.parser.getOWLObjectProperty("serves_meal")!!
 
 
-        val testTable = resultGraphTestUtils.generateTestTable(ec, query.graph, transducer.graph);
+        val testTable = resultGraphTestUtils.generateTestTableELHI(ec, query.graph, transducer.graph);
         val resultGraphBuilder = ELHIResultGraphBuilder(ec, query.graph, transducer.graph)
         val restrictedGraph = resultGraphBuilder.constructRestrictedGraph();
         val resultGraph = resultGraphBuilder.constructResultGraph(testTable);

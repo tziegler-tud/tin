@@ -187,17 +187,14 @@ class ELResultGraphBuilderTest {
 
         queryGraph.nodes.forEach { queryNode ->
             transducerGraph.nodes.forEach { transducerNode ->
-                var isInitialState = false;
-                var isFinalState = false;
-                if(queryNode == s0 && transducerNode == t0) isInitialState = true;
-                if(queryNode == s2 && transducerNode == t1) isFinalState = true;
-                comparisonGraph.addNode(ResultNode(queryNode,transducerNode,beer, isInitialState, isFinalState))
-                comparisonGraph.addNode(ResultNode(queryNode,transducerNode,bruschetta, isInitialState, isFinalState))
-                comparisonGraph.addNode(ResultNode(queryNode,transducerNode,carbonara, isInitialState, isFinalState))
-                comparisonGraph.addNode(ResultNode(queryNode,transducerNode,place1, isInitialState, isFinalState))
-                comparisonGraph.addNode(ResultNode(queryNode,transducerNode,place2, isInitialState, isFinalState))
-                comparisonGraph.addNode(ResultNode(queryNode,transducerNode,r, isInitialState, isFinalState))
-                comparisonGraph.addNode(ResultNode(queryNode,transducerNode,veganPlace,isInitialState, isFinalState))
+
+                comparisonGraph.addNode(ResultNode(queryNode,transducerNode,beer, ))
+                comparisonGraph.addNode(ResultNode(queryNode,transducerNode,bruschetta))
+                comparisonGraph.addNode(ResultNode(queryNode,transducerNode,carbonara))
+                comparisonGraph.addNode(ResultNode(queryNode,transducerNode,place1))
+                comparisonGraph.addNode(ResultNode(queryNode,transducerNode,place2))
+                comparisonGraph.addNode(ResultNode(queryNode,transducerNode,r))
+                comparisonGraph.addNode(ResultNode(queryNode,transducerNode,veganPlace))
             }
         }
 
