@@ -1,0 +1,20 @@
+package tin.services.ontology.ResultGraph
+
+import tin.model.v2.ResultGraph.ResultNode
+import tin.model.v2.ResultGraph.ResultNodeSet
+
+class DijkstraQueue: HashSet<ResultNode>() {
+    fun addNodeset(nodeset: ResultNodeSet) {
+        nodeset.forEach { node ->
+            this.add(node.asResultNode()!!)
+        }
+    }
+
+    fun addNode(node: ResultNode) {
+        this.add(node)
+    }
+
+    fun removeNode(node: ResultNode) {
+        this.remove(node)
+    }
+}

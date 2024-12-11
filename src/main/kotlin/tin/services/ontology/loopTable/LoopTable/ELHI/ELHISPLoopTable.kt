@@ -1,6 +1,7 @@
 package tin.services.ontology.loopTable.LoopTable.ELHI
 import tin.services.ontology.loopTable.LoopTable.IndividualLoopTable
 import tin.services.ontology.loopTable.LoopTable.LoopTable
+import tin.services.ontology.loopTable.loopTableEntry.ELHI.ELHISPALoopTableEntry
 import tin.services.ontology.loopTable.loopTableEntry.IndividualLoopTableEntry
 
 class ELHISPLoopTable(
@@ -9,6 +10,10 @@ class ELHISPLoopTable(
     : IndividualLoopTable(map) {
 
     constructor(): this(HashMap());
+
+    override fun get(entry: IndividualLoopTableEntry): Int? {
+        return map[entry];
+    }
 
     override fun equals(other: Any?) : Boolean {
         if(other !is ELHISPLoopTable) return false;

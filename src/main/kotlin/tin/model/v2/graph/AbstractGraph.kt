@@ -62,26 +62,41 @@ abstract class AbstractGraph : Graph {
         return edges.filterForLabel(label);
     }
 
+    override fun getInitialNodes() : List<Node> {
+        return this.nodes.filter { it.isInitialState };
+    }
+
+    override fun getFinalNodes(): List<Node> {
+        return this.nodes.filter { it.isFinalState };
+    }
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other !is Graph) return false
 
-        if (nodes.count() != other.nodes.count()) return false
-        if (edges.count() != other.edges.count()) return false
+        return hasEqualNodes(other) && hasEqualEdges(other) && (alphabet == other.alphabet)
 
+    }
+
+    fun hasEqualNodes(other: Graph) : Boolean {
+        if (nodes.count() != other.nodes.count()) return false
         nodes.forEach {
             val node = other.getNode(it.identifier);
             if (node !== null) {
                 if (it != node) return false;
             } else return false;
         }
+        return true;
+    }
+
+    fun hasEqualEdges(other: Graph) : Boolean {
+        if (edges.count() != other.edges.count()) return false
         edges.forEach {
             if (!other.containsEdge(it)) {
                 return false;
             }
         }
-        return alphabet == other.alphabet;
-
+        return true;
     }
 
     override fun hashCode(): Int {

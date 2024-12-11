@@ -64,4 +64,9 @@ abstract class AbstractReasoner(
         val axiom = OWLClassAssertionAxiomImpl(owlIndividual, expr.getClassExpression(), HashSet<OWLAnnotation>())
         return reasoner.isEntailed(axiom)
     }
+
+    override fun getConnectedIndividuals(property: OWLObjectPropertyExpression, individual: OWLNamedIndividual): NodeSet<OWLNamedIndividual> {
+        return reasoner.getObjectPropertyValues(individual, property);
+    }
+
 }

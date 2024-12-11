@@ -1,0 +1,7 @@
+// most simple, answer preserving transducer for test case 1
+nodes
+t0, true, true
+edges
+t0, t0, takesCourse, takesCourse, 0
+t0, t0, GraduateStudent?, GraduateStudent?, 0
+t0, t0, Course?, Course?, 0

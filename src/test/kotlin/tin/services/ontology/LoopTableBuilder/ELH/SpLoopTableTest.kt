@@ -8,6 +8,7 @@ import tin.model.v2.query.QueryGraph
 import tin.model.v2.transducer.TransducerGraph
 import tin.services.internal.fileReaders.*
 import tin.services.internal.fileReaders.fileReaderResult.FileReaderResult
+import tin.services.internal.utils.DLTransducerFactory
 import tin.services.ontology.OntologyExecutionContext.ExecutionContextType
 import tin.services.ontology.Reasoner.SimpleDLReasoner
 import tin.services.ontology.OntologyManager
@@ -248,6 +249,72 @@ class SpLoopTableTest {
         assert(spTable.get(ELSPLoopTableEntry(Pair(s0,t0),Pair(s2,t2),carRes)) == 0)
 
         assert(spTable.map.size == 2)
+
+    }
+
+
+    @Test
+    fun runLUBMExample(){
+        val manager = loadOntologyWithFilename("LUBM/merged/merge_0_0.rdf");
+        val ec = manager.createELExecutionContext(ExecutionContextType.ELH, false);
+
+        val query = readQueryWithFileReaderService("LUBM/univbench-test1.txt")
+
+//        val transducer = readTransducerWithFileReaderService("LUBM/univbench-test1.txt")
+//        val transducerGraph = transducer.graph
+        val transducerGraph = DLTransducerFactory.generateClassicAnswersTransducer(ec);
+
+        val iterationLimit = 2000
+
+        val timeSource = TimeSource.Monotonic
+        val initialTime = timeSource.markNow()
+//        ec.prewarmSubsumptionCache()
+        val builder = ELSPALoopTableBuilder(query.graph, transducerGraph, manager, ec);
+        val spBuilder = ELSPLoopTableBuilder(query.graph, transducerGraph, manager, ec);
+
+        val startTime = timeSource.markNow()
+
+//        builder.calculateWithDepthLimit(iterationLimit);
+        println("Calculating spa table...")
+
+        val spaTable = builder.calculateFullTable();
+
+        val spaEndTime = timeSource.markNow()
+        println("Calculating sp table...")
+        val spTable = spBuilder.calculateFullTable(spaTable);
+        val spEndTime = timeSource.markNow()
+
+
+        val prewarmTime = startTime - initialTime;
+        val spaTime = spaEndTime - startTime;
+        val spTime = spEndTime - spaEndTime;
+        val totalTime = spEndTime - initialTime;
+
+
+        println("Total computation time: " + totalTime)
+        println("Cache prewarming: " + prewarmTime)
+        println("SPA computation time: " + spaTime)
+        println("SP computation time: " + spTime)
+
+        val stats = builder.getExecutionContext().dlReasoner.getStats();
+
+        println("Superclass Cache Size: " + stats["superClassCache"])
+        println("Superclass Cache Hits: " + stats["superClassCacheHitCounter"])
+
+        println("Equiv Node Cache Size: " + stats["equivalentClassCache"])
+        println("Equiv Node Cache Hits: " + stats["equivNodeCacheHitCounter"])
+
+        println("SubClasses Cache Size: " + stats["subClassCache"])
+        println("SubClasses Cache Hits: " + stats["subClassCacheHitCounter"])
+
+        println("Entailment Check Cache Size: " + stats["entailmentCache"])
+        println("Entailment Cache Hits: " + stats["entailmentCacheHitCounter"])
+        println("Entailment Cache Misses: " + stats["entailmentCacheMissCounter"])
+
+        println("Results:")
+        spTable.map.forEach { (key, value) ->
+            println(key.transformToString(ec.shortFormProvider) + ": " + value)
+        }
 
     }
 }

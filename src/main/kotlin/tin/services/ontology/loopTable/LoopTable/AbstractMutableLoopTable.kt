@@ -9,14 +9,6 @@ abstract class AbstractMutableLoopTable<T: AbstractLoopTableEntry, in R: LoopTab
     : MutableLoopTable<T> {
 
     constructor(): this(HashMap());
-    override fun get(entry: T): Int? {
-        //[p,p,M] = 0
-        if(entry.hasEqualSourceAndTarget()){
-            return 0;
-        }
-        // return null for +inf weights
-        return map[entry];
-    }
 
     override fun set(entry: T, value: Int) {
         if(entry.hasEqualSourceAndTarget()) return;

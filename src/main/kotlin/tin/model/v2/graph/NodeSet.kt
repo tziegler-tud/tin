@@ -1,9 +1,9 @@
 package tin.model.v2.graph
 
-open class NodeSet : HashSet<Node>()
+open class NodeSet : AbstractNodeSet<Node>()
 {
     override fun contains(element: Node): Boolean {
-        return find{it.identifier == element.identifier} != null;
+        return find{it == element} != null;
     }
 
     override fun containsAll(elements: Collection<Node>): Boolean {
@@ -11,10 +11,6 @@ open class NodeSet : HashSet<Node>()
             if(!contains(element)){ return false};
         }
         return true;
-    }
-
-    public fun get(identifier: String): Node?{
-        return find{it.identifier == identifier};
     }
 
     override fun add(element: Node) : Boolean {

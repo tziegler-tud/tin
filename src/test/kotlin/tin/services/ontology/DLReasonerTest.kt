@@ -1,6 +1,10 @@
 package tin.services.ontology
 
 import org.junit.jupiter.api.Test
+import org.semanticweb.owlapi.model.OWLNamedIndividual
+import org.semanticweb.owlapi.model.OWLObjectProperty
+import org.semanticweb.owlapi.model.OWLPropertyExpression
+import org.semanticweb.owlapi.reasoner.NodeSet
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.context.TestConfiguration
@@ -360,5 +364,50 @@ class DLReasonerTest {
                 assert(!isSubsumed);
             }
         }
+    }
+
+    @Test
+    fun testGetConnectedIndividuals() {
+        val manager = loadExampleOntology("pizza_4.rdf");
+        val ec = manager.createELHIExecutionContext(ExecutionContextType.ELHI_NUMERIC, false);
+        val dlReasoner = ec.dlReasoner;
+
+        val resultMap: MutableMap<Pair<OWLNamedIndividual, OWLObjectProperty>, NodeSet<OWLNamedIndividual> > = hashMapOf();
+
+        ec.forEachIndividual { individual ->
+            ec.getRoles().forEach { owlObjectProperty ->
+                val result = dlReasoner.getConnectedIndividuals(owlObjectProperty, individual);
+                val pair = Pair(individual, owlObjectProperty);
+                resultMap[pair] = result
+            }
+        }
+
+        val beer = ec.parser.getNamedIndividual("beer")!!;
+        val bruschetta = ec.parser.getNamedIndividual("bruschetta")!!;
+        val carbonara = ec.parser.getNamedIndividual("carbonara")!!;
+        val place1 = ec.parser.getNamedIndividual("place1")!!;
+        val place2 = ec.parser.getNamedIndividual("place2")!!;
+        val r = ec.parser.getNamedIndividual("r")!!;
+        val veganPlace = ec.parser.getNamedIndividual("VeganPlace")!!
+        val serves = ec.parser.getOWLObjectProperty("serves")!!
+        val serves_drink = ec.parser.getOWLObjectProperty("serves_drink")!!
+        val serves_meal = ec.parser.getOWLObjectProperty("serves_meal")!!
+
+        //verify
+        assert(resultMap[Pair(place1, serves_drink)]!!.containsEntity(beer))
+        assert(resultMap[Pair(place1, serves_drink)]!!.isSingleton)
+
+        assert(resultMap[Pair(place1, serves_meal)]!!.containsEntity(carbonara) )
+        assert(resultMap[Pair(place1, serves_meal)]!!.isSingleton)
+
+        assert(resultMap[Pair(place1, serves)]!!.containsEntity(beer) )
+        assert(resultMap[Pair(place1, serves)]!!.containsEntity(carbonara) )
+
+        assert(resultMap[Pair(r, serves)]!!.containsEntity(bruschetta) )
+        assert(resultMap[Pair(r, serves)]!!.containsEntity(carbonara) )
+
+        assert(resultMap[Pair(veganPlace, serves)]!!.containsEntity(bruschetta) )
+
+
     }
 }

@@ -27,6 +27,8 @@ interface DLReasoner {
 
     fun getClasses(individual: OWLNamedIndividual): NodeSet<OWLClass>
 
+    fun getConnectedIndividuals(property: OWLObjectPropertyExpression, individual: OWLNamedIndividual): NodeSet<OWLNamedIndividual>
+
     fun getTopClassNode(): Node<OWLClass>
 
     fun getBottomClassNode(): Node<OWLClass>
