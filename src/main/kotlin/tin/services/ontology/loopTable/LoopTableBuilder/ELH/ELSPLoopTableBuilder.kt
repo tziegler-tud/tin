@@ -15,12 +15,16 @@ class ELSPLoopTableBuilder (
     private val transducerGraph: TransducerGraph,
     private val ontologyManager: OntologyManager,
     private val ec: ELExecutionContext
-)
+) : ELLoopTableBuilder
 {
     private var table: ELSPLoopTable = ELSPLoopTable();
     private val pairsAvailable = mutableSetOf<Pair<Node, Node>>()
 
     private val calculator = SpCalculator(ec, queryGraph, transducerGraph)
+
+    //stat tracking
+    var statsTotalSize: Int = 0;
+    val statsMaxPossibleSize: Int = (queryGraph.nodes.size * transducerGraph.nodes.size * ec.individuals.size);
 
     private fun initializeTable(){
         //build all pairs for (s,t) € queryNodes x transducerNodes
@@ -35,6 +39,7 @@ class ELSPLoopTableBuilder (
     fun calculateFullTable(spaTable: ELSPALoopTable): ELSPLoopTable {
         //iterate until max iterations are reached
         table = calculator.calculateAll(spaTable)
+        statsTotalSize = table.getSize();
         return table;
     }
 

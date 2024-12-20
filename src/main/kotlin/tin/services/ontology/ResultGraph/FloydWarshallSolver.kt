@@ -1,11 +1,8 @@
 package tin.services.ontology.ResultGraph
 
 import org.semanticweb.owlapi.model.OWLNamedIndividual
-import tin.model.v1.queryResult.DLQueryResult.DLQueryResult
 import tin.model.v2.ResultGraph.ResultGraph
 import tin.model.v2.ResultGraph.ResultNode
-import tin.model.v2.genericGraph.GenericGraph
-import tin.model.v2.graph.Node
 
 class FloydWarshallSolver(private val resultGraph: ResultGraph) : ResultGraphSolver {
     private var distanceMap: HashMap<Pair<ResultNode, ResultNode>, Int> = floydWarshall(resultGraph);
@@ -50,6 +47,17 @@ class FloydWarshallSolver(private val resultGraph: ResultGraph) : ResultGraphSol
             val target: ResultNode = k.second;
             val cost: Int = v;
             if(source.isInitialState && target.isFinalState)  resultList.add(ShortestPathResult(source, target, cost));
+        }
+        return resultList
+    }
+
+    fun getAllShortestPathsWithMaxCost(maxCost: Int) : List<ShortestPathResult> {
+        val resultList: MutableList<ShortestPathResult> = mutableListOf();
+        distanceMap.forEach { (k, v) ->
+            val source: ResultNode = k.first;
+            val target: ResultNode = k.second;
+            val cost: Int = v;
+            if(source.isInitialState && target.isFinalState && cost<=maxCost)  resultList.add(ShortestPathResult(source, target, cost));
         }
         return resultList
     }

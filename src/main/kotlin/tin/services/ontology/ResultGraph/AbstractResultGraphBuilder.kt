@@ -21,6 +21,10 @@ open class AbstractResultGraphBuilder(
 
     ) {
 
+    var maxEdgeCost: Int = 0
+    var minEdgeCost: Int = 0
+    val unreachableNodesAmount: Int = 0;
+
     /**
      * construct product graph restricted to nodes (s,t, a) a € Ind(A)
      *

@@ -27,4 +27,8 @@ open class AbstractNodeSet<T: Node> : HashSet<T>()
         }
         return false;
     }
+
+    open fun asList() : List<T>{
+        return toList();
+    }
 }
