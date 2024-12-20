@@ -10,60 +10,79 @@ import org.springframework.ui.Model
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
 import org.springframework.web.servlet.mvc.support.RedirectAttributes
+import tin.model.v2.File.FileType
+import tin.model.v2.File.TinFile
 import tin.services.technical.SystemConfigurationService
+import java.io.File
 
 import java.io.IOException
 import java.nio.file.Path
 
 @Controller
-class FileUploadController @Autowired constructor(private val storageService: FileSystemStorageService, private val systemConfigurationService: SystemConfigurationService) {
+class FileUploadController @Autowired constructor(private val systemConfigurationService: SystemConfigurationService, private val fileService: FileService) {
 
     private val queryPath = Path.of(systemConfigurationService.getUploadQueryPath());
     private val transducerPath = Path.of(systemConfigurationService.getUploadTransducerPath());
     private val ontologyPath = Path.of(systemConfigurationService.getUploadOntologyPath());
 
-    @GetMapping("/files/upload/query/{filename:.+}")
+    @GetMapping("/files/get/{fileId:.+}")
     @ResponseBody
-    fun serveQueryFile(@PathVariable filename: String?): ResponseEntity<Resource> {
-        val file: Resource = storageService.loadQueryFile(filename)
+    fun serveFile(@PathVariable fileId: Long?): ResponseEntity<Resource> {
+        if(fileId == null) return ResponseEntity.notFound().build()
+        val file: TinFile = fileService.getFile(fileId) ?: return ResponseEntity.notFound().build();
+        val resource: Resource = fileService.loadAsResource(file)
             ?: return ResponseEntity.notFound().build()
 
         return ResponseEntity.ok().header(
             HttpHeaders.CONTENT_DISPOSITION,
             "attachment; filename=\"" + file.filename + "\""
-        ).body(file)
+        ).body(resource)
     }
 
-    @GetMapping("/files/upload/transducer/{filename:.+}")
-    @ResponseBody
-    fun serveTransducerFile(@PathVariable filename: String?): ResponseEntity<Resource> {
-        val file: Resource = storageService.loadTransducerFile(filename)
-            ?: return ResponseEntity.notFound().build()
-
-        return ResponseEntity.ok().header(
-            HttpHeaders.CONTENT_DISPOSITION,
-            "attachment; filename=\"" + file.filename + "\""
-        ).body(file)
-    }
-
-    @GetMapping("/files/upload/ontology/{filename:.+}")
-    @ResponseBody
-    fun serveOntologyFile(@PathVariable filename: String?): ResponseEntity<Resource> {
-        val file: Resource = storageService.loadOntologyFile(filename)
-            ?: return ResponseEntity.notFound().build()
-
-        return ResponseEntity.ok().header(
-            HttpHeaders.CONTENT_DISPOSITION,
-            "attachment; filename=\"" + file.filename + "\""
-        ).body(file)
-    }
+//    @GetMapping("/files/upload/query/{fileId:.+}")
+//    @ResponseBody
+//    fun serveQueryFile(@PathVariable fileId: Long?): ResponseEntity<Resource> {
+//        if(fileId == null) return ResponseEntity.notFound().build()
+//        val file: TinFile = fileService.getFile(fileId) ?: return ResponseEntity.notFound().build();
+//        val resource: Resource = fileService.loadAsResource(file)
+//            ?: return ResponseEntity.notFound().build()
+//
+//        return ResponseEntity.ok().header(
+//            HttpHeaders.CONTENT_DISPOSITION,
+//            "attachment; filename=\"" + file.filename + "\""
+//        ).body(resource)
+//    }
+//
+//    @GetMapping("/files/upload/transducer/{filename:.+}")
+//    @ResponseBody
+//    fun serveTransducerFile(@PathVariable filename: String?): ResponseEntity<Resource> {
+//        val file: Resource = storageService.loadTransducerFile(filename)
+//            ?: return ResponseEntity.notFound().build()
+//
+//        return ResponseEntity.ok().header(
+//            HttpHeaders.CONTENT_DISPOSITION,
+//            "attachment; filename=\"" + file.filename + "\""
+//        ).body(file)
+//    }
+//
+//    @GetMapping("/files/upload/ontology/{filename:.+}")
+//    @ResponseBody
+//    fun serveOntologyFile(@PathVariable filename: String?): ResponseEntity<Resource> {
+//        val file: Resource = storageService.loadOntologyFile(filename)
+//            ?: return ResponseEntity.notFound().build()
+//
+//        return ResponseEntity.ok().header(
+//            HttpHeaders.CONTENT_DISPOSITION,
+//            "attachment; filename=\"" + file.filename + "\""
+//        ).body(file)
+//    }
 
     @PostMapping("/files/upload/query")
     fun handleFileUploadQuery(
         @RequestParam("file") file: MultipartFile,
         redirectAttributes: RedirectAttributes
     ): String {
-        storageService.storeQueryFile(file)
+        fileService.addFile(file, FileType.RegularPathQuery)
         redirectAttributes.addFlashAttribute(
             "message",
             "You successfully uploaded " + file.originalFilename + "!"
@@ -77,7 +96,7 @@ class FileUploadController @Autowired constructor(private val storageService: Fi
         @RequestParam("file") file: MultipartFile,
         redirectAttributes: RedirectAttributes
     ): String {
-        storageService.storeTransducerFile(file)
+        fileService.addFile(file, FileType.Transducer)
         redirectAttributes.addFlashAttribute(
             "message",
             "You successfully uploaded " + file.originalFilename + "!"
@@ -91,7 +110,7 @@ class FileUploadController @Autowired constructor(private val storageService: Fi
         @RequestParam("file") file: MultipartFile,
         redirectAttributes: RedirectAttributes
     ): String {
-        storageService.storeOntologyFile(file)
+        fileService.addFile(file, FileType.Ontology)
         redirectAttributes.addFlashAttribute(
             "message",
             "You successfully uploaded " + file.originalFilename + "!"
