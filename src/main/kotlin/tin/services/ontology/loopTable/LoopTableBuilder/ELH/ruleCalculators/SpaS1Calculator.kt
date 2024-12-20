@@ -201,25 +201,14 @@ class SpaS1Calculator(
 
                                                 //calculate basic classes A that satisfy A <= €R.C
                                                 val atomicSubsumers = dlReasoner.calculateSubClasses(rM1Exp)
-                                                //if there are no atomic subsumers, exit and try next candidate
-                                                if (atomicSubsumers.isEmpty()) {
-                                                    return@candidates;
-                                                }
-
-                                                ec.forEachConcept tailsets@{  tailRestriction ->
-
-                                                    if(!tailRestriction.isContainedInSet(atomicSubsumers)) {
-                                                        return@tailsets;
-                                                    }
-
+                                                atomicSubsumers.forEach{  owlClass->
                                                     val entry = ELSPALoopTableEntry(
                                                         querySource,
                                                         transducerSource,
                                                         queryTarget,
                                                         transducerTarget,
-                                                        tailRestriction
+                                                        restrictionBuilder.createConceptNameRestriction(owlClass)
                                                     )
-
                                                     val result: Int = edgeCost + candidateCost
                                                     newTable.setIfLower(entry, result);
                                                 }
