@@ -63,14 +63,12 @@ class SpaS2Calculator(
                             return@transducerTarget
                         }
 
-                        val sortedTransducerEdges = candidateTransducerEdges.sortedBy { it.label.cost }
-
 
                         var edgecount = 0;
 
-                        sortedTransducerEdges.forEach edgeCheck@{ transducerEdge ->
+                        candidateTransducerEdges.forEach edgeCheck@{ transducerEdge ->
                             edgecount++;
-                            println("Calculating trans edge: ${edgecount}/${sortedTransducerEdges.size}");
+                            println("Calculating trans edge: ${edgecount}/${candidateTransducerEdges.size}");
 
 
                             val inLabel = transducerEdge.label.incoming;
