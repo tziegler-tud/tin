@@ -31,7 +31,8 @@ class SimpleDLReasoner(
         return isEntailed;
     }
 
-    override fun calculateSubClasses(expr: DLExpression, includeNothing: Boolean): HashSet<OWLClass> {
+    override fun calculateSubClasses(expr: DLExpression, includeNothing: Boolean, includeEquivalent: Boolean): HashSet<OWLClass> {
+        var resultSet = HashSet<OWLClass>()
         var classes = reasoner.getSubClasses(expr.getClassExpression(), false)
         //remove owl:Nothing
         if(!includeNothing && classes.isBottomSingleton) {
@@ -40,8 +41,12 @@ class SimpleDLReasoner(
         if(!includeNothing) {
             classes.removeAll { it.isBottomNode }
         }
-        val hashSet = classes.entities().toList().toHashSet()
-        return hashSet;
+        resultSet = classes.entities().toList().toHashSet()
+        if(includeEquivalent) {
+            val equiv = reasoner.getEquivalentClasses(expr.getClassExpression())
+            resultSet.addAll(equiv)
+        }
+        return resultSet;
     }
 
     override fun calculateSuperClasses(expr: DLExpression, includeEquivalent: Boolean): NodeSet<OWLClass> {

@@ -502,7 +502,7 @@ class SpaS1Calculator(
                                                             }
                                                         }
 
-                                                        //if all A € M and A in atomicSubsumers, so is M
+                                                        //if A € M and A in atomicSubsumers, so is M
                                                         var isSuperSet: Boolean = false;
                                                         isSuperSet = restriction.containsElementFromSet(atomicSubsumers)
 //                                                        val isComplexSuperSet = restriction.containsAllElementsFromOneOf(complexSubsumers);

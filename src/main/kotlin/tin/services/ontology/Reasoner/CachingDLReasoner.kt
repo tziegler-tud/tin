@@ -58,7 +58,7 @@ class CachingDLReasoner(
         return isEntailed;
     }
 
-    override fun calculateSubClasses(expr: DLExpression, includeNothing: Boolean): HashSet<OWLClass> {
+    override fun calculateSubClasses(expr: DLExpression, includeNothing: Boolean, includeEquivalent: Boolean): HashSet<OWLClass> {
         val cacheEntry = subClassCache[expr];
         if(cacheEntry != null){
             subClassCacheHitCounter++;
@@ -73,10 +73,13 @@ class CachingDLReasoner(
         if(!includeNothing) {
             classes.removeAll { it.isBottomNode }
         }
-
-        val hashSet = classes.entities().toList().toHashSet()
-        subClassCache[expr] = hashSet;
-        return hashSet;
+        val resultSet = classes.entities().toList().toHashSet()
+        if(includeEquivalent) {
+            val equiv = reasoner.getEquivalentClasses(expr.getClassExpression())
+            resultSet.addAll(equiv)
+        }
+        subClassCache[expr] = resultSet;
+        return resultSet;
     }
 
     override fun calculateSuperClasses(expr: DLExpression, includeEquivalent: Boolean): NodeSet<OWLClass> {

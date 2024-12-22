@@ -55,48 +55,26 @@ class SpaS2Calculator(
                                 return@transducerTarget
                             }
 
-                            val sortedTransducerEdges = candidateTransducerEdges.sortedBy { it.label.cost }
-                            //extract target class names from edges
+                            candidateTransducerEdges.forEach edgeCheck@ { transducerEdge ->
+                                val outLabel = transducerEdge.label.outgoing;
+                                val edgeCost = transducerEdge.label.cost;
+                                // try to match edge label to concept assertion. outgoing label must be a concept assertion
+                                //if no property could be obtained, there is no way to continue - this also means our transducer uses class names which are not part of our ontology.
+                                var edgeClass: OWLClass = queryParser.getOWLClass(outLabel) ?: return@edgeCheck;
 
-                            ec.forEachConcept tailsets@{ restriction ->
-                                val MClassExp = restrictionBuilder.asClassExpression(restriction);
-                                val MExp = expressionBuilder.createELHIExpression(MClassExp);
+                                //create subsumption expression
+                                val classExp = expressionBuilder.createELHExpression(edgeClass);
+                                //check if entailed
+                                val subsumers = dlReasoner.calculateSubClasses(classExp);
 
-                                val entry = ELSPALoopTableEntry(
-                                    Pair(querySource, transducerSource),
-                                    Pair(queryTarget, transducerTarget),
-                                    restriction
-                                )
-
-                                val costCutoff = table.get(entry) //0, int val or null
-                                if (costCutoff == 0) return@tailsets //we cannot improve an entry with cost 0
-
-
-                                // for each possible class name, check subsumption M <= A
-                                val validEdges: MutableList<TransducerEdge> = mutableListOf()
-
-                                sortedTransducerEdges.forEach edgeCheck@ { transducerEdge ->
-                                    val inLabel = transducerEdge.label.incoming;
-                                    val outLabel = transducerEdge.label.outgoing;
-                                    // try to match edge label to concept assertion. outgoing label must be a concept assertion
-                                    //if no property could be obtained, there is no way to continue - this also means our transducer uses class names which are not part of our ontology.
-                                    var edgeClass: OWLClass = queryParser.getOWLClass(outLabel) ?: return@edgeCheck;
-
-                                    //create subsumption expression
-                                    val classExp = expressionBuilder.createELHExpression(edgeClass);
-                                    //check if entailed
-                                    val isEntailed = dlReasoner.checkIsSubsumed(MExp, classExp);
-
-                                    if(isEntailed) {
-                                        validEdges.add(transducerEdge)
-                                    };
-                                }
-
-                                if(validEdges.isEmpty()){
-                                    return@tailsets
-                                }
-                                else {
-                                    table.set(entry, validEdges.minOf { it.label.cost });
+                                subsumers.forEach tailsets@{ owlClass ->
+                                    val restriction = restrictionBuilder.createConceptNameRestriction(owlClass)
+                                    val entry = ELSPALoopTableEntry(
+                                        Pair(querySource, transducerSource),
+                                        Pair(queryTarget, transducerTarget),
+                                        restriction
+                                    )
+                                    table.setIfLower(entry, edgeCost);
                                 }
                             }
                         }
