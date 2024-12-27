@@ -21,7 +21,7 @@ class TinFile(
 }
 
 
-interface FileRepository : JpaRepository<TinFile, Long>{
+interface TinFileRepository : JpaRepository<TinFile, Long>{
     fun findAllByFiletype(fileType: FileType): List<TinFile>
 
     fun findByFilenameAndFiletype(filename: String, filetype: FileType): TinFile?

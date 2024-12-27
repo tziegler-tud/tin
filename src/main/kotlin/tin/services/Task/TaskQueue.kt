@@ -16,4 +16,8 @@ class TaskQueue {
     fun isEmpty(): Boolean {
         return queue.isEmpty();
     }
+
+    fun toList(): List<Task> {
+        return queue.toList();
+    }
 }

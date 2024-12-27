@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import org.springframework.core.io.Resource
 import org.springframework.web.multipart.MultipartFile
-import tin.model.v2.File.FileRepository
+import tin.model.v2.File.TinFileRepository
 import tin.model.v2.File.FileType
 import tin.model.v2.File.TinFile
 import tin.services.technical.SystemConfigurationService
@@ -14,7 +14,7 @@ import java.nio.file.Path
 import java.util.*
 
 @Service
-class FileService @Autowired constructor(private val systemConfigurationService: SystemConfigurationService, private val fileRepository: FileRepository) {
+class FileService @Autowired constructor(private val systemConfigurationService: SystemConfigurationService, private val fileRepository: TinFileRepository) {
 
     private val uploadPath = systemConfigurationService.getUploadParentPath()
     private val uploadLocation = Path.of(uploadPath)

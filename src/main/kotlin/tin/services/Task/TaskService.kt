@@ -2,9 +2,8 @@ package tin.services.Task
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
-import tin.model.v2.Tasks.TaskComputationConfiguration
-import tin.model.v2.Tasks.TaskFileConfiguration
-import tin.model.v2.Tasks.TaskRuntimeConfiguration
+import tin.model.v1.tintheweb.FileRepository
+import tin.model.v2.Tasks.*
 import tin.services.Task.Benchmark.TaskProcessingBenchmarkResult
 import tin.services.files.FileService
 import tin.services.internal.fileReaders.OntologyReaderService
@@ -17,11 +16,9 @@ import tin.services.technical.SystemConfigurationService
 @Service
 class TaskService @Autowired constructor(
     private val fileService: FileService,
-    service: FileService
+    private val taskRepository: TaskRepository,
+    private val systemConfigurationService: SystemConfigurationService,
 ) {
-    @Autowired
-    final lateinit var systemConfigurationService: SystemConfigurationService;
-
     private val taskQueue: TaskQueue = TaskQueue();
     private var isProcessing: Boolean = false;
 
@@ -31,7 +28,10 @@ class TaskService @Autowired constructor(
 
 
     fun createTask(taskFileConfiguration: TaskFileConfiguration, taskRuntimeConfiguration: TaskRuntimeConfiguration, taskComputationConfiguration: TaskComputationConfiguration): Task {
-        return Task(taskFileConfiguration, taskRuntimeConfiguration, taskComputationConfiguration);
+        val task = Task(taskFileConfiguration, taskRuntimeConfiguration, taskComputationConfiguration);
+        val entity = TaskEntity(task);
+        taskRepository.save(entity)
+        return task;
     }
 
     /**
