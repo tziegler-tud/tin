@@ -1,24 +1,20 @@
 package tin.services.files
 
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.autoconfigure.web.ServerProperties
 import org.springframework.core.io.Resource
 import org.springframework.http.HttpHeaders
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
-import org.springframework.ui.Model
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
 import org.springframework.web.servlet.mvc.support.RedirectAttributes
-import tin.model.v2.File.FileType
+import tin.model.v2.File.TinFileType
 import tin.model.v2.File.TinFile
 import tin.services.technical.SystemConfigurationService
-import java.io.File
 
-import java.io.IOException
 import java.nio.file.Path
 
-@Controller
+@RestController
 class FileUploadController @Autowired constructor(private val systemConfigurationService: SystemConfigurationService, private val fileService: FileService) {
 
     private val queryPath = Path.of(systemConfigurationService.getUploadQueryPath());
@@ -82,7 +78,7 @@ class FileUploadController @Autowired constructor(private val systemConfiguratio
         @RequestParam("file") file: MultipartFile,
         redirectAttributes: RedirectAttributes
     ): String {
-        fileService.addFile(file, FileType.RegularPathQuery)
+        fileService.addFile(file, TinFileType.RegularPathQuery)
         redirectAttributes.addFlashAttribute(
             "message",
             "You successfully uploaded " + file.originalFilename + "!"
@@ -96,7 +92,7 @@ class FileUploadController @Autowired constructor(private val systemConfiguratio
         @RequestParam("file") file: MultipartFile,
         redirectAttributes: RedirectAttributes
     ): String {
-        fileService.addFile(file, FileType.Transducer)
+        fileService.addFile(file, TinFileType.Transducer)
         redirectAttributes.addFlashAttribute(
             "message",
             "You successfully uploaded " + file.originalFilename + "!"
@@ -110,7 +106,7 @@ class FileUploadController @Autowired constructor(private val systemConfiguratio
         @RequestParam("file") file: MultipartFile,
         redirectAttributes: RedirectAttributes
     ): String {
-        fileService.addFile(file, FileType.Ontology)
+        fileService.addFile(file, TinFileType.Ontology)
         redirectAttributes.addFlashAttribute(
             "message",
             "You successfully uploaded " + file.originalFilename + "!"

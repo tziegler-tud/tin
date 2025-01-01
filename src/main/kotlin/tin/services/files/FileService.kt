@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service
 import org.springframework.core.io.Resource
 import org.springframework.web.multipart.MultipartFile
 import tin.model.v2.File.TinFileRepository
-import tin.model.v2.File.FileType
+import tin.model.v2.File.TinFileType
 import tin.model.v2.File.TinFile
 import tin.services.technical.SystemConfigurationService
 import tin.utils.findByIdentifier
@@ -26,6 +26,8 @@ class FileService @Autowired constructor(private val systemConfigurationService:
         uploadLocation, queryPath, transducerPath, ontologyPath
     )
 
+    private val localSyncService = FileSyncService(fileRepository, systemConfigurationService)
+
     init {
         try {
             storageService.init();
@@ -33,6 +35,22 @@ class FileService @Autowired constructor(private val systemConfigurationService:
         catch (e: Exception) {
             throw Exception("Failed to initialize storageService.", e)
         }
+    }
+
+    fun syncLocalFiles(){
+        localSyncService.syncAll();
+    }
+
+    fun getAllQueryFiles(): List<TinFile> {
+        return fileRepository.findAllByFiletype(TinFileType.RegularPathQuery)
+    }
+
+    fun getAllTransducerFiles(): List<TinFile> {
+        return fileRepository.findAllByFiletype(TinFileType.Transducer)
+    }
+
+    fun getAllOntologyFiles(): List<TinFile> {
+        return fileRepository.findAllByFiletype(TinFileType.Ontology)
     }
 
     fun getFile(queryFileIdetifier: Long) : TinFile? {
@@ -46,18 +64,18 @@ class FileService @Autowired constructor(private val systemConfigurationService:
     }
 
     fun addOntology(uploadFile: MultipartFile) {
-        addFile(uploadFile, FileType.Ontology)
+        addFile(uploadFile, TinFileType.Ontology)
     }
 
     fun addQuery(uploadFile: MultipartFile) {
-        addFile(uploadFile, FileType.RegularPathQuery)
+        addFile(uploadFile, TinFileType.RegularPathQuery)
     }
 
     fun addTransducer(uploadFile: MultipartFile) {
-        addFile(uploadFile, FileType.Transducer)
+        addFile(uploadFile, TinFileType.Transducer)
     }
 
-    fun addFile(uploadFile: MultipartFile, fileType: FileType) {
+    fun addFile(uploadFile: MultipartFile, fileType: TinFileType) {
         if (uploadFile.isEmpty) {
             throw Exception("Failed to add empty file.")
         }

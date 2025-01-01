@@ -1,20 +1,35 @@
 package tin.model.v2.Tasks
 
+import org.semanticweb.owlapi.model.IRI
 import org.springframework.data.jpa.repository.JpaRepository
-import tin.model.v1.queryResult.computationStatistics.ComputationStatistics
-import tin.model.v1.queryTask.QueryTask
-import tin.services.Task.Task
+import tin.services.ontology.ResultGraph.ShortestPathResult
 import javax.persistence.*
 
-@Entity
-abstract class TaskResult(
-    @OneToOne(cascade = [CascadeType.ALL])
-    open val task: TaskEntity,
-) {
 
+@Entity
+class TaskResult(
+    @OneToOne(cascade = [CascadeType.ALL])
+    val task: Task,
+
+    val source: IRI,
+    val target: IRI,
+    val sourceNode: String,
+    val targetNode: String,
+    val cost: Int?
+) {
     @GeneratedValue
     @Id
-    open val id: Long = 0
+    val id: Long = 0
+
+    constructor(task: Task, shortestPathResult: ShortestPathResult) : this(task,
+        shortestPathResult.source.getIndividual().iri,
+        shortestPathResult.target.getIndividual().iri,
+        shortestPathResult.source.toString(),
+        shortestPathResult.target.toString(),
+        shortestPathResult.cost
+    )
 }
 
-interface TaskResultRepository : JpaRepository<TaskResult, Long>
+interface TaskResultRepository : JpaRepository<TaskResult, Long> {
+
+}

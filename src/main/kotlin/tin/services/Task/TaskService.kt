@@ -2,7 +2,7 @@ package tin.services.Task
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
-import tin.model.v1.tintheweb.FileRepository
+import org.springframework.transaction.annotation.Transactional
 import tin.model.v2.Tasks.*
 import tin.services.Task.Benchmark.TaskProcessingBenchmarkResult
 import tin.services.files.FileService
@@ -17,6 +17,8 @@ import tin.services.technical.SystemConfigurationService
 class TaskService @Autowired constructor(
     private val fileService: FileService,
     private val taskRepository: TaskRepository,
+    private val benchmarkResultRepository: BenchmarkResultsRepository,
+    private val taskResultRepository: TaskResultRepository,
     private val systemConfigurationService: SystemConfigurationService,
 ) {
     private val taskQueue: TaskQueue = TaskQueue();
@@ -29,8 +31,7 @@ class TaskService @Autowired constructor(
 
     fun createTask(taskFileConfiguration: TaskFileConfiguration, taskRuntimeConfiguration: TaskRuntimeConfiguration, taskComputationConfiguration: TaskComputationConfiguration): Task {
         val task = Task(taskFileConfiguration, taskRuntimeConfiguration, taskComputationConfiguration);
-        val entity = TaskEntity(task);
-        taskRepository.save(entity)
+        taskRepository.save(task)
         return task;
     }
 
@@ -38,26 +39,56 @@ class TaskService @Autowired constructor(
      * adds a task to the queue
      * @return boolean returns true if the queue was empty before the insertion
      */
-    fun addTask(task: Task) : Boolean{
+    fun addTask(entity: Task): Boolean {
         val isEmpty = taskQueue.isEmpty();
-        taskQueue.add(task);
+        taskQueue.add(entity);
         return isEmpty;
     }
 
-    fun getTasks() : TaskQueue{
-        return taskQueue;
-    }
-
-    fun processNext() : Boolean {
-        if(taskQueue.isEmpty()) return false;
-        if(isProcessing) return false;
-        val task = taskQueue.getNext()
-        if(task == null) return false;
-        processTask(task);
+    /**
+     * adds a tasks to the queue. Returns true if the queue was empty before the operation
+     */
+    @Transactional
+    fun queueTask(taskId: Long): Boolean {
+        val entity = taskRepository.findById(taskId).orElse(null);
+        if (entity == null) return false;
+        entity.state = TaskStatus.Queued
+        taskQueue.add(taskId);
         return true;
     }
 
-    private fun processTask(task: Task) {
+    fun getTasks() : List<Task> {
+        return taskRepository.findAll();
+    }
+
+    fun getQueuedTasks() : List<Task> {
+        return taskRepository.findAllByState(TaskStatus.Queued);
+    }
+
+    @Transactional
+    fun processNext() : ProcessingResultStatus {
+        if(taskQueue.isEmpty()) return ProcessingResultStatus.EMPTY;
+        if(isProcessing) return ProcessingResultStatus.BLOCKED;
+        val id = taskQueue.getNext()
+        val task = taskRepository.findById(id).orElse(null);
+        if(task == null) return ProcessingResultStatus.FAILURE
+        task.state = TaskStatus.Calculating;
+        val result = processTask(task);
+        task.state = TaskStatus.Finished;
+
+        val list = result.result;
+        list.forEach {
+            val r = TaskResult(task, it)
+            taskResultRepository.save(r)
+        }
+        val benchmarkResult = BenchmarkResult(task, result.benchmarkResult)
+        benchmarkResultRepository.save(benchmarkResult);
+        return result.processingResultStatus;
+    }
+
+
+
+    private fun processTask(task: Task) : ProcessingResult {
         isProcessing = true;
         val fileConfiguration = task.getFileConfiguration();
         //read query file
@@ -77,19 +108,10 @@ class TaskService @Autowired constructor(
 
         val manager: OntologyManager = OntologyManager(ontologyResult.get())
 
-
         val processor = TaskProcessor(task, queryResult.get(), transducerResult.get(), manager);
-        task.setState(TaskStatus.Calculating)
-
         val resultPair: Pair<List<ShortestPathResult>, TaskProcessingBenchmarkResult> = processor.execute();
-
+        isProcessing = false;
         //save results to DB?
-
+        return ProcessingResult(ProcessingResultStatus.SUCCESS, resultPair.first, resultPair.second)
     }
-
-    private fun readTransducerFile(){
-
-    }
-
-
 }

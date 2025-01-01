@@ -1,5 +1,6 @@
 package tin.controller.tintheweb.api.v1
 
+import org.apache.tomcat.jni.Proc
 import org.springframework.web.bind.annotation.*
 import tin.data.tintheweb.DLqueryTask.TaskConfigurationData
 import tin.data.tintheweb.DLqueryTask.TaskInfoData
@@ -8,7 +9,7 @@ import tin.model.v2.Tasks.ComputationMode
 import tin.model.v2.Tasks.TaskComputationConfiguration
 import tin.model.v2.Tasks.TaskFileConfiguration
 import tin.model.v2.Tasks.TaskRuntimeConfiguration
-import tin.services.Task.Task
+import tin.services.Task.ProcessingResult
 import tin.services.Task.TaskService
 import tin.services.tintheweb.FileOverviewService
 
@@ -18,7 +19,7 @@ class TaskController(
     private val taskService: TaskService
 ) {
 
-    @GetMapping("/add")
+    @GetMapping("/all")
     fun getTasks(): List<TaskInfoData> {
         val list = taskService.getTasks().toList()
         val infoList: MutableList<TaskInfoData> = mutableListOf();
@@ -41,8 +42,15 @@ class TaskController(
         return TaskInfoData(task);
     }
 
+    @PostMapping("/queue")
+    fun queueTasks(@RequestBody data: Long): List<TaskInfoData> {
+        taskService.queueTask(data);
+        return getTasks();
+    }
+
     @GetMapping("/processNext")
-    fun processNext(): Boolean {
-        return taskService.processNext();
+    fun processNext(): String {
+        val result = taskService.processNext();
+        return result.name;
     }
 }

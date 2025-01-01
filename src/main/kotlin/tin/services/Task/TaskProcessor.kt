@@ -4,11 +4,10 @@ import org.semanticweb.owlapi.model.OWLNamedIndividual
 import tin.model.v2.ResultGraph.ResultGraph
 import tin.model.v2.Tasks.ComputationMode
 import tin.model.v2.Tasks.OntologyVariant
+import tin.model.v2.Tasks.Task
 import tin.model.v2.query.QueryGraph
 import tin.model.v2.transducer.TransducerGraph
 import tin.services.Task.Benchmark.*
-import tin.services.ontology.OntologyExecutionContext.EL.ELExecutionContext
-import tin.services.ontology.OntologyExecutionContext.ELHI.ELHINumericExecutionContext
 import tin.services.ontology.OntologyExecutionContext.ExecutionContext
 import tin.services.ontology.OntologyExecutionContext.ExecutionContextType
 import tin.services.ontology.OntologyManager
@@ -39,7 +38,6 @@ class TaskProcessor(
 
     fun execute() : Pair<List<ShortestPathResult>, TaskProcessingBenchmarkResult> {
         //execute task
-
         val ec: ExecutionContext
         val resultGraph: ResultGraph
         val timeSource = TimeSource.Monotonic

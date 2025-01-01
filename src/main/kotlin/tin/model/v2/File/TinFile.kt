@@ -9,7 +9,7 @@ import javax.persistence.Id
 @Entity
 class TinFile(
     val filename: String,
-    val filetype: FileType,
+    val filetype: TinFileType,
     val filelength: Long,
     lastModifiedAt: Date?) {
     @GeneratedValue
@@ -22,9 +22,9 @@ class TinFile(
 
 
 interface TinFileRepository : JpaRepository<TinFile, Long>{
-    fun findAllByFiletype(fileType: FileType): List<TinFile>
+    fun findAllByFiletype(fileType: TinFileType): List<TinFile>
 
-    fun findByFilenameAndFiletype(filename: String, filetype: FileType): TinFile?
+    fun findByFilenameAndFiletype(filename: String, filetype: TinFileType): TinFile?
 
-    fun findByIdAndFiletype(id: Long, filetype: FileType): TinFile?
+    fun findByIdAndFiletype(id: Long, filetype: TinFileType): TinFile?
 }

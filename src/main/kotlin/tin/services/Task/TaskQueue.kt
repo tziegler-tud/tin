@@ -1,15 +1,19 @@
 package tin.services.Task
 
+import tin.model.v2.Tasks.Task
 import java.util.*
 
 class TaskQueue {
-    private val queue: LinkedList<Task> = LinkedList()
+    private val queue: LinkedList<Long> = LinkedList()
 
-    fun add(task: Task) : Boolean {
-        return queue.add(task);
+    fun add(task: Task) {
+        queue.add(task.id);
+    }
+    fun add(id: Long) : Boolean {
+        return queue.add(id);
     }
 
-    fun getNext() : Task? {
+    fun getNext() : Long? {
         return queue.poll();
     }
 
@@ -17,7 +21,7 @@ class TaskQueue {
         return queue.isEmpty();
     }
 
-    fun toList(): List<Task> {
+    fun toList(): List<Long> {
         return queue.toList();
     }
 }

@@ -12,9 +12,9 @@ class TaskProcessingResultTimes(
     val solverStartTime: TimeSource.Monotonic.ValueTimeMark,
     val solverEndTime: TimeSource.Monotonic.ValueTimeMark,
 ) {
-    val spaTime = spaStartTime - spaEndTime;
-    val spTime = spStartTime - spEndTime;
-    val resultGraphTime = resultGraphStartTime - resultGraphEndTime;
-    val solverTime = solverStartTime - solverEndTime;
+    val spaTime = spaEndTime - spaStartTime;
+    val spTime = spEndTime - spStartTime;
+    val resultGraphTime = resultGraphEndTime - resultGraphStartTime;
+    val solverTime = solverEndTime - solverStartTime;
 
 }

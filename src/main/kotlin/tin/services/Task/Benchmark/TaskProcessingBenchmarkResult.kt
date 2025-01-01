@@ -1,10 +1,10 @@
 package tin.services.Task.Benchmark
 
 class TaskProcessingBenchmarkResult(
-    private val times: TaskProcessingResultTimes,
-    private val reasonerStats: TaskProcessingReasonerStats,
-    private val spaBuilderStats: TaskProcessingSpaBuilderStats,
-    private val spBuilderStats: TaskProcessingSpBuilderStats,
-    private val resultBuilderStats: TaskProcessingResultBuilderStats,
+    val times: TaskProcessingResultTimes,
+    val reasonerStats: TaskProcessingReasonerStats,
+    val spaBuilderStats: TaskProcessingSpaBuilderStats,
+    val spBuilderStats: TaskProcessingSpBuilderStats,
+    val resultBuilderStats: TaskProcessingResultBuilderStats,
 ) {
 }

@@ -2,12 +2,10 @@ package tin.services.files
 
 import org.springframework.core.io.Resource
 import org.springframework.core.io.UrlResource
-import org.springframework.stereotype.Service
 import org.springframework.util.FileSystemUtils
 import org.springframework.web.multipart.MultipartFile
 import tin.model.v2.File.TinFile
-import tin.model.v2.File.FileType
-import tin.services.technical.SystemConfigurationService
+import tin.model.v2.File.TinFileType
 import java.io.File
 import java.io.IOException
 import java.net.MalformedURLException
@@ -25,11 +23,11 @@ class FileSystemStorageService(
 )
 {
 
-    private fun getPath(fileType: FileType): Path {
+    private fun getPath(fileType: TinFileType): Path {
         return when(fileType) {
-            FileType.RegularPathQuery -> queryLocation
-            FileType.Transducer -> transducerLocation
-            FileType.Ontology -> ontologyLocation
+            TinFileType.RegularPathQuery -> queryLocation
+            TinFileType.Transducer -> transducerLocation
+            TinFileType.Ontology -> ontologyLocation
         }
     }
 
