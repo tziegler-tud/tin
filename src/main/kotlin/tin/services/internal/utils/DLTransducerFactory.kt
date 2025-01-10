@@ -2,8 +2,10 @@ package tin.services.internal.utils
 
 import tin.model.v1.alphabet.Alphabet
 import tin.model.v2.graph.Node
+import tin.model.v2.query.QueryGraph
 import tin.model.v2.transducer.TransducerGraph
 import tin.services.ontology.OntologyExecutionContext.ExecutionContext
+import kotlin.random.Random
 
 class DLTransducerFactory {
 
@@ -39,13 +41,13 @@ class DLTransducerFactory {
             return transducerGraph
         }
 
-        fun generateEditDistanceTransducer(queryAlphabet: Alphabet, ec: ExecutionContext): TransducerGraph {
+        fun generateEditDistanceTransducer(queryGraph: QueryGraph, ec: ExecutionContext, allowRoleToConcept: Boolean=false, allowConceptToRole: Boolean = false): TransducerGraph {
 
             /**
              * Dummy config, can later be extended to run different scenarios
              */
-            val allowRoleToConceptAssertion = false; //adds edges that transform query roles names to concept assertions (PA construction step 11 + 12)
-            val allowConceptAssertionToRole = false; //adds edges that transform query concept assertions to role names (PA construction step 14 + 15)
+            val allowRoleToConceptAssertion = allowRoleToConcept; //adds edges that transform query roles names to concept assertions (PA construction step 11 + 12)
+            val allowConceptAssertionToRole = allowConceptToRole; //adds edges that transform query concept assertions to role names (PA construction step 14 + 15)
 
             val t = TransducerGraph();
             val node = Node("t0", true, true)
@@ -53,10 +55,27 @@ class DLTransducerFactory {
             //generate edit distance between all property names in query and database
             //as we assume some similarities between the alphabets, we cache our results locally and try to reuse them
 
+            val queryAlphabet = Alphabet();
+
+            for (edge in queryGraph.edges) {
+                val edgeLabel = edge.label.label
+                val string = edgeLabel.getLabel();
+                if(edgeLabel.isConceptAssertion()) {
+                    queryAlphabet.addConceptName(string)
+                }
+                else{
+                    queryAlphabet.addRoleName(string)
+                }
+            }
+
             val queryConcepts = queryAlphabet.getConceptNames();
             val queryRoles = queryAlphabet.getRoleNames();
             val dbConcepts = ec.getClassNames()
             val dbRoles = ec.getRoleNames();
+
+//            println("Generating edit distance transducer...")
+
+
 
 
             var cache = hashMapOf<Pair<String, String>, Int>();
@@ -76,15 +95,20 @@ class DLTransducerFactory {
                 return dist;
             };
 
+            var i = 0;
             for (concept in queryConcepts) {
+                i++;
                 for (databaseProperty in dbConcepts) {
                     var dist = cacheOrCredit(concept, databaseProperty);
                     //add transducer edge
                     t.addEdge(node, node, concept, databaseProperty, dist)
                 }
+//                println("Calculating concept distances... $i / ${queryConcepts.size}")
             }
 
+            var j=0;
             for (queryRole in queryRoles) {
+                j++;
                 for (databaseRole in dbRoles) {
                     var dist = cacheOrCredit(queryRole, databaseRole)
                     //add transducer edge
@@ -98,6 +122,7 @@ class DLTransducerFactory {
                         t.addEdge(node, node, queryRole, conceptAssertion, dist)
                     }
                 }
+//                println("Calculating role distances... $j / ${queryRoles.size}")
             }
 
             if(allowConceptAssertionToRole) {
@@ -113,11 +138,179 @@ class DLTransducerFactory {
             return t;
         };
 
+        fun generateEditDistanceTransducerRestricted(queryGraph: QueryGraph, ec: ExecutionContext, maxEdges: Int, allowRoleToConcept: Boolean=false, allowConceptToRole: Boolean = false): TransducerGraph {
+            /**
+             * Dummy config, can later be extended to run different scenarios
+             */
+            val allowRoleToConceptAssertion = allowRoleToConcept; //adds edges that transform query roles names to concept assertions (PA construction step 11 + 12)
+            val allowConceptAssertionToRole = allowConceptToRole; //adds edges that transform query concept assertions to role names (PA construction step 14 + 15)
+
+            val t = TransducerGraph();
+            val node = Node("t0", true, true)
+            t.addNodes(node)
+            //generate edit distance between all property names in query and database
+            //as we assume some similarities between the alphabets, we cache our results locally and try to reuse them
+
+            val queryAlphabet = Alphabet();
+
+            for (edge in queryGraph.edges) {
+                val edgeLabel = edge.label.label
+                val string = edgeLabel.getLabel();
+                if(edgeLabel.isConceptAssertion()) {
+                    queryAlphabet.addConceptName(string)
+                }
+                else{
+                    queryAlphabet.addRoleName(string)
+                }
+            }
+
+            val queryConcepts = queryAlphabet.getConceptNames();
+            val queryRoles = queryAlphabet.getRoleNames();
+            val dlConcepts = ec.getClassNames()
+            val dlRoles = ec.getRoleNames();
+
+            println("Generating edit distance transducer...")
+
+
+
+
+            var cache = hashMapOf<Pair<String, String>, Int>();
+
+            /**
+             * return cached value if present, else calculate and add to cache.
+             */
+            fun cacheOrCredit(a: String, b: String) : Int {
+                var dist = cache[Pair(a,b)]
+                if (dist === null) {
+                    //calculate edit distance between concept names
+                    dist = calculateEditDistance(a, b);
+                    //add to cache and mirror.
+                    cache[Pair(a, b)] = dist;
+                    cache[Pair(b, a)] = dist;
+                }
+                return dist;
+            };
+
+
+            var i = 0;
+            for (concept in queryConcepts) {
+                i++;
+                for (u in 0 until maxEdges/2) {
+                    val dlConcept = dlConcepts.elementAt(Random.nextInt(0, dlConcepts.size));
+                    var dist = cacheOrCredit(concept, dlConcept);
+                    //add transducer edge
+                    t.addEdge(node, node, concept, dlConcept, dist)
+                }
+                println("Calculating concept distances... $i / ${queryConcepts.size}")
+            }
+
+            var j=0;
+            for (queryRole in queryRoles) {
+                j++;
+                for (u in 0 until maxEdges/2) {
+                    val dlRole = dlConcepts.elementAt(Random.nextInt(0, dlRoles.size));
+                    var dist = cacheOrCredit(queryRole, dlRole)
+                    //add transducer edge
+                    t.addEdge(node, node, queryRole, dlRole, dist)
+                }
+                println("Calculating role distances... $j / ${queryRoles.size}")
+            }
+            return t;
+        }
+
+        fun generateRandomTransducerRestricted(queryGraph: QueryGraph, ec: ExecutionContext, maxEdges: Int, minCost: Int, maxCost: Int, allowRoleToConcept: Boolean=false, allowConceptToRole: Boolean = false): TransducerGraph {
+            /**
+             * Dummy config, can later be extended to run different scenarios
+             */
+            val allowRoleToConceptAssertion = allowRoleToConcept; //adds edges that transform query roles names to concept assertions (PA construction step 11 + 12)
+            val allowConceptAssertionToRole = allowConceptToRole; //adds edges that transform query concept assertions to role names (PA construction step 14 + 15)
+
+            val t = TransducerGraph();
+            val node = Node("t0", true, true)
+            t.addNodes(node)
+            //generate edit distance between all property names in query and database
+            //as we assume some similarities between the alphabets, we cache our results locally and try to reuse them
+
+            val queryAlphabet = Alphabet();
+
+            for (edge in queryGraph.edges) {
+                val edgeLabel = edge.label.label
+                val string = edgeLabel.getLabel();
+                if(edgeLabel.isConceptAssertion()) {
+                    queryAlphabet.addConceptName(string)
+                }
+                else{
+                    queryAlphabet.addRoleName(string)
+                }
+            }
+
+            val queryConcepts = queryAlphabet.getConceptNames();
+            val queryRoles = queryAlphabet.getRoleNames();
+            val dlConcepts = ec.getClassNames()
+            val dlRoles = ec.getRoleNames();
+
+            println("Generating edit distance transducer...")
+
+
+
+
+            var cache = hashMapOf<Pair<String, String>, Int>();
+
+            /**
+             * return cached value if present, else calculate and add to cache.
+             */
+            fun cacheOrCredit(a: String, b: String) : Int {
+                var dist = cache[Pair(a,b)]
+                if (dist === null) {
+                    //calculate edit distance between concept names
+                    dist = calculateEditDistance(a, b);
+                    //add to cache and mirror.
+                    cache[Pair(a, b)] = dist;
+                    cache[Pair(b, a)] = dist;
+                }
+                return dist;
+            };
+
+
+            var i = 0;
+            for (concept in queryConcepts) {
+                i++;
+                for (u in 0 until maxEdges) {
+                    val dlConcept = dlConcepts.elementAt(Random.nextInt(0, dlConcepts.size));
+                    var dist = Random.nextInt(minCost, maxCost)
+                    //add transducer edge
+                    t.addEdge(node, node, concept, dlConcept, dist)
+                }
+                println("Calculating concept distances... $i / ${queryConcepts.size}")
+            }
+
+            var j=0;
+            for (queryRole in queryRoles) {
+                j++;
+                for (u in 0 until maxEdges) {
+                    var dlRole = dlRoles.elementAt(Random.nextInt(0, dlRoles.size));
+                    var dist = Random.nextInt(minCost, maxCost)
+                    val isInverse = Random.nextBoolean()
+                    if(isInverse) dlRole = "inverse($dlRole)"
+                    //add transducer edge
+                    t.addEdge(node, node, queryRole, dlRole, dist)
+                }
+                println("Calculating role distances... $j / ${queryRoles.size}")
+            }
+            return t;
+        }
+
         private fun calculateEditDistance(lhs: String, rhs: String): Int {
             //implements wagner-fischer algorithm
-            if(lhs == rhs) { return 0 }
-            if(lhs.isEmpty()) { return rhs.length }
-            if(rhs.isEmpty()) { return lhs.length }
+            if (lhs == rhs) {
+                return 0
+            }
+            if (lhs.isEmpty()) {
+                return rhs.length
+            }
+            if (rhs.isEmpty()) {
+                return lhs.length
+            }
 
             val lhsLength = lhs.length + 1
             val rhsLength = rhs.length + 1
@@ -130,7 +323,7 @@ class DLTransducerFactory {
                 newCost[0] = i
 
                 for (j in 1 until lhsLength) {
-                    val match = if(lhs[j - 1] == rhs[i - 1]) 0 else 1
+                    val match = if (lhs[j - 1] == rhs[i - 1]) 0 else 1
 
                     val costReplace = cost[j - 1] + match
                     val costInsert = cost[j] + 1
