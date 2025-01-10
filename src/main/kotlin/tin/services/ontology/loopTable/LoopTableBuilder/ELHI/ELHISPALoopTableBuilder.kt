@@ -100,8 +100,6 @@ class ELHISPALoopTableBuilder (
         }
 
         //if nothing changed, no need to run S3 rule again
-        //TODO: do we even have to continue in this case? Is one iteration without changes enough to abort?
-        //TODO: This is important!
         if(updateTable.map.isEmpty()) return false
 
         val updateMap = calculateS3();
