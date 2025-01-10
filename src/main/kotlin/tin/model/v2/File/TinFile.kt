@@ -11,6 +11,7 @@ class TinFile(
     val filename: String,
     val filetype: TinFileType,
     val filelength: Long,
+    val source: TinFileSource,
     lastModifiedAt: Date?) {
     @GeneratedValue
     @Id

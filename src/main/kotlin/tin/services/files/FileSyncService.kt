@@ -3,6 +3,7 @@ package tin.services.files
 import org.springframework.stereotype.Service
 import tin.model.v2.File.TinFile
 import tin.model.v2.File.TinFileRepository
+import tin.model.v2.File.TinFileSource
 import tin.model.v2.File.TinFileType
 import tin.services.technical.SystemConfigurationService
 import java.io.File
@@ -29,36 +30,36 @@ class FileSyncService(
 
     fun syncRegularPathQueryFilesProvided() {
         val folderPath = systemConfigurationService.getQueryPath();
-        syncFiles(folderPath, TinFileType.RegularPathQuery)
+        syncFiles(folderPath, TinFileType.RegularPathQuery, TinFileSource.PROVIDED)
     }
 
     fun syncRegularPathQueryFilesUpload() {
         val folderPath = systemConfigurationService.getUploadQueryPath();
-        syncFiles(folderPath, TinFileType.RegularPathQuery)
+        syncFiles(folderPath, TinFileType.RegularPathQuery, TinFileSource.UPLOAD)
     }
 
     fun syncTransducerFilesProvided() {
         val folderPath = systemConfigurationService.getTransducerPath()
-        syncFiles(folderPath, TinFileType.Transducer)
+        syncFiles(folderPath, TinFileType.Transducer, TinFileSource.PROVIDED)
     }
 
     fun syncTransducerFilesUpload() {
         val folderPath = systemConfigurationService.getUploadTransducerPath()
-        syncFiles(folderPath, TinFileType.Transducer)
+        syncFiles(folderPath, TinFileType.Transducer, TinFileSource.UPLOAD)
     }
 
     fun syncOntologyFilesProvided() {
         val folderPath = systemConfigurationService.getOntologyPath()
-        syncFiles(folderPath, TinFileType.Ontology)
+        syncFiles(folderPath, TinFileType.Ontology, TinFileSource.PROVIDED)
     }
 
 
     fun syncOntologyFilesUpload() {
         val folderPath = systemConfigurationService.getUploadOntologyPath()
-        syncFiles(folderPath, TinFileType.Ontology)
+        syncFiles(folderPath, TinFileType.Ontology, TinFileSource.UPLOAD)
     }
 
-    private fun syncFiles(path: String, type: TinFileType) {
+    private fun syncFiles(path: String, type: TinFileType, source: TinFileSource) {
         val folder = File(path)
         var preSyncRepositoryEntities = mutableListOf<TinFile>()
 
@@ -86,6 +87,7 @@ class FileSyncService(
                         filename,
                         type,
                         filelength,
+                        source,
                         fileLastModifiedAt
                     )
                 )

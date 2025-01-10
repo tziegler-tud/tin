@@ -5,6 +5,7 @@ import org.springframework.core.io.UrlResource
 import org.springframework.util.FileSystemUtils
 import org.springframework.web.multipart.MultipartFile
 import tin.model.v2.File.TinFile
+import tin.model.v2.File.TinFileSource
 import tin.model.v2.File.TinFileType
 import java.io.File
 import java.io.IOException
@@ -17,13 +18,17 @@ import java.util.stream.Stream
 
 class FileSystemStorageService(
             private val uploadLocation: Path,
+            private val uploadQueryLocation: Path,
+            private val uploadTransducerLocation: Path,
+            private val uploadOntologyLocation: Path,
             private val queryLocation: Path,
             private val transducerLocation: Path,
             private val ontologyLocation: Path,
 )
 {
 
-    private fun getPath(fileType: TinFileType): Path {
+    private fun getPath(fileType: TinFileType, source: TinFileSource): Path {
+
         return when(fileType) {
             TinFileType.RegularPathQuery -> queryLocation
             TinFileType.Transducer -> transducerLocation
@@ -37,7 +42,7 @@ class FileSystemStorageService(
                 throw StorageException("Failed to store empty file.")
             }
 
-            val path = getPath(file.filetype)
+            val path = getPath(file.filetype, TinFileSource.UPLOAD)
 
             val destinationFile = path.resolve(
                 Paths.get(file.filename)
@@ -61,7 +66,7 @@ class FileSystemStorageService(
     }
 
     fun loadAsResource(file: TinFile) : Resource {
-        return loadAsResource(getPath(file.filetype), file.filename)
+        return loadAsResource(getPath(file.filetype, file.source), file.filename)
     }
 
     fun loadAll(): Stream<Path?>? {
@@ -102,7 +107,7 @@ class FileSystemStorageService(
     }
 
     fun loadFile(file: TinFile) : File {
-        return loadAsFile(getPath(file.filetype), file.filename);
+        return loadAsFile(getPath(file.filetype, file.source), file.filename);
     }
 
     private fun loadPath(path: Path, filename: String?): Path? {

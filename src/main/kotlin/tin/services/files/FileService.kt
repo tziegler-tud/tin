@@ -7,6 +7,7 @@ import org.springframework.web.multipart.MultipartFile
 import tin.model.v2.File.TinFileRepository
 import tin.model.v2.File.TinFileType
 import tin.model.v2.File.TinFile
+import tin.model.v2.File.TinFileSource
 import tin.services.technical.SystemConfigurationService
 import tin.utils.findByIdentifier
 import java.io.File
@@ -18,12 +19,15 @@ class FileService @Autowired constructor(private val systemConfigurationService:
 
     private val uploadPath = systemConfigurationService.getUploadParentPath()
     private val uploadLocation = Path.of(uploadPath)
-    private val queryPath = Path.of(systemConfigurationService.getUploadQueryPath());
-    private val transducerPath = Path.of(systemConfigurationService.getUploadTransducerPath());
-    private val ontologyPath = Path.of(systemConfigurationService.getUploadOntologyPath());
+    private val providedQueryPath = Path.of(systemConfigurationService.getQueryPath())
+    private val providedTransducerPath = Path.of(systemConfigurationService.getTransducerPath())
+    private val providedOntologyPath = Path.of(systemConfigurationService.getOntologyPath())
+    private val uploadQueryPath = Path.of(systemConfigurationService.getUploadQueryPath());
+    private val uploadTransducerPath = Path.of(systemConfigurationService.getUploadTransducerPath());
+    private val uploadOntologyPath = Path.of(systemConfigurationService.getUploadOntologyPath());
 
     private val storageService: FileSystemStorageService = FileSystemStorageService(
-        uploadLocation, queryPath, transducerPath, ontologyPath
+        uploadLocation, uploadQueryPath, uploadTransducerPath, uploadOntologyPath, providedQueryPath, providedTransducerPath, providedOntologyPath
     )
 
     private val localSyncService = FileSyncService(fileRepository, systemConfigurationService)
@@ -80,10 +84,9 @@ class FileService @Autowired constructor(private val systemConfigurationService:
             throw Exception("Failed to add empty file.")
         }
         val filename = uploadFile.originalFilename ?: uploadFile.name;
-        val path = ontologyPath;
         val fileLength = uploadFile.size
 
-        val file = TinFile(filename, fileType, fileLength, Date())
+        val file = TinFile(filename, fileType, fileLength, TinFileSource.UPLOAD, Date())
         try {
             storageService.store(file, uploadFile)
             //add to repo

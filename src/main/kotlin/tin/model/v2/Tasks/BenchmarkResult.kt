@@ -26,10 +26,10 @@ class BenchmarkResult(
     val entailmentCacheHitCounter: Int?,
     val entailmentCacheMissCounter: Int?,
 
-    val spaTime: Duration,
-    val spTime: Duration,
-    val resultGraphTime: Duration,
-    val solverTime: Duration,
+    val spaTimeMS: Long,
+    val spTimeMS: Long,
+    val resultGraphTimeMS: Long,
+    val solverTimeMS: Long,
 
     val spaTotalIterations: Int,
     val spaTableSize: Int,
@@ -62,10 +62,10 @@ class BenchmarkResult(
         benchmarkResult.reasonerStats.entailmentCacheHitCounter,
         benchmarkResult.reasonerStats.entailmentCacheMissCounter,
 
-        benchmarkResult.times.spaTime,
-        benchmarkResult.times.spTime,
-        benchmarkResult.times.resultGraphTime,
-        benchmarkResult.times.solverTime,
+        benchmarkResult.times.spaTime.inWholeMicroseconds,
+        benchmarkResult.times.spTime.inWholeMicroseconds,
+        benchmarkResult.times.resultGraphTime.inWholeMicroseconds,
+        benchmarkResult.times.solverTime.inWholeMicroseconds,
 
         benchmarkResult.spaBuilderStats.totalIterations,
         benchmarkResult.spaBuilderStats.tableSize,
