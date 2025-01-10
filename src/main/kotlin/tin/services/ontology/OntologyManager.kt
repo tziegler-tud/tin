@@ -56,16 +56,18 @@ class OntologyManager(val file: File) {
 
     init {
         //create json representation for vowl
-        val vowlJson = Owl2Vowl(ontology).getJsonAsString();
-        //save to json file
-        saveToJson(file.getName(), vowlJson)
+//        val vowlJson = Owl2Vowl(ontology).getJsonAsString();
+//        //save to json file
+//        saveToJson(file.getName(), vowlJson)
 
         //fill classNames and Iris in one iteration
         classes.forEach{
+            if(it.isTopEntity) return@forEach
             classIris.add(it.iri)
             classNames.add(shortFormProvider.getShortForm(it));
         };
         properties.forEach{
+            if(it.isTopEntity) return@forEach
             roleNames.add(shortFormProvider.getShortForm(it))
         }
     }
@@ -90,7 +92,7 @@ class OntologyManager(val file: File) {
                 //strange dependency problem with google guava 32.2.0
                 //TODO: find a fix or throw out ELK support
                 reasonerFactory = ElkReasonerFactory();
-                throw IllegalArgumentException("ELK Reasoner is currently not supported.")
+//                throw IllegalArgumentException("ELK Reasoner is currently not supported.")
 
             }
             BuildInReasoners.JCEL -> {
@@ -109,7 +111,7 @@ class OntologyManager(val file: File) {
         val reasoner = reasonerFactory.createReasoner(ontology)
         // Classify the ontology.
         val precomputableInferenceTypes = reasoner.precomputableInferenceTypes;
-        reasoner.precomputeInferences(InferenceType.CLASS_HIERARCHY, InferenceType.OBJECT_PROPERTY_HIERARCHY, InferenceType.SAME_INDIVIDUAL)
+//        reasoner.precomputeInferences(InferenceType.CLASS_HIERARCHY, InferenceType.OBJECT_PROPERTY_HIERARCHY, InferenceType.SAME_INDIVIDUAL)
         return reasoner;
     }
 

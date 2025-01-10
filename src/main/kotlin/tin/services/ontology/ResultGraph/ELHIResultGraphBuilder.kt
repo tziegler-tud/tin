@@ -9,6 +9,7 @@ import tin.model.v2.query.QueryEdgeLabel
 import tin.model.v2.query.QueryGraph
 import tin.model.v2.transducer.TransducerEdge
 import tin.model.v2.transducer.TransducerGraph
+import tin.services.Task.Benchmark.TaskProcessingResultBuilderStats
 import tin.services.ontology.OntologyExecutionContext.ELHI.ELHIExecutionContext
 import tin.services.ontology.loopTable.LoopTable.ELHI.ELHISPLoopTable
 import tin.services.ontology.loopTable.loopTableEntry.IndividualLoopTableEntry
@@ -46,6 +47,32 @@ class ELHIResultGraphBuilder(
                 }
             }
         }
+
         return resultGraph
+    }
+
+    fun getStats(resultGraph: ResultGraph) : TaskProcessingResultBuilderStats {
+        return TaskProcessingResultBuilderStats(
+            resultGraph.nodes.size,
+            resultGraph.edges.size,
+            resultGraph.edges.maxOf { it.label.cost },
+            resultGraph.edges.minOf { it.label.cost },
+            findUnreachableNodes(resultGraph).size
+        )
+    }
+
+    private fun findUnreachableNodes(resultGraph: ResultGraph) : List<ResultNode> {
+        var counter: Int = 0;
+        val unreachableNodes: MutableList<ResultNode> = mutableListOf()
+        val nodesQueue: MutableList<ResultNode> = resultGraph.nodes.asList().toMutableList();
+        //a node is unreachable if it has no incoming edges from a node different from itself.
+        if(nodesQueue.size <= 1) return unreachableNodes;
+        nodesQueue.forEach { node ->
+            val edges = resultGraph.getEdgesWithTarget(node);
+            if(edges.isNotEmpty()) return@forEach;
+            if(edges.filter{it.source !== node}.isNotEmpty()) return@forEach;
+            unreachableNodes.add(node);
+        }
+        return unreachableNodes;
     }
 }

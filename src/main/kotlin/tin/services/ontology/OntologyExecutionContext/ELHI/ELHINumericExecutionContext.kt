@@ -20,6 +20,7 @@ class ELHINumericExecutionContext(private val manager: OntologyManager) : ELHIEx
     private var classes = manager.classes;
     private var properties = manager.properties;
     override val dlReasoner = CachingDLReasoner(manager.createReasoner(OntologyManager.BuildInReasoners.HERMIT), manager.getExpressionBuilder())
+    override val resultGraphReasoner = dlReasoner
     override val expressionBuilder = manager.getExpressionBuilder();
     override val parser = manager.getQueryParser();
     override val shortFormProvider = manager.getShortFormProvider();
@@ -55,9 +56,20 @@ class ELHINumericExecutionContext(private val manager: OntologyManager) : ELHIEx
     }
 
     override fun forEachTailsetDescending(action: (MultiClassLoopTableEntryRestriction) -> Unit) {
-        for (i in tailsetMaximum downTo 1UL)
-        {
-            action(spaRestrictionBuilder.createConceptNameRestriction(i));
+//        for (i in tailsetMaximum downTo 1UL)
+//        {
+//            action(spaRestrictionBuilder.createConceptNameRestriction(i));
+//        }
+
+        val maxOnes = tailsetMaximum.countOneBits() // Maximum number of 1s in binary representation up to n
+
+        for (ones in maxOnes downTo 1) {
+            for (i in 1UL..tailsetMaximum) {
+                if (i.countOneBits() == ones) {
+//                    println("Number: $i, Binary: ${i.toString(2)}, 1s: ${i.countOneBits()}")
+                    action(spaRestrictionBuilder.createConceptNameRestriction(i));
+                }
+            }
         }
     }
 

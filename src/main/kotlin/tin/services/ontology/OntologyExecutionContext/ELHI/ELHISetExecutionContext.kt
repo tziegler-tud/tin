@@ -18,6 +18,7 @@ class ELHISetExecutionContext(private val manager: OntologyManager) : ELHIExecut
     private var classes = manager.classes;
     private var properties = manager.properties;
     override val dlReasoner = CachingDLReasoner(manager.createReasoner(OntologyManager.BuildInReasoners.HERMIT), manager.getExpressionBuilder())
+    override val resultGraphReasoner = dlReasoner
     override val expressionBuilder = manager.getExpressionBuilder();
     override val parser = manager.getQueryParser();
     override val shortFormProvider = manager.getShortFormProvider();

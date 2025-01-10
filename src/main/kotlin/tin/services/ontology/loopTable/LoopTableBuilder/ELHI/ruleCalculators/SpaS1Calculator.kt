@@ -271,12 +271,6 @@ class SpaS1Calculator(
 
         val allClassExpr = expressionBuilder.createELHIExpression(restrictionBuilder.asClassExpression(allClasses))
 
-        /**
-         * debug line
-         */
-        var elimSetHits = 0
-        var superSetHits = 0
-
         queryGraph.nodes.forEach { querySource ->
             transducerGraph.nodes.forEach { transducerSource ->
                 queryGraph.nodes.forEach { queryTarget ->
@@ -426,18 +420,15 @@ class SpaS1Calculator(
 //                                                eliminatedCandidatesMap.forEach { (elimRestriction, cost) ->
 //                                                    if(cost <= candidateCost && elimRestriction.isSubsetOf(M1Restriction) ) return@candidates
 //                                                }
-                                                val found = eliminatedCandidatesMap.firstNotNullOfOrNull { (elimRestriction, cost) ->
-                                                   cost <= candidateCost && elimRestriction.isSubsetOf(M1Restriction)
+                                                val found = eliminatedCandidatesMap.filter { (elimRestriction, cost) ->
+//                                                val found = eliminatedCandidatesMap.filter{ (elimRestriction, cost) ->
+                                                   cost == candidateCost && elimRestriction.isSubsetOf(M1Restriction)
                                                 }
-                                                if(found != null) return@candidates
+//                                                if(found.isEmpty()) {
+                                                if(found.isNotEmpty()) {
+                                                    return@candidates
+                                                }
                                                 eliminatedCandidatesMap[M1Restriction] = candidateCost;
-
-                                                /**
-                                                 * debug line
-                                                 */
-                                                csCounter++;
-                                                println("Calculating candidate set " + csCounter + "/ " + sortedCandidateResultList.size);
-//                                                if(tcCounter == 10) return@candidateEdges
 
                                                 //calculate basic class that are subsumed by A <= €R.M1
                                                 val atomicSubsumers = dlReasoner.calculateSubClasses(rM1Exp)
@@ -450,26 +441,11 @@ class SpaS1Calculator(
                                                 //if there is at least one atomic subsumer, we dont have to check the allClasses set as it is trivially satisfied
                                                 if (atomicSubsumers.isEmpty()) {
 
-                                                    /**
-                                                     * Test: build restriction consisting of all concept names
-                                                     */
-
-
                                                     val isEntailed = dlReasoner.checkIsSubsumed(allClassExpr, rM1Exp)
                                                     if(!isEntailed) return@candidates;
                                                 }
 
-                                                var tcCounter = 0;
-
                                                 ec.forEachTailsetDescending tailsets@{  tailset ->
-//                                                ec.tailsetsAsClasses.forEach { tailset ->
-
-                                                    /**
-                                                     * debug line
-                                                     */
-                                                    tcCounter++;
-//                                                    println("Calculating tailset " + tcCounter + "/ " + ec.tailsetSize);
-
                                                     val restriction = tailset
 
                                                     val entry = ELHISPALoopTableEntry(
@@ -479,7 +455,6 @@ class SpaS1Calculator(
                                                         transducerTarget,
                                                         restriction
                                                     )
-
 
                                                     val costCutoff = table.get(entry)
                                                     //check if the added weight of transducer edges is already higher than the current entry
@@ -494,10 +469,6 @@ class SpaS1Calculator(
                                                         //if M is a subset of an element in eliminatedSets, it cannot be entailed
                                                         eliminatedSets.forEach { set ->
                                                             if(restriction.isSubsetOf(set)) {
-                                                                /**
-                                                                 * debug line
-                                                                 */
-                                                                elimSetHits++;
                                                                 return@tailsets
                                                             }
                                                         }
@@ -512,10 +483,6 @@ class SpaS1Calculator(
                                                             //everything in place, this is valid rule application
                                                             //update entry with final value
                                                             newTable.set(entry, result);
-                                                            /**
-                                                             * debug line
-                                                             */
-                                                            superSetHits++;
                                                             return@tailsets
                                                         }
 
@@ -550,11 +517,6 @@ class SpaS1Calculator(
                 }
             }
         }
-        /**
-         * debug line
-         */
-        println("eliminated set hits: " + elimSetHits);
-        println("superset hits: " + superSetHits);
 
         return newTable;
     }

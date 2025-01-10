@@ -2,10 +2,12 @@ package tin.services.files
 
 import org.springframework.core.io.Resource
 import org.springframework.core.io.UrlResource
-import org.springframework.stereotype.Service
 import org.springframework.util.FileSystemUtils
 import org.springframework.web.multipart.MultipartFile
-import tin.services.technical.SystemConfigurationService
+import tin.model.v2.File.TinFile
+import tin.model.v2.File.TinFileSource
+import tin.model.v2.File.TinFileType
+import java.io.File
 import java.io.IOException
 import java.net.MalformedURLException
 import java.nio.file.Files
@@ -14,39 +16,36 @@ import java.nio.file.Paths
 import java.nio.file.StandardCopyOption
 import java.util.stream.Stream
 
+class FileSystemStorageService(
+            private val uploadLocation: Path,
+            private val uploadQueryLocation: Path,
+            private val uploadTransducerLocation: Path,
+            private val uploadOntologyLocation: Path,
+            private val queryLocation: Path,
+            private val transducerLocation: Path,
+            private val ontologyLocation: Path,
+)
+{
 
-@Service
-class FileSystemStorageService(systemConfigurationService: SystemConfigurationService) {
-    private val uploadPath = systemConfigurationService.getUploadParentPath()
-    private val uploadLocation = Path.of(uploadPath)
-    private val queryLocation = Path.of(systemConfigurationService.getUploadQueryPath())
-    private val transducerLocation = Path.of(systemConfigurationService.getUploadTransducerPath())
-    private val ontologyLocation = Path.of(systemConfigurationService.getUploadOntologyPath())
+    private fun getPath(fileType: TinFileType, source: TinFileSource): Path {
 
-    init {
-        init();
+        return when(fileType) {
+            TinFileType.RegularPathQuery -> queryLocation
+            TinFileType.Transducer -> transducerLocation
+            TinFileType.Ontology -> ontologyLocation
+        }
     }
 
-    fun storeQueryFile(file: MultipartFile?) {
-        return store(queryLocation, file);
-    }
-
-    fun storeTransducerFile(file: MultipartFile?) {
-        return store(transducerLocation, file);
-    }
-
-    fun storeOntologyFile(file: MultipartFile?) {
-        return store(ontologyLocation, file);
-    }
-
-    fun store(path: Path, file: MultipartFile?) {
+    fun store(file: TinFile, content: MultipartFile) {
         try {
-            if (file!!.isEmpty) {
+            if (content.isEmpty) {
                 throw StorageException("Failed to store empty file.")
             }
 
+            val path = getPath(file.filetype, TinFileSource.UPLOAD)
+
             val destinationFile = path.resolve(
-                Paths.get(file.originalFilename)
+                Paths.get(file.filename)
             )
                 .normalize().toAbsolutePath()
             if (destinationFile.parent != path.toAbsolutePath()) {
@@ -55,7 +54,7 @@ class FileSystemStorageService(systemConfigurationService: SystemConfigurationSe
                     "Cannot store file outside current directory."
                 )
             }
-            file.inputStream.use { inputStream ->
+            content.inputStream.use { inputStream ->
                 Files.copy(
                     inputStream, destinationFile,
                     StandardCopyOption.REPLACE_EXISTING
@@ -64,6 +63,10 @@ class FileSystemStorageService(systemConfigurationService: SystemConfigurationSe
         } catch (e: IOException) {
             throw StorageException("Failed to store file.", e)
         }
+    }
+
+    fun loadAsResource(file: TinFile) : Resource {
+        return loadAsResource(getPath(file.filetype, file.source), file.filename)
     }
 
     fun loadAll(): Stream<Path?>? {
@@ -103,14 +106,18 @@ class FileSystemStorageService(systemConfigurationService: SystemConfigurationSe
         }
     }
 
-    private fun load(path: Path, filename: String?): Path? {
+    fun loadFile(file: TinFile) : File {
+        return loadAsFile(getPath(file.filetype, file.source), file.filename);
+    }
+
+    private fun loadPath(path: Path, filename: String?): Path? {
         if(filename == null) return null;
         return path.resolve(filename)
     }
 
     private fun loadAsResource(absPath: Path, filename: String?): Resource {
         try {
-            val file = load(absPath, filename)
+            val file = loadPath(absPath, filename)
             val resource: Resource = UrlResource(file!!.toUri())
             if (resource.exists() || resource.isReadable) {
                 return resource
@@ -124,11 +131,21 @@ class FileSystemStorageService(systemConfigurationService: SystemConfigurationSe
         }
     }
 
+    private fun loadAsFile(absPath: Path, filename: String?): File {
+        try {
+            val file = loadPath(absPath, filename)
+            return file!!.toFile();
+        } catch (e: MalformedURLException) {
+            throw StorageFileNotFoundException("Could not read file: ${absPath.toString()} , $filename", e)
+        }
+    }
+
+
     fun deleteAll() {
         FileSystemUtils.deleteRecursively(uploadLocation.toFile())
     }
 
-    private final fun init() {
+    fun init() {
         try {
             Files.createDirectories(uploadLocation)
             Files.createDirectories(queryLocation)

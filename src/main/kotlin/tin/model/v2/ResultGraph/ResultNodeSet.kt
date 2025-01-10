@@ -38,4 +38,12 @@ class ResultNodeSet : NodeSet()
             action(it.asResultNode()!!)
         }
     }
+
+    override fun asList(): List<ResultNode> {
+        val list = mutableListOf<ResultNode>();
+        this.forEach { resultNode ->
+            list.add(resultNode.asResultNode()!!);
+        }
+        return list;
+    }
 }

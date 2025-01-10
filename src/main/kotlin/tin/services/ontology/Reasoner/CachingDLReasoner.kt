@@ -33,6 +33,8 @@ class CachingDLReasoner(
     var entailmentCacheHitCounter = 0;
     var entailmentCacheMissCounter = 0;
 
+    private var topClassNode : Node<OWLClass>? = null
+
     override fun checkIsSubsumed(expr: DLExpression, superExpression: DLExpression): Boolean {
         val cacheEntry = entailmentCache[Pair(expr, superExpression)];
         if(cacheEntry != null){
@@ -133,6 +135,14 @@ class CachingDLReasoner(
         map["entailmentCacheMissCounter"] = entailmentCacheMissCounter;
 
         return map;
+    }
+
+    override fun getTopClassNode(): Node<OWLClass> {
+        if (topClassNode !== null) {
+            return topClassNode!!;
+        }
+        topClassNode = reasoner.topClassNode;
+        return topClassNode!!;
     }
 
 }

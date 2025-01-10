@@ -140,6 +140,8 @@ class SpaS1Calculator(
                                             var upEdge: TransducerEdge? = null;
                                             run downIterator@ {
                                                 sortedTransducerEdgesDown.forEach down@{ down ->
+                                                    val outgoingLabel = down.label.outgoing;
+                                                    if(outgoingLabel.isInverse()) return@down;
                                                     val downProperty =
                                                         queryParser.getOWLObjectPropertyExpression(down.label.outgoing)
                                                             ?: return@down

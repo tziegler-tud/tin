@@ -10,9 +10,6 @@ class ResultGraph : AbstractGraph() {
     override var alphabet: Alphabet = Alphabet();
 
     override fun addEdge(edge: Edge) : Boolean {
-        /**
-         * add nodes if not present
-         */
         if (nodes.containsWithoutState(edge.source.asResultNode()!!) && nodes.containsWithoutState(edge.target.asResultNode()!!) ) {
             return edges.add(edge.asResultEdge()!!);
         }

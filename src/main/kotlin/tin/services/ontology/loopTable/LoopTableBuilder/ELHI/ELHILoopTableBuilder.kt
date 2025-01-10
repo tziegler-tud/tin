@@ -1,4 +1,6 @@
 package tin.services.ontology.loopTable.LoopTableBuilder.ELHI
 
-interface ELHILoopTableBuilder {
+import tin.services.ontology.loopTable.LoopTableBuilder.LoopTableBuilder
+
+interface ELHILoopTableBuilder : LoopTableBuilder {
 }

@@ -59,7 +59,7 @@ class QueryAnsweringTest {
     fun testQueryAnswering() {
 
         //load ontology
-        val manager = loadExampleOntology("pizza_4.rdf")
+        val manager = loadExampleOntology("pizza_4_1.rdf")
 
         val query = readQueryWithFileReaderService("integration/test_comp1.txt")
         val transducer = readTransducerWithFileReaderService("integration/test_comp1.txt")
@@ -138,7 +138,7 @@ class QueryAnsweringTest {
     fun testQueryAnswering2() {
 
         //load ontology
-        val manager = loadExampleOntology("pizza_4.rdf")
+        val manager = loadExampleOntology("pizza_4_1.obo")
 
         val query = readQueryWithFileReaderService("integration/test_comp2.txt")
         val transducer = readTransducerWithFileReaderService("integration/test_comp2.txt")

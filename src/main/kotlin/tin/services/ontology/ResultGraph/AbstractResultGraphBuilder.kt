@@ -21,6 +21,10 @@ open class AbstractResultGraphBuilder(
 
     ) {
 
+    var maxEdgeCost: Int = 0
+    var minEdgeCost: Int = 0
+    val unreachableNodesAmount: Int = 0;
+
     /**
      * construct product graph restricted to nodes (s,t, a) a € Ind(A)
      *
@@ -55,7 +59,7 @@ open class AbstractResultGraphBuilder(
                                 if(transducerEdges.isNotEmpty()) {
 
                                     //calc basic classes of element
-                                    val classes = ec.dlReasoner.getClasses(individual);
+                                    val classes = ec.resultGraphReasoner.getClasses(individual);
                                    transducerEdges.forEach transEdges@ { transEdge ->
                                        val transLabel = transEdge.label.outgoing;
                                        if(!transLabel.isConceptAssertion()) return@transEdges //smt went wrong
@@ -84,11 +88,12 @@ open class AbstractResultGraphBuilder(
                                 val role = transducerEdge.label.outgoing;
                                 if(role.isConceptAssertion()) continue;
                                 val propertyExpression = ec.parser.getOWLObjectPropertyExpression(role) ?: continue;
-                                val connectedIndividuals = ec.dlReasoner.getConnectedIndividuals(propertyExpression, individual)
+                                val connectedIndividuals = ec.resultGraphReasoner.getConnectedIndividuals(propertyExpression, individual)
 
                                 for (individualNode in connectedIndividuals) {
                                     val targetIndividual = individualNode.representativeElement
                                     val targetNode = ResultNode(targetQueryNode, targetTransducerNode, targetIndividual);
+                                    graph.addNode(targetNode)
                                     graph.addEdge(node, targetNode, transducerEdge.label.cost);
                                 }
                             }

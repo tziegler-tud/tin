@@ -17,7 +17,7 @@ class ELSPALoopTableBuilder (
     private val transducerGraph: TransducerGraph,
     private val ontologyManager: OntologyManager,
     private val ec: ELExecutionContext
-)
+) : ELLoopTableBuilder
 {
     private var table: ELSPALoopTable = ELSPALoopTable();
     private var updateTable: ELSPALoopTable = ELSPALoopTable();
@@ -30,6 +30,11 @@ class ELSPALoopTableBuilder (
     private val s1Calculator = SpaS1Calculator(ec, queryGraph, transducerGraph)
     private val s2Calculator = SpaS2Calculator(ec, queryGraph, transducerGraph)
     private val s3Calculator = SpaS3Calculator(ec, queryGraph, transducerGraph)
+
+    //stat tracking
+    var statsTotalIterations: Int = 0
+    var statsTotalSize: Int = 0;
+    val statsMaxPossibleSize: ULong = (queryGraph.nodes.size * transducerGraph.nodes.size * ec.tailsetSize).toULong();
 
     public val maxIterationDepth = calculateMaxIterationDepth();
 
@@ -116,42 +121,24 @@ class ELSPALoopTableBuilder (
 
     fun calculateFullTable(): ELSPALoopTable {
         //iterate until max iterations are reached
+        statsTotalIterations = 0;
+        statsTotalSize = 0;
         initializeTable();
 
         calculateInitialStep();
 
         //depth 0
-
         updateTable = ELSPALoopTable(table.map);
         println("Calculating iteration 1 / ${maxIterationDepth}")
         calculateFirstIteration();
+
 
 
         for(i in 2..maxIterationDepth) {
+            statsTotalIterations = i
             println("Calculating iteration ${i} / ${maxIterationDepth}")
             val hasChanged = calculateNextIteration();
             if(!hasChanged) return table;
-        }
-
-        return table;
-    }
-
-    fun calculateWithDepthLimit(limit: Int): ELSPALoopTable {
-        //iterate until max iterations are reached
-        println("Calculating loop table for paths up to depth ${limit}...")
-        initializeTable();
-
-        calculateInitialStep();
-
-        updateTable = ELSPALoopTable(table.map);
-        //depth 0
-
-        println("Calculating iteration 1 / ${maxIterationDepth}")
-        calculateFirstIteration();
-
-        for(i in 2..limit) {
-            println("Calculating iteration ${i} / ${limit}")
-            calculateNextIteration();
         }
         return table;
     }
@@ -169,5 +156,9 @@ class ELSPALoopTableBuilder (
 
     public fun getExecutionContext(): ExecutionContext {
         return ec;
+    }
+
+    fun getSize(): Int {
+        return table.map.size;
     }
 }

@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test
 import org.semanticweb.owlapi.model.OWLNamedIndividual
 import org.semanticweb.owlapi.model.OWLObjectProperty
 import org.semanticweb.owlapi.model.OWLPropertyExpression
+import org.semanticweb.owlapi.reasoner.InferenceType
 import org.semanticweb.owlapi.reasoner.NodeSet
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -12,6 +13,7 @@ import org.springframework.boot.web.client.RestTemplateBuilder
 import tin.services.internal.fileReaders.OntologyReaderService
 import tin.services.internal.fileReaders.fileReaderResult.FileReaderResult
 import tin.services.ontology.OntologyExecutionContext.ExecutionContextType
+import tin.services.ontology.Reasoner.ElkReasoner
 import tin.services.ontology.Reasoner.SimpleDLReasoner
 import tin.services.ontology.loopTable.LoopTableEntryRestriction.spa.MultiClassLoopTableEntryRestriction
 import tin.services.ontology.loopTable.LoopTableEntryRestriction.spa.RestrictionBuilder
@@ -270,6 +272,63 @@ class DLReasonerTest {
     }
 
     @Test
+    fun testSubPropertiesCalculationELK(){
+        val manager = loadExampleOntology("propertyTest2.rdf");
+        val reasoner = manager.createReasoner(OntologyManager.BuildInReasoners.ELK)
+        val expressionBuilder = manager.getExpressionBuilder();
+        val dlReasoner = ElkReasoner(reasoner, expressionBuilder);
+
+        val parser = manager.getQueryParser();
+
+
+        val r = parser.getOWLObjectProperty("r")!!;
+        val r1 = parser.getOWLObjectProperty("r1")!!;
+        val r11 = parser.getOWLObjectProperty("r11")!!;
+        val r12 = parser.getOWLObjectProperty("r12")!!;
+        val r111 = parser.getOWLObjectProperty("r111")!!;
+        val r1111 = parser.getOWLObjectProperty("r1111")!!;
+        val r112 = parser.getOWLObjectProperty("r112")!!;
+        val s = parser.getOWLObjectProperty("s")!!;
+        val t = parser.getOWLObjectProperty("t")!!;
+        val u = parser.getOWLObjectProperty("u")!!;
+        val u1 = parser.getOWLObjectProperty("u1")!!;
+
+
+        val subPropertiesA11 = dlReasoner.calculateSubProperties(r11);
+
+        assert(subPropertiesA11.count() == 4);
+        assert(subPropertiesA11.containsEntity(r111))
+        assert(subPropertiesA11.containsEntity(r112))
+        assert(subPropertiesA11.containsEntity(r1111))
+        assert(!subPropertiesA11.containsEntity(r))
+        assert(!subPropertiesA11.containsEntity(r1))
+        assert(!subPropertiesA11.containsEntity(r11))
+        assert(!subPropertiesA11.containsEntity(s))
+        assert(!subPropertiesA11.containsEntity(t))
+
+        val rst = parser.getOWLObjectProperty("rst")!!;
+        val subRST = dlReasoner.calculateSubProperties(rst);
+        assert(subRST.count() == 1);
+        assert(subRST.isBottomSingleton());
+
+        val subA = dlReasoner.calculateSubProperties(r);
+        assert(subA.containsEntity(r1));
+        assert(subA.containsEntity(rst));
+
+        val subR1 = dlReasoner.calculateSubProperties(r1);
+        assert(subR1.containsEntity(r11));
+        assert(subR1.containsEntity(r12));
+        assert(subR1.containsEntity(r111));
+        assert(subR1.containsEntity(r112));
+        assert(subR1.containsEntity(r1111));
+
+        reasoner.precomputeInferences(InferenceType.CLASS_HIERARCHY, InferenceType.OBJECT_PROPERTY_HIERARCHY, InferenceType.SAME_INDIVIDUAL)
+        assert(dlReasoner.checkPropertySubsumption(r1,r))
+        assert(dlReasoner.checkPropertySubsumption(r1,r1))
+
+    }
+
+    @Test
     fun testTopConceptExpressions(){
         val manager = loadExampleOntology("propertyTest2.rdf");
         val reasoner = manager.createReasoner(OntologyManager.BuildInReasoners.HERMIT)
@@ -407,6 +466,14 @@ class DLReasonerTest {
         assert(resultMap[Pair(r, serves)]!!.containsEntity(carbonara) )
 
         assert(resultMap[Pair(veganPlace, serves)]!!.containsEntity(bruschetta) )
+
+
+    }
+
+    @Test
+    fun testElkReasoner(){
+        val manager = loadExampleOntology("LUBM/univ-bench1.rdf");
+        val reasoner = manager.createReasoner(OntologyManager.BuildInReasoners.ELK)
 
 
     }

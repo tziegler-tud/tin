@@ -16,19 +16,22 @@ class ELHISPALoopTableBuilder (
     private val queryGraph: QueryGraph,
     private val transducerGraph: TransducerGraph,
     private val ontologyManager: OntologyManager,
-    private val ec: ELHIExecutionContext)
+    private val ec: ELHIExecutionContext) : ELHILoopTableBuilder
 {
     private var table: ELHISPALoopTable = ELHISPALoopTable();
     private var updateTable: ELHISPALoopTable = ELHISPALoopTable();
-    // prepare ontology execution context
-//    private val ec = ontologyManager.createELHIExecutionContext(ExecutionContextType.ELHI, false);
-//    private val ec = ontologyManager.createELHIExecutionContext(ExecutionContextType.ELHI_NUMERIC, false);
 
     private val pairsAvailable = mutableSetOf<Pair<Node, Node>>()
 
     private val s1Calculator = SpaS1Calculator(ec, queryGraph, transducerGraph)
     private val s2Calculator = SpaS2Calculator(ec, queryGraph, transducerGraph)
     private val s3Calculator = SpaS3Calculator(ec, queryGraph, transducerGraph)
+
+    //stat tracking
+    var statsTotalIterations: Int = 0
+    var statsTotalSize: Int = 0;
+    val statsMaxPossibleSize: ULong = (queryGraph.nodes.size * transducerGraph.nodes.size).toULong() * ec.tailsetSize;
+
 
     public val maxIterationDepth = calculateMaxIterationDepth();
 
@@ -97,8 +100,6 @@ class ELHISPALoopTableBuilder (
         }
 
         //if nothing changed, no need to run S3 rule again
-        //TODO: do we even have to continue in this case? Is one iteration without changes enough to abort?
-        //TODO: This is important!
         if(updateTable.map.isEmpty()) return false
 
         val updateMap = calculateS3();
@@ -129,11 +130,11 @@ class ELHISPALoopTableBuilder (
 
 
         for(i in 2UL..maxIterationDepth) {
+            statsTotalIterations = i.toInt()
             println("Calculating iteration ${i} / ${maxIterationDepth}")
             val hasChanged = calculateNextIteration();
             if(!hasChanged) return table;
         }
-
         return table;
     }
 
@@ -170,5 +171,9 @@ class ELHISPALoopTableBuilder (
 
     public fun getExecutionContext(): ExecutionContext {
         return ec;
+    }
+
+    fun getSize(): Int {
+        return table.map.size;
     }
 }

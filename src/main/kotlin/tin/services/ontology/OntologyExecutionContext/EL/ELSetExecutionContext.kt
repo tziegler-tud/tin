@@ -4,6 +4,7 @@ import org.semanticweb.owlapi.model.*
 import tin.services.ontology.OntologyExecutionContext.ExecutionContext
 import tin.services.ontology.Reasoner.CachingDLReasoner
 import tin.services.ontology.OntologyManager
+import tin.services.ontology.Reasoner.ElkReasoner
 import tin.services.ontology.loopTable.LoopTableEntryRestriction.LoopTableEntryRestriction
 import tin.services.ontology.loopTable.LoopTableEntryRestriction.RestrictionBuilderInterface
 import tin.services.ontology.loopTable.LoopTableEntryRestriction.sp.IndividualRestrictionBuilder
@@ -15,7 +16,9 @@ class ELSetExecutionContext(private val manager: OntologyManager) : ELExecutionC
     private var ontology = manager.getOntology();
     private var classes = manager.classes;
     private var properties = manager.properties;
-    override val dlReasoner = CachingDLReasoner(manager.createReasoner(OntologyManager.BuildInReasoners.HERMIT), manager.getExpressionBuilder())
+    override val dlReasoner = ElkReasoner(manager.createReasoner(OntologyManager.BuildInReasoners.HERMIT), manager.getExpressionBuilder())
+//    override val resultGraphReasoner = CachingDLReasoner(manager.createReasoner(OntologyManager.BuildInReasoners.HERMIT), manager.getExpressionBuilder())
+    override val resultGraphReasoner = dlReasoner
     override val expressionBuilder = manager.getExpressionBuilder();
     override val parser = manager.getQueryParser();
     override val shortFormProvider = manager.getShortFormProvider();

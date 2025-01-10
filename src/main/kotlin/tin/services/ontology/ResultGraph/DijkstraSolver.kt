@@ -1,7 +1,6 @@
 package tin.services.ontology.ResultGraph
 
 import org.semanticweb.owlapi.model.OWLNamedIndividual
-import tin.model.v1.queryResult.DLQueryResult.DLQueryResult
 import tin.model.v2.ResultGraph.ResultGraph
 import tin.model.v2.ResultGraph.ResultNode
 import tin.model.v2.genericGraph.GenericGraph
