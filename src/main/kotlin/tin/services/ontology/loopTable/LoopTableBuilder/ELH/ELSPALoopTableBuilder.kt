@@ -121,6 +121,8 @@ class ELSPALoopTableBuilder (
 
     fun calculateFullTable(): ELSPALoopTable {
         //iterate until max iterations are reached
+        statsTotalIterations = 0;
+        statsTotalSize = 0;
         initializeTable();
 
         calculateInitialStep();
@@ -138,7 +140,7 @@ class ELSPALoopTableBuilder (
             val hasChanged = calculateNextIteration();
             if(!hasChanged) return table;
         }
-
+        statsTotalSize = table.map.size;
         return table;
     }
 
