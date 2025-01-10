@@ -73,10 +73,6 @@ class DLTransducerFactory {
             val dbConcepts = ec.getClassNames()
             val dbRoles = ec.getRoleNames();
 
-//            println("Generating edit distance transducer...")
-
-
-
 
             var cache = hashMapOf<Pair<String, String>, Int>();
 
@@ -101,9 +97,8 @@ class DLTransducerFactory {
                 for (databaseProperty in dbConcepts) {
                     var dist = cacheOrCredit(concept, databaseProperty);
                     //add transducer edge
-                    t.addEdge(node, node, concept, databaseProperty, dist)
+                    t.addEdge(node, node, concept+"?", databaseProperty+"?", dist)
                 }
-//                println("Calculating concept distances... $i / ${queryConcepts.size}")
             }
 
             var j=0;
@@ -111,18 +106,22 @@ class DLTransducerFactory {
                 j++;
                 for (databaseRole in dbRoles) {
                     var dist = cacheOrCredit(queryRole, databaseRole)
+                    val isInverse = Random.nextBoolean()
+//                        val isInverse = false
+                    var label = databaseRole
+                    if(isInverse) label = "inverse($databaseRole)"
                     //add transducer edge
                     t.addEdge(node, node, queryRole, databaseRole, dist)
+                    t.addEdge(node, node, "inverse($queryRole)", "inverse($databaseRole)", dist)
                 }
 
                 if(allowRoleToConceptAssertion) {
                     for (conceptAssertion in queryAlphabet.getTransformedConceptNames()) {
                         var dist = cacheOrCredit(queryRole, conceptAssertion);
                         //add transducer edge
-                        t.addEdge(node, node, queryRole, conceptAssertion, dist)
+                        t.addEdge(node, node, queryRole, conceptAssertion+"?", dist)
                     }
                 }
-//                println("Calculating role distances... $j / ${queryRoles.size}")
             }
 
             if(allowConceptAssertionToRole) {
@@ -130,7 +129,7 @@ class DLTransducerFactory {
                     for (databaseRole in dbRoles) {
                         val dist = cacheOrCredit(conceptAssertion, databaseRole)
                         //add transducer edge
-                        t.addEdge(node, node, conceptAssertion, databaseRole, dist)
+                        t.addEdge(node, node, conceptAssertion+"?", databaseRole, dist)
                     }
                 }
 

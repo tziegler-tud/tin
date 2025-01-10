@@ -1,0 +1,175 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="http://www.semanticweb.org/tom/ontologies/2024/10/untitled-ontology-40/"
+     xml:base="http://www.semanticweb.org/tom/ontologies/2024/10/untitled-ontology-40/"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:test_paper1="http://www.semanticweb.org/tindl/examples/1/test_paper1#">
+    <owl:Ontology rdf:about="http://www.semanticweb.org/tindl/examples/1/test_paper1"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.semanticweb.org/tindl/examples/1/test_paper1#has-component -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/tindl/examples/1/test_paper1#has-component">
+        <rdfs:subPropertyOf rdf:resource="http://www.semanticweb.org/tindl/examples/1/test_paper1#has-part"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/tindl/examples/1/test_paper1#has-part -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/tindl/examples/1/test_paper1#has-part"/>
+    
+
+
+    <!-- http://www.semanticweb.org/tindl/examples/1/test_paper1#is-part-of -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/tindl/examples/1/test_paper1#is-part-of"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.semanticweb.org/tindl/examples/1/test_paper1#Car -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/tindl/examples/1/test_paper1#Car">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.semanticweb.org/tindl/examples/1/test_paper1#has-part"/>
+                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/tindl/examples/1/test_paper1#Motor"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/tindl/examples/1/test_paper1#CarFleet -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/tindl/examples/1/test_paper1#CarFleet"/>
+    
+
+
+    <!-- http://www.semanticweb.org/tindl/examples/1/test_paper1#Motor -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/tindl/examples/1/test_paper1#Motor"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Individuals
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.semanticweb.org/tindl/examples/1/test_paper1#a -->
+
+    <owl:NamedIndividual rdf:about="http://www.semanticweb.org/tindl/examples/1/test_paper1#a">
+        <test_paper1:has-component rdf:resource="http://www.semanticweb.org/tindl/examples/1/test_paper1#b"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.semanticweb.org/tindl/examples/1/test_paper1#b -->
+
+    <owl:NamedIndividual rdf:about="http://www.semanticweb.org/tindl/examples/1/test_paper1#b">
+        <rdf:type rdf:resource="http://www.semanticweb.org/tindl/examples/1/test_paper1#Car"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.semanticweb.org/tindl/examples/1/test_paper1#c -->
+
+    <owl:NamedIndividual rdf:about="http://www.semanticweb.org/tindl/examples/1/test_paper1#c">
+        <test_paper1:is-part-of rdf:resource="http://www.semanticweb.org/tindl/examples/1/test_paper1#d"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.semanticweb.org/tindl/examples/1/test_paper1#d -->
+
+    <owl:NamedIndividual rdf:about="http://www.semanticweb.org/tindl/examples/1/test_paper1#d">
+        <rdf:type rdf:resource="http://www.semanticweb.org/tindl/examples/1/test_paper1#CarFleet"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.semanticweb.org/tindl/examples/1/test_paper1#e -->
+
+    <owl:NamedIndividual rdf:about="http://www.semanticweb.org/tindl/examples/1/test_paper1#e">
+        <test_paper1:has-part rdf:resource="http://www.semanticweb.org/tindl/examples/1/test_paper1#d"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.semanticweb.org/tindl/examples/1/test_paper1#f -->
+
+    <owl:NamedIndividual rdf:about="http://www.semanticweb.org/tindl/examples/1/test_paper1#f">
+        <test_paper1:has-part rdf:resource="http://www.semanticweb.org/tindl/examples/1/test_paper1#g"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.semanticweb.org/tindl/examples/1/test_paper1#g -->
+
+    <owl:NamedIndividual rdf:about="http://www.semanticweb.org/tindl/examples/1/test_paper1#g">
+        <rdf:type rdf:resource="http://www.semanticweb.org/tindl/examples/1/test_paper1#Car"/>
+        <test_paper1:has-component rdf:resource="http://www.semanticweb.org/tindl/examples/1/test_paper1#l"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.semanticweb.org/tindl/examples/1/test_paper1#l -->
+
+    <owl:NamedIndividual rdf:about="http://www.semanticweb.org/tindl/examples/1/test_paper1#l">
+        <rdf:type rdf:resource="http://www.semanticweb.org/tindl/examples/1/test_paper1#Motor"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // General axioms
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    <owl:Restriction>
+        <owl:onProperty rdf:resource="http://www.semanticweb.org/tindl/examples/1/test_paper1#is-part-of"/>
+        <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/tindl/examples/1/test_paper1#CarFleet"/>
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/tindl/examples/1/test_paper1#Car"/>
+    </owl:Restriction>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 4.5.26.2023-07-17T20:34:13Z) https://github.com/owlcs/owlapi -->
+

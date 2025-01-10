@@ -16,14 +16,14 @@ import kotlin.streams.toList
 /**
  * wrapper class to provide some high-level utility using the owl reasoner interface
  */
-class CachingDLReasoner(
+class ElkReasoner(
     reasoner: OWLReasoner,
     expressionBuilder: DLExpressionBuilder
 ) : AbstractReasoner(reasoner, expressionBuilder) {
     val superClassCache: HashMap<DLExpression, NodeSet<OWLClass>> = hashMapOf()
     val equivalentClassCache: HashMap<DLExpression, Node<OWLClass>> = hashMapOf()
     val subClassCache: HashMap<DLExpression, HashSet<OWLClass>> = hashMapOf()
-    val propertySubsumptionCache: HashMap<Pair<OWLPropertyExpression, OWLPropertyExpression>, Boolean> = hashMapOf()
+    val propertySubsumptionCache: HashMap<OWLPropertyExpression, List<OWLObjectPropertyExpression>> = hashMapOf()
     val entailmentCache: HashMap<Pair<DLExpression, DLExpression>, Boolean> = hashMapOf()
 
     var superClassCacheHitCounter = 0;
@@ -49,15 +49,19 @@ class CachingDLReasoner(
     }
 
     override fun checkPropertySubsumption(property: OWLObjectPropertyExpression, superProperty: OWLObjectPropertyExpression): Boolean {
-        val cacheEntry = propertySubsumptionCache[Pair(property, superProperty)];
+        val cacheEntry = propertySubsumptionCache[superProperty];
         if(cacheEntry != null){
             propertySubsumptionCacheHitCounter++;
-            return cacheEntry
+            return cacheEntry.contains(property)
         }
-        val subex = expressionBuilder.createPropertySubsumptionExpression(property, superProperty);
-        val isEntailed = reasoner.isEntailed(subex);
-        propertySubsumptionCache[Pair(property, superProperty)] = isEntailed;
-        return isEntailed;
+        val subclasses: MutableList<OWLObjectPropertyExpression> = mutableListOf(superProperty)
+        val subs = reasoner.getSubObjectProperties(superProperty)
+        subs.forEach{sub ->
+            val s = sub.representativeElement
+            subclasses.add(s)
+        }
+        propertySubsumptionCache[property] = subclasses
+        return subclasses.contains(property);
     }
 
     override fun calculateSubClasses(expr: DLExpression, includeNothing: Boolean, includeEquivalent: Boolean): HashSet<OWLClass> {
@@ -68,6 +72,7 @@ class CachingDLReasoner(
         }
         val exp = expr.getClassExpression()
         var classes = reasoner.getSubClasses(exp, false)
+        var classes2 = reasoner.getSubClasses(exp, true)
         //remove owl:Nothing
         if(!includeNothing && classes.isBottomSingleton) {
             classes = OWLClassNodeSet();
@@ -75,7 +80,15 @@ class CachingDLReasoner(
         if(!includeNothing) {
             classes.removeAll { it.isBottomNode }
         }
+
+        if(!includeNothing && classes2.isBottomSingleton) {
+            classes2 = OWLClassNodeSet();
+        }
+        if(!includeNothing) {
+            classes2.removeAll { it.isBottomNode }
+        }
         val resultSet = classes.entities().toList().toHashSet()
+        resultSet.addAll(classes2.entities().toList())
         if(includeEquivalent) {
             val equiv = reasoner.getEquivalentClasses(expr.getClassExpression())
             resultSet.addAll(equiv)
@@ -141,7 +154,7 @@ class CachingDLReasoner(
         if (topClassNode !== null) {
             return topClassNode!!;
         }
-        topClassNode = reasoner.topClassNode;
+        topClassNode = reasoner.getTopClassNode();
         return topClassNode!!;
     }
 

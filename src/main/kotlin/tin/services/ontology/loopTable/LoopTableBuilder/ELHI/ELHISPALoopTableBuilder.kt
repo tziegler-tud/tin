@@ -135,8 +135,6 @@ class ELHISPALoopTableBuilder (
             val hasChanged = calculateNextIteration();
             if(!hasChanged) return table;
         }
-
-        statsTotalSize = table.getSize();
         return table;
     }
 
@@ -173,5 +171,9 @@ class ELHISPALoopTableBuilder (
 
     public fun getExecutionContext(): ExecutionContext {
         return ec;
+    }
+
+    fun getSize(): Int {
+        return table.map.size;
     }
 }

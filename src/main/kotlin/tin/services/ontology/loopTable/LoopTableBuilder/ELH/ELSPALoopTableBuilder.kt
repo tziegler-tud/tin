@@ -128,10 +128,10 @@ class ELSPALoopTableBuilder (
         calculateInitialStep();
 
         //depth 0
-
         updateTable = ELSPALoopTable(table.map);
         println("Calculating iteration 1 / ${maxIterationDepth}")
         calculateFirstIteration();
+
 
 
         for(i in 2..maxIterationDepth) {
@@ -140,7 +140,6 @@ class ELSPALoopTableBuilder (
             val hasChanged = calculateNextIteration();
             if(!hasChanged) return table;
         }
-        statsTotalSize = table.map.size;
         return table;
     }
 
@@ -157,5 +156,9 @@ class ELSPALoopTableBuilder (
 
     public fun getExecutionContext(): ExecutionContext {
         return ec;
+    }
+
+    fun getSize(): Int {
+        return table.map.size;
     }
 }

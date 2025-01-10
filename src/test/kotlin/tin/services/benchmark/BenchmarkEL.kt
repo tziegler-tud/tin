@@ -90,18 +90,21 @@ class BenchmarkEL {
         val initStart = timeSource.markNow()
         val ec = manager.createELExecutionContext(ExecutionContextType.ELH, false);
         val initEnd = timeSource.markNow();
-        val queryAmount = 1000;
+        val queryAmount = 200;
 
         val results = mutableListOf<TaskProcessingBenchmarkResult>();
         val startAllQueries = timeSource.markNow()
 
-        val queryStates = 5
+        var transSizeTotal = 0;
+
+
+        val queryStates = 10
         val queryEdges = 10
 
         for (i in 0 until queryAmount) {
             println("Calculating query $i / $queryAmount")
 
-            val queryGraph = RandomQueryFactory.generateRandomQuery(queryStates,queryEdges, 15);
+            val queryGraph = RandomQueryFactory.generateQuery(queryStates,queryEdges, ec);
             val transducerGraph = DLTransducerFactory.generateEditDistanceTransducer(queryGraph, ec);
             val queryInitialTime = timeSource.markNow()
 //        ec.prewarmSubsumptionCache()
@@ -149,11 +152,14 @@ class BenchmarkEL {
 
             val times = TaskProcessingResultTimes(startTime, spaEndTime, spaEndTime, spEndTime, resultGraphStartTime, resultGraphEndTime, solverStartTime, solverEndTime)
             val reasonerStats = TaskProcessingReasonerStats(stats)
-            val spa = TaskProcessingSpaBuilderStats(builder.statsTotalIterations, builder.statsTotalSize, builder.statsMaxPossibleSize)
-            val sp = TaskProcessingSpBuilderStats(spBuilder.statsTotalSize, spBuilder.statsMaxPossibleSize)
+            val spa = TaskProcessingSpaBuilderStats(builder.statsTotalIterations, builder.getSize(), builder.statsMaxPossibleSize)
+            val sp = TaskProcessingSpBuilderStats(spBuilder.getSize(), spBuilder.statsMaxPossibleSize)
             val resultStats = TaskProcessingResultBuilderStats(resultGraph.nodes.size, resultGraph.edges.size, resultGraphBuilder.maxEdgeCost, resultGraphBuilder.minEdgeCost, resultGraphBuilder.unreachableNodesAmount)
             val benchmarkResult = TaskProcessingBenchmarkResult(times, reasonerStats, spa, sp, resultStats)
             results.add(benchmarkResult);
+
+            transSizeTotal += transducerGraph.edges.size
+
         }
 
         val endAllQueries = timeSource.markNow()
@@ -165,6 +171,7 @@ class BenchmarkEL {
 
         var totalIterationsSum = 0;
         var totalSizeSum = 0;
+        var spTotalSizeSum = 0;
 
         var maxIterations = 0;
         var minIterations = Int.MAX_VALUE;
@@ -172,7 +179,10 @@ class BenchmarkEL {
 
         var maxSize = 0;
         var minSize = Int.MAX_VALUE;
+        var spMaxSize = 0;
+        var spMinSize = Int.MAX_VALUE;
         var avgSize = 0
+        var spAvgSize = 0
 
         var maxSpa: Duration = kotlin.time.Duration.ZERO
         var minSpa: Duration = kotlin.time.Duration.INFINITE
@@ -186,6 +196,7 @@ class BenchmarkEL {
 
             totalIterationsSum += benchmarkResult.spaBuilderStats.totalIterations
             totalSizeSum += benchmarkResult.spaBuilderStats.tableSize;
+            spTotalSizeSum += benchmarkResult.spBuilderStats.tableSize;
 
             if(benchmarkResult.times.spaTime < minSpa) minSpa = benchmarkResult.times.spaTime
             if(benchmarkResult.times.spTime < minSp) minSp = benchmarkResult.times.spTime
@@ -199,6 +210,9 @@ class BenchmarkEL {
             if(benchmarkResult.spaBuilderStats.tableSize < minSize) minSize = benchmarkResult.spaBuilderStats.tableSize
             if(benchmarkResult.spaBuilderStats.tableSize > maxSize) maxSize = benchmarkResult.spaBuilderStats.tableSize
 
+            if(benchmarkResult.spBuilderStats.tableSize < spMinSize) spMinSize = benchmarkResult.spBuilderStats.tableSize
+            if(benchmarkResult.spBuilderStats.tableSize > spMaxSize) spMaxSize = benchmarkResult.spBuilderStats.tableSize
+
 
 
         }
@@ -210,6 +224,10 @@ class BenchmarkEL {
 
         val avgIterations = totalIterationsSum / queryAmount
         val avgSpaSize = totalSizeSum / queryAmount
+        val avgSpSize = spTotalSizeSum / queryAmount
+
+        val transSizeAvg = transSizeTotal / queryAmount
+
 
         //results
         println("___________________________________________________________________________________________________________")
@@ -219,6 +237,7 @@ class BenchmarkEL {
         println(" query amount: $queryAmount")
         println(" query size: + $queryStates / $queryEdges")
         println(" trans:        editDistance")
+        println(" trans edges:  $transSizeAvg")
         println("___________________________________________________________________________________________________________")
 
         println("Loading Ontology: " + (ontoEnd - ontoStart))
@@ -239,5 +258,9 @@ class BenchmarkEL {
         println("Average SP Time: " + avgSp)
         println("Minimal sp time: " + minSp)
         println("Maximal sp time: " + maxSp)
+        println("----------------")
+        println("Average sp size: " + avgSpSize)
+        println("Minimal sp size: " + spMinSize)
+        println("Maximal sp size: " + spMaxSize)
     }
 }

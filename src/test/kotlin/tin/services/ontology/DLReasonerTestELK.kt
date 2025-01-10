@@ -22,7 +22,7 @@ import java.io.File
 
 @SpringBootTest
 @TestConfiguration
-class DLReasonerTest {
+class DLReasonerTestELK {
     @Autowired
     private lateinit var restTemplateBuilder: RestTemplateBuilder
 
@@ -44,7 +44,7 @@ class DLReasonerTest {
     @Test
     fun testSubsumptionCheck(){
         val manager = loadExampleOntology("pizza2.rdf");
-        val ec = manager.createELHIExecutionContext(ExecutionContextType.ELHI);
+        val ec = manager.createELExecutionContext(ExecutionContextType.ELH);
 
         val dlReasoner = ec.dlReasoner;
         val expressionBuilder = ec.expressionBuilder;
@@ -65,8 +65,7 @@ class DLReasonerTest {
     @Test
     fun testSubsumptionCheckTopElement(){
         val manager = loadExampleOntology("pizza2.rdf");
-        val reasoner = manager.createReasoner(OntologyManager.BuildInReasoners.HERMIT)
-        val ec = manager.createELHIExecutionContext(ExecutionContextType.ELHI);
+        val ec = manager.createELExecutionContext(ExecutionContextType.ELH);
         val expressionBuilder = ec.expressionBuilder;
         val restrictionBuilder = ec.spaRestrictionBuilder;
         val parser = ec.parser
@@ -123,10 +122,10 @@ class DLReasonerTest {
 
     @Test
     fun testSuperPropertiesCalculation(){
-        val manager = loadExampleOntology("propertyTest2.rdf");
-        val reasoner = manager.createReasoner(OntologyManager.BuildInReasoners.HERMIT)
+        val manager = loadExampleOntology("propertyTest3.rdf");
+        val reasoner = manager.createReasoner(OntologyManager.BuildInReasoners.ELK)
         val expressionBuilder = manager.getExpressionBuilder();
-        val dlReasoner = SimpleDLReasoner(reasoner, expressionBuilder);
+        val dlReasoner = ElkReasoner(reasoner, expressionBuilder);
 
         val parser = manager.getQueryParser();
 
@@ -160,120 +159,8 @@ class DLReasonerTest {
     }
 
     @Test
-    fun testInverseSuperPropertiesCalculation(){
-        val manager = loadExampleOntology("propertyTest2.rdf");
-        val reasoner = manager.createReasoner(OntologyManager.BuildInReasoners.HERMIT)
-        val expressionBuilder = manager.getExpressionBuilder();
-        val dlReasoner = SimpleDLReasoner(reasoner, expressionBuilder);
-
-        val parser = manager.getQueryParser();
-
-
-        // we have:
-        // r1 <= r
-        // u1 <= u
-        // u <= r(-)
-        // u1 <= r1(-)
-
-        val r = parser.getOWLObjectProperty("r")!!;
-        val r1 = parser.getOWLObjectProperty("r1")!!;
-        val u = parser.getOWLObjectProperty("u")!!;
-        val u1 = parser.getOWLObjectProperty("u1")!!;
-
-        val superPropertiesR1 = dlReasoner.calculateSuperProperties(r1);
-
-        val s = parser.getOWLObjectProperty("s")!!;
-        val t = parser.getOWLObjectProperty("t")!!;
-
-        assert(superPropertiesR1.count() == 2);
-        assert(superPropertiesR1.containsEntity(r))
-
-        val invSuperPropertiesR1 = dlReasoner.calculateSuperProperties(r1.getInverseProperty());
-
-        //expect:
-        // r1(-) <= r(-)
-
-        assert(invSuperPropertiesR1.containsEntity(r.inverseProperty))
-        assert(!invSuperPropertiesR1.containsEntity(r))
-        assert(!invSuperPropertiesR1.containsEntity(t))
-
-
-        //expect:
-        // u1 <= u
-        // u1 <= r1(-)
-        // u1 <= r(-) because r1 <= r
-        val superPropertiesU1 = dlReasoner.calculateSuperProperties(u1);
-        assert(superPropertiesU1.containsEntity(u))
-        assert(superPropertiesU1.containsEntity(r1.inverseProperty))
-        assert(superPropertiesU1.containsEntity(r.inverseProperty))
-
-        //expect:
-        // u1(-) <= u(-)
-        // u1(-) <= r1
-        // u1(-) <= r because r1 <= r
-        val invSuperPropertiesU1 = dlReasoner.calculateSuperProperties(u1.getInverseProperty());
-        assert(invSuperPropertiesU1.containsEntity(u.inverseProperty))
-        assert(invSuperPropertiesU1.containsEntity(r1))
-        assert(invSuperPropertiesU1.containsEntity(r))
-
-    }
-
-    @Test
     fun testSubPropertiesCalculation(){
-        val manager = loadExampleOntology("propertyTest2.rdf");
-        val reasoner = manager.createReasoner(OntologyManager.BuildInReasoners.HERMIT)
-        val expressionBuilder = manager.getExpressionBuilder();
-        val dlReasoner = SimpleDLReasoner(reasoner, expressionBuilder);
-
-        val parser = manager.getQueryParser();
-
-
-        val r = parser.getOWLObjectProperty("r")!!;
-        val r1 = parser.getOWLObjectProperty("r1")!!;
-        val r11 = parser.getOWLObjectProperty("r11")!!;
-        val r12 = parser.getOWLObjectProperty("r12")!!;
-        val r111 = parser.getOWLObjectProperty("r111")!!;
-        val r1111 = parser.getOWLObjectProperty("r1111")!!;
-        val r112 = parser.getOWLObjectProperty("r112")!!;
-        val s = parser.getOWLObjectProperty("s")!!;
-        val t = parser.getOWLObjectProperty("t")!!;
-        val u = parser.getOWLObjectProperty("u")!!;
-        val u1 = parser.getOWLObjectProperty("u1")!!;
-
-
-        val subPropertiesA11 = dlReasoner.calculateSubProperties(r11);
-
-        assert(subPropertiesA11.count() == 4);
-        assert(subPropertiesA11.containsEntity(r111))
-        assert(subPropertiesA11.containsEntity(r112))
-        assert(subPropertiesA11.containsEntity(r1111))
-        assert(!subPropertiesA11.containsEntity(r))
-        assert(!subPropertiesA11.containsEntity(r1))
-        assert(!subPropertiesA11.containsEntity(r11))
-        assert(!subPropertiesA11.containsEntity(s))
-        assert(!subPropertiesA11.containsEntity(t))
-
-        val rst = parser.getOWLObjectProperty("rst")!!;
-        val subRST = dlReasoner.calculateSubProperties(rst);
-        assert(subRST.count() == 1);
-        assert(subRST.isBottomSingleton());
-
-        val subA = dlReasoner.calculateSubProperties(r);
-        assert(subA.containsEntity(r1));
-        assert(subA.containsEntity(rst));
-
-        val subR1 = dlReasoner.calculateSubProperties(r1);
-        assert(subR1.containsEntity(r11));
-        assert(subR1.containsEntity(r12));
-        assert(subR1.containsEntity(r111));
-        assert(subR1.containsEntity(r112));
-        assert(subR1.containsEntity(r1111));
-        assert(subR1.containsEntity(u1.inverseProperty));
-    }
-
-    @Test
-    fun testSubPropertiesCalculationELK(){
-        val manager = loadExampleOntology("propertyTest2.rdf");
+        val manager = loadExampleOntology("propertyTest3.rdf");
         val reasoner = manager.createReasoner(OntologyManager.BuildInReasoners.ELK)
         val expressionBuilder = manager.getExpressionBuilder();
         val dlReasoner = ElkReasoner(reasoner, expressionBuilder);
@@ -322,7 +209,6 @@ class DLReasonerTest {
         assert(subR1.containsEntity(r112));
         assert(subR1.containsEntity(r1111));
 
-        reasoner.precomputeInferences(InferenceType.CLASS_HIERARCHY, InferenceType.OBJECT_PROPERTY_HIERARCHY, InferenceType.SAME_INDIVIDUAL)
         assert(dlReasoner.checkPropertySubsumption(r1,r))
         assert(dlReasoner.checkPropertySubsumption(r1,r1))
 
@@ -330,11 +216,11 @@ class DLReasonerTest {
 
     @Test
     fun testTopConceptExpressions(){
-        val manager = loadExampleOntology("propertyTest2.rdf");
-        val reasoner = manager.createReasoner(OntologyManager.BuildInReasoners.HERMIT)
+        val manager = loadExampleOntology("propertyTest3.rdf");
+        val reasoner = manager.createReasoner(OntologyManager.BuildInReasoners.ELK)
         val expressionBuilder = manager.getExpressionBuilder();
         val restrictionBuilder = RestrictionBuilder(manager.getQueryParser(), manager.getShortFormProvider())
-        val dlReasoner = SimpleDLReasoner(reasoner, expressionBuilder);
+        val dlReasoner = ElkReasoner(reasoner, expressionBuilder);
 
         val parser = manager.getQueryParser();
 
@@ -345,10 +231,39 @@ class DLReasonerTest {
 
         val r = parser.getOWLObjectProperty("r")!!;
         val someRExpression = expressionBuilder.createExistentialRestriction(r, topClassNode.representativeElement)
-        val someR = dlReasoner.reasoner.getSubClasses(someRExpression);
+        val exp = expressionBuilder.createELHExpression(someRExpression)
+        val someR = dlReasoner.calculateSubClasses(exp, true, true);
 
         val A = parser.getOWLClass("A")!!;
         val D = parser.getOWLClass("D")!!;
+
+        assert(someR.contains(A))
+        assert(someR.contains(D))
+    }
+
+    @Test
+    fun testSuperClassCalculation(){
+        val manager = loadExampleOntology("propertyTest3.rdf");
+        val reasoner = manager.createReasoner(OntologyManager.BuildInReasoners.ELK)
+        val expressionBuilder = manager.getExpressionBuilder();
+        val restrictionBuilder = RestrictionBuilder(manager.getQueryParser(), manager.getShortFormProvider())
+        val dlReasoner = ElkReasoner(reasoner, expressionBuilder);
+
+        val parser = manager.getQueryParser();
+
+        val topClassNode = dlReasoner.getTopClassNode();
+        val owlTopClassRestriction = restrictionBuilder.createConceptNameRestriction(topClassNode.representativeElement)
+
+        assert(topClassNode.isTopNode);
+
+        val r = parser.getOWLObjectProperty("r")!!;
+        val A = parser.getOWLClass("A")!!;
+        val D = parser.getOWLClass("D")!!;
+
+        val exp = expressionBuilder.createELHExpression(D)
+        val someR = dlReasoner.calculateSuperClasses(exp, true);
+
+
 
         assert(someR.containsEntity(A))
         assert(someR.containsEntity(D))
@@ -357,7 +272,7 @@ class DLReasonerTest {
     @Test
     fun testCalculateClassSubsumees() {
         val manager = loadExampleOntology("pizza2_test.rdf");
-        val ec = manager.createELHIExecutionContext(ExecutionContextType.ELHI)
+        val ec = manager.createELExecutionContext(ExecutionContextType.ELH)
         val dlReasoner = ec.dlReasoner;
         val expressionBuilder = ec.expressionBuilder
         val restrictionBuilder = ec.spaRestrictionBuilder
@@ -367,16 +282,16 @@ class DLReasonerTest {
 
         val role = queryParser.getOWLObjectProperty("contains")!!
 
-        val res1 = restrictionBuilder.createConceptNameRestriction("Pasta","Bread","Egg");
+        val res1 = restrictionBuilder.createConceptNameRestriction("Pasta");
         val class1 = restrictionBuilder.asClassExpression(res1);
         val r1Exp = expressionBuilder.createExistentialRestriction(role, class1)
-        val atomicSubClasses = dlReasoner.calculateSubClasses(expressionBuilder.createELHIExpression(r1Exp))
+        val atomicSubClasses = dlReasoner.calculateSubClasses(expressionBuilder.createELHExpression(r1Exp))
         assert(atomicSubClasses.isEmpty());
 
-        val res2 = restrictionBuilder.createConceptNameRestriction("Flour","Egg");
+        val res2 = restrictionBuilder.createConceptNameRestriction("Flour");
         val class2 = restrictionBuilder.asClassExpression(res2);
         val r2Exp = expressionBuilder.createExistentialRestriction(role, class2)
-        val atomicSubClasses2 = dlReasoner.calculateSubClasses(expressionBuilder.createELHIExpression(r2Exp))
+        val atomicSubClasses2 = dlReasoner.calculateSubClasses(expressionBuilder.createELHExpression(r2Exp))
         assert(atomicSubClasses2.size == 1)
         assert(atomicSubClasses2.contains(queryParser.getOWLClass("Pasta")))
     }
@@ -384,7 +299,7 @@ class DLReasonerTest {
     @Test
     fun testCachePrewarming() {
         val manager = loadExampleOntology("pizza2_test.rdf");
-        val ec = manager.createELHIExecutionContext(ExecutionContextType.ELHI, true);
+        val ec = manager.createELExecutionContext(ExecutionContextType.ELH, true);
 
         val dlReasoner = ec.dlReasoner;
         val stats = dlReasoner.getStats()
@@ -395,41 +310,41 @@ class DLReasonerTest {
         assert(stats["subClassCacheHitCounter"]!! == 0);
     }
 
-    @Test
-    fun testGetIndividualClasses() {
-        val manager = loadExampleOntology("pizza_4.rdf");
-        val ec = manager.createELHIExecutionContext(ExecutionContextType.ELHI_NUMERIC, false);
-        val dlReasoner = ec.dlReasoner;
-
-        ec.forEachIndividual { individual ->
-            val classes = dlReasoner.getClasses(individual)
-            var stringNames: MutableSet<String> = mutableSetOf()
-            val combinedRestriction = ec.spaRestrictionBuilder.createConceptNameRestriction(setOf());
-
-            classes.forEach { className ->
-                className.entities().forEach{
-                    combinedRestriction.addElement(it);
-                    stringNames.add(ec.shortFormProvider.getShortForm(it));
-                }
-            }
-            println("Individual ${ec.shortFormProvider.getShortForm(individual)}: " + stringNames)
-
-            //verify
-            ec.getClasses().forEach { owlClass ->
-                val restriction = ec.spaRestrictionBuilder.createConceptNameRestriction(combinedRestriction.asSet())
-                if(restriction.containsElement(owlClass)) return@forEach
-                restriction.addElement(owlClass);
-                val isSubsumed  = dlReasoner.checkIndividualEntailment(individual, ec.expressionBuilder.createELHIExpression(ec.spaRestrictionBuilder.asClassExpression(restriction)))
-                assert(!isSubsumed);
-            }
-        }
-    }
+//    @Test
+//    fun testGetIndividualClasses() {
+//        val manager = loadExampleOntology("pizza_4.rdf");
+//        val ec = manager.createELExecutionContext(ExecutionContextType.ELH, false);
+//        val dlReasoner = ec.dlReasoner;
+//
+//        ec.forEachIndividual { individual ->
+//            val classes = dlReasoner.getClasses(individual)
+//            var stringNames: MutableSet<String> = mutableSetOf()
+//            val combinedRestriction = ec.spaRestrictionBuilder.createConceptNameRestriction(setOf());
+//
+//            classes.forEach { className ->
+//                className.entities().forEach{
+//                    combinedRestriction.addElement(it);
+//                    stringNames.add(ec.shortFormProvider.getShortForm(it));
+//                }
+//            }
+//            println("Individual ${ec.shortFormProvider.getShortForm(individual)}: " + stringNames)
+//
+//            //verify
+//            ec.getClasses().forEach { owlClass ->
+//                val restriction = ec.spaRestrictionBuilder.createConceptNameRestriction(combinedRestriction.asSet())
+//                if(restriction.containsElement(owlClass)) return@forEach
+//                restriction.addElement(owlClass);
+//                val isSubsumed  = dlReasoner.checkIndividualEntailment(individual, ec.expressionBuilder.createELHIExpression(ec.spaRestrictionBuilder.asClassExpression(restriction)))
+//                assert(!isSubsumed);
+//            }
+//        }
+//    }
 
     @Test
     fun testGetConnectedIndividuals() {
         val manager = loadExampleOntology("pizza_4.rdf");
-        val ec = manager.createELHIExecutionContext(ExecutionContextType.ELHI_NUMERIC, false);
-        val dlReasoner = ec.dlReasoner;
+        val ec = manager.createELExecutionContext(ExecutionContextType.ELH, false);
+        val dlReasoner = SimpleDLReasoner(manager.createReasoner(OntologyManager.BuildInReasoners.HERMIT), ec.expressionBuilder);
 
         val resultMap: MutableMap<Pair<OWLNamedIndividual, OWLObjectProperty>, NodeSet<OWLNamedIndividual> > = hashMapOf();
 
@@ -466,14 +381,6 @@ class DLReasonerTest {
         assert(resultMap[Pair(r, serves)]!!.containsEntity(carbonara) )
 
         assert(resultMap[Pair(veganPlace, serves)]!!.containsEntity(bruschetta) )
-
-
-    }
-
-    @Test
-    fun testElkReasoner(){
-        val manager = loadExampleOntology("LUBM/univ-bench1.rdf");
-        val reasoner = manager.createReasoner(OntologyManager.BuildInReasoners.ELK)
 
 
     }

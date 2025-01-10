@@ -36,7 +36,7 @@ class ELResultGraphBuilder(
                         ec.forEachIndividual { individual ->
 
                             //calculate basic classes
-                            val classes = ec.dlReasoner.getClasses(individual);
+                            val classes = ec.resultGraphReasoner.getClasses(individual);
                             var minimumCost: Int? = null
 
                             val candidates: MutableSet<Pair<SingleClassLoopTableEntryRestriction, Int>> = mutableSetOf()

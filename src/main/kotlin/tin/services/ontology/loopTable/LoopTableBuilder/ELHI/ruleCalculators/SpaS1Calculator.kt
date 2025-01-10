@@ -430,13 +430,6 @@ class SpaS1Calculator(
                                                 }
                                                 eliminatedCandidatesMap[M1Restriction] = candidateCost;
 
-                                                /**
-                                                 * debug line
-                                                 */
-                                                csCounter++;
-                                                println("Calculating candidate set " + csCounter + "/ " + sortedCandidateResultList.size);
-//                                                if(tcCounter == 10) return@candidateEdges
-
                                                 //calculate basic class that are subsumed by A <= €R.M1
                                                 val atomicSubsumers = dlReasoner.calculateSubClasses(rM1Exp)
 //                                                val atomicSubsumers: HashSet<OWLClass> = hashSetOf()
@@ -448,26 +441,11 @@ class SpaS1Calculator(
                                                 //if there is at least one atomic subsumer, we dont have to check the allClasses set as it is trivially satisfied
                                                 if (atomicSubsumers.isEmpty()) {
 
-                                                    /**
-                                                     * Test: build restriction consisting of all concept names
-                                                     */
-
-
                                                     val isEntailed = dlReasoner.checkIsSubsumed(allClassExpr, rM1Exp)
                                                     if(!isEntailed) return@candidates;
                                                 }
 
-                                                var tcCounter = 0;
-
                                                 ec.forEachTailsetDescending tailsets@{  tailset ->
-//                                                ec.tailsetsAsClasses.forEach { tailset ->
-
-                                                    /**
-                                                     * debug line
-                                                     */
-                                                    tcCounter++;
-//                                                    println("Calculating tailset " + tcCounter + "/ " + ec.tailsetSize);
-
                                                     val restriction = tailset
 
                                                     val entry = ELHISPALoopTableEntry(
@@ -477,7 +455,6 @@ class SpaS1Calculator(
                                                         transducerTarget,
                                                         restriction
                                                     )
-
 
                                                     val costCutoff = table.get(entry)
                                                     //check if the added weight of transducer edges is already higher than the current entry

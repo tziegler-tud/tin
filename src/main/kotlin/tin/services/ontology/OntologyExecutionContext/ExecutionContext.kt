@@ -15,6 +15,7 @@ import tin.services.ontology.loopTable.LoopTableEntryRestriction.spa.MultiClassL
 interface ExecutionContext {
 
     val dlReasoner: DLReasoner
+    val resultGraphReasoner: DLReasoner
     val expressionBuilder: DLExpressionBuilder
     val parser: DLQueryParser
     val shortFormProvider: ShortFormProvider

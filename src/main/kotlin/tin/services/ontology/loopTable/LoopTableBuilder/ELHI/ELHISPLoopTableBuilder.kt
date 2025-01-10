@@ -33,4 +33,8 @@ class ELHISPLoopTableBuilder (
     public fun getExecutionContext(): ExecutionContext {
         return ec;
     }
+
+    fun getSize(): Int {
+        return table.map.size;
+    }
 }

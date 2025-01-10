@@ -92,17 +92,19 @@ class BenchmarkELHI {
         val queryAmount = 10;
 
         val queryStates = 5
-        val queryEdges = 10
+        val queryEdges = 3
 
         val results = mutableListOf<TaskProcessingBenchmarkResult>();
         val startAllQueries = timeSource.markNow()
+
+        var transSizeTotal = 0;
 
         for (i in 0 until queryAmount) {
             println("Calculating query $i / $queryAmount")
             val ec = manager.createELHIExecutionContext(ExecutionContextType.ELHI_NUMERIC, false);
             ec.dlReasoner.clearCache();
 
-            val queryGraph = RandomQueryFactory.generateRandomQuery(queryStates,queryEdges, 15);
+            val queryGraph = RandomQueryFactory.generateQuery(queryStates,queryEdges, ec);
             val transducerGraph = DLTransducerFactory.generateEditDistanceTransducer(queryGraph, ec);
             val queryInitialTime = timeSource.markNow()
 //        ec.prewarmSubsumptionCache()
@@ -150,11 +152,13 @@ class BenchmarkELHI {
 
             val times = TaskProcessingResultTimes(startTime, spaEndTime, spaEndTime, spEndTime, resultGraphStartTime, resultGraphEndTime, solverStartTime, solverEndTime)
             val reasonerStats = TaskProcessingReasonerStats(stats)
-            val spa = TaskProcessingSpaBuilderStats(builder.statsTotalIterations, builder.statsTotalSize, builder.statsMaxPossibleSize)
-            val sp = TaskProcessingSpBuilderStats(spBuilder.statsTotalSize, spBuilder.statsMaxPossibleSize)
+            val spa = TaskProcessingSpaBuilderStats(builder.statsTotalIterations, builder.getSize(), builder.statsMaxPossibleSize)
+            val sp = TaskProcessingSpBuilderStats(spBuilder.statsTotalSize, spBuilder.getSize())
             val resultStats = TaskProcessingResultBuilderStats(resultGraph.nodes.size, resultGraph.edges.size, resultGraphBuilder.maxEdgeCost, resultGraphBuilder.minEdgeCost, resultGraphBuilder.unreachableNodesAmount)
             val benchmarkResult = TaskProcessingBenchmarkResult(times, reasonerStats, spa, sp, resultStats)
             results.add(benchmarkResult);
+
+            transSizeTotal += transducerGraph.edges.size
         }
 
         val endAllQueries = timeSource.markNow()
@@ -212,6 +216,8 @@ class BenchmarkELHI {
         val avgIterations = totalIterationsSum / queryAmount
         val avgSpaSize = totalSizeSum / queryAmount
 
+        val transSizeAvg = transSizeTotal / queryAmount
+
         //results
         println("___________________________________________________________________________________________________________")
         println("                                       RESULTS")
@@ -220,6 +226,7 @@ class BenchmarkELHI {
         println(" query amount: $queryAmount")
         println(" query size: + $queryStates / $queryEdges")
         println(" trans:        editDistance")
+        println(" trans edges:  $transSizeAvg")
         println("___________________________________________________________________________________________________________")
 
         println("Loading Ontology: " + (ontoEnd - ontoStart))
