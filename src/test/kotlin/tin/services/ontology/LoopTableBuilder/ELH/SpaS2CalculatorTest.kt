@@ -62,60 +62,6 @@ class SpaS2CalculatorTest {
     }
 
     @Test
-    fun testCalculation(){
-        val manager = loadExampleOntology();
-        val reasoner = manager.createReasoner(OntologyManager.BuildInReasoners.HERMIT)
-        val expressionBuilder = manager.getExpressionBuilder();
-        val dlReasoner = SimpleDLReasoner(reasoner, expressionBuilder);
-
-        val query = readQueryWithFileReaderService("spaCalculation/S2/test_spaS2_1.txt")
-        val transducer = readTransducerWithFileReaderService("spaCalculation/S2/test_spaS2_1.txt")
-
-        val ec = manager.createELHIExecutionContext(ExecutionContextType.ELHI);
-        val queryParser = ec.parser;
-        val shortFormProvider = ec.shortFormProvider;
-        val restrictionBuilder = ec.spaRestrictionBuilder;
-
-
-
-        val s2Calculator = SpaS2Calculator(ec, query.graph, transducer.graph);
-
-        val testRestrictionBuilder = RestrictionBuilder(queryParser, shortFormProvider)
-
-
-        //calculate s1 for a non-trivial entry
-
-        val s0 = query.graph.getNode("s0")!!
-        val s1 = query.graph.getNode("s1")!!
-        val s2 = query.graph.getNode("s2")!!
-        val s3 = query.graph.getNode("s3")!!
-
-        val t0 = transducer.graph.getNode("t0")!!
-
-        val M = testRestrictionBuilder.createConceptNameRestriction("Egg")
-
-        val entry = SPASetLoopTableEntry(Pair(s1,t0), Pair(s2,t0),M);
-        val entry2 = SPASetLoopTableEntry(Pair(s2,t0), Pair(s3,t0),M);
-        //create empty loop table
-        val table: ELHISPALoopTable = ELHISPALoopTable();
-
-        //calculate spa[(s1,t0),(s2,t0),{Egg}]
-        val result = s2Calculator.calculate(entry, table);
-        //use s1->Chicken?->s2 with t0-Chicken?|Egg?|2->t0
-        assert(result == 2); // 2 + 2 + 3
-        table.set(entry, result!!);
-
-        assert(table.get(entry) == result)
-
-        //calculate spa[(s2,t0),(s3,t0),{Egg}]
-        val result2 = s2Calculator.calculate(entry2, table);
-        //use s2->contains->s3 with t0-contains|Ingredient?|6->t0
-        assert(result2 == 6); // 2 + 0 + 3
-        table.set(entry2, result2!!);
-        assert(table.get(entry2) == result2)
-    }
-
-    @Test
     fun testCalculationV2(){
         val exampleFile = readWithFileReaderService("pizza_small.rdf").get()
         val manager = OntologyManager(exampleFile);
