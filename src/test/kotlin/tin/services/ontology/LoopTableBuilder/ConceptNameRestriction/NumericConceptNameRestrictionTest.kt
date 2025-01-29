@@ -43,7 +43,6 @@ class NumericConceptNameRestrictionTest {    @Autowired
 
     fun loadExampleOntology() : OntologyManager {
         val exampleFile = readWithFileReaderService("pizza2.rdf").get()
-//        val exampleFile = readWithFileReaderService("univ-bench.owl.rdf").get()
         val manager = OntologyManager(exampleFile);
         return manager
     }

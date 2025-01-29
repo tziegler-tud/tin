@@ -1,9 +1,0 @@
-nodes
-s0, true,  false
-s1, false, false
-s2, false, true
-s3, false, true
-edges
-s0, s1, GraduateStudent?
-s1, s2, takesCourse
-s2, s3, Course

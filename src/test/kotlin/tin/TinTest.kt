@@ -12,27 +12,6 @@ import tin.services.internal.ProductAutomatonServiceTest
 @Service
 class TinTest {
 
-    @Autowired
-    lateinit var productAutomatonServiceTest: ProductAutomatonServiceTest
-
-    @Autowired
-    lateinit var dijkstraQueryAnsweringServiceTest: DijkstraQueryAnsweringServiceTest
-
-    @Test
-    fun testFileReaders(){
-
-    }
-
-    @Test
-    fun testProductAutomatonBuilder() {
-
-    }
-
-    @Test
-    fun testDijkstra() {
-        // test 3 computation modes
-    }
-
     @Test
     fun testAlphabet(){
         val a1 = Alphabet();

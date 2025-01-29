@@ -64,35 +64,11 @@ class ELResultGraphBuilderTest {
         val query = readQueryWithFileReaderService("resultGraph/test1.txt")
         val transducer = readTransducerWithFileReaderService("resultGraph/test1.txt")
 
-        val queryGraph = query.graph;
-        val transducerGraph = transducer.graph;
-
-        val s0 = queryGraph.getNode("s0")!!
-        val s1 = queryGraph.getNode("s1")!!
-        val s2 = queryGraph.getNode("s2")!!
-
-        val t0 = transducerGraph.getNode("t0")!!
-        val t1 = transducerGraph.getNode("t1")!!
-
-        val beer = ec.parser.getNamedIndividual("beer")!!;
-        val bruschetta = ec.parser.getNamedIndividual("bruschetta")!!;
-        val carbonara = ec.parser.getNamedIndividual("carbonara")!!;
-        val place1 = ec.parser.getNamedIndividual("place1")!!;
-        val place2 = ec.parser.getNamedIndividual("place2")!!;
-        val r = ec.parser.getNamedIndividual("r")!!;
-        val veganPlace = ec.parser.getNamedIndividual("VeganPlace")!!
-        val serves = ec.parser.getOWLObjectProperty("serves")!!
-        val serves_drink = ec.parser.getOWLObjectProperty("serves_drink")!!
-        val serves_meal = ec.parser.getOWLObjectProperty("serves_meal")!!
-
-
         val resultGraphBuilder = ELResultGraphBuilder(ec, query.graph, transducer.graph)
         val restrictedGraph = resultGraphBuilder.constructRestrictedGraph();
         val comparisonGraph = buildComparisonGraphRestricted(ec, query.graph, transducer.graph);
 
         assert(restrictedGraph == comparisonGraph)
-
-
     }
 
     @Test
@@ -101,27 +77,6 @@ class ELResultGraphBuilderTest {
         val ec = manager.createELExecutionContext(ExecutionContextType.ELH);
         val query = readQueryWithFileReaderService("resultGraph/test1.txt")
         val transducer = readTransducerWithFileReaderService("resultGraph/test1.txt")
-
-        val queryGraph = query.graph;
-        val transducerGraph = transducer.graph;
-
-        val s0 = queryGraph.getNode("s0")!!
-        val s1 = queryGraph.getNode("s1")!!
-        val s2 = queryGraph.getNode("s2")!!
-
-        val t0 = transducerGraph.getNode("t0")!!
-        val t1 = transducerGraph.getNode("t1")!!
-
-        val beer = ec.parser.getNamedIndividual("beer")!!;
-        val bruschetta = ec.parser.getNamedIndividual("bruschetta")!!;
-        val carbonara = ec.parser.getNamedIndividual("carbonara")!!;
-        val place1 = ec.parser.getNamedIndividual("place1")!!;
-        val place2 = ec.parser.getNamedIndividual("place2")!!;
-        val r = ec.parser.getNamedIndividual("r")!!;
-        val veganPlace = ec.parser.getNamedIndividual("VeganPlace")!!
-        val serves = ec.parser.getOWLObjectProperty("serves")!!
-        val serves_drink = ec.parser.getOWLObjectProperty("serves_drink")!!
-        val serves_meal = ec.parser.getOWLObjectProperty("serves_meal")!!
 
 
         val testTable = generateTestTable(ec, query.graph, transducer.graph);
@@ -144,15 +99,7 @@ class ELResultGraphBuilderTest {
         val t1 = transducerGraph.getNode("t1")!!
 
         val beer = ec.parser.getNamedIndividual("beer")!!;
-        val bruschetta = ec.parser.getNamedIndividual("bruschetta")!!;
-        val carbonara = ec.parser.getNamedIndividual("carbonara")!!;
-        val place1 = ec.parser.getNamedIndividual("place1")!!;
-        val place2 = ec.parser.getNamedIndividual("place2")!!;
-        val r = ec.parser.getNamedIndividual("r")!!;
         val veganPlace = ec.parser.getNamedIndividual("VeganPlace")!!
-        val serves = ec.parser.getOWLObjectProperty("serves")!!
-        val serves_drink = ec.parser.getOWLObjectProperty("serves_drink")!!
-        val serves_meal = ec.parser.getOWLObjectProperty("serves_meal")!!
 
         comparisonGraph.addEdge(ResultNode(s0,t0,beer), ResultNode(s1,t0,beer), 4)
         comparisonGraph.addEdge(ResultNode(s0,t1,beer), ResultNode(s1,t1,beer), 7)
@@ -180,10 +127,6 @@ class ELResultGraphBuilderTest {
         val place2 = ec.parser.getNamedIndividual("place2")!!;
         val r = ec.parser.getNamedIndividual("r")!!;
         val veganPlace = ec.parser.getNamedIndividual("VeganPlace")!!
-        val serves = ec.parser.getOWLObjectProperty("serves")!!
-        val serves_drink = ec.parser.getOWLObjectProperty("serves_drink")!!
-        val serves_meal = ec.parser.getOWLObjectProperty("serves_meal")!!
-
 
         queryGraph.nodes.forEach { queryNode ->
             transducerGraph.nodes.forEach { transducerNode ->
@@ -229,31 +172,15 @@ class ELResultGraphBuilderTest {
 
         val s0 = queryGraph.getNode("s0")!!
         val s1 = queryGraph.getNode("s1")!!
-        val s2 = queryGraph.getNode("s2")!!
 
         val t0 = transducerGraph.getNode("t0")!!
         val t1 = transducerGraph.getNode("t1")!!
 
-        val beer = ec.parser.getNamedIndividual("beer")!!;
         val beerRes = ec.spRestrictionBuilder.createConceptNameRestriction("Beer")
-
-        val bruschetta = ec.parser.getNamedIndividual("bruschetta")!!;
-        val carbonara = ec.parser.getNamedIndividual("carbonara")!!;
-        val place1 = ec.parser.getNamedIndividual("place1")!!;
-        val place2 = ec.parser.getNamedIndividual("place2")!!;
-        val r = ec.parser.getNamedIndividual("r")!!;
-        val veganPlace = ec.parser.getNamedIndividual("VeganPlace")!!
         val veganPlaceRes = ec.spRestrictionBuilder.createConceptNameRestriction("VeganRestaurant")
 
-        val serves = ec.parser.getOWLObjectProperty("serves")!!
-        val serves_drink = ec.parser.getOWLObjectProperty("serves_drink")!!
-        val serves_meal = ec.parser.getOWLObjectProperty("serves_meal")!!
-
         val e1 = ELSPLoopTableEntry(Pair(s0,t0), Pair(s1,t0), beerRes);
-        val e1Val = 4;
-
         val e2 = ELSPLoopTableEntry(Pair(s0,t1), Pair(s1,t1), beerRes);
-
         val e3 = ELSPLoopTableEntry(Pair(s0,t0), Pair(s1,t0), veganPlaceRes);
 
         spTable.set(e1, 4)

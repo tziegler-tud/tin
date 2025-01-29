@@ -32,7 +32,6 @@ class OntologyManagerTest {
         return manager
     }
 
-//    private val ontologyTestUtils = OntologyTestUtils();
     @Test
     fun testInstanceQueries(){
         val manager = loadExampleOntology();

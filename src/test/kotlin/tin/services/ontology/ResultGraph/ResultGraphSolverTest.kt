@@ -65,22 +65,14 @@ class ResultGraphSolverTest {
         val allPathsList = fwSolver.getAllShortestPaths()
 
         val s0 = queryGraph.getNode("s0")!!
-        val s1 = queryGraph.getNode("s1")!!
         val s2 = queryGraph.getNode("s2")!!
 
         val t0 = transducerGraph.getNode("t0")!!
         val t1 = transducerGraph.getNode("t1")!!
 
-        val beer = ec.parser.getNamedIndividual("beer")!!;
         val bruschetta = ec.parser.getNamedIndividual("bruschetta")!!;
-        val carbonara = ec.parser.getNamedIndividual("carbonara")!!;
-        val place1 = ec.parser.getNamedIndividual("place1")!!;
-        val place2 = ec.parser.getNamedIndividual("place2")!!;
         val r = ec.parser.getNamedIndividual("r")!!;
         val veganPlace = ec.parser.getNamedIndividual("VeganPlace")!!
-        val serves = ec.parser.getOWLObjectProperty("serves")!!
-        val serves_drink = ec.parser.getOWLObjectProperty("serves_drink")!!
-        val serves_meal = ec.parser.getOWLObjectProperty("serves_meal")!!
 
         val s0t0VeganPlace = ResultNode(s0, t0, veganPlace);
         val s2t1VeganPlace = ResultNode(s2, t1, veganPlace);

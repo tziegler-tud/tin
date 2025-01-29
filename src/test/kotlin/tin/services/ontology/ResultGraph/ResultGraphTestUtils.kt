@@ -12,7 +12,6 @@ import tin.services.ontology.loopTable.loopTableEntry.IndividualLoopTableEntry
 class ResultGraphTestUtils {
 
     fun buildComparisonGraphRestricted(ec: ExecutionContext, queryGraph: QueryGraph, transducerGraph: TransducerGraph) : ResultGraph {
-        //build comparison graph
         val comparisonGraph = ResultGraph()
 
         val s0 = queryGraph.getNode("s0")!!
@@ -29,15 +28,9 @@ class ResultGraphTestUtils {
         val place2 = ec.parser.getNamedIndividual("place2")!!;
         val r = ec.parser.getNamedIndividual("r")!!;
         val veganPlace = ec.parser.getNamedIndividual("VeganPlace")!!
-        val serves = ec.parser.getOWLObjectProperty("serves")!!
-        val serves_drink = ec.parser.getOWLObjectProperty("serves_drink")!!
-        val serves_meal = ec.parser.getOWLObjectProperty("serves_meal")!!
-
 
         queryGraph.nodes.forEach { queryNode ->
             transducerGraph.nodes.forEach { transducerNode ->
-                var isInitialState = false;
-                var isFinalState = false;
                 comparisonGraph.addNode(ResultNode(queryNode,transducerNode,beer))
                 comparisonGraph.addNode(ResultNode(queryNode,transducerNode,bruschetta))
                 comparisonGraph.addNode(ResultNode(queryNode,transducerNode,carbonara))
@@ -108,7 +101,6 @@ class ResultGraphTestUtils {
 
         val s0 = queryGraph.getNode("s0")!!
         val s1 = queryGraph.getNode("s1")!!
-        val s2 = queryGraph.getNode("s2")!!
 
         val t0 = transducerGraph.getNode("t0")!!
         val t1 = transducerGraph.getNode("t1")!!
@@ -116,23 +108,11 @@ class ResultGraphTestUtils {
         val beer = ec.parser.getNamedIndividual("beer")!!;
         val beerRes = ec.spRestrictionBuilder.createNamedIndividualRestriction(beer)
 
-        val bruschetta = ec.parser.getNamedIndividual("bruschetta")!!;
-        val carbonara = ec.parser.getNamedIndividual("carbonara")!!;
-        val place1 = ec.parser.getNamedIndividual("place1")!!;
-        val place2 = ec.parser.getNamedIndividual("place2")!!;
-        val r = ec.parser.getNamedIndividual("r")!!;
         val veganPlace = ec.parser.getNamedIndividual("VeganPlace")!!
         val veganPlaceRes = ec.spRestrictionBuilder.createNamedIndividualRestriction(veganPlace)
 
-        val serves = ec.parser.getOWLObjectProperty("serves")!!
-        val serves_drink = ec.parser.getOWLObjectProperty("serves_drink")!!
-        val serves_meal = ec.parser.getOWLObjectProperty("serves_meal")!!
-
         val e1 = IndividualLoopTableEntry(Pair(s0,t0), Pair(s1,t0), beerRes);
-        val e1Val = 4;
-
         val e2 = IndividualLoopTableEntry(Pair(s0,t1), Pair(s1,t1), beerRes);
-
         val e3 = IndividualLoopTableEntry(Pair(s0,t0), Pair(s1,t0), veganPlaceRes);
 
         spTable.set(e1, 4)
