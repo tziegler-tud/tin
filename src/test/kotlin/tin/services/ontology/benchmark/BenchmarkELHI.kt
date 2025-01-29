@@ -1,4 +1,4 @@
-package tin.services.ontology.IntegrationTests.SNOWMED
+package tin.services.benchmark
 
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -6,7 +6,6 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.context.TestConfiguration
 import tin.model.v2.ResultGraph.ResultGraph
 import tin.model.v2.ResultGraph.ResultNode
-import tin.model.v2.Tasks.BenchmarkResult
 import tin.model.v2.query.QueryGraph
 import tin.model.v2.transducer.TransducerGraph
 import tin.services.Task.Benchmark.*
@@ -18,7 +17,10 @@ import tin.services.internal.utils.DLTransducerFactory
 import tin.services.internal.utils.RandomQueryFactory
 import tin.services.ontology.OntologyExecutionContext.ExecutionContextType
 import tin.services.ontology.OntologyManager
-import tin.services.ontology.ResultGraph.*
+import tin.services.ontology.ResultGraph.ELHIResultGraphBuilder
+import tin.services.ontology.ResultGraph.ELResultGraphBuilder
+import tin.services.ontology.ResultGraph.FloydWarshallSolver
+import tin.services.ontology.ResultGraph.ShortestPathResult
 import tin.services.ontology.loopTable.LoopTableBuilder.ELH.ELSPALoopTableBuilder
 import tin.services.ontology.loopTable.LoopTableBuilder.ELH.ELSPLoopTableBuilder
 import tin.services.ontology.loopTable.LoopTableBuilder.ELHI.ELHISPALoopTableBuilder
@@ -30,9 +32,10 @@ import java.io.File
 import kotlin.time.Duration
 import kotlin.time.TimeSource
 
+
 @SpringBootTest
 @TestConfiguration
-class SnowmedTest {
+class BenchmarkELHI {
     @Autowired
     lateinit var systemConfigurationService: SystemConfigurationService;
 
@@ -60,7 +63,7 @@ class SnowmedTest {
         return fileReaderService.read(testFilePath, fileName, breakOnError);
     }
 
-    @Test
+// @Test
     fun testGetTopClassNode() {
 
         //load ontology
@@ -72,34 +75,41 @@ class SnowmedTest {
         println("found!")
     }
 
-    @Test
+// @Test
     fun testQueryAnswering() {
 
         //load ontology
         val timeSource = TimeSource.Monotonic
 
 
-        val snomedStart = timeSource.markNow()
-        val manager = loadExampleOntology("SNOMED/snomed-2024-09.owl")
-        val snowmedEnd = timeSource.markNow()
+        val ontoStart = timeSource.markNow()
+        val ontoName = "pizza3.rdf"
+        val manager = loadExampleOntology(ontoName)
+        val ontoEnd = timeSource.markNow()
 
         val initStart = timeSource.markNow()
-        val ec = manager.createELExecutionContext(ExecutionContextType.ELH, false);
         val initEnd = timeSource.markNow();
-        val queryAmount = 50;
+        val queryAmount = 10;
+
+        val queryStates = 5
+        val queryEdges = 3
 
         val results = mutableListOf<TaskProcessingBenchmarkResult>();
         val startAllQueries = timeSource.markNow()
 
+        var transSizeTotal = 0;
+
         for (i in 0 until queryAmount) {
             println("Calculating query $i / $queryAmount")
+            val ec = manager.createELHIExecutionContext(ExecutionContextType.ELHI_NUMERIC, false);
+            ec.dlReasoner.clearCache();
 
-            val queryGraph = RandomQueryFactory.generateRandomQuery(4,5, 3);
-            val transducerGraph = DLTransducerFactory.generateRandomTransducerRestricted(queryGraph, ec, 10, 1, 100);
+            val queryGraph = RandomQueryFactory.generateQuery(queryStates,queryEdges, ec);
+            val transducerGraph = DLTransducerFactory.generateEditDistanceTransducer(queryGraph, ec);
             val queryInitialTime = timeSource.markNow()
 //        ec.prewarmSubsumptionCache()
-            val builder = ELSPALoopTableBuilder(queryGraph, transducerGraph, manager, ec);
-            val spBuilder = ELSPLoopTableBuilder(queryGraph, transducerGraph, manager, ec);
+            val builder = ELHISPALoopTableBuilder(queryGraph, transducerGraph, manager, ec);
+            val spBuilder = ELHISPLoopTableBuilder(queryGraph, transducerGraph, manager, ec);
 
             val startTime = timeSource.markNow()
 
@@ -110,13 +120,12 @@ class SnowmedTest {
 
             val spaEndTime = timeSource.markNow()
             println("Calculating sp table...")
-//            val spTable = spBuilder.calculateFullTable(spaTable);
+            val spTable = spBuilder.calculateFullTable(spaTable);
             val spEndTime = timeSource.markNow()
 
-            val resultGraphBuilder = ELResultGraphBuilder(ec, queryGraph ,transducerGraph)
+            val resultGraphBuilder = ELHIResultGraphBuilder(ec, queryGraph ,transducerGraph)
             val resultGraphStartTime = timeSource.markNow()
-//            val resultGraph = resultGraphBuilder.constructResultGraph(spTable);
-            val resultGraph = ResultGraph()
+            val resultGraph = resultGraphBuilder.constructResultGraph(spTable);
             val resultGraphEndTime = timeSource.markNow();
 
             val prewarmTime = startTime - queryInitialTime;
@@ -124,9 +133,9 @@ class SnowmedTest {
             val spTime = spEndTime - spaEndTime;
             val resultGraphTime = resultGraphEndTime - resultGraphStartTime;
             val solverStartTime = timeSource.markNow();
-//            val solver = FloydWarshallSolver(resultGraph);
+            val solver = FloydWarshallSolver(resultGraph);
             val solverEndTime = timeSource.markNow();
-//            val resultList = solver.getAllShortestPaths()
+            val resultList = solver.getAllShortestPaths()
 //            val resultMap = solver.getShortestPathMap();
             val totalTime = resultGraphEndTime - queryInitialTime;
 
@@ -143,11 +152,13 @@ class SnowmedTest {
 
             val times = TaskProcessingResultTimes(startTime, spaEndTime, spaEndTime, spEndTime, resultGraphStartTime, resultGraphEndTime, solverStartTime, solverEndTime)
             val reasonerStats = TaskProcessingReasonerStats(stats)
-            val spa = TaskProcessingSpaBuilderStats(builder.statsTotalIterations, builder.statsTotalSize, builder.statsMaxPossibleSize)
-            val sp = TaskProcessingSpBuilderStats(spBuilder.statsTotalSize, spBuilder.statsMaxPossibleSize)
+            val spa = TaskProcessingSpaBuilderStats(builder.statsTotalIterations, builder.getSize(), builder.statsMaxPossibleSize)
+            val sp = TaskProcessingSpBuilderStats(spBuilder.statsTotalSize, spBuilder.getSize())
             val resultStats = TaskProcessingResultBuilderStats(resultGraph.nodes.size, resultGraph.edges.size, resultGraphBuilder.maxEdgeCost, resultGraphBuilder.minEdgeCost, resultGraphBuilder.unreachableNodesAmount)
             val benchmarkResult = TaskProcessingBenchmarkResult(times, reasonerStats, spa, sp, resultStats)
             results.add(benchmarkResult);
+
+            transSizeTotal += transducerGraph.edges.size
         }
 
         val endAllQueries = timeSource.markNow()
@@ -205,12 +216,20 @@ class SnowmedTest {
         val avgIterations = totalIterationsSum / queryAmount
         val avgSpaSize = totalSizeSum / queryAmount
 
+        val transSizeAvg = transSizeTotal / queryAmount
+
         //results
         println("___________________________________________________________________________________________________________")
         println("                                       RESULTS")
+        println(" ontology:     $ontoName")
+        println(" mode:         ELH")
+        println(" query amount: $queryAmount")
+        println(" query size: + $queryStates / $queryEdges")
+        println(" trans:        editDistance")
+        println(" trans edges:  $transSizeAvg")
         println("___________________________________________________________________________________________________________")
 
-        println("Loading SNOMED: " + (snowmedEnd - snomedStart))
+        println("Loading Ontology: " + (ontoEnd - ontoStart))
         println("Average query time: " + avgTime + "\n")
         println("-------------------------------------------------")
         println("Average SPA Time: " + avgSpa)
@@ -226,7 +245,7 @@ class SnowmedTest {
         println("Maximal spa size: " + maxSize)
         println("-------------------------------------------------")
         println("Average SP Time: " + avgSp)
-        println("Minimal sp time: " + avgSp)
-        println("Maximal sp time: " + avgSp)
+        println("Minimal sp time: " + minSp)
+        println("Maximal sp time: " + maxSp)
     }
 }

@@ -65,11 +65,9 @@ class DLReasonerTest {
     @Test
     fun testSubsumptionCheckTopElement(){
         val manager = loadExampleOntology("pizza2.rdf");
-        val reasoner = manager.createReasoner(OntologyManager.BuildInReasoners.HERMIT)
         val ec = manager.createELHIExecutionContext(ExecutionContextType.ELHI);
         val expressionBuilder = ec.expressionBuilder;
         val restrictionBuilder = ec.spaRestrictionBuilder;
-        val parser = ec.parser
         val dlReasoner = ec.dlReasoner;
 
 
@@ -87,20 +85,9 @@ class DLReasonerTest {
 
         val topClassNode = dlReasoner.getTopClassNode();
         val owlTopClassRestriction = restrictionBuilder.createConceptNameRestriction(topClassNode.representativeElement)
-
-
-//        val joinedTopRestriction = restrictionBuilder.createConceptNameRestriction(topClassNode.representativeElement)
-//        joinedTopRestriction.addElement(parser.getOWLClass("Bread")!!);
-//
-//        val testRestriction = restrictionBuilder.createConceptNameRestriction("Bread");
-//        val testClassExpr = restrictionBuilder.asClassExpression(testRestriction);
-//        val testExpr = expressionBuilder.createELHIExpression(testClassExpr);
-
         val role = ec.parser.getOWLObjectProperty("contains")!!
 
-
         val M1ClassExp = restrictionBuilder.asClassExpression(owlTopClassRestriction);
-        val M1Exp = expressionBuilder.createELHIExpression(M1ClassExp);
         val rM1 = expressionBuilder.createExistentialRestriction(role, M1ClassExp)
         val rM1Exp = expressionBuilder.createELHIExpression(rM1);
 
@@ -115,10 +102,6 @@ class DLReasonerTest {
         assert(!dlReasoner.checkIsSubsumed(n1, rM1Exp))
         assert(!dlReasoner.checkIsSubsumed(n2, rM1Exp))
         assert(!dlReasoner.checkIsSubsumed(n3, rM1Exp))
-
-//        assert(dlReasoner.checkIsSubsumed(l2, r1));
-//        assert(!dlReasoner.checkIsSubsumed(l1, r2));
-//        assert(!dlReasoner.checkIsSubsumed(l2, r2));
     }
 
     @Test
@@ -466,14 +449,6 @@ class DLReasonerTest {
         assert(resultMap[Pair(r, serves)]!!.containsEntity(carbonara) )
 
         assert(resultMap[Pair(veganPlace, serves)]!!.containsEntity(bruschetta) )
-
-
-    }
-
-    @Test
-    fun testElkReasoner(){
-        val manager = loadExampleOntology("LUBM/univ-bench1.rdf");
-        val reasoner = manager.createReasoner(OntologyManager.BuildInReasoners.ELK)
 
 
     }

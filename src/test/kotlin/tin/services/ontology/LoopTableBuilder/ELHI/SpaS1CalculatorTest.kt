@@ -47,63 +47,8 @@ class SpaS1CalculatorTest {
         return manager
     }
 
-//    @Test
-//    fun testCalculation(){
-//        val manager = loadExampleOntology();
-//
-//        val query = readQueryWithFileReaderService("spaCalculation/S1/test_spaS1_1.txt")
-//        val transducer = readTransducerWithFileReaderService("spaCalculation/S1/test_spaS1_1.txt")
-//
-//        val ec = manager.createELHIExecutionContext(ExecutionContextType.ELHI);
-//
-//        val dlReasoner = ec.dlReasoner
-//        val expressionBuilder = ec.expressionBuilder
-//        val queryParser = ec.parser;
-//        val shortFormProvider = ec.shortFormProvider;
-//        val restrictionBuilder = ec.spaRestrictionBuilder;
-//
-//
-//
-//        val s1Calculator = SpaS1Calculator(ec, query.graph, transducer.graph);
-//
-//        //calculate s1 for a non-trivial entry
-//
-//        val s0 = query.graph.getNode("s0")!!
-//        val s1 = query.graph.getNode("s1")!!
-//        val s2 = query.graph.getNode("s2")!!
-//        val s3 = query.graph.getNode("s3")!!
-//
-//        val t0 = transducer.graph.getNode("t0")!!
-//        val M = restrictionBuilder.createConceptNameRestriction("Bread")
-//        val entry = SPASetLoopTableEntry(Pair(s0,t0), Pair(s3,t0),M);
-//
-//        val entry2 = SPASetLoopTableEntry(Pair(s0,t0), Pair(s2,t0),M);
-//        val entry3 = SPASetLoopTableEntry(Pair(s1,t0), Pair(s3,t0),M);
-//
-//
-//        //create empty loop table
-//        val table: SPALoopTable = SPALoopTable();
-//        //fill with non-trivial candidates for testing
-//        val M1 = restrictionBuilder.createConceptNameRestriction("Flour");
-//        table.set(SPASetLoopTableEntry(Pair(s1,t0),Pair(s2,t0), M1), 2)
-//
-//        val result = s1Calculator.calculate(entry, table);
-//        assert(result == 7); // 2 + 2 + 3
-//        table.set(entry, result!!);
-//
-//        assert(table.get(entry) == result)
-//
-//        val result2 = s1Calculator.calculate(entry2, table);
-//        assert(result2 == null); // no path found
-//        assert(table.get(entry2) == result2)
-//
-//        val result3 = s1Calculator.calculate(entry3, table);
-//        assert(result3 == null); // 3 + 0 + 4
-//        assert(table.get(entry3) == result3)
-//    }
-
     @Test
-    fun testCalculationV2(){
+    fun testCalculation(){
         val manager = loadExampleOntology();
 
         val query = readQueryWithFileReaderService("spaCalculation/S1/test_spaS1_1.txt")
