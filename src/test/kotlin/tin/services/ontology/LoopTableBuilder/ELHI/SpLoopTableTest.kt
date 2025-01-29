@@ -45,27 +45,12 @@ class SpLoopTableTest {
 
     fun loadExampleOntology() : OntologyManager {
         val exampleFile = readWithFileReaderService("pizza2.rdf").get()
-//        val exampleFile = readWithFileReaderService("univ-bench.owl.rdf").get()
-        val manager = OntologyManager(exampleFile);
-        return manager
-    }
-
-    fun loadExampleOntologyLarge() : OntologyManager {
-        val exampleFile = readWithFileReaderService("pizza3_1.rdf").get()
-//        val exampleFile = readWithFileReaderService("univ-bench.owl.rdf").get()
         val manager = OntologyManager(exampleFile);
         return manager
     }
 
     fun loadExampleOntologyLarge2() : OntologyManager {
         val exampleFile = readWithFileReaderService("pizza_4.rdf").get()
-//        val exampleFile = readWithFileReaderService("univ-bench.owl.rdf").get()
-        val manager = OntologyManager(exampleFile);
-        return manager
-    }
-
-    fun loadExampleOntologyUnivbench() : OntologyManager {
-        val exampleFile = readWithFileReaderService("univ-bench.owl.rdf").get()
         val manager = OntologyManager(exampleFile);
         return manager
     }

@@ -310,6 +310,9 @@ class DLReasonerTestELK {
         assert(stats["subClassCacheHitCounter"]!! == 0);
     }
 
+    /**
+     * CURRENTLY NOT SUPPORTED BY ELK v0.5.3
+     */
 //    @Test
 //    fun testGetIndividualClasses() {
 //        val manager = loadExampleOntology("pizza_4.rdf");
