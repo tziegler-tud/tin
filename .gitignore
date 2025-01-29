@@ -19,3 +19,4 @@ build
 .gradle
 /build/
 /src/test/resources/input/ontology/SNOMED/
+/src/test/kotlin/tin/services/benchmark/

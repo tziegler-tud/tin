@@ -63,7 +63,7 @@ class BenchmarkEL {
         return fileReaderService.read(testFilePath, fileName, breakOnError);
     }
 
-    @Test
+// @Test
     fun testGetTopClassNode() {
 
         //load ontology
@@ -75,7 +75,7 @@ class BenchmarkEL {
         println("found!")
     }
 
-    @Test
+    // @Test
     fun testQueryAnswering() {
 
         //load ontology

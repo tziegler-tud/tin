@@ -57,29 +57,20 @@ class QueryAnsweringTest {
 
     @Test
     fun testQueryAnswering() {
-
-        //load ontology
         val manager = loadExampleOntology("pizza_4_1.rdf")
-
         val query = readQueryWithFileReaderService("integration/test_comp1.txt")
         val transducer = readTransducerWithFileReaderService("integration/test_comp1.txt")
 
         val timeSource = TimeSource.Monotonic
         val initialTime = timeSource.markNow()
         val ec = manager.createELHIExecutionContext(ExecutionContextType.ELHI_NUMERIC, false);
-//        ec.prewarmSubsumptionCache()
         val builder = ELHISPALoopTableBuilder(query.graph, transducer.graph, manager, ec);
         val spBuilder = ELHISPLoopTableBuilder(query.graph, transducer.graph, manager, ec);
 
         val startTime = timeSource.markNow()
 
-//        builder.calculateWithDepthLimit(iterationLimit);
-        println("Calculating spa table...")
-
         val spaTable = builder.calculateFullTable();
-
         val spaEndTime = timeSource.markNow()
-        println("Calculating sp table...")
         val spTable = spBuilder.calculateFullTable(spaTable);
         val spEndTime = timeSource.markNow()
 
@@ -101,8 +92,6 @@ class QueryAnsweringTest {
         println("SP computation time: " + spTime)
         println("ResultGraph computation time: " + resultGraphTime)
 
-        val stats = builder.getExecutionContext().dlReasoner.getStats();
-
         val solver = FloydWarshallSolver(resultGraph);
         val resultList = solver.getAllShortestPaths()
         val resultMap = solver.getShortestPathMap();
@@ -111,10 +100,6 @@ class QueryAnsweringTest {
         val s1 = query.graph.getNode("s1")!!
         val s2 = query.graph.getNode("s2")!!
         val t0 = transducer.graph.getNode("t0")!!
-
-        val r1 = ec.spaRestrictionBuilder.createConceptNameRestriction("Bruschetta", "Vegan");
-
-        val entry1 = ELHISPALoopTableEntry(Pair(s1,t0), Pair(s0,t0), r1);
 
         val bruschetta = manager.getQueryParser().getNamedIndividual("bruschetta")!!
         val carbonara = manager.getQueryParser().getNamedIndividual("carbonara")!!
@@ -129,15 +114,10 @@ class QueryAnsweringTest {
 
         assert(spTable.get(IndividualLoopTableEntry(Pair(s0,t0),Pair(s1,t0),carbonaraRes)) == 34)
         assert(spTable.get(IndividualLoopTableEntry(Pair(s1,t0),Pair(s0,t0),carbonaraRes)) == 34)
-
-        
-
     }
 
     @Test
     fun testQueryAnswering2() {
-
-        //load ontology
         val manager = loadExampleOntology("pizza_4_1.obo")
 
         val query = readQueryWithFileReaderService("integration/test_comp2.txt")
@@ -146,19 +126,13 @@ class QueryAnsweringTest {
         val timeSource = TimeSource.Monotonic
         val initialTime = timeSource.markNow()
         val ec = manager.createELHIExecutionContext(ExecutionContextType.ELHI_NUMERIC, false);
-//        ec.prewarmSubsumptionCache()
         val builder = ELHISPALoopTableBuilder(query.graph, transducer.graph, manager, ec);
         val spBuilder = ELHISPLoopTableBuilder(query.graph, transducer.graph, manager, ec);
 
         val startTime = timeSource.markNow()
-
-//        builder.calculateWithDepthLimit(iterationLimit);
-        println("Calculating spa table...")
-
         val spaTable = builder.calculateFullTable();
-
         val spaEndTime = timeSource.markNow()
-        println("Calculating sp table...")
+
         val spTable = spBuilder.calculateFullTable(spaTable);
         val spEndTime = timeSource.markNow()
 
@@ -184,29 +158,19 @@ class QueryAnsweringTest {
 
         val solver = FloydWarshallSolver(resultGraph);
         val resultList = solver.getAllShortestPaths()
-        val resultMap = solver.getShortestPathMap();
-
 
         val s0 = query.graph.getNode("s0")!!
-        val s1 = query.graph.getNode("s1")!!
         val s2 = query.graph.getNode("s2")!!
 
         val t0 = transducer.graph.getNode("t0")!!
         val t1 = transducer.graph.getNode("t1")!!
 
-        val beer = ec.parser.getNamedIndividual("beer")!!;
         val bruschetta = ec.parser.getNamedIndividual("bruschetta")!!;
         val carbonara = ec.parser.getNamedIndividual("carbonara")!!;
-        val place1 = ec.parser.getNamedIndividual("place1")!!;
-        val place2 = ec.parser.getNamedIndividual("place2")!!;
         val r = ec.parser.getNamedIndividual("r")!!;
         val veganPlace = ec.parser.getNamedIndividual("VeganPlace")!!
-        val serves = ec.parser.getOWLObjectProperty("serves")!!
-        val serves_drink = ec.parser.getOWLObjectProperty("serves_drink")!!
-        val serves_meal = ec.parser.getOWLObjectProperty("serves_meal")!!
 
         val s0t0VeganPlace = ResultNode(s0, t0, veganPlace);
-        val s2t1VeganPlace = ResultNode(s2, t1, veganPlace);
         val s2t1Bruschetta = ResultNode(s2, t1, bruschetta);
 
         val s0t0r = ResultNode(s0, t0, r)
@@ -217,6 +181,5 @@ class QueryAnsweringTest {
         assert(solver.getShortestPath(r, bruschetta) == ShortestPathResult(s0t0r, s2t1Bruschetta, 24));
 
         assert(solver.getShortestPath(veganPlace, carbonara) == null);
-
     }
 }

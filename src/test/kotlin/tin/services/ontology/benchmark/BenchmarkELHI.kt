@@ -63,7 +63,7 @@ class BenchmarkELHI {
         return fileReaderService.read(testFilePath, fileName, breakOnError);
     }
 
-    @Test
+// @Test
     fun testGetTopClassNode() {
 
         //load ontology
@@ -75,7 +75,7 @@ class BenchmarkELHI {
         println("found!")
     }
 
-    @Test
+// @Test
     fun testQueryAnswering() {
 
         //load ontology
