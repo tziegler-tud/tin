@@ -1,6 +1,7 @@
 package tin.controller.tintheweb.api.v1
 
 import org.apache.tomcat.jni.Proc
+import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
 import tin.data.tintheweb.DLqueryTask.TaskConfigurationData
 import tin.data.tintheweb.DLqueryTask.TaskInfoData
@@ -12,12 +13,16 @@ import tin.model.v2.Tasks.TaskRuntimeConfiguration
 import tin.services.Task.ProcessingResult
 import tin.services.Task.TaskService
 import tin.services.tintheweb.FileOverviewService
+import javax.servlet.http.HttpServletResponse
 
 @RestController
 @RequestMapping("/api/v1/tasks")
 class TaskController(
     private val taskService: TaskService
 ) {
+
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    class ResourceNotFoundException(message: String) : RuntimeException(message)
 
     @GetMapping("/all")
     fun getTasks(): List<TaskInfoData> {
@@ -29,14 +34,18 @@ class TaskController(
         return infoList;
     }
 
+    @GetMapping("/{taskId}")
+    fun getTasks(@PathVariable taskId: Long, response: HttpServletResponse): TaskInfoData? {
+        val task = taskService.getTask(taskId);
+        if(task == null) throw ResourceNotFoundException("Task with ID $taskId not found.");
+        return TaskInfoData(task);
+    }
+
     @PostMapping("/add")
     fun addTask(@RequestBody data: TaskConfigurationData): TaskInfoData {
-//        if(data.queryFileIdentifier == null || data.transducerFileIdentifier == null || data.ontologyFileIdentifier == null) {
-//
-//        }
-        val fileConfiguration = TaskFileConfiguration(data.queryFileIdentifier!!, data.transducerFileIdentifier!!, data.ontologyFileIdentifier!!);
+        val fileConfiguration = TaskFileConfiguration(data.queryFileIdentifier, data.ontologyFileIdentifier, data.transducerMode, data.transducerGenerationMode, data.transducerFileIdentifier );
         val runtimeConfiguration = TaskRuntimeConfiguration(data.ontologyVariant)
-        val computationConfiguration = TaskComputationConfiguration(ComputationMode.allIndivudals, null, null, null)
+        val computationConfiguration = TaskComputationConfiguration(data.computationMode, data.sourceIndividual, data.targetIndividual, data.maxCost)
         val task = taskService.createTask(fileConfiguration, runtimeConfiguration, computationConfiguration)
         taskService.addTask(task);
         return TaskInfoData(task);

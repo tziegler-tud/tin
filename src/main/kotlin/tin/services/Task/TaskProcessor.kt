@@ -2,12 +2,11 @@ package tin.services.Task
 
 import org.semanticweb.owlapi.model.OWLNamedIndividual
 import tin.model.v2.ResultGraph.ResultGraph
-import tin.model.v2.Tasks.ComputationMode
-import tin.model.v2.Tasks.OntologyVariant
-import tin.model.v2.Tasks.Task
+import tin.model.v2.Tasks.*
 import tin.model.v2.query.QueryGraph
 import tin.model.v2.transducer.TransducerGraph
 import tin.services.Task.Benchmark.*
+import tin.services.internal.utils.DLTransducerFactory
 import tin.services.ontology.OntologyExecutionContext.ExecutionContext
 import tin.services.ontology.OntologyExecutionContext.ExecutionContextType
 import tin.services.ontology.OntologyManager
@@ -21,9 +20,11 @@ import kotlin.time.TimeSource
 
 class TaskProcessor(
     private val task: Task,
+    private val manager: OntologyManager,
     private val queryGraph: QueryGraph,
-    private val transducerGraph: TransducerGraph,
-    private val manager: OntologyManager
+    private val transducerMode: TransducerMode,
+    private val transducerGenerationMode: TransducerGenerationMode? = null,
+    private val transducerGraphProvided: TransducerGraph? = null,
 ) {
 
     private val compConfig = task.getComputationConfiguration();
@@ -31,6 +32,13 @@ class TaskProcessor(
     private val fileConfig = task.getFileConfiguration();
 
     private var benchmarkResults: TaskProcessingBenchmarkResult? = null;
+
+    constructor(
+        task: Task,
+        manager: OntologyManager,
+        queryGraph: QueryGraph,
+        transducerGraph: TransducerGraph,
+    ): this(task, manager, queryGraph, TransducerMode.provided, null, transducerGraph)
 
     fun getTask() : Task {
         return task;
@@ -63,6 +71,7 @@ class TaskProcessor(
         when (runConfig.ontologyVariant) {
             OntologyVariant.ELH -> {
                 ec = manager.createELExecutionContext(ExecutionContextType.ELH)
+                val transducerGraph = buildTransducerGraph(transducerMode, transducerGenerationMode, transducerGraphProvided, ec, queryGraph)
                 val spaBuilder = ELSPALoopTableBuilder(queryGraph, transducerGraph, manager, ec);
                 val spBuilder = ELSPLoopTableBuilder(queryGraph, transducerGraph, manager, ec);
 
@@ -86,6 +95,7 @@ class TaskProcessor(
             }
             OntologyVariant.ELHI -> {
                 ec = manager.createELHINumericExecutionContext()
+                val transducerGraph = buildTransducerGraph(transducerMode, transducerGenerationMode, transducerGraphProvided, ec, queryGraph)
                 val spaBuilder = ELHISPALoopTableBuilder(queryGraph, transducerGraph, manager, ec);
                 val spBuilder = ELHISPLoopTableBuilder(queryGraph, transducerGraph, manager, ec);
 
@@ -194,6 +204,31 @@ class TaskProcessor(
         val a = name ?: throw Error("Invalid arguments given for computation mode 'Entailment': Individual not given")
         val indA = manager.getQueryParser().getNamedIndividual(a) ?: throw Error("Invalid arguments given for computation mode 'Entailment': Failed to find individual '$a' in ontology")
         return indA
+    }
+
+    private fun buildTransducerGraph(transducerMode: TransducerMode, transducerGenerationMode: TransducerGenerationMode?, provided: TransducerGraph?, ec: ExecutionContext, queryGraph: QueryGraph) : TransducerGraph {
+        if(transducerMode == TransducerMode.provided){
+            if(transducerGraphProvided != null) {
+                return transducerGraphProvided
+            }
+            else {
+                throw IllegalArgumentException("TransducerMode set to provided, but no graph was obtained.")
+            }
+        }
+        else {
+            if(transducerGenerationMode == null) throw IllegalArgumentException("TransducerMode set to generated, but TransducerGenerationMode was not given.")
+            when (transducerGenerationMode) {
+                TransducerGenerationMode.classicAnswers -> {
+                    return DLTransducerFactory.generateClassicAnswersTransducer(ec)
+                }
+                TransducerGenerationMode.wordEditDistance -> {
+                    return DLTransducerFactory.generateEditDistanceTransducer(queryGraph = queryGraph, ec = ec, useSimpleWeights = false);
+                }
+                TransducerGenerationMode.simpleEditDistance -> {
+                    return DLTransducerFactory.generateEditDistanceTransducer(queryGraph = queryGraph, ec = ec, useSimpleWeights = true);
+                }
+            }
+        }
     }
 
 
