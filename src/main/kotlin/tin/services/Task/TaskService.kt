@@ -74,7 +74,7 @@ class TaskService @Autowired constructor(
     fun processNext() : ProcessingResultStatus {
         if(taskQueue.isEmpty()) return ProcessingResultStatus.EMPTY;
         if(isProcessing) return ProcessingResultStatus.BLOCKED;
-        val id = taskQueue.getNext()
+        val id = taskQueue.getNext() ?: return ProcessingResultStatus.EMPTY
         val task = taskRepository.findById(id).orElse(null);
         if(task == null) return ProcessingResultStatus.FAILURE
         task.state = TaskStatus.Calculating;

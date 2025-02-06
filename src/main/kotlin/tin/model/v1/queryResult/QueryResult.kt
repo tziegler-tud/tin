@@ -1,9 +1,9 @@
 package tin.model.v1.queryResult
 
+import jakarta.persistence.*
 import org.springframework.data.jpa.repository.JpaRepository
 import tin.model.v1.queryResult.computationStatistics.ComputationStatistics
 import tin.model.v1.queryTask.QueryTask
-import javax.persistence.*
 
 @Entity
 abstract class QueryResult(

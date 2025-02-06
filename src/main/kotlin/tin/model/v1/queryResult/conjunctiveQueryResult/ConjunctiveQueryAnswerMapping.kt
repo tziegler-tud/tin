@@ -2,7 +2,7 @@ package tin.model.v1.queryResult.conjunctiveQueryResult
 
 import org.springframework.data.jpa.repository.JpaRepository
 import tin.model.v1.converter.VariableMappingConverter
-import javax.persistence.*
+import jakarta.persistence.*
 
 @Entity
 class ConjunctiveQueryAnswerMapping(

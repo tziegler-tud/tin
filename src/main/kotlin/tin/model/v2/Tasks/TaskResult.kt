@@ -1,10 +1,8 @@
 package tin.model.v2.Tasks
-
+import jakarta.persistence.*
 import org.semanticweb.owlapi.model.IRI
 import org.springframework.data.jpa.repository.JpaRepository
 import tin.services.ontology.ResultGraph.ShortestPathResult
-import javax.persistence.*
-
 
 @Entity
 class TaskResult(

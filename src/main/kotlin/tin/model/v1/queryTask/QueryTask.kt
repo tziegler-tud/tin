@@ -3,7 +3,7 @@ package tin.model.v1.queryTask
 import org.springframework.data.jpa.repository.JpaRepository
 import tin.model.v1.queryResult.QueryResult
 import java.util.*
-import javax.persistence.*
+import jakarta.persistence.*
 
 @Entity
 class QueryTask(

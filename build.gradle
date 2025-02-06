@@ -15,7 +15,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 //}
 
 plugins {
-    id 'org.springframework.boot' version '2.7.14'
+    id 'org.springframework.boot' version '3.0.0'
     id 'io.spring.dependency-management' version '1.0.11.RELEASE'
     id 'org.jetbrains.kotlin.jvm' version '2.0.21' // Use latest stable Kotlin 1.x
     id 'org.jetbrains.kotlin.plugin.spring' version '2.0.21'
@@ -70,7 +70,8 @@ dependencies {
     // other
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
-    annotationProcessor group: 'org.springframework.boot', name: 'spring-boot-configuration-processor', version: '2.7.14'
+    implementation group: 'jakarta.servlet', name: 'jakarta.servlet-api', version: '6.1.0'
+    annotationProcessor group: 'org.springframework.boot', name: 'spring-boot-configuration-processor', version: '3.0.0'
 
     //testing
     implementation 'org.springframework.boot:spring-boot-starter-test'
@@ -90,9 +91,23 @@ tasks.withType(Test).configureEach {
     }
 }
 
-tasks.withType(KotlinCompile).configureEach {
+compileKotlin {
     kotlinOptions {
-        jvmTarget = '17' // Use Java 17 instead of 15
 //        freeCompilerArgs = ['-Xjsr305=strict']
+        jvmTarget = '17'
     }
 }
+
+compileTestKotlin {
+    kotlinOptions {
+//        freeCompilerArgs = ['-Xjsr305=strict']
+        jvmTarget = '17'
+    }
+}
+//
+//tasks.withType(KotlinCompile).configureEach {
+//    kotlinOptions {
+//        jvmTarget = '17' // Use Java 17 instead of 15
+////        freeCompilerArgs = ['-Xjsr305=strict']
+//    }
+//}

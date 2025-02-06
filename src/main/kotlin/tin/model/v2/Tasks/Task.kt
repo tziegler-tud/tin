@@ -1,10 +1,10 @@
 package tin.model.v2.Tasks
 
+import jakarta.persistence.Entity
+import jakarta.persistence.GeneratedValue
+import jakarta.persistence.Id
 import org.springframework.data.jpa.repository.JpaRepository
 import tin.services.Task.TaskStatus
-import javax.persistence.Entity
-import javax.persistence.GeneratedValue
-import javax.persistence.Id
 
 @Entity
 class Task(
