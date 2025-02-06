@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import tin.model.v2.Tasks.*
+import tin.model.v2.transducer.TransducerGraph
 import tin.services.Task.Benchmark.TaskProcessingBenchmarkResult
 import tin.services.files.FileService
 import tin.services.internal.fileReaders.OntologyReaderService
@@ -61,6 +62,10 @@ class TaskService @Autowired constructor(
         return taskRepository.findAll();
     }
 
+    fun getTask(taskId: Long): Task? {
+        return taskRepository.findById(taskId).orElse(null);
+    }
+
     fun getQueuedTasks() : List<Task> {
         return taskRepository.findAllByState(TaskStatus.Queued);
     }
@@ -91,24 +96,43 @@ class TaskService @Autowired constructor(
     private fun processTask(task: Task) : ProcessingResult {
         isProcessing = true;
         val fileConfiguration = task.getFileConfiguration();
-        //read query file
+
         val queryFile = fileService.getFile(fileConfiguration.queryFileIdentifier)!!;
-        val transducerFile = fileService.getFile(fileConfiguration.transducerFileIdentifier)!!;
         val ontologyFile = fileService.getFile(fileConfiguration.ontologyFileIdentifier)!!;
 
         val qf = fileService.loadFileContent(queryFile);
-        val tf = fileService.loadFileContent(transducerFile);
         val of = fileService.loadFileContent(ontologyFile);
 
         //file readers
         //read and check for error
         val queryResult = queryFileReader.processFile(qf, false)
-        val transducerResult = transducerFileReader.processFile(tf, false)
         val ontologyResult = ontologyReader.processFile(of, false)
 
         val manager: OntologyManager = OntologyManager(ontologyResult.get())
+        val processor: TaskProcessor;
+        var transducerGraph: TransducerGraph? = null;
 
-        val processor = TaskProcessor(task, queryResult.get(), transducerResult.get(), manager);
+        //if provided, read transducer file
+        if(fileConfiguration.transducerMode == TransducerMode.provided) {
+            if(fileConfiguration.transducerFileIdentifier != null) {
+                val transducerFile = fileService.getFile(fileConfiguration.transducerFileIdentifier)!!;
+                val tf = fileService.loadFileContent(transducerFile);
+                val transducerResult = transducerFileReader.processFile(tf, false)
+                transducerGraph = transducerResult.graph
+            }
+            else  {
+                throw IllegalArgumentException("Expected provided transducer file, but no file identifier was given.");
+            }
+        }
+        else {
+            if(fileConfiguration.transducerGenerationMode == null) {
+                throw IllegalArgumentException("Transducer Mode set to ${fileConfiguration.transducerMode.name}, but required argument TransducerGenerationMode is null.");
+
+            }
+        }
+
+        processor = TaskProcessor(task, manager, queryResult.get(), fileConfiguration.transducerMode, fileConfiguration.transducerGenerationMode, transducerGraph);
+
         val resultPair: Pair<List<ShortestPathResult>, TaskProcessingBenchmarkResult> = processor.execute();
         isProcessing = false;
         //save results to DB?

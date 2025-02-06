@@ -9,10 +9,13 @@ import javax.persistence.Id
 @Entity
 class Task(
     val queryFile: Long,
-    val transducerFile: Long,
     val ontologyFile: Long,
-    val ontologyVariant: OntologyVariant,
 
+    val transducerMode: TransducerMode,
+    val transducerGenerationMode: TransducerGenerationMode?,
+    val transducerFile: Long?,
+
+    val ontologyVariant: OntologyVariant,
     val computationMode: ComputationMode,
     val individualNameA: String?,
     val individualNameB: String?,
@@ -26,18 +29,20 @@ class Task(
     var state: TaskStatus = TaskStatus.Created;
 
     constructor(fileConfiguration: TaskFileConfiguration, runtimeConfiguration: TaskRuntimeConfiguration, computationConfiguration: TaskComputationConfiguration) : this(
-        fileConfiguration.queryFileIdentifier,
-        fileConfiguration.transducerFileIdentifier,
-        fileConfiguration.ontologyFileIdentifier,
-        runtimeConfiguration.ontologyVariant,
-        computationConfiguration.computationMode,
-        computationConfiguration.individualNameA,
-        computationConfiguration.individualNameB,
-        computationConfiguration.maxCost,
+        queryFile = fileConfiguration.queryFileIdentifier,
+        ontologyFile = fileConfiguration.ontologyFileIdentifier,
+        transducerMode = fileConfiguration.transducerMode,
+        transducerGenerationMode = fileConfiguration.transducerGenerationMode,
+        transducerFile = fileConfiguration.transducerFileIdentifier,
+        ontologyVariant = runtimeConfiguration.ontologyVariant,
+        computationMode = computationConfiguration.computationMode,
+        individualNameA = computationConfiguration.individualNameA,
+        individualNameB = computationConfiguration.individualNameB,
+        maxCost = computationConfiguration.maxCost,
     )
 
     fun getFileConfiguration(): TaskFileConfiguration {
-        return TaskFileConfiguration(queryFile, transducerFile, ontologyFile)
+        return TaskFileConfiguration(queryFile, ontologyFile, transducerMode, transducerGenerationMode, transducerFile)
     }
 
     fun getRuntimeConfiguration(): TaskRuntimeConfiguration {
