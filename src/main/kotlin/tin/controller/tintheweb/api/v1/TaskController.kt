@@ -1,18 +1,14 @@
 package tin.controller.tintheweb.api.v1
 
-import org.apache.tomcat.jni.Proc
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
 import tin.data.tintheweb.DLqueryTask.TaskConfigurationData
 import tin.data.tintheweb.DLqueryTask.TaskInfoData
-import tin.data.tintheweb.FileData
-import tin.model.v2.Tasks.ComputationMode
+
 import tin.model.v2.Tasks.TaskComputationConfiguration
 import tin.model.v2.Tasks.TaskFileConfiguration
 import tin.model.v2.Tasks.TaskRuntimeConfiguration
-import tin.services.Task.ProcessingResult
 import tin.services.Task.TaskService
-import tin.services.tintheweb.FileOverviewService
 import javax.servlet.http.HttpServletResponse
 
 @RestController
