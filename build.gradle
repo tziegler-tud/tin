@@ -1,21 +1,7 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
-//buildscript {
-//    ext {
-//        kotlinVersion = '2.0.21'
-//        springBootVersion = '2.7.14'
-//    }
-//
-//    dependencies {
-//        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
-//        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${kotlinVersion}")
-//        classpath("org.jetbrains.kotlin:kotlin-allopen:${kotlinVersion}")
-//        classpath("org.jetbrains.kotlin:kotlin-noarg:${kotlinVersion}")
-//    }
-//}
-
 plugins {
-    id 'org.springframework.boot' version '3.0.0'
+    id 'org.springframework.boot' version '3.3.0'
     id 'io.spring.dependency-management' version '1.0.11.RELEASE'
     id 'org.jetbrains.kotlin.jvm' version '2.0.21' // Use latest stable Kotlin 1.x
     id 'org.jetbrains.kotlin.plugin.spring' version '2.0.21'
@@ -71,7 +57,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation group: 'jakarta.servlet', name: 'jakarta.servlet-api', version: '6.1.0'
-    annotationProcessor group: 'org.springframework.boot', name: 'spring-boot-configuration-processor', version: '3.0.0'
+    annotationProcessor group: 'org.springframework.boot', name: 'spring-boot-configuration-processor', version: '3.3.0'
 
     //testing
     implementation 'org.springframework.boot:spring-boot-starter-test'
@@ -91,23 +77,10 @@ tasks.withType(Test).configureEach {
     }
 }
 
-compileKotlin {
-    kotlinOptions {
-//        freeCompilerArgs = ['-Xjsr305=strict']
-        jvmTarget = '17'
-    }
-}
 
-compileTestKotlin {
+tasks.withType(KotlinCompile).configureEach {
     kotlinOptions {
+        jvmTarget = '17' // Use Java 17 instead of 15
 //        freeCompilerArgs = ['-Xjsr305=strict']
-        jvmTarget = '17'
     }
 }
-//
-//tasks.withType(KotlinCompile).configureEach {
-//    kotlinOptions {
-//        jvmTarget = '17' // Use Java 17 instead of 15
-////        freeCompilerArgs = ['-Xjsr305=strict']
-//    }
-//}
