@@ -5,9 +5,8 @@ import tin.model.v1.queryResult.QueryResultStatus
 import tin.model.v1.queryResult.RegularPathQueryResult
 import tin.model.v1.queryResult.computationStatistics.ConjunctiveComputationStatistics
 import tin.model.v1.queryTask.QueryTask
-import javax.persistence.CascadeType
-import javax.persistence.Entity
-import javax.persistence.OneToMany
+import jakarta.persistence.*
+
 
 @Entity
 class ConjunctiveQueryResult(
