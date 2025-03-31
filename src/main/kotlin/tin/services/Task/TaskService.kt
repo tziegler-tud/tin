@@ -58,6 +58,19 @@ class TaskService @Autowired constructor(
         return true;
     }
 
+    /**
+     * removes a tasks from the queue. Returns true if the tasks was removed
+     */
+    @Transactional
+    fun removeFromQueue(taskId: Long): Boolean {
+        val entity = taskRepository.findById(taskId).orElse(null);
+        if (entity == null) return false;
+        if(entity.state !== TaskStatus.Queued) return false;
+        entity.state = TaskStatus.Created
+        taskQueue.remove(taskId)
+        return true;
+    }
+
     fun getTasks() : List<Task> {
         return taskRepository.findAll();
     }

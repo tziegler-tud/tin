@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import tin.services.ontology.OntologyInfoData
 
 data class OntologyData @JsonCreator constructor(
-    @JsonProperty("filename") val fname: String,
+    @JsonProperty("ontologyIRI") val ontologyIRI: String,
     @JsonProperty("AboxAxiomCount") val aboxAxiomCount: Int,
     @JsonProperty("TboxAxiomCount") val tboxAxiomCount: Int,
     @JsonProperty("SignatureCount") val signatureCount: Int,
@@ -14,7 +14,7 @@ data class OntologyData @JsonCreator constructor(
     @JsonProperty("signature") val signature: List<String>,
 ) {
     constructor(ontologyInfoData: OntologyInfoData): this(
-        fname = ontologyInfoData.filename,
+        ontologyIRI = ontologyInfoData.ontologyIRI,
         aboxAxiomCount = ontologyInfoData.aboxAxioms.size,
         tboxAxiomCount = ontologyInfoData.tboxAxioms.size,
         signatureCount = ontologyInfoData.signature.size,

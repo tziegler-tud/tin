@@ -8,18 +8,18 @@ import tin.services.Task.TaskStatus
 
 @Entity
 class Task(
-    val queryFile: Long,
-    val ontologyFile: Long,
+    val queryFile: Long = 0,
+    val ontologyFile: Long = 0,
 
-    val transducerMode: TransducerMode,
-    val transducerGenerationMode: TransducerGenerationMode?,
-    val transducerFile: Long?,
+    val transducerMode: TransducerMode = TransducerMode.UNSET,
+    val transducerGenerationMode: TransducerGenerationMode? = null,
+    val transducerFile: Long? = null,
 
-    val ontologyVariant: OntologyVariant,
-    val computationMode: ComputationMode,
-    val individualNameA: String?,
-    val individualNameB: String?,
-    val maxCost: Int?,
+    val ontologyVariant: OntologyVariant = OntologyVariant.UNSET,
+    val computationMode: ComputationMode = ComputationMode.UNSET,
+    val individualNameA: String? = null,
+    val individualNameB: String? = null,
+    val maxCost: Int? = null,
 ){
 
     @GeneratedValue
@@ -40,6 +40,8 @@ class Task(
         individualNameB = computationConfiguration.individualNameB,
         maxCost = computationConfiguration.maxCost,
     )
+
+
 
     fun getFileConfiguration(): TaskFileConfiguration {
         return TaskFileConfiguration(queryFile, ontologyFile, transducerMode, transducerGenerationMode, transducerFile)
