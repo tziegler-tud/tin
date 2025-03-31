@@ -8,17 +8,17 @@ import java.util.*
 
 @Entity
 class TinFile(
-    val filename: String,
-    val filetype: TinFileType,
-    val filelength: Long,
-    val source: TinFileSource,
-    lastModifiedAt: Date?) {
+    val filename: String = "",
+    val filetype: TinFileType = TinFileType.File,
+    val filelength: Long = 0,
+    val source: TinFileSource = TinFileSource.UNKNOWN,
+    var path: String? = "",
+    lastModifiedAt: Date? = null) {
+
     @GeneratedValue
     @Id
     val id: Long = 0
-
     var lastModifiedAt: Date = lastModifiedAt?: Date()
-
 }
 
 

@@ -4,4 +4,5 @@ enum class TinFileType {
     RegularPathQuery,
     Transducer,
     Ontology,
+    File
 }

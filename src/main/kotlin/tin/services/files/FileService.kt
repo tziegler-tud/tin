@@ -4,18 +4,29 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import org.springframework.core.io.Resource
 import org.springframework.web.multipart.MultipartFile
+import tin.model.v2.File.Ontology.OntologyMetaInfo
+import tin.model.v2.File.Ontology.OntologyMetaInfoRepository
 import tin.model.v2.File.TinFileRepository
 import tin.model.v2.File.TinFileType
 import tin.model.v2.File.TinFile
 import tin.model.v2.File.TinFileSource
+import tin.model.v2.Tasks.OntologyVariant
+import tin.services.internal.fileReaders.OntologyReaderService
+import tin.services.internal.fileReaders.fileReaderResult.FileReaderResult
+import tin.services.ontology.OntologyInfoData
+import tin.services.ontology.OntologyManager
 import tin.services.technical.SystemConfigurationService
 import tin.utils.findByIdentifier
 import java.io.File
 import java.nio.file.Path
 import java.util.*
+import kotlin.io.path.pathString
 
 @Service
-class FileService @Autowired constructor(private val systemConfigurationService: SystemConfigurationService, private val fileRepository: TinFileRepository) {
+class FileService @Autowired constructor(private val systemConfigurationService: SystemConfigurationService, private val fileRepository: TinFileRepository, private val metaRepository: OntologyMetaInfoRepository) {
+
+    @Autowired
+    lateinit var ontologyReaderService: OntologyReaderService
 
     private val uploadPath = systemConfigurationService.getUploadParentPath()
     private val uploadLocation = Path.of(uploadPath)
@@ -79,22 +90,31 @@ class FileService @Autowired constructor(private val systemConfigurationService:
         addFile(uploadFile, TinFileType.Transducer)
     }
 
-    fun addFile(uploadFile: MultipartFile, fileType: TinFileType) {
+    fun addFile(uploadFile: MultipartFile, fileType: TinFileType, ontologyVariant: OntologyVariant? = null) {
         if (uploadFile.isEmpty) {
             throw Exception("Failed to add empty file.")
         }
         val filename = uploadFile.originalFilename ?: uploadFile.name;
         val fileLength = uploadFile.size
 
-        val file = TinFile(filename, fileType, fileLength, TinFileSource.UPLOAD, Date())
+        val file = TinFile(filename, fileType, fileLength, TinFileSource.UPLOAD )
         try {
-            storageService.store(file, uploadFile)
+            val path = storageService.store(file, uploadFile)
             //add to repo
+            file.path = path.pathString;
             fileRepository.save(file)
         }
         catch (e: Exception) {
             throw Exception("Failed to store file.")
-
+        }
+        if(fileType == TinFileType.Ontology) {
+            //read ontology
+            val result: FileReaderResult<File> = ontologyReaderService.read(file.path!!);
+            val manager = OntologyManager(result.get());
+            val info: OntologyInfoData = manager.getOntologyInfo();
+            //add meta info dataset
+            val meta = OntologyMetaInfo(file, info, ontologyVariant)
+            metaRepository.save(meta);
         }
     }
 
