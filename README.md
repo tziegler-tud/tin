@@ -56,6 +56,11 @@ cp src/resources/application.default.properties src/resources/application.proper
 ```
 3. Make sure you have Redis and a MySQL DB up and running, and set up your ```application.properties``` accordingly.\
 If you want to run these with docker, take a look at the provided ```docker-compose.development.yml```
+You can use 
+```
+docker compose -f docker-compose.development.yml up -d
+```
+to start the containers.
 4. Use Gradle to build the project (Make sure gradle is available at the path, see https://github.com/gradle/gradle for installation)
 ```
 gradle build
