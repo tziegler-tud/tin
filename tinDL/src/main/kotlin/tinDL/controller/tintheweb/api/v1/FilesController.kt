@@ -6,7 +6,6 @@ import org.springframework.web.bind.annotation.RestController
 import tinDL.data.tintheweb.FileData
 import tinDL.data.tintheweb.TinFileData
 import tinDL.services.files.FileService
-import tinDL.services.tintheweb.FileOverviewService
 
 @RestController
 @RequestMapping("/api/v1/files")

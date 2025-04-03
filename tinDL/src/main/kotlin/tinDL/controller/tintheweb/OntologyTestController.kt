@@ -9,12 +9,10 @@ import tinDL.services.internal.fileReaders.OntologyReaderService
 import tinDL.services.internal.fileReaders.fileReaderResult.FileReaderResult
 import tinDL.services.ontology.OntologyInfoData
 import tinDL.services.ontology.OntologyManager
-import tinDL.services.tintheweb.ComputationPropertiesService
 import java.io.File
 
 @RestController
 class OntologyTestController(
-    private val computationPropertiesService: ComputationPropertiesService
 ) {
 
 
