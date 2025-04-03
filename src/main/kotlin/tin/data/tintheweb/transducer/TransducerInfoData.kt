@@ -2,9 +2,7 @@ package tin.data.tintheweb.transducer
 
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
-import tin.model.v2.File.TinFile
-import tin.model.v2.query.QueryGraph
-import tin.services.ontology.OntologyInfoData
+import tin.model.v2.transducer.TransducerGraph
 import java.util.*
 
 data class TransducerInfoData @JsonCreator constructor(
@@ -13,10 +11,10 @@ data class TransducerInfoData @JsonCreator constructor(
     @JsonProperty("edgesCount") val edgeCount: Int,
     @JsonProperty("lastModified") val lastModified: Date? = null,
 ) {
-    constructor(filename: String, queryGraph: QueryGraph): this(
+    constructor(filename: String, graph: TransducerGraph): this(
         filename = filename,
-        stateCount = queryGraph.nodes.size,
-        edgeCount = queryGraph.edges.size,
+        stateCount = graph.nodes.size,
+        edgeCount = graph.edges.size,
         lastModified = null,
     )
 }
