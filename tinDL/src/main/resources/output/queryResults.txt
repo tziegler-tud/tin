@@ -1,0 +1,6 @@
+query processed. 
+(a, a) with cost 0.0
+(c, c) with cost 0.0
+(a, c) with cost 0.0
+(c, a) with cost 0.0
+total answers: 4

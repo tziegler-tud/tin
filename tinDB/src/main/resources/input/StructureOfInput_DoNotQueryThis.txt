@@ -1,0 +1,28 @@
+name: testData123                           <name of your data set>
+queryGraph:                                 <we start with the definition of the query graph>
+nodes:                                      <it is important to state "nodes:" and "edges:" before you write down the concrete objects>
+s0, true, false                             <please use unique names. I use sN (N being a number starting at 0) for queryNodes>
+s1, false, true                             <                               tN for transducerNodes>
+s2, false, false                            <                and simply some char for databaseNodes>
+edges:                                      <important line! always separate node definitions and edge definitions with "edges:" >
+s0, s1, S                                   <form of query edges: source, target, label >
+s1, s1, R                                   <important to only connect nodes that have previously been defined.>
+transducerGraph:                            <now for the transducer definition. start with nodes and continue with edges>
+t0, true, false                             <transducer nodes have the same form as query nodes>
+t1, false, true
+edges:                                      <don't forget to separate your definitions!>
+t0, t1, R, R, 0                             <syntax: source, target, incomingString, outgoingString, cost of approximation>
+t1, t1, ε, S, 2                             <this is an incoming epsilon edge. We read nothing and replace this with outgoingString at some cost. (= insertion at the end)
+t1, t1, R, ε, 1                             <this is an outgoing epsilon edge. We read incomingString and delete it at some cost.
+t1, t1, R, , 1                              <you can also leave the space for the epsilon blank.>
+databaseGraph:                              <finally for the database definition>
+nodes:                                      <the database has a simple form since we do not care about intial and final states (they are by definition always true)>
+a                                           <just name the database nodes...>
+b
+c
+edges:                                      <again, don't miss the "edges:" keyword. the parser will thank you :)>
+a, b, S                                     <simple form of the edges: source, target, label>
+b, c, T
+c, a, R                                     < summary: >
+c, b, E                                     < lines 1, 2, 3, 7, 10, 13, 18, 19 and 23 have to be exactly (excluding the comments on the right) as stated here. >
+c, c, R                                     < every other line has to fulfill the syntax of the corresponding definition block.>

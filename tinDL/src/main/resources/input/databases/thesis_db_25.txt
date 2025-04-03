@@ -1,0 +1,26 @@
+nodes
+a
+b
+c
+d
+e
+f
+g
+h
+edges
+a,c, has-part
+c,g, has-part
+c,h, has-part
+b,a, is-part-of
+b,f, has-part
+d,a, is-part-of
+d,e, has-part
+properties
+a, Car-Fleet, Occupied
+b, Car
+c, Car
+d, Car
+e, Motor
+f, Motor
+g, Motor
+h, Hitch, Permanent

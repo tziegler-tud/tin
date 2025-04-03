@@ -1,0 +1,52 @@
+formula
+q(x) = exists(s,t,y,z).phi(R14(x,z) and R15(x,y) and R16(s,s) and R17(x,s) and R18(t,x) and R19(t,t))
+graph R14
+nodes
+s0, true, false
+s1, false, false
+s2, false, false
+s3, false, true
+edges
+s0,s1, Car?
+s1,s2, has-part
+s2,s3, Motor?
+graph R15
+nodes
+s0, true, false
+s1, false, false
+s2, false, false
+s3, false, true
+edges
+s0,s1, Car?
+s1,s2, has-part
+s2,s3, Hitch?
+graph R16
+nodes
+s0, true, false
+s1, false, true
+edges
+s0,s1, Hitch?
+graph R17
+nodes
+s0, true, false
+s1, false, false
+s2, false, true
+edges
+s0,s1, Car?
+s1,s2, has-part
+graph R18
+nodes
+s0, true, false
+s1, false, false
+s2, false, true
+edges
+s0,s1, Customer?
+s1,s2, rents
+graph R19
+nodes
+s0, true, false
+s1, false, false
+s2, false, true
+edges
+s0,s1, CarFleet?
+s1,s2, Occupied?
