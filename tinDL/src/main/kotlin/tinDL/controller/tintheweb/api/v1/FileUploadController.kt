@@ -1,8 +1,4 @@
-<<<<<<<< HEAD:tinDL/src/main/kotlin/tinDL/controller/tintheweb/api/v1/FileUploadController.kt
-package tin.controller.tintheweb.api.v1
-========
-package tinDL.services.files
->>>>>>>> refactor:tinDL/src/main/kotlin/tinDL/services/files/FileUploadController.kt
+package tinDL.controller.tintheweb.api.v1
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.core.io.Resource
@@ -11,18 +7,12 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
 import org.springframework.web.servlet.mvc.support.RedirectAttributes
-<<<<<<<< HEAD:tinDL/src/main/kotlin/tinDL/controller/tintheweb/api/v1/FileUploadController.kt
-import tin.model.v2.File.TinFileType
-import tin.model.v2.File.TinFile
-import tin.model.v2.Tasks.OntologyVariant
-import tin.services.files.FileService
-import tin.services.files.StorageFileNotFoundException
-import tin.services.technical.SystemConfigurationService
-========
 import tinDL.model.v2.File.TinFileType
 import tinDL.model.v2.File.TinFile
+import tinDL.model.v2.Tasks.OntologyVariant
+import tinDL.services.files.FileService
+import tinDL.services.files.StorageFileNotFoundException
 import tinDL.services.technical.SystemConfigurationService
->>>>>>>> refactor:tinDL/src/main/kotlin/tinDL/services/files/FileUploadController.kt
 
 import java.nio.file.Path
 

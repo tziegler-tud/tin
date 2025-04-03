@@ -1,13 +1,11 @@
-package tin.controller.tintheweb.api.v1
+package tinDL.controller.tintheweb.api.v1
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.*
-import tin.data.tintheweb.query.QueryInfoData
-import tin.data.tintheweb.transducer.TransducerInfoData
-import tin.model.v1.tintheweb.FileRepository
-import tin.services.files.FileService
-import tin.services.internal.fileReaders.QueryReaderServiceV2
-import tin.services.internal.fileReaders.TransducerReaderServiceV2
+import tinDL.data.tintheweb.transducer.TransducerInfoData
+import tinDL.model.v1.tintheweb.FileRepository
+import tinDL.services.files.FileService
+import tinDL.services.internal.fileReaders.TransducerReaderServiceV2
 import java.nio.file.Path
 
 @RestController

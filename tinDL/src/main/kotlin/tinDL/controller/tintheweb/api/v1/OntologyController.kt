@@ -1,18 +1,18 @@
-package tin.controller.tintheweb.api.v1
+package tinDL.controller.tintheweb.api.v1
 
 import OnotlogyTestPostData
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.*
-import tin.data.tintheweb.TinFileData
-import tin.data.tintheweb.ontology.OntologyData
-import tin.data.tintheweb.ontology.OntologyMetaInfoData
-import tin.model.v2.File.Ontology.OntologyMetaInfo
-import tin.model.v2.File.Ontology.OntologyMetaInfoRepository
-import tin.services.files.FileService
-import tin.services.internal.fileReaders.OntologyReaderService
-import tin.services.internal.fileReaders.fileReaderResult.FileReaderResult
-import tin.services.ontology.OntologyInfoData
-import tin.services.ontology.OntologyManager
+import tinDL.data.tintheweb.TinFileData
+import tinDL.data.tintheweb.ontology.OntologyData
+import tinDL.data.tintheweb.ontology.OntologyMetaInfoData
+import tinDL.model.v2.File.Ontology.OntologyMetaInfo
+import tinDL.model.v2.File.Ontology.OntologyMetaInfoRepository
+import tinDL.services.files.FileService
+import tinDL.services.internal.fileReaders.OntologyReaderService
+import tinDL.services.internal.fileReaders.fileReaderResult.FileReaderResult
+import tinDL.services.ontology.OntologyInfoData
+import tinDL.services.ontology.OntologyManager
 import java.io.File
 
 @RestController
