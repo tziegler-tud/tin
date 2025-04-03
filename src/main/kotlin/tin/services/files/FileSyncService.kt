@@ -69,12 +69,14 @@ class FileSyncService(
             TinFileType.RegularPathQuery -> listOf("txt", "tinput")
             TinFileType.Transducer -> listOf("txt", "tinput")
             TinFileType.Ontology  -> listOf("rdf", "owl")
+            TinFileType.File -> listOf("")
         }
 
         folder.listFiles { f -> f.isFile && allowedExtensions.contains(f.extension)}?.forEach { file ->
             val filename = file.name
             val filelength = file.length()
             val fileLastModifiedAt = Date(file.lastModified())
+            val path = file.path;
 
 
             // check if file exists in the repo
@@ -88,6 +90,7 @@ class FileSyncService(
                         type,
                         filelength,
                         source,
+                        path,
                         fileLastModifiedAt
                     )
                 )

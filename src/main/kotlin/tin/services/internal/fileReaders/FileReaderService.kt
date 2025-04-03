@@ -37,6 +37,10 @@ abstract class FileReaderService<T> (systemConfigurationService: SystemConfigura
         return this.processFile(file, breakOnError);
     }
 
+    final fun read(file: File, breakOnError: Boolean = false) : T {
+        return this.processFile(file, breakOnError);
+    }
+
     protected fun readFileFromAbsolutePath(path: Path) : File {
         return path.toFile();
     }

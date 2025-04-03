@@ -118,6 +118,10 @@ class TaskProcessor(
 
 
             }
+
+            OntologyVariant.UNSET -> {
+                throw IllegalArgumentException("Failed to process task: Ontology Variant not set.")
+            }
         }
 
         val dijkstraSolver = DijkstraSolver(resultGraph)
@@ -162,7 +166,7 @@ class TaskProcessor(
 
 
             }
-            ComputationMode.allIndivudals -> {
+            ComputationMode.allIndividuals -> {
                 //return all pairs of individuals and their cost if <infty
                 val fwSolver = FloydWarshallSolver(resultGraph)
 
@@ -184,6 +188,11 @@ class TaskProcessor(
 
                 results = result;
 
+
+            }
+
+            ComputationMode.UNSET -> {
+                throw IllegalArgumentException("Failed to process task: Computation mode not set.")
 
             }
         }

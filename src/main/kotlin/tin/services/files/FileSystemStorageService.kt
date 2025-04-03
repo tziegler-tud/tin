@@ -33,10 +33,11 @@ class FileSystemStorageService(
             TinFileType.RegularPathQuery -> queryLocation
             TinFileType.Transducer -> transducerLocation
             TinFileType.Ontology -> ontologyLocation
+            TinFileType.File -> uploadLocation //unused, but required for the compiler
         }
     }
 
-    fun store(file: TinFile, content: MultipartFile) {
+    fun store(file: TinFile, content: MultipartFile) : Path {
         try {
             if (content.isEmpty) {
                 throw StorageException("Failed to store empty file.")
@@ -60,9 +61,12 @@ class FileSystemStorageService(
                     StandardCopyOption.REPLACE_EXISTING
                 )
             }
+            return destinationFile;
+
         } catch (e: IOException) {
             throw StorageException("Failed to store file.", e)
         }
+
     }
 
     fun loadAsResource(file: TinFile) : Resource {

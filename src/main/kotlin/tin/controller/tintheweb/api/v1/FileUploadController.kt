@@ -1,15 +1,17 @@
-package tin.services.files
+package tin.controller.tintheweb.api.v1
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.core.io.Resource
 import org.springframework.http.HttpHeaders
 import org.springframework.http.ResponseEntity
-import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
 import org.springframework.web.servlet.mvc.support.RedirectAttributes
 import tin.model.v2.File.TinFileType
 import tin.model.v2.File.TinFile
+import tin.model.v2.Tasks.OntologyVariant
+import tin.services.files.FileService
+import tin.services.files.StorageFileNotFoundException
 import tin.services.technical.SystemConfigurationService
 
 import java.nio.file.Path
@@ -104,9 +106,10 @@ class FileUploadController @Autowired constructor(private val systemConfiguratio
     @PostMapping("/files/upload/ontology")
     fun handleFileUploadOntology(
         @RequestParam("file") file: MultipartFile,
+        @RequestParam("variant") ontologyVariant: OntologyVariant,
         redirectAttributes: RedirectAttributes
     ): String {
-        fileService.addFile(file, TinFileType.Ontology)
+        fileService.addFile(file, TinFileType.Ontology, ontologyVariant)
         redirectAttributes.addFlashAttribute(
             "message",
             "You successfully uploaded " + file.originalFilename + "!"

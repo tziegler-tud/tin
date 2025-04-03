@@ -13,6 +13,10 @@ class TaskQueue {
         return queue.add(id);
     }
 
+    fun remove(id: Long): Boolean {
+        return queue.remove(id);
+    }
+
     fun getNext() : Long? {
         return queue.poll();
     }

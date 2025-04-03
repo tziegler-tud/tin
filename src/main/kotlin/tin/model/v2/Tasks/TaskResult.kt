@@ -1,21 +1,19 @@
 package tin.model.v2.Tasks
-
+import jakarta.persistence.*
 import org.semanticweb.owlapi.model.IRI
 import org.springframework.data.jpa.repository.JpaRepository
 import tin.services.ontology.ResultGraph.ShortestPathResult
-import javax.persistence.*
-
 
 @Entity
 class TaskResult(
     @OneToOne(cascade = [CascadeType.ALL])
-    val task: Task,
+    val task: Task = Task(),
 
-    val source: IRI,
-    val target: IRI,
-    val sourceNode: String,
-    val targetNode: String,
-    val cost: Int?
+    val source: IRI? = null,
+    val target: IRI? = null,
+    val sourceNode: String = "",
+    val targetNode: String = "",
+    val cost: Int? = null,
 ) {
     @GeneratedValue
     @Id

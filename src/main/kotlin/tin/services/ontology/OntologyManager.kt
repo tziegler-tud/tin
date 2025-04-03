@@ -120,11 +120,15 @@ class OntologyManager(val file: File) {
     }
 
     fun getOntologyInfo(): OntologyInfoData {
-        val name = manager.getOntologyDocumentIRI(ontology);
+        val iri = manager.getOntologyDocumentIRI(ontology);
+        val name = iri.shortForm;
+        val classCount = classes.size;
+        val roleCount = properties.size;
+        val individualCount = individuals.size;
         val aboxAxioms = ontology.getABoxAxioms(Imports.EXCLUDED);
         val tboxAxioms = ontology.getTBoxAxioms(Imports.EXCLUDED);
         val signature = ontology.getSignature(Imports.EXCLUDED);
-        return OntologyInfoData(name.toString(), aboxAxioms, tboxAxioms, signature);
+        return OntologyInfoData(iri.toString(), name, aboxAxioms, tboxAxioms, signature, classCount, roleCount, individualCount);
     }
 
 

@@ -1,6 +1,18 @@
 version: '3.3'
 
 services:
+  tin:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: tin-container
+    ports:
+      - "8900:8900"
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+    restart: on-failure
+    networks:
+      - tin_network
   db:
     image: mysql:8.4.1
     restart: always
@@ -19,15 +31,21 @@ services:
       # Where our data will be persisted
     volumes:
       - my-db:/var/lib/mysql
+    networks:
+      - tin_network
 
   redis:
     image: redis:7.2.5
     restart: always
     ports:
       - '6379:6379'
+    networks:
+      - tin_network
 
   wpmongo:
     image: mongodb/mongodb-community-server:5.0.21-ubuntu2004-20240703T064600Z
+    networks:
+      - tin_network
 #  webprotege:
 #    image: protegeproject/webprotege:latest
 #    restart: always
@@ -42,3 +60,7 @@ services:
 # Names our volume
 volumes:
   my-db:
+
+networks:
+  tin_network:
+    driver: bridge

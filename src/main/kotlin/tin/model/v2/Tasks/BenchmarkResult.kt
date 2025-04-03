@@ -6,7 +6,7 @@ import tin.model.v1.queryTask.QueryTask
 import tin.services.Task.Benchmark.TaskProcessingBenchmarkResult
 import tin.services.Task.Benchmark.TaskProcessingResultTimes
 import tin.services.Task.ProcessingResult
-import javax.persistence.*
+import jakarta.persistence.*
 import kotlin.time.Duration
 
 @Entity
@@ -46,7 +46,7 @@ class BenchmarkResult(
 ) {
     @GeneratedValue
     @Id
-    open val id: Long = 0
+    val id: Long = 0
 
     constructor(task: Task, benchmarkResult: TaskProcessingBenchmarkResult) : this(
         task,

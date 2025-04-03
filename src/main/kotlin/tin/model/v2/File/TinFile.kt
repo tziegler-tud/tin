@@ -1,24 +1,24 @@
 package tin.model.v2.File
 
+import jakarta.persistence.Entity
+import jakarta.persistence.GeneratedValue
+import jakarta.persistence.Id
 import org.springframework.data.jpa.repository.JpaRepository
 import java.util.*
-import javax.persistence.Entity
-import javax.persistence.GeneratedValue
-import javax.persistence.Id
 
 @Entity
 class TinFile(
-    val filename: String,
-    val filetype: TinFileType,
-    val filelength: Long,
-    val source: TinFileSource,
-    lastModifiedAt: Date?) {
+    val filename: String = "",
+    val filetype: TinFileType = TinFileType.File,
+    val filelength: Long = 0,
+    val source: TinFileSource = TinFileSource.UNKNOWN,
+    var path: String? = "",
+    lastModifiedAt: Date? = null) {
+
     @GeneratedValue
     @Id
     val id: Long = 0
-
     var lastModifiedAt: Date = lastModifiedAt?: Date()
-
 }
 
 
