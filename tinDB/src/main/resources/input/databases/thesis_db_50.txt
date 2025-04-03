@@ -1,0 +1,47 @@
+nodes
+a
+b
+c
+d
+e
+f
+g
+h
+i
+k
+m
+n
+o
+p
+q
+edges
+a,c, has-part
+c,g, has-part
+c,h, has-part
+b,a, is-part-of
+b,f, has-part
+d,a, is-part-of
+d,e, has-part
+d,i, is-part-of
+k,i, rents
+m,n, has-part
+i,m, has-part
+m,o, has-part
+q,i, is-part-of
+p,q, is-part-of
+properties
+a, CarFleet, Occupied
+b, Car
+c, Car
+d, Car
+e, Motor
+f, Motor
+g, Motor
+h, Hitch, Permanent
+i, CarFleet, Occupied
+k, Customer
+m, Car
+n, Motor
+o, Hitch, Temporary
+p, Hitch
+q, Car, Occupied

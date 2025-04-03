@@ -1,0 +1,4 @@
+nodes
+q0, true, true
+edges
+q0, q0, epsilon
