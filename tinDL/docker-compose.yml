@@ -1,11 +1,11 @@
 version: '3.3'
 
 services:
-  tin:
+  tinDL:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: tin-container
+    container_name: tinDL-container
     ports:
       - "8900:8900"
     environment:
