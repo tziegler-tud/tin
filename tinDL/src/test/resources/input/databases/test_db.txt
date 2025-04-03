@@ -1,9 +1,0 @@
-nodes
-d0
-d1
-d2
-d3
-edges
-d0, d1, l1
-d1, d2, l2
-d2, d3, l3
