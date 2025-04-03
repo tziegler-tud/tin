@@ -1,0 +1,5 @@
+rootProject.name = 'tin'
+
+include("tinDB")
+include("tinDL")
+//include("tinLIB")
