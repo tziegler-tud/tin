@@ -25,7 +25,7 @@ WORKDIR /tin
 
 COPY --from=build /tin/build/libs/*.jar app.jar
 # Expose the application port
-EXPOSE 8900
+EXPOSE 8901
 
 # Run the application
 CMD ["java", "-jar", "app.jar"]

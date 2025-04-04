@@ -1,6 +1,6 @@
-package tinDL.model.v2.graph
+package tinLIB.model.v2.graph
 
-import tinDL.model.v1.alphabet.Alphabet
+import tinLIB.model.v1.alphabet.Alphabet
 
 abstract class AbstractGraph : Graph {
 
