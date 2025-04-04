@@ -1,6 +1,6 @@
 package tin.model.queryResult.computationStatistics
 
-import javax.persistence.Entity
+import jakarta.persistence.Entity
 
 /**
  * @param preProcessingTimeInMs building the ConjunctiveQueryDataProvider

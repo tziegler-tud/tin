@@ -137,7 +137,7 @@ class ConjunctiveQueryAnsweringService(
     private fun buildDataProvider(data: QueryTask): ConjunctiveQueryDataProvider {
 
         val queryFileDb = fileRepository.findByIdentifier(data.queryFileIdentifier)
-        val databaseFileDb = fileRepository.findByIdentifier(data.databaseFileIdentifier)
+        val databaseFileDb = fileRepository.findByIdentifier(data.dataSourceFileIdentifier)
 
         val queryFileReaderResult = conjunctiveQueryReaderService.read(
             systemConfigurationService.getConjunctiveQueryPath(),
@@ -250,7 +250,7 @@ class ConjunctiveQueryAnsweringService(
                                 localPostProcessingTime,
                                 combinedProcessingTimes
                             ),
-                            QueryResult.QueryResultStatus.NoError,
+                            QueryResultStatus.NoError,
                             it.key,
                             transformedAnswerSet
                         )
@@ -285,7 +285,7 @@ class ConjunctiveQueryAnsweringService(
         val conjunctiveQueryResult = ConjunctiveQueryResult(
             queryTask = queryTask,
             computationStatistics = null,
-            queryResultStatus = QueryResult.QueryResultStatus.NoError,
+            queryResultStatus = QueryResultStatus.NoError,
             variableMappings = emptySet(),
             regularPathQueryResults = regularPathQueryResultSet
         )
@@ -386,7 +386,7 @@ class ConjunctiveQueryAnsweringService(
                                 localPostProcessingTime,
                                 combinedProcessingTimes
                             ),
-                            QueryResult.QueryResultStatus.NoError,
+                            QueryResultStatus.NoError,
                             it.key,
                             transformedAnswerSet
                         )
@@ -421,7 +421,7 @@ class ConjunctiveQueryAnsweringService(
         val conjunctiveQueryResult = ConjunctiveQueryResult(
             queryTask = queryTask,
             computationStatistics = null,
-            queryResultStatus = QueryResult.QueryResultStatus.NoError,
+            queryResultStatus = QueryResultStatus.NoError,
             variableMappings = emptySet(),
             regularPathQueryResults = regularPathQueryResultSet
         )
@@ -525,7 +525,7 @@ class ConjunctiveQueryAnsweringService(
                                 localPostProcessingTime,
                                 combinedProcessingTimes
                             ),
-                            QueryResult.QueryResultStatus.NoError,
+                            QueryResultStatus.NoError,
                             it.key,
                             transformedAnswerSet
                         )
@@ -560,7 +560,7 @@ class ConjunctiveQueryAnsweringService(
         val conjunctiveQueryResult = ConjunctiveQueryResult(
             queryTask = queryTask,
             computationStatistics = null,
-            queryResultStatus = QueryResult.QueryResultStatus.NoError,
+            queryResultStatus = QueryResultStatus.NoError,
             variableMappings = emptySet(),
             regularPathQueryResults = regularPathQueryResultSet
         )
@@ -600,7 +600,7 @@ class ConjunctiveQueryAnsweringService(
             ConjunctiveQueryResult(
                 queryTask,
                 null,
-                QueryResult.QueryResultStatus.ErrorInComputationMode,
+                QueryResultStatus.ErrorInComputationMode,
                 emptySet(),
                 emptySet()
             ), null

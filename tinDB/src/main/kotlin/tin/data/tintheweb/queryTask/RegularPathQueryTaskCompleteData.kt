@@ -21,7 +21,7 @@ class RegularPathQueryTaskCompleteData(
         computationProperties = ComputationPropertiesData(model.computationProperties),
         queryFileIdentifier = model.queryFileIdentifier,
         transducerFileIdentifier = model.transducerFileIdentifier,
-        databaseFileIdentifier = model.databaseFileIdentifier,
+        databaseFileIdentifier = model.dataSourceFileIdentifier,
         queryStatus = model.queryStatus,
         queryResult = model.queryResult?.let { RegularPathQueryResultData(it.first() as RegularPathQueryResult) },
         createdAt = model.createdAt
@@ -39,7 +39,7 @@ class QueryTaskCreateData(
         computationProperties = ComputationPropertiesData(model.computationProperties),
         queryFileIdentifier = model.queryFileIdentifier,
         transducerFileIdentifier = model.transducerFileIdentifier,
-        databaseFileIdentifier = model.databaseFileIdentifier,
+        databaseFileIdentifier = model.dataSourceFileIdentifier,
     )
 
 }

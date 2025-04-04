@@ -1,9 +1,9 @@
 package tin.model.queryResult
 
+import jakarta.persistence.*
 import org.springframework.data.jpa.repository.JpaRepository
 import tin.model.queryResult.computationStatistics.ComputationStatistics
 import tin.model.queryTask.QueryTask
-import javax.persistence.*
 
 @Entity
 abstract class QueryResult(
@@ -19,15 +19,6 @@ abstract class QueryResult(
     @GeneratedValue
     @Id
     open val id: Long = 0
-
-    enum class QueryResultStatus {
-        NoError,
-        QueryFileNotFound,
-        TransducerFileNotFound,
-        DatabaseFileNotFound,
-        ErrorInComputationMode,
-        ErrorInComputationProperties
-    }
 }
 
 interface QueryResultRepository : JpaRepository<QueryResult, Long> {

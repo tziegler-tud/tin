@@ -3,13 +3,13 @@ package tin.model.queryTask
 import org.springframework.data.jpa.repository.JpaRepository
 import tin.model.queryResult.QueryResult
 import java.util.*
-import javax.persistence.*
+import jakarta.persistence.*
 
 @Entity
 class QueryTask(
     val queryFileIdentifier: Long,
     val transducerFileIdentifier: Long?,
-    val databaseFileIdentifier: Long,
+    val dataSourceFileIdentifier: Long,
     var queryStatus: QueryStatus,
     val queryType: QueryType,
 
@@ -19,7 +19,7 @@ class QueryTask(
     @ManyToOne(cascade = [CascadeType.ALL])
     val computationProperties: ComputationProperties
 
-    ) {
+) {
     @GeneratedValue
     @Id
     val id: Long = 0
@@ -36,6 +36,7 @@ class QueryTask(
     enum class QueryType {
         regularPathQuery,
         conjunctiveQuery,
+        DLQuery,
     }
 }
 

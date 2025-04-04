@@ -15,7 +15,7 @@ repositories {
 
 dependencies {
     // tinLIB shared library
-//    implementation(project(":tinLIB"))
+    implementation(project(":tinLIB"))
     // kotlin
     implementation 'com.fasterxml.jackson.module:jackson-module-kotlin'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"

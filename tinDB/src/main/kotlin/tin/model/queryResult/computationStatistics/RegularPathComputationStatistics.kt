@@ -1,6 +1,7 @@
 package tin.model.queryResult.computationStatistics
 
-import javax.persistence.Entity
+import jakarta.persistence.Entity
+
 
 @Entity
 class RegularPathComputationStatistics(

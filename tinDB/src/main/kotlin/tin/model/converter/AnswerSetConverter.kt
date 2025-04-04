@@ -2,9 +2,10 @@ package tin.model.converter
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
+import jakarta.persistence.AttributeConverter
+import jakarta.persistence.Converter
 import tin.model.queryResult.RegularPathQueryResult
-import javax.persistence.AttributeConverter
-import javax.persistence.Converter
+
 
 /**
  * converts the Set<AnswerTriplet> to a json string for the db,
