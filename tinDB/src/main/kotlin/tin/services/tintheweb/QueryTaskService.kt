@@ -4,7 +4,7 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.RequestBody
 import tin.data.tintheweb.queryTask.QueryTaskCreateData
-import tin.model.queryResult.QueryResult
+import tin.model.queryResult.QueryResultStatus
 import tin.model.queryTask.ComputationProperties
 import tin.model.queryTask.ComputationPropertiesRepository
 import tin.model.queryTask.QueryTask
@@ -30,7 +30,7 @@ class QueryTaskService(
 
         // check for potential errors before we queue the task.
         // first: check, if the files are present.
-        var errorWhileReadingFiles: QueryResult.QueryResultStatus = QueryResult.QueryResultStatus.NoError
+        var errorWhileReadingFiles: QueryResultStatus = QueryResultStatus.NoError
         val tempQueryFile: File? =
             fileRepository.findByIdAndFiletype(data.queryFileIdentifier, FileType.RegularPathQuery)
         val tempDatabaseFile: File? = fileRepository.findByIdAndFiletype(data.databaseFileIdentifier, FileType.Database)
@@ -41,11 +41,11 @@ class QueryTaskService(
                 fileRepository.findByIdAndFiletype(data.transducerFileIdentifier, FileType.Transducer)
 
             if (tempTransducerFile == null) errorWhileReadingFiles =
-                QueryResult.QueryResultStatus.TransducerFileNotFound
+                QueryResultStatus.TransducerFileNotFound
         }
 
-        if (tempQueryFile == null) errorWhileReadingFiles = QueryResult.QueryResultStatus.QueryFileNotFound
-        if (tempDatabaseFile == null) errorWhileReadingFiles = QueryResult.QueryResultStatus.DatabaseFileNotFound
+        if (tempQueryFile == null) errorWhileReadingFiles = QueryResultStatus.QueryFileNotFound
+        if (tempDatabaseFile == null) errorWhileReadingFiles = QueryResultStatus.DatabaseFileNotFound
 
         // compProperties.id should really not fail but if it somehow does, we still have the fallback option.
         // Note: If you change the dataClass, you can simply throw away the catch block.
@@ -76,9 +76,9 @@ class QueryTaskService(
 
         // if an error is found, we don't queue the task
         if (errorWhileReadingFiles in listOf(
-                QueryResult.QueryResultStatus.QueryFileNotFound,
-                QueryResult.QueryResultStatus.TransducerFileNotFound,
-                QueryResult.QueryResultStatus.DatabaseFileNotFound
+                QueryResultStatus.QueryFileNotFound,
+                QueryResultStatus.TransducerFileNotFound,
+                QueryResultStatus.DatabaseFileNotFound
             )
         ) {
             queryTask.queryStatus = QueryTask.QueryStatus.Error

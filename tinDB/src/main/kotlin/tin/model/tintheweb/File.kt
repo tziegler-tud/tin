@@ -1,10 +1,10 @@
 package tin.model.tintheweb
 
+import jakarta.persistence.Entity
+import jakarta.persistence.GeneratedValue
+import jakarta.persistence.Id
 import org.springframework.data.jpa.repository.JpaRepository
 import java.util.*
-import javax.persistence.Entity
-import javax.persistence.GeneratedValue
-import javax.persistence.Id
 
 @Entity
 class File(

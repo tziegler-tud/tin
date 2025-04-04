@@ -37,6 +37,7 @@ class SchedulerService(
             when (it.queryType) {
                 QueryTask.QueryType.regularPathQuery -> regularPathQueryAnsweringService.calculateQueryTask(it)
                 QueryTask.QueryType.conjunctiveQuery -> conjunctiveQueryAnsweringService.calculateQueryTask(it)
+                QueryTask.QueryType.DLQuery -> TODO()
             }
         }
     }

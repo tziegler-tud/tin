@@ -15,6 +15,7 @@ import tin.model.queryTask.QueryTaskRepository
 import tin.model.queryTask.ComputationProperties
 import tin.model.queryResult.computationStatistics.ComputationStatistics
 import tin.model.queryResult.QueryResult
+import tin.model.queryResult.QueryResultStatus
 import tin.model.queryResult.computationStatistics.RegularPathComputationStatistics
 import tin.model.tintheweb.FileRepository
 import tin.model.transducer.TransducerGraph
@@ -63,7 +64,7 @@ class RegularPathQueryAnsweringService(
         var pairContainingCompStatsAndAnswerSet: Pair<ComputationStatistics, Set<RegularPathQueryResult.AnswerTriplet>>? =
             null
 
-        var regularPathQueryResultStatus: QueryResult.QueryResultStatus = QueryResult.QueryResultStatus.NoError
+        var regularPathQueryResultStatus: QueryResultStatus = QueryResultStatus.NoError
 
 
         when (queryTask.computationProperties.computationModeEnum) {
@@ -71,7 +72,7 @@ class RegularPathQueryAnsweringService(
                 calculateDijkstra(dataProvider)
 
             ComputationProperties.ComputationModeEnum.Threshold -> if (queryTask.computationProperties.thresholdValue == null) {
-                regularPathQueryResultStatus = QueryResult.QueryResultStatus.ErrorInComputationMode
+                regularPathQueryResultStatus = QueryResultStatus.ErrorInComputationMode
             } else {
                 pairContainingCompStatsAndAnswerSet = calculateThreshold(
                     dataProvider, queryTask.computationProperties.thresholdValue
@@ -79,7 +80,7 @@ class RegularPathQueryAnsweringService(
             }
 
             ComputationProperties.ComputationModeEnum.TopK -> if (queryTask.computationProperties.topKValue == null) {
-                regularPathQueryResultStatus = QueryResult.QueryResultStatus.ErrorInComputationMode
+                regularPathQueryResultStatus = QueryResultStatus.ErrorInComputationMode
             } else {
                 pairContainingCompStatsAndAnswerSet =
                     calculateTopK(dataProvider, queryTask.computationProperties.topKValue)
@@ -89,7 +90,7 @@ class RegularPathQueryAnsweringService(
         val regularPathQueryResult =
 
             // return if an error was found
-            if (regularPathQueryResultStatus != QueryResult.QueryResultStatus.NoError) {
+            if (regularPathQueryResultStatus != QueryResultStatus.NoError) {
                 RegularPathQueryResult(
                     queryTask,
                     null,
@@ -102,7 +103,7 @@ class RegularPathQueryAnsweringService(
                 RegularPathQueryResult(
                     queryTask,
                     pairContainingCompStatsAndAnswerSet!!.first,
-                    QueryResult.QueryResultStatus.NoError,
+                    QueryResultStatus.NoError,
                     null,
                     pairContainingCompStatsAndAnswerSet.second
                 )
@@ -122,7 +123,7 @@ class RegularPathQueryAnsweringService(
 
         // find files
         val queryFileDb = fileRepository.findByIdentifier(data.queryFileIdentifier)
-        val databaseFileDb = fileRepository.findByIdentifier(data.databaseFileIdentifier)
+        val databaseFileDb = fileRepository.findByIdentifier(data.dataSourceFileIdentifier)
 
         val queryReaderResult: FileReaderResult<QueryGraph> =
             queryReaderService.read(systemConfigurationService.getQueryPath(), queryFileDb.filename)

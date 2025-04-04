@@ -4,7 +4,7 @@ import tin.model.converter.AnswerSetConverter
 import tin.model.queryResult.computationStatistics.ComputationStatistics
 import tin.model.queryResult.conjunctiveQueryResult.ConjunctiveQueryResult
 import tin.model.queryTask.QueryTask
-import javax.persistence.*
+import jakarta.persistence.*
 
 @Entity
 class RegularPathQueryResult(

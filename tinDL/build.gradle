@@ -3,13 +3,10 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
     id 'org.springframework.boot' version '3.3.0'
     id 'io.spring.dependency-management' version '1.0.11.RELEASE'
-    id 'org.jetbrains.kotlin.jvm' version '2.0.21' // Use latest stable Kotlin 1.x
+    id 'org.jetbrains.kotlin.jvm' version '2.0.21'
     id 'org.jetbrains.kotlin.plugin.spring' version '2.0.21'
-    id 'war'
+//    id 'war'
 }
-
-group = "com.tin"
-version = "0.0.1-SNAPSHOT"
 
 java {
     sourceCompatibility = JavaVersion.VERSION_17
@@ -23,10 +20,12 @@ repositories {
 }
 
 
-group = "com.tin"
-version = "0.1.0-SNAPSHOT"
+//group = "com.tin"
+//version = "0.1.0-SNAPSHOT"
 
 dependencies {
+    // tinLIB shared library
+    implementation(project(":tinLIB"))
     // kotlin
     implementation 'com.fasterxml.jackson.module:jackson-module-kotlin'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"

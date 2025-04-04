@@ -1,12 +1,12 @@
 package tin.model.queryResult.conjunctiveQueryResult
 
 import tin.model.queryResult.QueryResult
+import tin.model.queryResult.QueryResultStatus
 import tin.model.queryResult.RegularPathQueryResult
 import tin.model.queryResult.computationStatistics.ConjunctiveComputationStatistics
 import tin.model.queryTask.QueryTask
-import javax.persistence.CascadeType
-import javax.persistence.Entity
-import javax.persistence.OneToMany
+import jakarta.persistence.*
+
 
 @Entity
 class ConjunctiveQueryResult(

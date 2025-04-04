@@ -2,12 +2,12 @@ package tinDL.model.v2.graph
 
 import tinDL.model.v1.alphabet.Alphabet
 
-abstract class AbstractGraph : tinDL.model.v2.graph.Graph {
+abstract class AbstractGraph : Graph {
 
     companion object {
         fun isValidGraph(graphLikeObject: Any?): Boolean {
             //must be a Graph
-            if (graphLikeObject !is tinDL.model.v2.graph.Graph){
+            if (graphLikeObject !is Graph){
                 return false;
             }
             //at least one initial node and one final node
@@ -15,22 +15,22 @@ abstract class AbstractGraph : tinDL.model.v2.graph.Graph {
         }
     }
 
-    abstract override val nodes: tinDL.model.v2.graph.NodeSet;
-    abstract override val edges: tinDL.model.v2.graph.EdgeSet<out tinDL.model.v2.graph.Edge>
+    abstract override val nodes: NodeSet;
+    abstract override val edges: EdgeSet<out Edge>
     abstract override var alphabet: Alphabet;
 
-    override fun addNode(node: _root_ide_package_.tinDL.model.v2.graph.Node) : Boolean {
+    override fun addNode(node: Node) : Boolean {
         return nodes.add(node);
     }
 
-    override fun addNodes(vararg n: _root_ide_package_.tinDL.model.v2.graph.Node) : Boolean {
+    override fun addNodes(vararg n: Node) : Boolean {
         val list = listOf(*n);
         var allInserted = true
         list.forEach { allInserted = allInserted && addNode(it) }
         return allInserted;
     }
 
-    override fun getNode(identifier: String) : _root_ide_package_.tinDL.model.v2.graph.Node? {
+    override fun getNode(identifier: String) : Node? {
         return nodes.get(identifier)
     }
 
@@ -38,47 +38,47 @@ abstract class AbstractGraph : tinDL.model.v2.graph.Graph {
         return nodes.find { it.identifier == identifier } != null
     }
 
-    override fun containsNode(node: _root_ide_package_.tinDL.model.v2.graph.Node) : Boolean {
+    override fun containsNode(node: Node) : Boolean {
         return nodes.contains(node)
     }
 
-    override fun containsEdge(edge: _root_ide_package_.tinDL.model.v2.graph.Edge) : Boolean {
+    override fun containsEdge(edge: Edge) : Boolean {
         return edges.contains(edge)
     }
 
-    override fun getEdgesWithSource(source: _root_ide_package_.tinDL.model.v2.graph.Node): List<_root_ide_package_.tinDL.model.v2.graph.Edge> {
+    override fun getEdgesWithSource(source: Node): List<Edge> {
         return edges.filterForSource(source);
     }
 
-    override fun getEdgesWithTarget(target: _root_ide_package_.tinDL.model.v2.graph.Node): List<_root_ide_package_.tinDL.model.v2.graph.Edge> {
+    override fun getEdgesWithTarget(target: Node): List<Edge> {
         return edges.filterForTarget(target);
     }
 
-    override fun getEdgesWithSourceAndTarget(source: _root_ide_package_.tinDL.model.v2.graph.Node, target: _root_ide_package_.tinDL.model.v2.graph.Node): List<_root_ide_package_.tinDL.model.v2.graph.Edge> {
+    override fun getEdgesWithSourceAndTarget(source: Node, target: Node): List<Edge> {
         return edges.filterForSourceAndTarget(source, target);
     }
 
-    override fun getEdgesWithLabel(label: _root_ide_package_.tinDL.model.v2.graph.EdgeLabel): List<_root_ide_package_.tinDL.model.v2.graph.Edge> {
+    override fun getEdgesWithLabel(label: EdgeLabel): List<Edge> {
         return edges.filterForLabel(label);
     }
 
-    override fun getInitialNodes() : List<_root_ide_package_.tinDL.model.v2.graph.Node> {
+    override fun getInitialNodes() : List<Node> {
         return this.nodes.filter { it.isInitialState };
     }
 
-    override fun getFinalNodes(): List<_root_ide_package_.tinDL.model.v2.graph.Node> {
+    override fun getFinalNodes(): List<Node> {
         return this.nodes.filter { it.isFinalState };
     }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
-        if (other !is _root_ide_package_.tinDL.model.v2.graph.Graph) return false
+        if (other !is Graph) return false
 
         return hasEqualNodes(other) && hasEqualEdges(other) && (alphabet == other.alphabet)
 
     }
 
-    fun hasEqualNodes(other: _root_ide_package_.tinDL.model.v2.graph.Graph) : Boolean {
+    fun hasEqualNodes(other: Graph) : Boolean {
         if (nodes.count() != other.nodes.count()) return false
         nodes.forEach {
             val node = other.getNode(it.identifier);
@@ -89,7 +89,7 @@ abstract class AbstractGraph : tinDL.model.v2.graph.Graph {
         return true;
     }
 
-    fun hasEqualEdges(other: _root_ide_package_.tinDL.model.v2.graph.Graph) : Boolean {
+    fun hasEqualEdges(other: Graph) : Boolean {
         if (edges.count() != other.edges.count()) return false
         edges.forEach {
             if (!other.containsEdge(it)) {
@@ -126,5 +126,5 @@ abstract class AbstractGraph : tinDL.model.v2.graph.Graph {
             edge.print();
         }
     }
-    abstract override fun addEdge(edge: _root_ide_package_.tinDL.model.v2.graph.Edge) : Boolean;
+    abstract override fun addEdge(edge: Edge) : Boolean;
 }
