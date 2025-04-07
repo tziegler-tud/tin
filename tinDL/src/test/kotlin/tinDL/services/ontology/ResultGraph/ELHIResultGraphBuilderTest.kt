@@ -6,8 +6,8 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.context.TestConfiguration
 import tinDL.model.v2.ResultGraph.ResultGraph
 import tinDL.model.v2.ResultGraph.ResultNode
-import tinDL.model.v2.query.QueryGraph
-import tinDL.model.v2.transducer.TransducerGraph
+import tinLIB.model.v2.query.QueryGraph
+import tinLIB.model.v2.transducer.TransducerGraph
 import tinDL.services.internal.fileReaders.OntologyReaderService
 import tinDL.services.internal.fileReaders.QueryReaderServiceV2
 import tinDL.services.internal.fileReaders.TransducerReaderServiceV2

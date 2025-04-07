@@ -1,8 +1,8 @@
 package tinDL.model.v2.ResultGraph
 
 import org.semanticweb.owlapi.model.OWLNamedIndividual
-import tinDL.model.v2.genericGraph.PairNode
-import tinDL.model.v2.graph.Node
+import tinLIB.model.v2.genericGraph.PairNode
+import tinLIB.model.v2.graph.Node
 
 class ResultNode(
     private val queryNode: Node,
@@ -49,10 +49,6 @@ class ResultNode(
 
     fun getIndividual(): OWLNamedIndividual {
         return individual;
-    }
-
-    override fun asResultNode(): ResultNode {
-        return this;
     }
 
     override fun hashCode(): Int {

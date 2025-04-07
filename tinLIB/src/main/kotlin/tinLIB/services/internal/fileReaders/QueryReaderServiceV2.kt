@@ -1,24 +1,20 @@
 package tinLIB.services.internal.fileReaders
 
-import org.springframework.stereotype.Service
 import tinLIB.model.v1.alphabet.Alphabet
 import tinLIB.model.v2.query.QueryGraph
 import tinLIB.model.v2.graph.Node
 import tinLIB.services.internal.fileReaders.fileReaderResult.FileReaderResult
-import tinLIB.services.technical.SystemConfigurationService
 import java.io.BufferedReader
 import java.io.File
 import java.util.HashMap
 
-@Service
 class QueryReaderServiceV2 (
-        systemConfigurationService: SystemConfigurationService
-) : FileReaderService<FileReaderResult<QueryGraph>>(
-        systemConfigurationService
-) {
+        filePath: String,
+        private val inputFileMaxLines: Int
 
-    override var filePath = systemConfigurationService.getQueryPath()
-    override var inputFileMaxLines : Int = systemConfigurationService.getQuerySizeLimit()
+) : FileReaderService<FileReaderResult<QueryGraph>>(
+    filePath
+) {
 
     override fun processFile(file: File, breakOnError: Boolean): FileReaderResult<QueryGraph> {
         val queryGraph = QueryGraph()

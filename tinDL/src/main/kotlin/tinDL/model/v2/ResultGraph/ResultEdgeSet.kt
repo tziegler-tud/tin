@@ -1,9 +1,9 @@
 package tinDL.model.v2.ResultGraph
 
-import tinDL.model.v2.graph.EdgeLabel
-import tinDL.model.v2.graph.EdgeSet
-import tinDL.model.v2.graph.Node
-import tinDL.model.v2.query.QueryEdge
+import tinLIB.model.v2.graph.EdgeLabel
+import tinLIB.model.v2.graph.EdgeSet
+import tinLIB.model.v2.graph.Node
+import tinLIB.model.v2.query.QueryEdge
 
 class ResultEdgeSet : EdgeSet<ResultEdge>() {
     companion object {

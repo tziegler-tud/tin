@@ -1,24 +1,18 @@
 package tinLIB.services.internal.fileReaders
 
-
-import org.springframework.stereotype.Service
 import tinLIB.model.v1.alphabet.Alphabet
 import tinLIB.model.v2.transducer.TransducerGraph
 import tinLIB.model.v2.graph.Node
 import tinLIB.services.internal.fileReaders.fileReaderResult.FileReaderResult
-import tinLIB.services.technical.SystemConfigurationService
 import java.io.BufferedReader
 import java.io.File
 
-@Service
 class TransducerReaderServiceV2 (
-        systemConfigurationService: SystemConfigurationService
+    filePath: String,
+    private val inputFileMaxLines: Int
 ) : FileReaderService<FileReaderResult<TransducerGraph>>(
-        systemConfigurationService
+        filePath
 ) {
-
-    override var filePath = systemConfigurationService.getTransducerPath()
-    override var inputFileMaxLines : Int = systemConfigurationService.getTransducerSizeLimit()
 
     override fun processFile(file: File, breakOnError: Boolean): FileReaderResult<TransducerGraph> {
         val transducerGraph = TransducerGraph()

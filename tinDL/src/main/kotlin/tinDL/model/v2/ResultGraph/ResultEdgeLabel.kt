@@ -1,8 +1,8 @@
 package tinDL.model.v2.ResultGraph
 
-import tinDL.model.v2.graph.EdgeLabel
-import tinDL.model.v2.graph.EdgeLabelProperty
-import tinDL.model.v2.transducer.TransducerEdgeLabel
+import tinLIB.model.v2.graph.EdgeLabel
+import tinLIB.model.v2.graph.EdgeLabelProperty
+import tinLIB.model.v2.transducer.TransducerEdgeLabel
 
 class ResultEdgeLabel(val cost: Int) : EdgeLabel {
 

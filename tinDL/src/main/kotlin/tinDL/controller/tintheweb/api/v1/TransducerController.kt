@@ -2,11 +2,14 @@ package tinDL.controller.tintheweb.api.v1
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.*
-import tinDL.data.tintheweb.transducer.TransducerInfoData
 import tinDL.model.v1.tintheweb.FileRepository
 import tinDL.services.files.FileService
-import tinDL.services.internal.fileReaders.TransducerReaderServiceV2
+import tinDL.services.technical.SystemConfigurationService
 import java.nio.file.Path
+
+import tinLIB.services.internal.fileReaders.TransducerReaderServiceV2
+import tinLIB.data.tintheweb.transducer.TransducerInfoData
+
 
 @RestController
 @RequestMapping("/api/v1/transducer")
@@ -17,8 +20,12 @@ class TransducerController(
     private lateinit var fileRepository: FileRepository
 
     @Autowired
-    lateinit var transducerReaderService: TransducerReaderServiceV2
+    private lateinit var systemConfigurationService: SystemConfigurationService
 
+    val transducerReaderService: TransducerReaderServiceV2 = TransducerReaderServiceV2(
+        systemConfigurationService.getTransducerPath(),
+        systemConfigurationService.getTransducerSizeLimit()
+    )
     @GetMapping("info")
     fun getQueryInfoAll(): List<TransducerInfoData> {
         //get ontology files

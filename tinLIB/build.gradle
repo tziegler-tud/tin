@@ -10,8 +10,10 @@ plugins {
 repositories {
     mavenCentral()
     mavenLocal()
-    google()
+//    google()
 }
+
+bootJar { enabled = false }
 
 dependencies {
     // kotlin

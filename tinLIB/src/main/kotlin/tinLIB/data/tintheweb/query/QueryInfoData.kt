@@ -1,20 +1,20 @@
-package tinDL.data.tintheweb.transducer
+package tinLIB.data.tintheweb.query
 
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
-import tinLIB.model.v2.transducer.TransducerGraph
+import tinLIB.model.v2.query.QueryGraph
 import java.util.*
 
-data class TransducerInfoData @JsonCreator constructor(
+data class QueryInfoData @JsonCreator constructor(
     @JsonProperty("filename") val filename: String,
     @JsonProperty("stateCount") val stateCount: Int,
     @JsonProperty("edgesCount") val edgeCount: Int,
     @JsonProperty("lastModified") val lastModified: Date? = null,
 ) {
-    constructor(filename: String, graph: TransducerGraph): this(
+    constructor(filename: String, queryGraph: QueryGraph): this(
         filename = filename,
-        stateCount = graph.nodes.size,
-        edgeCount = graph.edges.size,
+        stateCount = queryGraph.nodes.size,
+        edgeCount = queryGraph.edges.size,
         lastModified = null,
     )
 }

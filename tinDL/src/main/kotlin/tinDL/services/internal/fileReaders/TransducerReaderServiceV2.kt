@@ -3,8 +3,8 @@ package tinDL.services.internal.fileReaders
 
 import org.springframework.stereotype.Service
 import tinDL.model.v1.alphabet.Alphabet
-import tinDL.model.v2.transducer.TransducerGraph
-import tinDL.model.v2.graph.Node
+import tinLIB.model.v2.transducer.TransducerGraph
+import tinLIB.model.v2.graph.Node
 import tinDL.services.internal.fileReaders.fileReaderResult.FileReaderResult
 import tinDL.services.technical.SystemConfigurationService
 import java.io.BufferedReader

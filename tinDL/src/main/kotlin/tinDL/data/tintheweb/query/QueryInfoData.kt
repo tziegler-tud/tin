@@ -3,7 +3,7 @@ package tinDL.data.tintheweb.query
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
 import tinDL.model.v2.File.TinFile
-import tinDL.model.v2.query.QueryGraph
+import tinLIB.model.v2.query.QueryGraph
 import tinDL.services.ontology.OntologyInfoData
 import java.util.*
 

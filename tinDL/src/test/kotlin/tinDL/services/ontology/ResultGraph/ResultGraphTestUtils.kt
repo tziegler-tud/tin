@@ -2,8 +2,8 @@ package tinDL.services.ontology.ResultGraph
 
 import tinDL.model.v2.ResultGraph.ResultGraph
 import tinDL.model.v2.ResultGraph.ResultNode
-import tinDL.model.v2.query.QueryGraph
-import tinDL.model.v2.transducer.TransducerGraph
+import tinLIB.model.v2.query.QueryGraph
+import tinLIB.model.v2.transducer.TransducerGraph
 import tinDL.services.ontology.OntologyExecutionContext.ELHI.ELHIExecutionContext
 import tinDL.services.ontology.OntologyExecutionContext.ExecutionContext
 import tinDL.services.ontology.loopTable.LoopTable.ELHI.ELHISPLoopTable

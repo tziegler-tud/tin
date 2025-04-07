@@ -3,16 +3,20 @@ package tinDL.controller.tintheweb.api.v1
 import OnotlogyTestPostData
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.*
-import tinDL.data.tintheweb.TinFileData
 import tinDL.data.tintheweb.ontology.OntologyData
 import tinDL.data.tintheweb.ontology.OntologyMetaInfoData
 import tinDL.model.v2.File.Ontology.OntologyMetaInfo
 import tinDL.model.v2.File.Ontology.OntologyMetaInfoRepository
 import tinDL.services.files.FileService
-import tinDL.services.internal.fileReaders.OntologyReaderService
-import tinDL.services.internal.fileReaders.fileReaderResult.FileReaderResult
 import tinDL.services.ontology.OntologyInfoData
 import tinDL.services.ontology.OntologyManager
+import tinDL.services.technical.SystemConfigurationService
+
+import tinDL.data.tintheweb.TinFileData
+
+import tinLIB.services.internal.fileReaders.OntologyReaderService
+import tinLIB.services.internal.fileReaders.fileReaderResult.FileReaderResult
+
 import java.io.File
 
 @RestController
@@ -24,7 +28,11 @@ class OntologyController(
     private lateinit var ontologyMetaInfoRepository: OntologyMetaInfoRepository
 
     @Autowired
-    lateinit var ontologyReaderService: OntologyReaderService
+    private lateinit var systemConfigurationService: SystemConfigurationService
+
+    private val ontologyReaderService: OntologyReaderService = OntologyReaderService(
+        systemConfigurationService.getOntologyPath()
+    )
 
     @PostMapping("load")
     fun loadTestOntology(@RequestBody data: OnotlogyTestPostData): OntologyData {

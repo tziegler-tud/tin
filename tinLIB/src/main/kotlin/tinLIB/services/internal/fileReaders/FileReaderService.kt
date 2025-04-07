@@ -1,44 +1,41 @@
 package tinLIB.services.internal.fileReaders
 
-import org.springframework.stereotype.Service
-import tinLIB.services.technical.SystemConfigurationService
 import java.io.File
 import java.nio.file.Path
 
-@Service
-abstract class FileReaderService<T> (systemConfigurationService: SystemConfigurationService) {
-    abstract var filePath: String;
-    abstract var inputFileMaxLines: Int;
-    var readingNodes = false;
-    var readingEdges = false;
-    var warnings: MutableList<FileReaderWarning> = mutableListOf();
-    var errors: MutableList<FileReaderWarning> = mutableListOf();
+abstract class FileReaderService<T> (
+    protected var filePath: String,
+) {
+    private var readingNodes = false
+    private var readingEdges = false
+    protected var warnings: MutableList<FileReaderWarning> = mutableListOf()
+    protected var errors: MutableList<FileReaderWarning> = mutableListOf()
 
-    val commentLineRegex = Regex("\\s*//.*");
+    val commentLineRegex = Regex("\\s*//.*")
 
-    final fun read(fileName: String, breakOnError: Boolean = false) : T {
-        var absPath = Path.of(filePath).resolve(fileName);
-        var file = this.readFileFromAbsolutePath(absPath);
-        return this.processFile(file, breakOnError);
+    fun read(fileName: String, breakOnError: Boolean = false) : T {
+        val absPath = Path.of(filePath).resolve(fileName)
+        val file = this.readFileFromAbsolutePath(absPath)
+        return this.processFile(file, breakOnError)
     }
-    final fun read(path: Path, breakOnError: Boolean = false) : T {
-        var file = this.readFileFromAbsolutePath(path);
-        return this.processFile(file, breakOnError);
+    fun read(path: Path, breakOnError: Boolean = false) : T {
+        val file = this.readFileFromAbsolutePath(path)
+        return this.processFile(file, breakOnError)
     }
-    final fun read(dir: Path, filename: String, breakOnError: Boolean = false) : T {
-        var absPath = dir.resolve(filename);
-        var file = this.readFileFromAbsolutePath(absPath);
-        return this.processFile(file, breakOnError);
-    }
-
-    final fun read(dir: String, filename: String, breakOnError: Boolean = false) : T {
-        var absPath = Path.of(dir).resolve(filename);
-        var file = this.readFileFromAbsolutePath(absPath);
-        return this.processFile(file, breakOnError);
+    fun read(dir: Path, filename: String, breakOnError: Boolean = false) : T {
+        val absPath = dir.resolve(filename)
+        val file = this.readFileFromAbsolutePath(absPath)
+        return this.processFile(file, breakOnError)
     }
 
-    protected fun readFileFromAbsolutePath(path: Path) : File {
-        return path.toFile();
+    fun read(dir: String, filename: String, breakOnError: Boolean = false) : T {
+        val absPath = Path.of(dir).resolve(filename)
+        val file = this.readFileFromAbsolutePath(absPath)
+        return this.processFile(file, breakOnError)
+    }
+
+    private fun readFileFromAbsolutePath(path: Path) : File {
+        return path.toFile()
     }
 
     abstract fun processFile(file: File, breakOnError: Boolean = false): T

@@ -1,4 +1,4 @@
-package tinDL.data.tintheweb.transducer
+package tinLIB.data.tintheweb.transducer
 
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty

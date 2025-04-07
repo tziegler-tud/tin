@@ -1,23 +1,15 @@
 package tinDL.controller.tintheweb.api.v1
 
-import OnotlogyTestPostData
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.*
-import tinDL.data.tintheweb.TinFileData
-import tinDL.data.tintheweb.ontology.OntologyData
-import tinDL.data.tintheweb.ontology.OntologyMetaInfoData
 import tinDL.data.tintheweb.query.QueryInfoData
 import tinDL.model.v1.tintheweb.FileRepository
-import tinDL.model.v2.File.Ontology.OntologyMetaInfo
-import tinDL.model.v2.File.Ontology.OntologyMetaInfoRepository
 import tinDL.services.files.FileService
-import tinDL.services.internal.fileReaders.OntologyReaderService
-import tinDL.services.internal.fileReaders.QueryReaderServiceV2
-import tinDL.services.internal.fileReaders.fileReaderResult.FileReaderResult
-import tinDL.services.ontology.OntologyInfoData
-import tinDL.services.ontology.OntologyManager
-import java.io.File
+import tinDL.services.technical.SystemConfigurationService
 import java.nio.file.Path
+
+import tinLIB.services.internal.fileReaders.QueryReaderServiceV2
+
 
 @RestController
 @RequestMapping("/api/v1/query")
@@ -28,7 +20,12 @@ class QueryController(
     private lateinit var fileRepository: FileRepository
 
     @Autowired
-    lateinit var queryReaderService: QueryReaderServiceV2
+    private lateinit var systemConfigurationService: SystemConfigurationService
+
+    val queryReaderService: QueryReaderServiceV2 = QueryReaderServiceV2(
+        systemConfigurationService.getQueryPath(),
+        systemConfigurationService.getQuerySizeLimit()
+    )
 
     @GetMapping("info")
     fun getQueryInfoAll(): List<QueryInfoData> {

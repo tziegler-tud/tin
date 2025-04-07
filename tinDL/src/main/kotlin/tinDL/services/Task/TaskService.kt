@@ -4,15 +4,17 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import tinDL.model.v2.Tasks.*
-import tinDL.model.v2.transducer.TransducerGraph
+import tinLIB.model.v2.transducer.TransducerGraph
 import tinDL.services.Task.Benchmark.TaskProcessingBenchmarkResult
 import tinDL.services.files.FileService
 import tinDL.services.internal.fileReaders.OntologyReaderService
-import tinDL.services.internal.fileReaders.QueryReaderServiceV2
-import tinDL.services.internal.fileReaders.TransducerReaderServiceV2
 import tinDL.services.ontology.OntologyManager
 import tinDL.services.ontology.ResultGraph.ShortestPathResult
 import tinDL.services.technical.SystemConfigurationService
+
+
+import tinLIB.services.internal.fileReaders.QueryReaderServiceV2
+import tinLIB.services.internal.fileReaders.TransducerReaderServiceV2
 
 @Service
 class TaskService @Autowired constructor(
@@ -25,11 +27,11 @@ class TaskService @Autowired constructor(
     private val taskQueue: TaskQueue = TaskQueue();
     private var isProcessing: Boolean = false;
 
-    private val queryFileReader = QueryReaderServiceV2(systemConfigurationService);
-    private val transducerFileReader = TransducerReaderServiceV2(systemConfigurationService);
+    private val queryFileReader = QueryReaderServiceV2(systemConfigurationService.getQueryPath(), systemConfigurationService.getQuerySizeLimit());
+    private val transducerFileReader = TransducerReaderServiceV2(systemConfigurationService.getTransducerPath(), systemConfigurationService.getTransducerSizeLimit());
     private val ontologyReader = OntologyReaderService(systemConfigurationService);
 
-
+Query
     fun createTask(taskFileConfiguration: TaskFileConfiguration, taskRuntimeConfiguration: TaskRuntimeConfiguration, taskComputationConfiguration: TaskComputationConfiguration): Task {
         val task = Task(taskFileConfiguration, taskRuntimeConfiguration, taskComputationConfiguration);
         taskRepository.save(task)

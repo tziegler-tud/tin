@@ -1,25 +1,19 @@
 package tinLIB.services.internal.fileReaders
 
-import org.springframework.stereotype.Service
 import tinLIB.model.v1.alphabet.Alphabet
 import tinLIB.model.v1.database.DatabaseGraph
 import tinLIB.model.v1.database.DatabaseNode
 import tinLIB.services.internal.fileReaders.fileReaderResult.FileReaderResult
-import tinLIB.services.technical.SystemConfigurationService
 import java.io.BufferedReader
 import java.io.File
 import java.util.HashMap
-@Service
+
 class DatabaseReaderService(
-        systemConfigurationService: SystemConfigurationService
+    filePath: String,
+    private val inputFileMaxLines: Int
 ) : FileReaderService<FileReaderResult<DatabaseGraph>>(
-        systemConfigurationService
+        filePath
 ) {
-
-    override var filePath = systemConfigurationService.getDatabasePath()
-    override var inputFileMaxLines : Int = systemConfigurationService.getDatabaseSizeLimit()
-
-
     override fun processFile(file: File, breakOnError: Boolean): FileReaderResult<DatabaseGraph> {
         val databaseGraph = DatabaseGraph()
         val databaseNodes = HashMap<String, DatabaseNode>() // map containing the QueryNodes

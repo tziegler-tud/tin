@@ -1,13 +1,12 @@
 package tinDL.model.v2.ResultGraph
 
-import tinDL.model.v2.graph.Node
-import tinDL.model.v2.graph.NodeSet
+import tinLIB.model.v2.graph.Node
+import tinLIB.model.v2.graph.NodeSet
 
 class ResultNodeSet : NodeSet()
 {
     override fun contains(element: Node): Boolean {
-        val resultNodeElement = element.asResultNode() ?: return false
-        return find{it == resultNodeElement} != null;
+        return contains(element as ResultNode);
     }
 
     fun contains(element: ResultNode): Boolean {
@@ -19,9 +18,8 @@ class ResultNodeSet : NodeSet()
     }
 
     override fun add(element: Node) : Boolean {
-        val resultNodeElement = element.asResultNode() ?: return false
-        if(!contains(resultNodeElement)){
-            return super.add(resultNodeElement);
+        if(!contains(element as ResultNode)){
+            return super.add(element);
         }
         return false;
     }
@@ -35,14 +33,14 @@ class ResultNodeSet : NodeSet()
 
     fun forEach(action: (ResultNode)-> Unit ) {
         super.forEach {
-            action(it.asResultNode()!!)
+            action(it as ResultNode)
         }
     }
 
     override fun asList(): List<ResultNode> {
         val list = mutableListOf<ResultNode>();
-        this.forEach { resultNode ->
-            list.add(resultNode.asResultNode()!!);
+        this.forEach { node ->
+            list.add(node as ResultNode);
         }
         return list;
     }
