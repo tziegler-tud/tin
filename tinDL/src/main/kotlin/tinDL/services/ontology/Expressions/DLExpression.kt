@@ -8,7 +8,7 @@ import tinDL.services.ontology.DLQueryParser
 
 interface DLExpression {
 
-    open val expression: OWLClassExpression;
+    val expression: OWLClassExpression;
 
     public fun isValid(): Boolean
 

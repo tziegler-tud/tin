@@ -1,5 +1,5 @@
 package tinDL.services.ontology.loopTable.LoopTable
-import tinDL.model.v2.graph.Node
+import tinLIB.model.v2.graph.Node
 import tinDL.services.ontology.loopTable.LoopTableEntryRestriction.LoopTableEntryRestriction
 import tinDL.services.ontology.loopTable.loopTableEntry.AbstractLoopTableEntry
 

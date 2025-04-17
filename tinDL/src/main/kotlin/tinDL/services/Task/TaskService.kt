@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import tinDL.model.v2.Tasks.*
-import tinDL.model.v2.transducer.TransducerGraph
+import tinLIB.model.v2.transducer.TransducerGraph
 import tinDL.services.Task.Benchmark.TaskProcessingBenchmarkResult
 import tinDL.services.files.FileService
 import tinDL.services.internal.fileReaders.OntologyReaderService

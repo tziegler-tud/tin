@@ -3,8 +3,8 @@ package tinDL.services.Task
 import org.semanticweb.owlapi.model.OWLNamedIndividual
 import tinDL.model.v2.ResultGraph.ResultGraph
 import tinDL.model.v2.Tasks.*
-import tinDL.model.v2.query.QueryGraph
-import tinDL.model.v2.transducer.TransducerGraph
+import tinLIB.model.v2.query.QueryGraph
+import tinLIB.model.v2.transducer.TransducerGraph
 import tinDL.services.Task.Benchmark.*
 import tinDL.services.internal.utils.DLTransducerFactory
 import tinDL.services.ontology.OntologyExecutionContext.ExecutionContext

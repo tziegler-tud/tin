@@ -2,7 +2,7 @@ package tinDL.data.tintheweb.transducer
 
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
-import tinDL.model.v2.transducer.TransducerGraph
+import tinLIB.model.v2.transducer.TransducerGraph
 import java.util.*
 
 data class TransducerInfoData @JsonCreator constructor(

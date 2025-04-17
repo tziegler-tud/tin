@@ -1,13 +1,12 @@
-package tin.services.benchmark
+package tinDL.services.ontology.benchmark
 
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.context.TestConfiguration
-import tinDL.model.v2.ResultGraph.ResultGraph
-import tinDL.model.v2.ResultGraph.ResultNode
-import tinDL.model.v2.query.QueryGraph
-import tinDL.model.v2.transducer.TransducerGraph
+
+import tinLIB.model.v2.query.QueryGraph
+import tinLIB.model.v2.transducer.TransducerGraph
 import tinDL.services.Task.Benchmark.*
 import tinDL.services.internal.fileReaders.OntologyReaderService
 import tinDL.services.internal.fileReaders.QueryReaderServiceV2
@@ -18,15 +17,9 @@ import tinDL.services.internal.utils.RandomQueryFactory
 import tinDL.services.ontology.OntologyExecutionContext.ExecutionContextType
 import tinDL.services.ontology.OntologyManager
 import tinDL.services.ontology.ResultGraph.ELHIResultGraphBuilder
-import tinDL.services.ontology.ResultGraph.ELResultGraphBuilder
 import tinDL.services.ontology.ResultGraph.FloydWarshallSolver
-import tinDL.services.ontology.ResultGraph.ShortestPathResult
-import tinDL.services.ontology.loopTable.LoopTableBuilder.ELH.ELSPALoopTableBuilder
-import tinDL.services.ontology.loopTable.LoopTableBuilder.ELH.ELSPLoopTableBuilder
 import tinDL.services.ontology.loopTable.LoopTableBuilder.ELHI.ELHISPALoopTableBuilder
 import tinDL.services.ontology.loopTable.LoopTableBuilder.ELHI.ELHISPLoopTableBuilder
-import tinDL.services.ontology.loopTable.loopTableEntry.ELHI.ELHISPALoopTableEntry
-import tinDL.services.ontology.loopTable.loopTableEntry.IndividualLoopTableEntry
 import tinDL.services.technical.SystemConfigurationService
 import java.io.File
 import kotlin.time.Duration
@@ -75,7 +68,7 @@ class BenchmarkELHI {
         println("found!")
     }
 
-// @Test
+ @Test
     fun testQueryAnswering() {
 
         //load ontology

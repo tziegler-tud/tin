@@ -1,11 +1,8 @@
 package tinDL.model.v2.ResultGraph
 
-import tinDL.model.v2.graph.AbstractEdge
-import tinDL.model.v2.graph.Edge
-import tinDL.model.v2.graph.EdgeLabelProperty
-import tinDL.model.v2.graph.Node
-import tinDL.model.v2.query.QueryEdge
-import tinDL.model.v2.transducer.TransducerEdge
+import tinLIB.model.v2.graph.AbstractEdge
+import tinLIB.model.v2.query.QueryEdge
+import tinLIB.model.v2.transducer.TransducerEdge
 
 class ResultEdge (
     override val source: ResultNode,
@@ -35,11 +32,6 @@ class ResultEdge (
     override fun asQueryEdge(): QueryEdge? {
         return null;
     }
-
-    override fun asResultEdge(): ResultEdge {
-        return this;
-    }
-
 
     override fun hashCode(): Int {
         var result = source.hashCode()

@@ -7,7 +7,7 @@ import org.semanticweb.owlapi.model.*
 import org.semanticweb.owlapi.util.BidirectionalShortFormProvider
 import org.semanticweb.owlapi.util.BidirectionalShortFormProviderAdapter
 import org.semanticweb.owlapi.util.ShortFormProvider
-import tinDL.model.v2.graph.EdgeLabelProperty
+import tinLIB.model.v2.graph.EdgeLabelProperty
 import tinDL.services.ontology.Expressions.DLExpression
 import uk.ac.manchester.cs.owl.owlapi.OWLObjectIntersectionOfImpl
 import uk.ac.manchester.cs.owl.owlapi.OWLObjectSomeValuesFromImpl

@@ -130,7 +130,4 @@ class SystemConfigurationService {
     fun setOntologySizeLimit(limit: Int) {
         this.ontologySizeLimit = limit;
     }
-
-
-
 }

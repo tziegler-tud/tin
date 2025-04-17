@@ -2,9 +2,9 @@ package tinDL
 
 import org.junit.jupiter.api.Test
 import org.springframework.stereotype.Service
-import tinDL.model.v1.alphabet.Alphabet
-import tinDL.model.v1.database.DatabaseGraph
-import tinDL.model.v1.database.DatabaseNode
+import tinLIB.model.v1.alphabet.Alphabet
+import tinLIB.model.v1.database.DatabaseGraph
+import tinLIB.model.v1.database.DatabaseNode
 
 @Service
 class TinTest {

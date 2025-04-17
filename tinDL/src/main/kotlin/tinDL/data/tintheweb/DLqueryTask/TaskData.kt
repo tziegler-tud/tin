@@ -1,7 +1,6 @@
 package tinDL.data.tintheweb.DLqueryTask
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import java.util.Date
 
 data class TaskData(
     @JsonProperty("id") val id: Long,

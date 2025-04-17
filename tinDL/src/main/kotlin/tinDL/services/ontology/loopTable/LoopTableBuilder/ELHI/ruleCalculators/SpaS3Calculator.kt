@@ -1,9 +1,9 @@
 package tinDL.services.ontology.loopTable.LoopTableBuilder.ELHI.ruleCalculators
 
-import tinDL.model.v2.genericGraph.*
-import tinDL.model.v2.query.QueryGraph
-import tinDL.model.v2.graph.Node
-import tinDL.model.v2.transducer.TransducerGraph
+import tinLIB.model.v2.genericGraph.*
+import tinLIB.model.v2.query.QueryGraph
+import tinLIB.model.v2.graph.Node
+import tinLIB.model.v2.transducer.TransducerGraph
 import tinDL.services.ontology.OntologyExecutionContext.ELHI.ELHIExecutionContext
 import tinDL.services.ontology.loopTable.LoopTable.ELHI.ELHISPALoopTable
 import tinDL.services.ontology.loopTable.LoopTableEntryRestriction.spa.MultiClassLoopTableEntryRestriction
@@ -72,9 +72,6 @@ class SpaS3Calculator(
 
     //use Floyd Warshall to calculate all possible updates in one step
     fun calculateAllV2(table: ELHISPALoopTable): Map<ELHISPALoopTableEntry, Int> {
-
-        //build graph structure
-        val graph = GenericGraph();
 
         val updateMap: MutableMap<ELHISPALoopTableEntry, Int> = mutableMapOf();
 

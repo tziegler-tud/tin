@@ -3,7 +3,6 @@ package tinDL.data.tintheweb.ontology
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
 import tinDL.model.v2.File.Ontology.OntologyMetaInfo
-import tinDL.services.ontology.OntologyInfoData
 import java.util.*
 
 data class OntologyMetaInfoData @JsonCreator constructor(

@@ -6,7 +6,7 @@ import tinDL.model.v2.ResultGraph.ResultNodeSet
 class DijkstraQueue: HashSet<ResultNode>() {
     fun addNodeset(nodeset: ResultNodeSet) {
         nodeset.forEach { node ->
-            this.add(node.asResultNode()!!)
+            this.add(node as ResultNode)
         }
     }
 

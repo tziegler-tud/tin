@@ -1,8 +1,8 @@
 package tinDL.services.internal.utils
 
-import tinDL.model.v1.alphabet.Alphabet
-import tinDL.model.v1.transducer.TransducerGraph
-import tinDL.model.v1.transducer.TransducerNode
+import tinLIB.model.v1.alphabet.Alphabet
+import tinLIB.model.v1.transducer.TransducerGraph
+import tinLIB.model.v1.transducer.TransducerNode
 
 class TransducerFactory {
 

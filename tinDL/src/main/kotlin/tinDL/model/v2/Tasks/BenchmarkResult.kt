@@ -1,48 +1,43 @@
 package tinDL.model.v2.Tasks
 
 import org.springframework.data.jpa.repository.JpaRepository
-import tinDL.model.v1.queryResult.computationStatistics.ComputationStatistics
-import tinDL.model.v1.queryTask.QueryTask
 import tinDL.services.Task.Benchmark.TaskProcessingBenchmarkResult
-import tinDL.services.Task.Benchmark.TaskProcessingResultTimes
-import tinDL.services.Task.ProcessingResult
 import jakarta.persistence.*
-import kotlin.time.Duration
 
 @Entity
 class BenchmarkResult(
     @OneToOne(cascade = [CascadeType.ALL])
     val task: Task,
 
-    val superClassCacheSize: Int?,
-    val equivalentClassCacheSize: Int?,
-    val subClassCacheSize: Int?,
-    val propertySubsumptionCacheSize: Int?,
-    val entailmentCacheSize: Int?,
-    val superClassCacheHitCounter: Int?,
-    val equivNodeCacheHitCounter: Int?,
-    val subClassCacheHitCounter: Int?,
-    val propertySubsumptionCacheHitCounter: Int?,
-    val entailmentCacheHitCounter: Int?,
-    val entailmentCacheMissCounter: Int?,
+    val superClassCacheSize: Int? = 0,
+    val equivalentClassCacheSize: Int? = 0,
+    val subClassCacheSize: Int? = 0,
+    val propertySubsumptionCacheSize: Int? = 0,
+    val entailmentCacheSize: Int? = 0,
+    val superClassCacheHitCounter: Int? = 0,
+    val equivNodeCacheHitCounter: Int? = 0,
+    val subClassCacheHitCounter: Int? = 0,
+    val propertySubsumptionCacheHitCounter: Int? = 0,
+    val entailmentCacheHitCounter: Int? = 0,
+    val entailmentCacheMissCounter: Int? = 0,
 
-    val spaTimeMS: Long,
-    val spTimeMS: Long,
-    val resultGraphTimeMS: Long,
-    val solverTimeMS: Long,
+    val spaTimeMS: Long = 0,
+    val spTimeMS: Long = 0,
+    val resultGraphTimeMS: Long = 0,
+    val solverTimeMS: Long = 0,
 
-    val spaTotalIterations: Int,
-    val spaTableSize: Int,
-    val spaMaxTableSize: ULong,
+    val spaTotalIterations: Int = 0,
+    val spaTableSize: Int = 0,
+    val spaMaxTableSize: ULong = 0UL,
 
-    val spTableSize: Int,
-    val spMaxTableSize: Int,
+    val spTableSize: Int = 0,
+    val spMaxTableSize: Int = 0,
 
-    val rg_edges: Int,
-    val rg_nodes: Int,
-    val rg_minEdgeCost: Int,
-    val rg_maxEdgeCost: Int,
-    val rg_unreachableNodesAmount: Int,
+    val rg_edges: Int = 0,
+    val rg_nodes: Int = 0,
+    val rg_minEdgeCost: Int = 0,
+    val rg_maxEdgeCost: Int = 0,
+    val rg_unreachableNodesAmount: Int = 0,
 ) {
     @GeneratedValue
     @Id
@@ -81,6 +76,7 @@ class BenchmarkResult(
         benchmarkResult.resultBuilderStats.unreachableNodesAmount
     )
 
+    constructor() : this(Task())
 }
 
 interface BenchmarkResultsRepository : JpaRepository<BenchmarkResult, Long>

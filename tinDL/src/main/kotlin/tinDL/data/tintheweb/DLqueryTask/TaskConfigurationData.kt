@@ -1,7 +1,6 @@
 package tinDL.data.tintheweb.DLqueryTask
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import tinDL.model.v1.queryTask.ComputationProperties
 import tinDL.model.v2.Tasks.ComputationMode
 import tinDL.model.v2.Tasks.OntologyVariant
 import tinDL.model.v2.Tasks.TransducerGenerationMode

@@ -19,9 +19,9 @@ class FloydWarshallSolver(private val resultGraph: ResultGraph) : ResultGraphSol
         sourceNodes.forEach { sourceNode ->
             targetNodes.forEach { targetNode ->
                 //get distance
-                val distance = distanceMap[Pair(sourceNode.asResultNode()!!, targetNode.asResultNode()!!)];
+                val distance = distanceMap[Pair(sourceNode as ResultNode, targetNode as ResultNode)];
                 if(distance != null) {
-                    val minCandidate = ShortestPathResult(sourceNode.asResultNode()!!, targetNode.asResultNode()!!, distance);
+                    val minCandidate = ShortestPathResult(sourceNode as ResultNode, targetNode as ResultNode, distance);
                     resultSet.add(minCandidate);
                 }
             }
@@ -80,12 +80,12 @@ class FloydWarshallSolver(private val resultGraph: ResultGraph) : ResultGraphSol
 
         for (kNode in graph.nodes) {
             for (iNode in graph.nodes) {
-                val k = kNode.asResultNode()!!;
-                val i = iNode.asResultNode()!!;
+                val k = kNode as ResultNode;
+                val i = iNode as ResultNode;
                 val distIK = distance[Pair(i,k)] ?: continue;
 
                 for (jNode in graph.nodes) {
-                    val j = jNode.asResultNode()!!;
+                    val j = jNode as ResultNode;
                     val kj = Pair(k,j)
                     val distkj = distance[kj]
                     if(distkj != null) {

@@ -127,8 +127,12 @@ class FileService @Autowired constructor(private val systemConfigurationService:
     }
 
     fun loadFileContent(fileId: Long) : File {
-        val file = fileRepository.findByIdentifier(fileId);
-        if(file == null) throw Exception("File not found.");
-        return storageService.loadFile(file)
+        try {
+            var file = fileRepository.findByIdentifier(fileId);
+            return storageService.loadFile(file)
+        }
+        catch (e: Exception) {
+            throw Exception("File not found.");
+        }
     }
 }

@@ -5,8 +5,8 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.context.TestConfiguration
 import tinDL.model.v2.ResultGraph.ResultNode
-import tinDL.model.v2.query.QueryGraph
-import tinDL.model.v2.transducer.TransducerGraph
+import tinLIB.model.v2.query.QueryGraph
+import tinLIB.model.v2.transducer.TransducerGraph
 import tinDL.services.internal.fileReaders.OntologyReaderService
 import tinDL.services.internal.fileReaders.QueryReaderServiceV2
 import tinDL.services.internal.fileReaders.TransducerReaderServiceV2
@@ -57,7 +57,7 @@ class QueryAnsweringTest {
 
     @Test
     fun testQueryAnswering() {
-        val manager = loadExampleOntology("pizza_4_1.rdf")
+        val manager = loadExampleOntology("pizza3.rdf")
         val query = readQueryWithFileReaderService("integration/test_comp1.txt")
         val transducer = readTransducerWithFileReaderService("integration/test_comp1.txt")
 

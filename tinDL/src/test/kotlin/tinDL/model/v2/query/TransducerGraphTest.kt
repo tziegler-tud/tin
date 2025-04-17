@@ -3,9 +3,9 @@ package tinDL.model.v2.query
 import org.junit.jupiter.api.Test
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.context.TestConfiguration
-import tinDL.model.v2.graph.Node
-import tinDL.model.v2.transducer.TransducerEdge
-import tinDL.model.v2.transducer.TransducerGraph
+import tinLIB.model.v2.graph.Node
+import tinLIB.model.v2.transducer.TransducerEdge
+import tinLIB.model.v2.transducer.TransducerGraph
 
 
 @SpringBootTest

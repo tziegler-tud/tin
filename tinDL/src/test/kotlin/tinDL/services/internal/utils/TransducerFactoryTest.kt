@@ -3,10 +3,10 @@ package tinDL.services.internal.utils
 import org.junit.jupiter.api.Test
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.context.TestConfiguration
-import tinDL.model.v1.alphabet.Alphabet
-import tinDL.model.v1.transducer.TransducerEdge
-import tinDL.model.v1.transducer.TransducerGraph
-import tinDL.model.v1.transducer.TransducerNode
+import tinLIB.model.v1.alphabet.Alphabet
+import tinLIB.model.v1.transducer.TransducerEdge
+import tinLIB.model.v1.transducer.TransducerGraph
+import tinLIB.model.v1.transducer.TransducerNode
 
 @SpringBootTest
 @TestConfiguration

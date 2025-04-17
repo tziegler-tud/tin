@@ -1,6 +1,6 @@
 package tinDL.services.ontology.loopTable.loopTableEntry.ELH
 
-import tinDL.model.v2.graph.Node
+import tinLIB.model.v2.graph.Node
 import tinDL.services.ontology.loopTable.LoopTableEntryRestriction.spa.SingleClassLoopTableEntryRestriction
 import tinDL.services.ontology.loopTable.loopTableEntry.AbstractLoopTableEntry
 import tinDL.services.ontology.loopTable.loopTableEntry.SPALoopTableEntry

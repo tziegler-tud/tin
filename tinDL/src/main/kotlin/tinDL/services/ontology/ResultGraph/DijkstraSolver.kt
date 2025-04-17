@@ -3,8 +3,6 @@ package tinDL.services.ontology.ResultGraph
 import org.semanticweb.owlapi.model.OWLNamedIndividual
 import tinDL.model.v2.ResultGraph.ResultGraph
 import tinDL.model.v2.ResultGraph.ResultNode
-import tinDL.model.v2.genericGraph.GenericGraph
-import tinDL.model.v2.graph.Node
 
 class DijkstraSolver(private val resultGraph: ResultGraph) : ResultGraphSolver {
 
@@ -17,9 +15,9 @@ class DijkstraSolver(private val resultGraph: ResultGraph) : ResultGraphSolver {
         val resultSet:  MutableSet<ShortestPathResult> = mutableSetOf();
 
         sourceNodes.forEach { sourceN ->
-            val sourceNode = sourceN.asResultNode()!!
+            val sourceNode = sourceN as ResultNode
             targetNodes.forEach { targetN ->
-                val targetNode = targetN.asResultNode()!!
+                val targetNode = targetN as ResultNode
                 //get distance
                 val distance = getDistance(sourceNode, targetNode).cost
                 if(distance != null) {
@@ -48,7 +46,7 @@ class DijkstraSolver(private val resultGraph: ResultGraph) : ResultGraphSolver {
         val edges = graph.edges
 
         graph.nodes.forEach { n ->
-            val v = n.asResultNode()!!;
+            val v = n as ResultNode
             dist[v] = Integer.MAX_VALUE
             prev[v] = null
             q.add(v)
