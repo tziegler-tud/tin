@@ -1,7 +1,7 @@
 package tinDL.services.internal.fileReaders
 
 import org.springframework.stereotype.Service
-import tinLIB.model.v1.alphabet.Alphabet
+import tinLIB.model.v2.alphabet.Alphabet
 import tinLIB.model.v2.query.QueryGraph
 import tinLIB.model.v2.graph.Node
 import tinDL.services.internal.fileReaders.fileReaderResult.FileReaderResult

@@ -5,8 +5,8 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.boot.web.client.RestTemplateBuilder
-import tinDL.model.v2.ResultGraph.ResultGraph
-import tinDL.model.v2.ResultGraph.ResultNode
+import tinDL.model.v2.ResultGraph.DlResultGraph
+import tinDL.model.v2.ResultGraph.DlResultNode
 import tinLIB.model.v2.query.QueryGraph
 import tinLIB.model.v2.transducer.TransducerGraph
 import tinDL.services.internal.fileReaders.OntologyReaderService
@@ -14,13 +14,10 @@ import tinDL.services.internal.fileReaders.QueryReaderServiceV2
 import tinDL.services.internal.fileReaders.TransducerReaderServiceV2
 import tinDL.services.internal.fileReaders.fileReaderResult.FileReaderResult
 import tinDL.services.ontology.OntologyExecutionContext.EL.ELExecutionContext
-import tinDL.services.ontology.OntologyExecutionContext.ELHI.ELHIExecutionContext
 import tinDL.services.ontology.OntologyExecutionContext.ExecutionContextType
 import tinDL.services.ontology.OntologyManager
 import tinDL.services.ontology.loopTable.LoopTable.ELH.ELSPLoopTable
-import tinDL.services.ontology.loopTable.LoopTable.ELHI.ELHISPLoopTable
 import tinDL.services.ontology.loopTable.loopTableEntry.ELH.ELSPLoopTableEntry
-import tinDL.services.ontology.loopTable.loopTableEntry.IndividualLoopTableEntry
 import tinDL.services.technical.SystemConfigurationService
 import java.io.File
 
@@ -88,7 +85,7 @@ class ELResultGraphBuilderTest {
         assert(resultGraph == comparisonGraph)
     }
 
-    fun buildComparisonGraph(ec: ELExecutionContext, queryGraph: QueryGraph, transducerGraph: TransducerGraph) : ResultGraph {
+    fun buildComparisonGraph(ec: ELExecutionContext, queryGraph: QueryGraph, transducerGraph: TransducerGraph) : DlResultGraph {
         val comparisonGraph = buildComparisonGraphRestricted(ec, queryGraph, transducerGraph);
 
         val s0 = queryGraph.getNode("s0")!!
@@ -101,17 +98,17 @@ class ELResultGraphBuilderTest {
         val beer = ec.parser.getNamedIndividual("beer")!!;
         val veganPlace = ec.parser.getNamedIndividual("VeganPlace")!!
 
-        comparisonGraph.addEdge(ResultNode(s0,t0,beer), ResultNode(s1,t0,beer), 4)
-        comparisonGraph.addEdge(ResultNode(s0,t1,beer), ResultNode(s1,t1,beer), 7)
-        comparisonGraph.addEdge(ResultNode(s0,t0,veganPlace), ResultNode(s1,t0,veganPlace), 13)
+        comparisonGraph.addEdge(DlResultNode(s0,t0,beer), DlResultNode(s1,t0,beer), 4)
+        comparisonGraph.addEdge(DlResultNode(s0,t1,beer), DlResultNode(s1,t1,beer), 7)
+        comparisonGraph.addEdge(DlResultNode(s0,t0,veganPlace), DlResultNode(s1,t0,veganPlace), 13)
 
         return comparisonGraph;
 
     }
 
-    fun buildComparisonGraphRestricted(ec: ELExecutionContext, queryGraph: QueryGraph, transducerGraph: TransducerGraph) : ResultGraph {
+    fun buildComparisonGraphRestricted(ec: ELExecutionContext, queryGraph: QueryGraph, transducerGraph: TransducerGraph) : DlResultGraph {
         //build comparison graph
-        val comparisonGraph = ResultGraph()
+        val comparisonGraph = DlResultGraph()
 
         val s0 = queryGraph.getNode("s0")!!
         val s1 = queryGraph.getNode("s1")!!
@@ -131,38 +128,38 @@ class ELResultGraphBuilderTest {
         queryGraph.nodes.forEach { queryNode ->
             transducerGraph.nodes.forEach { transducerNode ->
 
-                comparisonGraph.addNode(ResultNode(queryNode,transducerNode,beer, ))
-                comparisonGraph.addNode(ResultNode(queryNode,transducerNode,bruschetta))
-                comparisonGraph.addNode(ResultNode(queryNode,transducerNode,carbonara))
-                comparisonGraph.addNode(ResultNode(queryNode,transducerNode,place1))
-                comparisonGraph.addNode(ResultNode(queryNode,transducerNode,place2))
-                comparisonGraph.addNode(ResultNode(queryNode,transducerNode,r))
-                comparisonGraph.addNode(ResultNode(queryNode,transducerNode,veganPlace))
+                comparisonGraph.addNode(DlResultNode(queryNode,transducerNode,beer, ))
+                comparisonGraph.addNode(DlResultNode(queryNode,transducerNode,bruschetta))
+                comparisonGraph.addNode(DlResultNode(queryNode,transducerNode,carbonara))
+                comparisonGraph.addNode(DlResultNode(queryNode,transducerNode,place1))
+                comparisonGraph.addNode(DlResultNode(queryNode,transducerNode,place2))
+                comparisonGraph.addNode(DlResultNode(queryNode,transducerNode,r))
+                comparisonGraph.addNode(DlResultNode(queryNode,transducerNode,veganPlace))
             }
         }
 
-        comparisonGraph.addEdge(ResultNode(s0,t0,place1), ResultNode(s0,t0,beer), 0)
-        comparisonGraph.addEdge(ResultNode(s0,t0,place1), ResultNode(s1,t0,beer), 0)
-        comparisonGraph.addEdge(ResultNode(s0,t0,place1), ResultNode(s0,t0,carbonara), 0)
-        comparisonGraph.addEdge(ResultNode(s0,t0,place1), ResultNode(s1,t0,carbonara), 0)
+        comparisonGraph.addEdge(DlResultNode(s0,t0,place1), DlResultNode(s0,t0,beer), 0)
+        comparisonGraph.addEdge(DlResultNode(s0,t0,place1), DlResultNode(s1,t0,beer), 0)
+        comparisonGraph.addEdge(DlResultNode(s0,t0,place1), DlResultNode(s0,t0,carbonara), 0)
+        comparisonGraph.addEdge(DlResultNode(s0,t0,place1), DlResultNode(s1,t0,carbonara), 0)
 
-        comparisonGraph.addEdge(ResultNode(s1,t0,place1), ResultNode(s0,t0,beer), 0)
-        comparisonGraph.addEdge(ResultNode(s1,t0,place1), ResultNode(s0,t0,carbonara), 0)
+        comparisonGraph.addEdge(DlResultNode(s1,t0,place1), DlResultNode(s0,t0,beer), 0)
+        comparisonGraph.addEdge(DlResultNode(s1,t0,place1), DlResultNode(s0,t0,carbonara), 0)
 
-        comparisonGraph.addEdge(ResultNode(s0,t0,veganPlace), ResultNode(s0,t0,bruschetta), 0)
-        comparisonGraph.addEdge(ResultNode(s0,t0,veganPlace), ResultNode(s1,t0,bruschetta), 0)
-        comparisonGraph.addEdge(ResultNode(s1,t0,veganPlace), ResultNode(s0,t0,bruschetta), 0)
+        comparisonGraph.addEdge(DlResultNode(s0,t0,veganPlace), DlResultNode(s0,t0,bruschetta), 0)
+        comparisonGraph.addEdge(DlResultNode(s0,t0,veganPlace), DlResultNode(s1,t0,bruschetta), 0)
+        comparisonGraph.addEdge(DlResultNode(s1,t0,veganPlace), DlResultNode(s0,t0,bruschetta), 0)
 
-        comparisonGraph.addEdge(ResultNode(s1,t0, veganPlace), ResultNode(s2,t1, veganPlace), 4)
-        comparisonGraph.addEdge(ResultNode(s1,t0, bruschetta), ResultNode(s2,t1, bruschetta), 4)
+        comparisonGraph.addEdge(DlResultNode(s1,t0, veganPlace), DlResultNode(s2,t1, veganPlace), 4)
+        comparisonGraph.addEdge(DlResultNode(s1,t0, bruschetta), DlResultNode(s2,t1, bruschetta), 4)
 
-        comparisonGraph.addEdge(ResultNode(s0,t0,r), ResultNode(s0,t0,bruschetta), 0)
-        comparisonGraph.addEdge(ResultNode(s0,t0,r), ResultNode(s1,t0,bruschetta), 0)
-        comparisonGraph.addEdge(ResultNode(s1,t0,r), ResultNode(s0,t0,bruschetta), 0)
+        comparisonGraph.addEdge(DlResultNode(s0,t0,r), DlResultNode(s0,t0,bruschetta), 0)
+        comparisonGraph.addEdge(DlResultNode(s0,t0,r), DlResultNode(s1,t0,bruschetta), 0)
+        comparisonGraph.addEdge(DlResultNode(s1,t0,r), DlResultNode(s0,t0,bruschetta), 0)
 
-        comparisonGraph.addEdge(ResultNode(s0,t0,r), ResultNode(s0,t0,carbonara), 0)
-        comparisonGraph.addEdge(ResultNode(s0,t0,r), ResultNode(s1,t0,carbonara), 0)
-        comparisonGraph.addEdge(ResultNode(s1,t0,r), ResultNode(s0,t0,carbonara), 0)
+        comparisonGraph.addEdge(DlResultNode(s0,t0,r), DlResultNode(s0,t0,carbonara), 0)
+        comparisonGraph.addEdge(DlResultNode(s0,t0,r), DlResultNode(s1,t0,carbonara), 0)
+        comparisonGraph.addEdge(DlResultNode(s1,t0,r), DlResultNode(s0,t0,carbonara), 0)
 
         return comparisonGraph;
     }

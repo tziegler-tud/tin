@@ -1,7 +1,7 @@
 package tinDL.services.ontology.ResultGraph
 
-import tinDL.model.v2.ResultGraph.ResultGraph
-import tinDL.model.v2.ResultGraph.ResultNode
+import tinDL.model.v2.ResultGraph.DlResultGraph
+import tinDL.model.v2.ResultGraph.DlResultNode
 import tinLIB.model.v2.query.QueryGraph
 import tinLIB.model.v2.transducer.TransducerGraph
 import tinDL.services.ontology.OntologyExecutionContext.ELHI.ELHIExecutionContext
@@ -11,8 +11,8 @@ import tinDL.services.ontology.loopTable.loopTableEntry.IndividualLoopTableEntry
 
 class ResultGraphTestUtils {
 
-    fun buildComparisonGraphRestricted(ec: ExecutionContext, queryGraph: QueryGraph, transducerGraph: TransducerGraph) : ResultGraph {
-        val comparisonGraph = ResultGraph()
+    fun buildComparisonGraphRestricted(ec: ExecutionContext, queryGraph: QueryGraph, transducerGraph: TransducerGraph) : DlResultGraph {
+        val comparisonGraph = DlResultGraph()
 
         val s0 = queryGraph.getNode("s0")!!
         val s1 = queryGraph.getNode("s1")!!
@@ -31,43 +31,43 @@ class ResultGraphTestUtils {
 
         queryGraph.nodes.forEach { queryNode ->
             transducerGraph.nodes.forEach { transducerNode ->
-                comparisonGraph.addNode(ResultNode(queryNode,transducerNode,beer))
-                comparisonGraph.addNode(ResultNode(queryNode,transducerNode,bruschetta))
-                comparisonGraph.addNode(ResultNode(queryNode,transducerNode,carbonara))
-                comparisonGraph.addNode(ResultNode(queryNode,transducerNode,place1))
-                comparisonGraph.addNode(ResultNode(queryNode,transducerNode,place2))
-                comparisonGraph.addNode(ResultNode(queryNode,transducerNode,r))
-                comparisonGraph.addNode(ResultNode(queryNode,transducerNode,veganPlace))
+                comparisonGraph.addNode(DlResultNode(queryNode,transducerNode,beer))
+                comparisonGraph.addNode(DlResultNode(queryNode,transducerNode,bruschetta))
+                comparisonGraph.addNode(DlResultNode(queryNode,transducerNode,carbonara))
+                comparisonGraph.addNode(DlResultNode(queryNode,transducerNode,place1))
+                comparisonGraph.addNode(DlResultNode(queryNode,transducerNode,place2))
+                comparisonGraph.addNode(DlResultNode(queryNode,transducerNode,r))
+                comparisonGraph.addNode(DlResultNode(queryNode,transducerNode,veganPlace))
             }
         }
 
-        comparisonGraph.addEdge(ResultNode(s0,t0,place1), ResultNode(s0,t0,beer), 0)
-        comparisonGraph.addEdge(ResultNode(s0,t0,place1), ResultNode(s1,t0,beer), 0)
-        comparisonGraph.addEdge(ResultNode(s0,t0,place1), ResultNode(s0,t0,carbonara), 0)
-        comparisonGraph.addEdge(ResultNode(s0,t0,place1), ResultNode(s1,t0,carbonara), 0)
+        comparisonGraph.addEdge(DlResultNode(s0,t0,place1), DlResultNode(s0,t0,beer), 0)
+        comparisonGraph.addEdge(DlResultNode(s0,t0,place1), DlResultNode(s1,t0,beer), 0)
+        comparisonGraph.addEdge(DlResultNode(s0,t0,place1), DlResultNode(s0,t0,carbonara), 0)
+        comparisonGraph.addEdge(DlResultNode(s0,t0,place1), DlResultNode(s1,t0,carbonara), 0)
 
-        comparisonGraph.addEdge(ResultNode(s1,t0,place1), ResultNode(s0,t0,beer), 0)
-        comparisonGraph.addEdge(ResultNode(s1,t0,place1), ResultNode(s0,t0,carbonara), 0)
+        comparisonGraph.addEdge(DlResultNode(s1,t0,place1), DlResultNode(s0,t0,beer), 0)
+        comparisonGraph.addEdge(DlResultNode(s1,t0,place1), DlResultNode(s0,t0,carbonara), 0)
 
-        comparisonGraph.addEdge(ResultNode(s0,t0,veganPlace), ResultNode(s0,t0,bruschetta), 0)
-        comparisonGraph.addEdge(ResultNode(s0,t0,veganPlace), ResultNode(s1,t0,bruschetta), 0)
-        comparisonGraph.addEdge(ResultNode(s1,t0,veganPlace), ResultNode(s0,t0,bruschetta), 0)
+        comparisonGraph.addEdge(DlResultNode(s0,t0,veganPlace), DlResultNode(s0,t0,bruschetta), 0)
+        comparisonGraph.addEdge(DlResultNode(s0,t0,veganPlace), DlResultNode(s1,t0,bruschetta), 0)
+        comparisonGraph.addEdge(DlResultNode(s1,t0,veganPlace), DlResultNode(s0,t0,bruschetta), 0)
 
-        comparisonGraph.addEdge(ResultNode(s1,t0, veganPlace), ResultNode(s2,t1, veganPlace), 4)
-        comparisonGraph.addEdge(ResultNode(s1,t0, bruschetta), ResultNode(s2,t1, bruschetta), 4)
+        comparisonGraph.addEdge(DlResultNode(s1,t0, veganPlace), DlResultNode(s2,t1, veganPlace), 4)
+        comparisonGraph.addEdge(DlResultNode(s1,t0, bruschetta), DlResultNode(s2,t1, bruschetta), 4)
 
-        comparisonGraph.addEdge(ResultNode(s0,t0,r), ResultNode(s0,t0,bruschetta), 0)
-        comparisonGraph.addEdge(ResultNode(s0,t0,r), ResultNode(s1,t0,bruschetta), 0)
-        comparisonGraph.addEdge(ResultNode(s1,t0,r), ResultNode(s0,t0,bruschetta), 0)
+        comparisonGraph.addEdge(DlResultNode(s0,t0,r), DlResultNode(s0,t0,bruschetta), 0)
+        comparisonGraph.addEdge(DlResultNode(s0,t0,r), DlResultNode(s1,t0,bruschetta), 0)
+        comparisonGraph.addEdge(DlResultNode(s1,t0,r), DlResultNode(s0,t0,bruschetta), 0)
 
-        comparisonGraph.addEdge(ResultNode(s0,t0,r), ResultNode(s0,t0,carbonara), 0)
-        comparisonGraph.addEdge(ResultNode(s0,t0,r), ResultNode(s1,t0,carbonara), 0)
-        comparisonGraph.addEdge(ResultNode(s1,t0,r), ResultNode(s0,t0,carbonara), 0)
+        comparisonGraph.addEdge(DlResultNode(s0,t0,r), DlResultNode(s0,t0,carbonara), 0)
+        comparisonGraph.addEdge(DlResultNode(s0,t0,r), DlResultNode(s1,t0,carbonara), 0)
+        comparisonGraph.addEdge(DlResultNode(s1,t0,r), DlResultNode(s0,t0,carbonara), 0)
 
         return comparisonGraph;
     }
 
-    fun buildComparisonGraph(ec: ExecutionContext, queryGraph: QueryGraph, transducerGraph: TransducerGraph) : ResultGraph {
+    fun buildComparisonGraph(ec: ExecutionContext, queryGraph: QueryGraph, transducerGraph: TransducerGraph) : DlResultGraph {
         val comparisonGraph = buildComparisonGraphRestricted(ec, queryGraph, transducerGraph);
 
         val s0 = queryGraph.getNode("s0")!!
@@ -88,9 +88,9 @@ class ResultGraphTestUtils {
         val serves_drink = ec.parser.getOWLObjectProperty("serves_drink")!!
         val serves_meal = ec.parser.getOWLObjectProperty("serves_meal")!!
 
-        comparisonGraph.addEdge(ResultNode(s0,t0,beer), ResultNode(s1,t0,beer), 4)
-        comparisonGraph.addEdge(ResultNode(s0,t1,beer), ResultNode(s1,t1,beer), 7)
-        comparisonGraph.addEdge(ResultNode(s0,t0,veganPlace), ResultNode(s1,t0,veganPlace), 13)
+        comparisonGraph.addEdge(DlResultNode(s0,t0,beer), DlResultNode(s1,t0,beer), 4)
+        comparisonGraph.addEdge(DlResultNode(s0,t1,beer), DlResultNode(s1,t1,beer), 7)
+        comparisonGraph.addEdge(DlResultNode(s0,t0,veganPlace), DlResultNode(s1,t0,veganPlace), 13)
 
         return comparisonGraph;
 

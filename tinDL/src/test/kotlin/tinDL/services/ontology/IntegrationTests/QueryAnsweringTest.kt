@@ -4,7 +4,8 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.context.TestConfiguration
-import tinDL.model.v2.ResultGraph.ResultNode
+import tinDL.model.v2.ResultGraph.DlResultGraphIndividual
+import tinDL.model.v2.ResultGraph.DlResultNode
 import tinLIB.model.v2.query.QueryGraph
 import tinLIB.model.v2.transducer.TransducerGraph
 import tinDL.services.internal.fileReaders.OntologyReaderService
@@ -14,9 +15,9 @@ import tinDL.services.internal.fileReaders.fileReaderResult.FileReaderResult
 import tinDL.services.ontology.OntologyExecutionContext.ExecutionContextType
 import tinDL.services.ontology.OntologyManager
 import tinDL.services.ontology.ResultGraph.ELHIResultGraphBuilder
-import tinDL.services.ontology.ResultGraph.FloydWarshallSolver
-import tinDL.services.ontology.ResultGraph.ResultGraphSolver
-import tinDL.services.ontology.ResultGraph.ShortestPathResult
+import tinLIB.services.ResultGraph.FloydWarshallSolver
+import tinLIB.services.ResultGraph.ResultGraphSolver
+import tinLIB.services.ResultGraph.ShortestPathResult
 import tinDL.services.ontology.loopTable.LoopTableBuilder.ELHI.ELHISPALoopTableBuilder
 import tinDL.services.ontology.loopTable.LoopTableBuilder.ELHI.ELHISPLoopTableBuilder
 import tinDL.services.ontology.loopTable.loopTableEntry.ELHI.ELHISPALoopTableEntry
@@ -170,16 +171,21 @@ class QueryAnsweringTest {
         val r = ec.parser.getNamedIndividual("r")!!;
         val veganPlace = ec.parser.getNamedIndividual("VeganPlace")!!
 
-        val s0t0VeganPlace = ResultNode(s0, t0, veganPlace);
-        val s2t1Bruschetta = ResultNode(s2, t1, bruschetta);
+        val s0t0VeganPlace = DlResultNode(s0, t0, veganPlace);
+        val s2t1Bruschetta = DlResultNode(s2, t1, bruschetta);
 
-        val s0t0r = ResultNode(s0, t0, r)
+        val s0t0r = DlResultNode(s0, t0, r)
 
         assert(resultList.size == 2 )
 
-        assert(solver.getShortestPath(veganPlace, bruschetta) == ShortestPathResult(s0t0VeganPlace, s2t1Bruschetta, 24));
-        assert(solver.getShortestPath(r, bruschetta) == ShortestPathResult(s0t0r, s2t1Bruschetta, 24));
+        val veganPlaceInd = DlResultGraphIndividual(veganPlace)
+        val bruschettaInd = DlResultGraphIndividual(bruschetta)
+        val carbonaraInd = DlResultGraphIndividual(carbonara)
+        val rInd = DlResultGraphIndividual(r)
 
-        assert(solver.getShortestPath(veganPlace, carbonara) == null);
+        assert(solver.getShortestPath(veganPlaceInd, bruschettaInd) == ShortestPathResult(s0t0VeganPlace, s2t1Bruschetta, 24));
+        assert(solver.getShortestPath(rInd, bruschettaInd) == ShortestPathResult(s0t0r, s2t1Bruschetta, 24));
+
+        assert(solver.getShortestPath(veganPlaceInd, carbonaraInd) == null);
     }
 }

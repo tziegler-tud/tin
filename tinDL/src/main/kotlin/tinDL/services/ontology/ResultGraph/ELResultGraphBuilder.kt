@@ -1,9 +1,9 @@
 package tinDL.services.ontology.ResultGraph
 
 import org.semanticweb.owlapi.model.OWLClass
-import tinDL.model.v2.ResultGraph.ResultEdge
-import tinDL.model.v2.ResultGraph.ResultGraph
-import tinDL.model.v2.ResultGraph.ResultNode
+import tinDL.model.v2.ResultGraph.DlResultEdge
+import tinDL.model.v2.ResultGraph.DlResultGraph
+import tinDL.model.v2.ResultGraph.DlResultNode
 
 import tinLIB.model.v2.query.QueryGraph
 import tinLIB.model.v2.transducer.TransducerGraph
@@ -15,6 +15,8 @@ import tinDL.services.ontology.loopTable.LoopTableEntryRestriction.spa.SingleCla
 import tinDL.services.ontology.loopTable.LoopTableEntryRestriction.spa.SingleClassLoopTableEntryRestriction
 import tinDL.services.ontology.loopTable.loopTableEntry.ELH.ELSPLoopTableEntry
 import tinDL.services.ontology.loopTable.loopTableEntry.IndividualLoopTableEntry
+import tinLIB.model.v2.graph.Node
+import tinLIB.services.ontology.ResultGraph.AbstractResultGraphBuilder
 import kotlin.math.min
 
 class ELResultGraphBuilder(
@@ -22,14 +24,14 @@ class ELResultGraphBuilder(
     private val queryGraph: QueryGraph,
     private val transducerGraph: TransducerGraph,
 
-    ) : AbstractResultGraphBuilder(ec, queryGraph, transducerGraph) {
+    ) : AbstractDlResultGraphBuilder(ec, queryGraph, transducerGraph) {
 
-    fun constructResultGraph(spTable: ELSPLoopTable) : ResultGraph {
+    fun constructResultGraph(spTable: ELSPLoopTable) : DlResultGraph {
         val resultGraph = constructRestrictedGraph();
         queryGraph.nodes.forEach { queryNode ->
-            transducerGraph.nodes.forEach { transducerNode ->
+            transducerGraph.nodes.forEach { transducerNode: Node ->
                 queryGraph.nodes.forEach { targetQueryNode ->
-                    transducerGraph.nodes.forEach transducerTarget@{ targetTransducerNode ->
+                    transducerGraph.nodes.forEach transducerTarget@{ targetTransducerNode: Node ->
                         ec.forEachIndividual { individual ->
 
                             //calculate basic classes
@@ -57,9 +59,9 @@ class ELResultGraphBuilder(
                             }
 
                             if (minimumCost != null) {
-                                val sourceNode = ResultNode(queryNode, transducerNode, individual );
-                                val targetNode = ResultNode(targetQueryNode, targetTransducerNode, individual);
-                                val edge = ResultEdge(sourceNode, targetNode, minimumCost)
+                                val sourceNode = DlResultNode(queryNode, transducerNode, individual );
+                                val targetNode = DlResultNode(targetQueryNode, targetTransducerNode, individual);
+                                val edge = DlResultEdge(sourceNode, targetNode, minimumCost)
                                 resultGraph.addEdge(edge);
                             }
                         }

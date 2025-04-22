@@ -4,7 +4,8 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.context.TestConfiguration
-import tinDL.model.v2.ResultGraph.ResultNode
+import tinDL.model.v2.ResultGraph.DlResultEdge
+import tinDL.model.v2.ResultGraph.DlResultNode
 import tinLIB.model.v2.query.QueryGraph
 import tinLIB.model.v2.transducer.TransducerGraph
 import tinDL.services.internal.fileReaders.OntologyReaderService
@@ -14,6 +15,9 @@ import tinDL.services.internal.fileReaders.fileReaderResult.FileReaderResult
 import tinDL.services.ontology.OntologyExecutionContext.ExecutionContextType
 import tinDL.services.ontology.OntologyManager
 import tinDL.services.technical.SystemConfigurationService
+import tinLIB.services.ResultGraph.DijkstraSolver
+import tinLIB.services.ResultGraph.FloydWarshallSolver
+import tinLIB.services.ResultGraph.ShortestPathResult
 import java.io.File
 
 
@@ -74,11 +78,11 @@ class ResultGraphSolverTest {
         val r = ec.parser.getNamedIndividual("r")!!;
         val veganPlace = ec.parser.getNamedIndividual("VeganPlace")!!
 
-        val s0t0VeganPlace = ResultNode(s0, t0, veganPlace);
-        val s2t1VeganPlace = ResultNode(s2, t1, veganPlace);
-        val s2t1Bruschetta = ResultNode(s2, t1, bruschetta);
+        val s0t0VeganPlace = DlResultNode(s0, t0, veganPlace);
+        val s2t1VeganPlace = DlResultNode(s2, t1, veganPlace);
+        val s2t1Bruschetta = DlResultNode(s2, t1, bruschetta);
 
-        val s0t0r = ResultNode(s0, t0, r)
+        val s0t0r = DlResultNode(s0, t0, r)
 
         assert(allPathsList.size == 3 )
         assert(allPathsList.contains(ShortestPathResult(s0t0VeganPlace, s2t1Bruschetta, 4)))

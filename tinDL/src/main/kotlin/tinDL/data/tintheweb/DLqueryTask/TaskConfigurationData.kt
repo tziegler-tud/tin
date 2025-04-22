@@ -1,10 +1,10 @@
 package tinDL.data.tintheweb.DLqueryTask
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import tinDL.model.v2.Tasks.ComputationMode
-import tinDL.model.v2.Tasks.OntologyVariant
-import tinDL.model.v2.Tasks.TransducerGenerationMode
-import tinDL.model.v2.Tasks.TransducerMode
+import tinDL.data.Task.DlTask.ComputationMode
+import tinDL.data.Task.DlTask.OntologyVariant
+import tinDL.data.Task.DlTask.TransducerGenerationMode
+import tinDL.data.Task.DlTask.TransducerMode
 
 class TaskConfigurationData(
     @JsonProperty("query") val queryFileIdentifier: Long,

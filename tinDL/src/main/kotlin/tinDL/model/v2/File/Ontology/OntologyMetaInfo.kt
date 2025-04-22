@@ -3,7 +3,7 @@ package tinDL.model.v2.File.Ontology
 import jakarta.persistence.*
 import org.springframework.data.jpa.repository.JpaRepository
 import tinDL.model.v2.File.TinFile
-import tinDL.model.v2.Tasks.OntologyVariant
+import tinDL.data.Task.DlTask.OntologyVariant
 import tinDL.services.ontology.OntologyInfoData
 import java.util.*
 

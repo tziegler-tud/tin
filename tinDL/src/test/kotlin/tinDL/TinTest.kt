@@ -2,9 +2,7 @@ package tinDL
 
 import org.junit.jupiter.api.Test
 import org.springframework.stereotype.Service
-import tinLIB.model.v1.alphabet.Alphabet
-import tinLIB.model.v1.database.DatabaseGraph
-import tinLIB.model.v1.database.DatabaseNode
+import tinLIB.model.v2.alphabet.Alphabet
 
 @Service
 class TinTest {
@@ -66,19 +64,5 @@ class TinTest {
         assert(Alphabet.isInverseRoleName(inverseValid1))
         assert(Alphabet.transformToInverseRoleName(valid1) == inverseValid1)
         assert(Alphabet.transformToPositiveRoleName(inverseValid1) == valid1)
-    }
-
-    @Test
-    fun testDatabaseGraph(){
-        var graph = DatabaseGraph();
-        val n1 = DatabaseNode("n1");
-        val n2 = DatabaseNode("n2");
-        graph.addNodes(n1, n2);
-        graph.addEdge(n1, n2, "r");
-        graph.addNodeProperty(n1, "A")
-        graph.addNodeProperty(n2, "B")
-
-        assert(graph.getNode(n1.identifier)!!.hasProperty("A"));
-        assert(!graph.getNode(n1.identifier)!!.hasProperty("B"));
     }
 }

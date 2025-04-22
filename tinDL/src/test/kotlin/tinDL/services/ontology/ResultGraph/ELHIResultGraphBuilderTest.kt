@@ -4,8 +4,8 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.context.TestConfiguration
-import tinDL.model.v2.ResultGraph.ResultGraph
-import tinDL.model.v2.ResultGraph.ResultNode
+import tinDL.model.v2.ResultGraph.DlResultGraph
+import tinDL.model.v2.ResultGraph.DlResultNode
 import tinLIB.model.v2.query.QueryGraph
 import tinLIB.model.v2.transducer.TransducerGraph
 import tinDL.services.internal.fileReaders.OntologyReaderService
@@ -107,7 +107,7 @@ class ELHIResultGraphBuilderTest {
         assert(resultGraph == comparisonGraph)
     }
 
-    fun buildComparisonGraph(ec: ELHIExecutionContext, queryGraph: QueryGraph, transducerGraph: TransducerGraph) : ResultGraph {
+    fun buildComparisonGraph(ec: ELHIExecutionContext, queryGraph: QueryGraph, transducerGraph: TransducerGraph) : DlResultGraph {
         val comparisonGraph = resultGraphTestUtils.buildComparisonGraphRestricted(ec, queryGraph, transducerGraph);
 
         val s0 = queryGraph.getNode("s0")!!
@@ -120,9 +120,9 @@ class ELHIResultGraphBuilderTest {
         val beer = ec.parser.getNamedIndividual("beer")!!;
         val veganPlace = ec.parser.getNamedIndividual("VeganPlace")!!
 
-        comparisonGraph.addEdge(ResultNode(s0,t0,beer), ResultNode(s1,t0,beer), 4)
-        comparisonGraph.addEdge(ResultNode(s0,t1,beer), ResultNode(s1,t1,beer), 7)
-        comparisonGraph.addEdge(ResultNode(s0,t0,veganPlace), ResultNode(s1,t0,veganPlace), 13)
+        comparisonGraph.addEdge(DlResultNode(s0,t0,beer), DlResultNode(s1,t0,beer), 4)
+        comparisonGraph.addEdge(DlResultNode(s0,t1,beer), DlResultNode(s1,t1,beer), 7)
+        comparisonGraph.addEdge(DlResultNode(s0,t0,veganPlace), DlResultNode(s1,t0,veganPlace), 13)
 
         return comparisonGraph;
 

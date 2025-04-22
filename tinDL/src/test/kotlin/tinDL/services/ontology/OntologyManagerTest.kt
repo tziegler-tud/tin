@@ -6,7 +6,7 @@ import org.semanticweb.owlapi.reasoner.impl.OWLNamedIndividualNodeSet
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.context.TestConfiguration
-import tinLIB.model.v1.alphabet.Alphabet
+import tinLIB.model.v2.alphabet.Alphabet
 import tinDL.services.internal.fileReaders.OntologyReaderService
 import tinDL.services.internal.fileReaders.fileReaderResult.FileReaderResult
 import tinDL.services.technical.SystemConfigurationService

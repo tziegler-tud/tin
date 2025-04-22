@@ -1,15 +1,15 @@
 package tinLIB.model.v2.query
 
-import tinLIB.model.v1.alphabet.Alphabet
+import tinLIB.model.v2.alphabet.Alphabet
 import tinLIB.model.v2.graph.*
 import tinLIB.model.v2.query.QueryEdge
 
-class QueryGraph : AbstractGraph() {
-    override var nodes: NodeSet = NodeSet()
+class QueryGraph : AbstractGraph<Node, QueryEdge>() {
+    override var nodes: NodeSet<Node> = NodeSet()
     override var edges = QueryEdgeSet()
     override var alphabet: Alphabet = Alphabet();
 
-    override fun addEdge(edge: Edge) : Boolean {
+    override fun addEdge(edge: QueryEdge) : Boolean {
         /**
          * add nodes if not present
          */
@@ -20,7 +20,7 @@ class QueryGraph : AbstractGraph() {
         if (nodes.contains(edge.target)) {
             nodes.add(edge.target)
         }
-        return edges.add(edge.asQueryEdge()!!);
+        return edges.add(edge);
     }
 
     fun addEdge(source: Node, target: Node, label: QueryEdgeLabel) : Boolean {
@@ -30,7 +30,7 @@ class QueryGraph : AbstractGraph() {
         return addEdge(QueryEdge(source, target, stringLabel));
     }
 
-    override fun containsEdge(edge: Edge) : Boolean {
+    override fun containsEdge(edge: QueryEdge) : Boolean {
         val e = edge.asQueryEdge() ?: return false;
         return edges.contains(e)
     }

@@ -10,7 +10,7 @@ import tinDL.model.v2.File.TinFileRepository
 import tinDL.model.v2.File.TinFileType
 import tinDL.model.v2.File.TinFile
 import tinDL.model.v2.File.TinFileSource
-import tinDL.model.v2.Tasks.OntologyVariant
+import tinDL.data.Task.DlTask.OntologyVariant
 import tinDL.services.internal.fileReaders.OntologyReaderService
 import tinDL.services.internal.fileReaders.fileReaderResult.FileReaderResult
 import tinDL.services.ontology.OntologyInfoData
@@ -19,7 +19,6 @@ import tinDL.services.technical.SystemConfigurationService
 import tinDL.utils.findByIdentifier
 import java.io.File
 import java.nio.file.Path
-import java.util.*
 import kotlin.io.path.pathString
 
 @Service

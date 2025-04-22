@@ -17,7 +17,7 @@ import tinDL.services.internal.utils.RandomQueryFactory
 import tinDL.services.ontology.OntologyExecutionContext.ExecutionContextType
 import tinDL.services.ontology.OntologyManager
 import tinDL.services.ontology.ResultGraph.ELHIResultGraphBuilder
-import tinDL.services.ontology.ResultGraph.FloydWarshallSolver
+import tinLIB.services.ResultGraph.FloydWarshallSolver
 import tinDL.services.ontology.loopTable.LoopTableBuilder.ELHI.ELHISPALoopTableBuilder
 import tinDL.services.ontology.loopTable.LoopTableBuilder.ELHI.ELHISPLoopTableBuilder
 import tinDL.services.technical.SystemConfigurationService

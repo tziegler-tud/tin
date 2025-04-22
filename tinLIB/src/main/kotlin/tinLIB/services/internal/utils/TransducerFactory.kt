@@ -1,8 +1,8 @@
 package tinLIB.services.internal.utils
 
-import tinLIB.model.v1.alphabet.Alphabet
-import tinLIB.model.v1.transducer.TransducerGraph
-import tinLIB.model.v1.transducer.TransducerNode
+import tinLIB.model.v2.alphabet.Alphabet
+import tinLIB.model.v2.graph.Node
+import tinLIB.model.v2.transducer.TransducerGraph
 
 class TransducerFactory {
 
@@ -10,11 +10,11 @@ class TransducerFactory {
         fun generateClassicAnswersTransducer(alphabet: Alphabet): TransducerGraph {
 
             val transducerGraph = TransducerGraph()
-            val source = TransducerNode("t0", isInitialState = true, isFinalState = true)
+            val source = Node("t0", isInitialState = true, isFinalState = true)
 
             for (word in alphabet.getAlphabet()) {
                 // for each word of the alphabet we add the edge (t0, t0, word, word, 0)
-                transducerGraph.addEdge(source, source, word, word, 0.0)
+                transducerGraph.addEdge(source, source, word, word, 0)
             }
 
             return transducerGraph
@@ -33,7 +33,7 @@ class TransducerFactory {
             val allowConceptAssertionToRole = false; //adds edges that transform query concept assertions to role names (PA construction step 14 + 15)
 
             val t = TransducerGraph();
-            val node = TransducerNode("t0", true, true)
+            val node = Node("t0", true, true)
             t.addNodes(node)
             //generate edit distance between all property names in query and database
             //as we assume some similarities between the alphabets, we cache our results locally and try to reuse them
@@ -65,7 +65,7 @@ class TransducerFactory {
                 for (databaseProperty in dbConcepts) {
                     var dist = cacheOrCredit(concept, databaseProperty);
                     //add transducer edge
-                    t.addEdge(node, node, concept, databaseProperty, dist.toDouble())
+                    t.addEdge(node, node, concept, databaseProperty, dist)
                 }
             }
 
@@ -73,14 +73,14 @@ class TransducerFactory {
                 for (databaseRole in dbRoles) {
                     var dist = cacheOrCredit(queryRole, databaseRole)
                     //add transducer edge
-                    t.addEdge(node, node, queryRole, databaseRole, dist.toDouble())
+                    t.addEdge(node, node, queryRole, databaseRole, dist)
                 }
 
                 if(allowRoleToConceptAssertion) {
                     for (conceptAssertion in queryAlphabet.getTransformedConceptNames()) {
                         var dist = cacheOrCredit(queryRole, conceptAssertion);
                         //add transducer edge
-                        t.addEdge(node, node, queryRole, conceptAssertion, dist.toDouble())
+                        t.addEdge(node, node, queryRole, conceptAssertion, dist)
                     }
                 }
             }
@@ -90,7 +90,7 @@ class TransducerFactory {
                     for (databaseRole in dbRoles) {
                         val dist = cacheOrCredit(conceptAssertion, databaseRole)
                         //add transducer edge
-                        t.addEdge(node, node, conceptAssertion, databaseRole, dist.toDouble())
+                        t.addEdge(node, node, conceptAssertion, databaseRole, dist)
                     }
                 }
 
