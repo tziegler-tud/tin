@@ -57,4 +57,19 @@ class QueryGraph : AbstractGraph<Node, QueryEdge>() {
 
         return super.equals(other);
     }
+
+    fun generateAlphabet(): Alphabet {
+        val al = Alphabet();
+        for (edge in edges) {
+            val edgeLabel = edge.label.label
+            val string = edgeLabel.getLabel();
+            if (edgeLabel.isConceptAssertion()) {
+                al.addConceptName(string)
+            } else {
+                al.addRoleName(string)
+            }
+        }
+        alphabet = al;
+        return al;
+    }
 }

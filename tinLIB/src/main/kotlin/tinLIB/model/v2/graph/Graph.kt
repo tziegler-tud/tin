@@ -58,4 +58,6 @@ interface Graph<T: Node, E: Edge> {
     fun hasFinalNode(): Boolean;
 
     fun printGraph();
+
+//    fun generateAlphabet(): Alphabet;
 }

@@ -1,5 +1,6 @@
 rootProject.name = 'tin'
 
+include("tinCORE")
 include("tinDB")
 include("tinDL")
 include("tinLIB")

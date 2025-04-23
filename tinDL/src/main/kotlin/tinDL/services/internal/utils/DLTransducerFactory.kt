@@ -64,17 +64,7 @@ class DLTransducerFactory {
             //as we assume some similarities between the alphabets, we cache our results locally and try to reuse them
             val simpleDist = 1
 
-            val queryAlphabet = Alphabet();
-
-            for (edge in queryGraph.edges) {
-                val edgeLabel = edge.label.label
-                val string = edgeLabel.getLabel();
-                if (edgeLabel.isConceptAssertion()) {
-                    queryAlphabet.addConceptName(string)
-                } else {
-                    queryAlphabet.addRoleName(string)
-                }
-            }
+            val queryAlphabet = queryGraph.generateAlphabet()
 
             val queryConcepts = queryAlphabet.getConceptNames();
             val queryRoles = queryAlphabet.getRoleNames();

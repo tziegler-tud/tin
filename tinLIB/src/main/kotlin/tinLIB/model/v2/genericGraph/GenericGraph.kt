@@ -23,6 +23,4 @@ class GenericGraph : AbstractGraph<Node, GenericEdge>() {
         }
         return edges.add(edge);
     }
-
-
 }
