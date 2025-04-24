@@ -1,14 +1,15 @@
-package tinDL.services.ontology
+package tinCORE.services.ontology
 
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.context.TestConfiguration
-import tinDL.services.internal.fileReaders.OntologyReaderService
-import tinDL.services.internal.fileReaders.fileReaderResult.FileReaderResult
+import tinCORE.services.internal.fileReaders.*
+import tinCORE.services.internal.fileReaders.fileReaderResult.FileReaderResult
+import tinCORE.services.technical.SystemConfigurationService
 import tinDL.services.ontology.OntologyExecutionContext.ELHI.ELHISetExecutionContext
-import tinDL.services.ontology.OntologyExecutionContext.ExecutionContextType
-import tinDL.services.technical.SystemConfigurationService
+import tinDL.services.ontology.OntologyManager
+
 import java.io.File
 
 

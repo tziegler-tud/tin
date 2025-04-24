@@ -1,20 +1,17 @@
-package tinDL.services.ontology.ResultGraph
+package tinCORE.services.ontology.ResultGraph
 
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.context.TestConfiguration
-import tinDL.model.v2.ResultGraph.DlResultEdge
 import tinDL.model.v2.ResultGraph.DlResultNode
 import tinLIB.model.v2.query.QueryGraph
 import tinLIB.model.v2.transducer.TransducerGraph
-import tinDL.services.internal.fileReaders.OntologyReaderService
-import tinDL.services.internal.fileReaders.QueryReaderServiceV2
-import tinDL.services.internal.fileReaders.TransducerReaderServiceV2
-import tinDL.services.internal.fileReaders.fileReaderResult.FileReaderResult
+import tinCORE.services.internal.fileReaders.*
+import tinCORE.services.internal.fileReaders.fileReaderResult.FileReaderResult
+import tinCORE.services.technical.SystemConfigurationService
 import tinDL.services.ontology.OntologyExecutionContext.ExecutionContextType
 import tinDL.services.ontology.OntologyManager
-import tinDL.services.technical.SystemConfigurationService
 import tinLIB.services.ResultGraph.DijkstraSolver
 import tinLIB.services.ResultGraph.FloydWarshallSolver
 import tinLIB.services.ResultGraph.ShortestPathResult
@@ -24,7 +21,7 @@ import java.io.File
 @SpringBootTest
 @TestConfiguration
 class ResultGraphSolverTest {
-    val resultGraphTestUtils = tinDL.services.ontology.ResultGraph.ResultGraphTestUtils();
+    val resultGraphTestUtils = tinCORE.services.ontology.ResultGraph.ResultGraphTestUtils();
 
     @Autowired
     lateinit var systemConfigurationService: SystemConfigurationService;

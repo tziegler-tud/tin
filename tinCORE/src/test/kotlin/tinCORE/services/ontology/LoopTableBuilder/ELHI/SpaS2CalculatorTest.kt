@@ -1,14 +1,14 @@
-package tinDL.services.ontology.LoopTableBuilder.ELHI
+package tinCORE.services.ontology.LoopTableBuilder.ELHI
 
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.context.TestConfiguration
-import tinLIB.model.v2.graph.Node
 import tinLIB.model.v2.query.QueryGraph
 import tinLIB.model.v2.transducer.TransducerGraph
-import tinDL.services.internal.fileReaders.*
-import tinDL.services.internal.fileReaders.fileReaderResult.FileReaderResult
+import tinCORE.services.internal.fileReaders.*
+import tinCORE.services.internal.fileReaders.fileReaderResult.FileReaderResult
+import tinCORE.services.technical.SystemConfigurationService
 import tinDL.services.ontology.Reasoner.SimpleDLReasoner
 import tinDL.services.ontology.OntologyExecutionContext.ExecutionContextType
 import tinDL.services.ontology.OntologyManager
@@ -16,8 +16,6 @@ import tinDL.services.ontology.loopTable.LoopTable.ELHI.ELHISPALoopTable
 import tinDL.services.ontology.loopTable.LoopTableBuilder.ELHI.ruleCalculators.SpaS2Calculator
 import tinDL.services.ontology.loopTable.LoopTableEntryRestriction.spa.RestrictionBuilder
 import tinDL.services.ontology.loopTable.loopTableEntry.ELHI.ELHISPALoopTableEntry
-import tinDL.services.ontology.loopTable.loopTableEntry.ELHI.SPASetLoopTableEntry
-import tinDL.services.technical.SystemConfigurationService
 import java.io.File
 import kotlin.time.TimeSource
 

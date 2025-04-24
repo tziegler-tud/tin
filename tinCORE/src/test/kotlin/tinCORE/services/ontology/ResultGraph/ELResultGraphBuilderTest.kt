@@ -1,4 +1,4 @@
-package tinDL.services.ontology.ResultGraph
+package tinCORE.services.ontology.ResultGraph
 
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -9,16 +9,15 @@ import tinDL.model.v2.ResultGraph.DlResultGraph
 import tinDL.model.v2.ResultGraph.DlResultNode
 import tinLIB.model.v2.query.QueryGraph
 import tinLIB.model.v2.transducer.TransducerGraph
-import tinDL.services.internal.fileReaders.OntologyReaderService
-import tinDL.services.internal.fileReaders.QueryReaderServiceV2
-import tinDL.services.internal.fileReaders.TransducerReaderServiceV2
-import tinDL.services.internal.fileReaders.fileReaderResult.FileReaderResult
+import tinCORE.services.internal.fileReaders.*
+import tinCORE.services.internal.fileReaders.fileReaderResult.FileReaderResult
+import tinCORE.services.technical.SystemConfigurationService
 import tinDL.services.ontology.OntologyExecutionContext.EL.ELExecutionContext
 import tinDL.services.ontology.OntologyExecutionContext.ExecutionContextType
 import tinDL.services.ontology.OntologyManager
+import tinDL.services.ontology.ResultGraph.ELResultGraphBuilder
 import tinDL.services.ontology.loopTable.LoopTable.ELH.ELSPLoopTable
 import tinDL.services.ontology.loopTable.loopTableEntry.ELH.ELSPLoopTableEntry
-import tinDL.services.technical.SystemConfigurationService
 import java.io.File
 
 @SpringBootTest

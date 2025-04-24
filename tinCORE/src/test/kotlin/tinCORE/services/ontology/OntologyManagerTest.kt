@@ -1,4 +1,4 @@
-package tinDL.services.ontology
+package tinCORE.services.ontology
 
 import org.junit.jupiter.api.Test
 import org.semanticweb.owlapi.reasoner.impl.OWLClassNodeSet
@@ -7,9 +7,10 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.context.TestConfiguration
 import tinLIB.model.v2.alphabet.Alphabet
-import tinDL.services.internal.fileReaders.OntologyReaderService
-import tinDL.services.internal.fileReaders.fileReaderResult.FileReaderResult
-import tinDL.services.technical.SystemConfigurationService
+import tinCORE.services.internal.fileReaders.*
+import tinCORE.services.internal.fileReaders.fileReaderResult.FileReaderResult
+import tinCORE.services.technical.SystemConfigurationService
+import tinDL.services.ontology.OntologyManager
 import java.io.File
 
 

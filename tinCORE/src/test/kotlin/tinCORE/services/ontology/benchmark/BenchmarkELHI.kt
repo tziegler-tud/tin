@@ -1,25 +1,30 @@
-package tinDL.services.ontology.benchmark
+package tinCORE.services.ontology.benchmark
 
+import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.context.TestConfiguration
+
+import tinCORE.data.Task.DlTask.Benchmark.*
+
+import tinCORE.services.internal.fileReaders.OntologyReaderService
+import tinCORE.services.internal.fileReaders.QueryReaderServiceV2
+import tinCORE.services.internal.fileReaders.TransducerReaderServiceV2
+import tinCORE.services.internal.fileReaders.fileReaderResult.FileReaderResult
+import tinCORE.services.technical.SystemConfigurationService
 import tinLIB.model.v2.query.QueryGraph
 import tinLIB.model.v2.transducer.TransducerGraph
-import tinDL.services.Task.Benchmark.*
-import tinDL.services.internal.fileReaders.OntologyReaderService
-import tinDL.services.internal.fileReaders.QueryReaderServiceV2
-import tinDL.services.internal.fileReaders.TransducerReaderServiceV2
-import tinDL.services.internal.fileReaders.fileReaderResult.FileReaderResult
+
 import tinDL.services.internal.utils.DLTransducerFactory
 import tinDL.services.internal.utils.RandomQueryFactory
 import tinDL.services.ontology.OntologyExecutionContext.ExecutionContextType
 import tinDL.services.ontology.OntologyManager
-import tinDL.services.ontology.ResultGraph.ELResultGraphBuilder
+import tinDL.services.ontology.ResultGraph.ELHIResultGraphBuilder
+import tinDL.services.ontology.ResultGraph.TaskProcessingResultBuilderStats
 import tinLIB.services.ResultGraph.FloydWarshallSolver
-import tinDL.services.ontology.loopTable.LoopTableBuilder.ELH.ELSPALoopTableBuilder
-import tinDL.services.ontology.loopTable.LoopTableBuilder.ELH.ELSPLoopTableBuilder
+import tinDL.services.ontology.loopTable.LoopTableBuilder.ELHI.ELHISPALoopTableBuilder
+import tinDL.services.ontology.loopTable.LoopTableBuilder.ELHI.ELHISPLoopTableBuilder
 
-import tinDL.services.technical.SystemConfigurationService
 import java.io.File
 import kotlin.time.Duration
 import kotlin.time.TimeSource
@@ -27,7 +32,7 @@ import kotlin.time.TimeSource
 
 @SpringBootTest
 @TestConfiguration
-class BenchmarkEL {
+class BenchmarkELHI {
     @Autowired
     lateinit var systemConfigurationService: SystemConfigurationService;
 
@@ -67,7 +72,7 @@ class BenchmarkEL {
         println("found!")
     }
 
-    // @Test
+ @Test
     fun testQueryAnswering() {
 
         //load ontology
@@ -80,28 +85,28 @@ class BenchmarkEL {
         val ontoEnd = timeSource.markNow()
 
         val initStart = timeSource.markNow()
-        val ec = manager.createELExecutionContext(ExecutionContextType.ELH, false);
         val initEnd = timeSource.markNow();
-        val queryAmount = 200;
+        val queryAmount = 10;
+
+        val queryStates = 5
+        val queryEdges = 3
 
         val results = mutableListOf<TaskProcessingBenchmarkResult>();
         val startAllQueries = timeSource.markNow()
 
         var transSizeTotal = 0;
 
-
-        val queryStates = 10
-        val queryEdges = 10
-
         for (i in 0 until queryAmount) {
             println("Calculating query $i / $queryAmount")
+            val ec = manager.createELHIExecutionContext(ExecutionContextType.ELHI_NUMERIC, false);
+            ec.dlReasoner.clearCache();
 
             val queryGraph = RandomQueryFactory.generateQuery(queryStates,queryEdges, ec);
             val transducerGraph = DLTransducerFactory.generateEditDistanceTransducer(queryGraph, ec);
             val queryInitialTime = timeSource.markNow()
 //        ec.prewarmSubsumptionCache()
-            val builder = ELSPALoopTableBuilder(queryGraph, transducerGraph, manager, ec);
-            val spBuilder = ELSPLoopTableBuilder(queryGraph, transducerGraph, manager, ec);
+            val builder = ELHISPALoopTableBuilder(queryGraph, transducerGraph, manager, ec);
+            val spBuilder = ELHISPLoopTableBuilder(queryGraph, transducerGraph, manager, ec);
 
             val startTime = timeSource.markNow()
 
@@ -115,7 +120,7 @@ class BenchmarkEL {
             val spTable = spBuilder.calculateFullTable(spaTable);
             val spEndTime = timeSource.markNow()
 
-            val resultGraphBuilder = ELResultGraphBuilder(ec, queryGraph ,transducerGraph)
+            val resultGraphBuilder = ELHIResultGraphBuilder(ec, queryGraph ,transducerGraph)
             val resultGraphStartTime = timeSource.markNow()
             val resultGraph = resultGraphBuilder.constructResultGraph(spTable);
             val resultGraphEndTime = timeSource.markNow();
@@ -145,13 +150,12 @@ class BenchmarkEL {
             val times = TaskProcessingResultTimes(startTime, spaEndTime, spaEndTime, spEndTime, resultGraphStartTime, resultGraphEndTime, solverStartTime, solverEndTime)
             val reasonerStats = TaskProcessingReasonerStats(stats)
             val spa = TaskProcessingSpaBuilderStats(builder.statsTotalIterations, builder.getSize(), builder.statsMaxPossibleSize)
-            val sp = TaskProcessingSpBuilderStats(spBuilder.getSize(), spBuilder.statsMaxPossibleSize)
+            val sp = TaskProcessingSpBuilderStats(spBuilder.statsTotalSize, spBuilder.getSize())
             val resultStats = TaskProcessingResultBuilderStats(resultGraph.nodes.size, resultGraph.edges.size, resultGraphBuilder.maxEdgeCost, resultGraphBuilder.minEdgeCost, resultGraphBuilder.unreachableNodesAmount)
             val benchmarkResult = TaskProcessingBenchmarkResult(times, reasonerStats, spa, sp, resultStats)
             results.add(benchmarkResult);
 
             transSizeTotal += transducerGraph.edges.size
-
         }
 
         val endAllQueries = timeSource.markNow()
@@ -163,7 +167,6 @@ class BenchmarkEL {
 
         var totalIterationsSum = 0;
         var totalSizeSum = 0;
-        var spTotalSizeSum = 0;
 
         var maxIterations = 0;
         var minIterations = Int.MAX_VALUE;
@@ -171,10 +174,7 @@ class BenchmarkEL {
 
         var maxSize = 0;
         var minSize = Int.MAX_VALUE;
-        var spMaxSize = 0;
-        var spMinSize = Int.MAX_VALUE;
         var avgSize = 0
-        var spAvgSize = 0
 
         var maxSpa: Duration = kotlin.time.Duration.ZERO
         var minSpa: Duration = kotlin.time.Duration.INFINITE
@@ -188,7 +188,6 @@ class BenchmarkEL {
 
             totalIterationsSum += benchmarkResult.spaBuilderStats.totalIterations
             totalSizeSum += benchmarkResult.spaBuilderStats.tableSize;
-            spTotalSizeSum += benchmarkResult.spBuilderStats.tableSize;
 
             if(benchmarkResult.times.spaTime < minSpa) minSpa = benchmarkResult.times.spaTime
             if(benchmarkResult.times.spTime < minSp) minSp = benchmarkResult.times.spTime
@@ -202,9 +201,6 @@ class BenchmarkEL {
             if(benchmarkResult.spaBuilderStats.tableSize < minSize) minSize = benchmarkResult.spaBuilderStats.tableSize
             if(benchmarkResult.spaBuilderStats.tableSize > maxSize) maxSize = benchmarkResult.spaBuilderStats.tableSize
 
-            if(benchmarkResult.spBuilderStats.tableSize < spMinSize) spMinSize = benchmarkResult.spBuilderStats.tableSize
-            if(benchmarkResult.spBuilderStats.tableSize > spMaxSize) spMaxSize = benchmarkResult.spBuilderStats.tableSize
-
 
 
         }
@@ -216,10 +212,8 @@ class BenchmarkEL {
 
         val avgIterations = totalIterationsSum / queryAmount
         val avgSpaSize = totalSizeSum / queryAmount
-        val avgSpSize = spTotalSizeSum / queryAmount
 
         val transSizeAvg = transSizeTotal / queryAmount
-
 
         //results
         println("___________________________________________________________________________________________________________")
@@ -250,9 +244,5 @@ class BenchmarkEL {
         println("Average SP Time: " + avgSp)
         println("Minimal sp time: " + minSp)
         println("Maximal sp time: " + maxSp)
-        println("----------------")
-        println("Average sp size: " + avgSpSize)
-        println("Minimal sp size: " + spMinSize)
-        println("Maximal sp size: " + spMaxSize)
     }
 }

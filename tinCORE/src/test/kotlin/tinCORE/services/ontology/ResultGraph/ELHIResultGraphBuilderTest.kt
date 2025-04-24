@@ -1,4 +1,4 @@
-package tinDL.services.ontology.ResultGraph
+package tinCORE.services.ontology.ResultGraph
 
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -11,14 +11,18 @@ import tinLIB.model.v2.transducer.TransducerGraph
 import tinDL.services.ontology.OntologyExecutionContext.ELHI.ELHIExecutionContext
 import tinDL.services.ontology.OntologyExecutionContext.ExecutionContextType
 import tinDL.services.ontology.OntologyManager
+import tinCORE.services.internal.fileReaders.*
+import tinCORE.services.internal.fileReaders.fileReaderResult.FileReaderResult
+import tinCORE.services.technical.SystemConfigurationService
+import tinDL.services.ontology.ResultGraph.ELHIResultGraphBuilder
 import java.io.File
 
 @SpringBootTest
 @TestConfiguration
 class ELHIResultGraphBuilderTest {
 
-    private val resultGraphTestUtils: tinDL.services.ontology.ResultGraph.ResultGraphTestUtils =
-        tinDL.services.ontology.ResultGraph.ResultGraphTestUtils();
+    private val resultGraphTestUtils: tinCORE.services.ontology.ResultGraph.ResultGraphTestUtils =
+        tinCORE.services.ontology.ResultGraph.ResultGraphTestUtils();
 
 
     @Autowired

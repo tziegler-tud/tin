@@ -15,7 +15,7 @@ repositories {
 
 dependencies {
     implementation(project(":tinDL"))
-    implementation(project(":tinDB"))
+//    implementation(project(":tinDB"))
     implementation(project(":tinLIB"))
     // kotlin
     implementation 'com.fasterxml.jackson.module:jackson-module-kotlin'
@@ -41,6 +41,8 @@ dependencies {
 
     //OWL API
     implementation group: 'net.sourceforge.owlapi', name: 'owlapi-distribution', version: '5.5.0'
+
+    implementation 'org.springframework.boot:spring-boot-starter-test'
 
 }
 

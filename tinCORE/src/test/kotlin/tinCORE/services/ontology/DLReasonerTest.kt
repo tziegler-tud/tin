@@ -1,23 +1,22 @@
-package tinDL.services.ontology
+package tinCORE.services.ontology
 
 import org.junit.jupiter.api.Test
 import org.semanticweb.owlapi.model.OWLNamedIndividual
 import org.semanticweb.owlapi.model.OWLObjectProperty
-import org.semanticweb.owlapi.model.OWLPropertyExpression
 import org.semanticweb.owlapi.reasoner.InferenceType
 import org.semanticweb.owlapi.reasoner.NodeSet
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.boot.web.client.RestTemplateBuilder
-import tinDL.services.internal.fileReaders.OntologyReaderService
-import tinDL.services.internal.fileReaders.fileReaderResult.FileReaderResult
+import tinCORE.services.internal.fileReaders.OntologyReaderService
+import tinCORE.services.internal.fileReaders.fileReaderResult.FileReaderResult
+import tinCORE.services.technical.SystemConfigurationService
 import tinDL.services.ontology.OntologyExecutionContext.ExecutionContextType
+import tinDL.services.ontology.OntologyManager
 import tinDL.services.ontology.Reasoner.ElkReasoner
 import tinDL.services.ontology.Reasoner.SimpleDLReasoner
-import tinDL.services.ontology.loopTable.LoopTableEntryRestriction.spa.MultiClassLoopTableEntryRestriction
 import tinDL.services.ontology.loopTable.LoopTableEntryRestriction.spa.RestrictionBuilder
-import tinDL.services.technical.SystemConfigurationService
 import java.io.File
 
 @SpringBootTest

@@ -1,4 +1,4 @@
-package tinDL.services.ontology.ResultGraph
+package tinCORE.services.ontology.ResultGraph
 
 import tinDL.model.v2.ResultGraph.DlResultGraph
 import tinDL.model.v2.ResultGraph.DlResultNode
