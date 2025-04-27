@@ -1,10 +1,10 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    id 'org.springframework.boot' version '3.3.0'
-    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+//    id 'org.springframework.boot' version '3.3.0'
+//    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
     id 'org.jetbrains.kotlin.jvm' version '2.0.21'
-    id 'org.jetbrains.kotlin.plugin.spring' version '2.0.21'
+//    id 'org.jetbrains.kotlin.plugin.spring' version '2.0.21'
 //    id 'war'
 }
 
@@ -27,20 +27,20 @@ dependencies {
     // tinLIB shared library
     implementation(project(":tinLIB"))
     // kotlin
-    implementation 'com.fasterxml.jackson.module:jackson-module-kotlin'
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
-    implementation "org.jetbrains.kotlin:kotlin-reflect"
-    implementation"org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.0"
+//    implementation 'com.fasterxml.jackson.module:jackson-module-kotlin'
+//    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+//    implementation "org.jetbrains.kotlin:kotlin-reflect"
+//    implementation"org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.0"
 
     // spring
-    implementation 'org.springframework.boot:spring-boot-starter'
-    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-    implementation 'org.springframework.boot:spring-boot-starter-web'
+//    implementation 'org.springframework.boot:spring-boot-starter'
+//    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+//    implementation 'org.springframework.boot:spring-boot-starter-web'
     testImplementation 'org.junit.jupiter:junit-jupiter:5.8.1'
 
     // database
-    runtimeOnly 'com.h2database:h2'
-    runtimeOnly 'com.mysql:mysql-connector-j:8.2.0'
+//    runtimeOnly 'com.h2database:h2'
+//    runtimeOnly 'com.mysql:mysql-connector-j:8.2.0'
 
     //owl api
     implementation group: 'net.sourceforge.owlapi', name: 'owlapi-distribution', version: '5.5.0'
@@ -53,13 +53,13 @@ dependencies {
     implementation group: 'org.visualdataweb.vowl.owl2vowl', name: 'OWL2VOWL', version: '0.3.1'
 
     // other
-    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
-    implementation 'org.springframework.boot:spring-boot-starter-actuator'
-    implementation group: 'jakarta.servlet', name: 'jakarta.servlet-api', version: '6.1.0'
-    annotationProcessor group: 'org.springframework.boot', name: 'spring-boot-configuration-processor', version: '3.3.0'
+//    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+//    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+//    implementation group: 'jakarta.servlet', name: 'jakarta.servlet-api', version: '6.1.0'
+//    annotationProcessor group: 'org.springframework.boot', name: 'spring-boot-configuration-processor', version: '3.3.0'
 
     //testing
-    implementation 'org.springframework.boot:spring-boot-starter-test'
+//    implementation 'org.springframework.boot:spring-boot-starter-test'
 
 
 }
