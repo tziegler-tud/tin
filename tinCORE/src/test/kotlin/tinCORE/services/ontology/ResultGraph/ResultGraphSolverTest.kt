@@ -10,6 +10,7 @@ import tinLIB.model.v2.transducer.TransducerGraph
 import tinCORE.services.internal.fileReaders.*
 import tinCORE.services.internal.fileReaders.fileReaderResult.FileReaderResult
 import tinCORE.services.technical.SystemConfigurationService
+import tinDL.model.v2.ResultGraph.DlResultGraphIndividualFactory
 import tinDL.services.ontology.OntologyExecutionContext.ExecutionContextType
 import tinDL.services.ontology.OntologyManager
 import tinLIB.services.ResultGraph.DijkstraSolver
@@ -57,6 +58,8 @@ class ResultGraphSolverTest {
         val query = readQueryWithFileReaderService("resultGraph/test1.txt")
         val transducer = readTransducerWithFileReaderService("resultGraph/test1.txt")
 
+        val individualFactory = DlResultGraphIndividualFactory(ec.shortFormProvider)
+
         val queryGraph = query.graph;
         val transducerGraph = transducer.graph;
 
@@ -71,9 +74,9 @@ class ResultGraphSolverTest {
         val t0 = transducerGraph.getNode("t0")!!
         val t1 = transducerGraph.getNode("t1")!!
 
-        val bruschetta = ec.parser.getNamedIndividual("bruschetta")!!;
-        val r = ec.parser.getNamedIndividual("r")!!;
-        val veganPlace = ec.parser.getNamedIndividual("VeganPlace")!!
+        val bruschetta = individualFactory.fromOWLNamedIndividual(ec.parser.getNamedIndividual("bruschetta")!!)
+        val r = individualFactory.fromOWLNamedIndividual(ec.parser.getNamedIndividual("r")!!)
+        val veganPlace = individualFactory.fromOWLNamedIndividual(ec.parser.getNamedIndividual("VeganPlace")!!)
 
         val s0t0VeganPlace = DlResultNode(s0, t0, veganPlace);
         val s2t1VeganPlace = DlResultNode(s2, t1, veganPlace);

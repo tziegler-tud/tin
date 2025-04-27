@@ -1,6 +1,7 @@
 package tinCORE.services.ontology.ResultGraph
 
 import tinDL.model.v2.ResultGraph.DlResultGraph
+import tinDL.model.v2.ResultGraph.DlResultGraphIndividualFactory
 import tinDL.model.v2.ResultGraph.DlResultNode
 import tinLIB.model.v2.query.QueryGraph
 import tinLIB.model.v2.transducer.TransducerGraph
@@ -12,7 +13,7 @@ import tinDL.services.ontology.loopTable.loopTableEntry.IndividualLoopTableEntry
 class ResultGraphTestUtils {
 
     fun buildComparisonGraphRestricted(ec: ExecutionContext, queryGraph: QueryGraph, transducerGraph: TransducerGraph) : DlResultGraph {
-        val comparisonGraph = DlResultGraph()
+        val comparisonGraph = DlResultGraph(ec.shortFormProvider)
 
         val s0 = queryGraph.getNode("s0")!!
         val s1 = queryGraph.getNode("s1")!!
@@ -21,13 +22,15 @@ class ResultGraphTestUtils {
         val t0 = transducerGraph.getNode("t0")!!
         val t1 = transducerGraph.getNode("t1")!!
 
-        val beer = ec.parser.getNamedIndividual("beer")!!;
-        val bruschetta = ec.parser.getNamedIndividual("bruschetta")!!;
-        val carbonara = ec.parser.getNamedIndividual("carbonara")!!;
-        val place1 = ec.parser.getNamedIndividual("place1")!!;
-        val place2 = ec.parser.getNamedIndividual("place2")!!;
-        val r = ec.parser.getNamedIndividual("r")!!;
-        val veganPlace = ec.parser.getNamedIndividual("VeganPlace")!!
+        val individualFactory = DlResultGraphIndividualFactory(ec.shortFormProvider)
+
+        val beer = individualFactory.fromOWLNamedIndividual(ec.parser.getNamedIndividual("beer")!!)
+        val bruschetta = individualFactory.fromOWLNamedIndividual(ec.parser.getNamedIndividual("bruschetta")!!)
+        val carbonara = individualFactory.fromOWLNamedIndividual(ec.parser.getNamedIndividual("carbonara")!!)
+        val place1 = individualFactory.fromOWLNamedIndividual(ec.parser.getNamedIndividual("place1")!!)
+        val place2 = individualFactory.fromOWLNamedIndividual(ec.parser.getNamedIndividual("place2")!!)
+        val r = individualFactory.fromOWLNamedIndividual(ec.parser.getNamedIndividual("r")!!)
+        val veganPlace = individualFactory.fromOWLNamedIndividual(ec.parser.getNamedIndividual("VeganPlace")!!)
 
         queryGraph.nodes.forEach { queryNode ->
             transducerGraph.nodes.forEach { transducerNode ->
@@ -77,16 +80,11 @@ class ResultGraphTestUtils {
         val t0 = transducerGraph.getNode("t0")!!
         val t1 = transducerGraph.getNode("t1")!!
 
-        val beer = ec.parser.getNamedIndividual("beer")!!;
-        val bruschetta = ec.parser.getNamedIndividual("bruschetta")!!;
-        val carbonara = ec.parser.getNamedIndividual("carbonara")!!;
-        val place1 = ec.parser.getNamedIndividual("place1")!!;
-        val place2 = ec.parser.getNamedIndividual("place2")!!;
-        val r = ec.parser.getNamedIndividual("r")!!;
-        val veganPlace = ec.parser.getNamedIndividual("VeganPlace")!!
-        val serves = ec.parser.getOWLObjectProperty("serves")!!
-        val serves_drink = ec.parser.getOWLObjectProperty("serves_drink")!!
-        val serves_meal = ec.parser.getOWLObjectProperty("serves_meal")!!
+        val individualFactory = DlResultGraphIndividualFactory(ec.shortFormProvider)
+
+
+        val beer = individualFactory.fromOWLNamedIndividual(ec.parser.getNamedIndividual("beer")!!)
+        val veganPlace = individualFactory.fromOWLNamedIndividual(ec.parser.getNamedIndividual("VeganPlace")!!)
 
         comparisonGraph.addEdge(DlResultNode(s0,t0,beer), DlResultNode(s1,t0,beer), 4)
         comparisonGraph.addEdge(DlResultNode(s0,t1,beer), DlResultNode(s1,t1,beer), 7)

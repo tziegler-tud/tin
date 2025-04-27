@@ -14,6 +14,7 @@ import tinDL.services.ontology.OntologyManager
 import tinCORE.services.internal.fileReaders.*
 import tinCORE.services.internal.fileReaders.fileReaderResult.FileReaderResult
 import tinCORE.services.technical.SystemConfigurationService
+import tinDL.model.v2.ResultGraph.DlResultGraphIndividualFactory
 import tinDL.services.ontology.ResultGraph.ELHIResultGraphBuilder
 import java.io.File
 
@@ -116,10 +117,14 @@ class ELHIResultGraphBuilderTest {
         val t0 = transducerGraph.getNode("t0")!!
         val t1 = transducerGraph.getNode("t1")!!
 
-        val beer = ec.parser.getNamedIndividual("beer")!!;
-        val veganPlace = ec.parser.getNamedIndividual("VeganPlace")!!
+        val owlBeer = ec.parser.getNamedIndividual("beer")!!;
+        val owlVeganPlace = ec.parser.getNamedIndividual("VeganPlace")!!
 
-        comparisonGraph.addEdge(DlResultNode(s0,t0,beer), DlResultNode(s1,t0,beer), 4)
+        val individualFactory = DlResultGraphIndividualFactory(ec.shortFormProvider)
+        val beer = individualFactory.fromOWLNamedIndividual(owlBeer)
+        val veganPlace = individualFactory.fromOWLNamedIndividual(owlVeganPlace)
+
+        comparisonGraph.addEdge(DlResultNode(s0,t0, beer), DlResultNode(s1,t0,beer), 4)
         comparisonGraph.addEdge(DlResultNode(s0,t1,beer), DlResultNode(s1,t1,beer), 7)
         comparisonGraph.addEdge(DlResultNode(s0,t0,veganPlace), DlResultNode(s1,t0,veganPlace), 13)
 

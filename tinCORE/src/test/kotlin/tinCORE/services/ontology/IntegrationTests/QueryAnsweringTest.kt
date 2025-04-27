@@ -9,7 +9,7 @@ import tinCORE.services.internal.fileReaders.QueryReaderServiceV2
 import tinCORE.services.internal.fileReaders.TransducerReaderServiceV2
 import tinCORE.services.internal.fileReaders.fileReaderResult.FileReaderResult
 import tinCORE.services.technical.SystemConfigurationService
-import tinDL.model.v2.ResultGraph.DlResultGraphIndividual
+import tinDL.model.v2.ResultGraph.DlResultGraphIndividualFactory
 import tinDL.model.v2.ResultGraph.DlResultNode
 import tinLIB.model.v2.query.QueryGraph
 import tinLIB.model.v2.transducer.TransducerGraph
@@ -118,7 +118,7 @@ class QueryAnsweringTest {
 
     @Test
     fun testQueryAnswering2() {
-        val manager = loadExampleOntology("pizza_4_1.obo")
+        val manager = loadExampleOntology("pizza_4_1.rdf")
 
         val query = readQueryWithFileReaderService("integration/test_comp2.txt")
         val transducer = readTransducerWithFileReaderService("integration/test_comp2.txt")
@@ -126,6 +126,7 @@ class QueryAnsweringTest {
         val timeSource = TimeSource.Monotonic
         val initialTime = timeSource.markNow()
         val ec = manager.createELHIExecutionContext(ExecutionContextType.ELHI_NUMERIC, false);
+        val individualFactory = DlResultGraphIndividualFactory(ec.shortFormProvider)
         val builder = ELHISPALoopTableBuilder(query.graph, transducer.graph, manager, ec);
         val spBuilder = ELHISPLoopTableBuilder(query.graph, transducer.graph, manager, ec);
 
@@ -170,17 +171,17 @@ class QueryAnsweringTest {
         val r = ec.parser.getNamedIndividual("r")!!;
         val veganPlace = ec.parser.getNamedIndividual("VeganPlace")!!
 
-        val s0t0VeganPlace = DlResultNode(s0, t0, veganPlace);
-        val s2t1Bruschetta = DlResultNode(s2, t1, bruschetta);
+        val s0t0VeganPlace = DlResultNode(s0, t0, individualFactory.fromOWLNamedIndividual(veganPlace));
+        val s2t1Bruschetta = DlResultNode(s2, t1, individualFactory.fromOWLNamedIndividual(bruschetta));
 
-        val s0t0r = DlResultNode(s0, t0, r)
+        val s0t0r = DlResultNode(s0, t0, individualFactory.fromOWLNamedIndividual(r))
 
         assert(resultList.size == 2 )
 
-        val veganPlaceInd = DlResultGraphIndividual(veganPlace)
-        val bruschettaInd = DlResultGraphIndividual(bruschetta)
-        val carbonaraInd = DlResultGraphIndividual(carbonara)
-        val rInd = DlResultGraphIndividual(r)
+        val veganPlaceInd = individualFactory.fromOWLNamedIndividual(veganPlace)
+        val bruschettaInd = individualFactory.fromOWLNamedIndividual(bruschetta)
+        val carbonaraInd = individualFactory.fromOWLNamedIndividual(carbonara)
+        val rInd = individualFactory.fromOWLNamedIndividual(r)
 
         assert(solver.getShortestPath(veganPlaceInd, bruschettaInd) == ShortestPathResult(s0t0VeganPlace, s2t1Bruschetta, 24));
         assert(solver.getShortestPath(rInd, bruschettaInd) == ShortestPathResult(s0t0r, s2t1Bruschetta, 24));

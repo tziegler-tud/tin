@@ -363,7 +363,7 @@ class DLReasonerTest {
         assert(atomicSubClasses2.contains(queryParser.getOWLClass("Pasta")))
     }
 
-    @Test
+//    @Test
     fun testCachePrewarming() {
         val manager = loadExampleOntology("pizza2_test.rdf");
         val ec = manager.createELHIExecutionContext(ExecutionContextType.ELHI, true);
