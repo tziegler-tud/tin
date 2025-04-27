@@ -6,7 +6,7 @@ open class ResultNode(
     private val queryNode: Node,
     private val transducerNode: Node,
     open val individual: ResultGraphIndividual
-) : Node(queryNode.identifier+transducerNode.identifier+individual.toString(), queryNode.isInitialState && transducerNode.isInitialState, queryNode.isFinalState && transducerNode.isFinalState)
+) : Node(queryNode.identifier + transducerNode.identifier + individual.identifier, queryNode.isInitialState && transducerNode.isInitialState, queryNode.isFinalState && transducerNode.isFinalState)
 
 {
     override var isInitialState: Boolean = queryNode.isInitialState && transducerNode.isInitialState
