@@ -11,11 +11,6 @@ class DlResultNode(
 ) : ResultNode(queryNode, transducerNode, individual)
 
 {
-    constructor(queryNode: Node, transducerNode: Node, owlNamedIndividual: OWLNamedIndividual) : this(
-        queryNode,
-        transducerNode,
-        DlResultGraphIndividual(owlNamedIndividual)
-    )
     override var isInitialState: Boolean = queryNode.isInitialState && transducerNode.isInitialState
     override var isFinalState: Boolean = queryNode.isFinalState && transducerNode.isFinalState;
 

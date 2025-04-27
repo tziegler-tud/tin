@@ -1,14 +1,19 @@
 package tinDL.model.v2.ResultGraph
 
 import org.semanticweb.owlapi.model.OWLNamedIndividual
+import org.semanticweb.owlapi.util.ShortFormProvider
 import tinLIB.model.v2.alphabet.Alphabet
 import tinLIB.model.v2.ResultGraph.*
 import tinLIB.model.v2.graph.*
 
-class DlResultGraph : ResultGraph<DlResultNode, DlResultEdge>() {
+class DlResultGraph(
+    val shortFormProvider: ShortFormProvider
+) : ResultGraph<DlResultNode, DlResultEdge>() {
     override var nodes: ResultNodeSet<DlResultNode> = DlResultNodeSet()
     override var edges: ResultEdgeSet<DlResultEdge> = DlResultEdgeSet()
     override var alphabet: Alphabet = Alphabet();
+
+    val individualFactory = DlResultGraphIndividualFactory(shortFormProvider)
 
     override fun addEdge(edge: DlResultEdge) : Boolean {
         if (nodes.containsWithoutState(edge.source as DlResultNode) && nodes.containsWithoutState(edge.target as DlResultNode) ) {
@@ -27,14 +32,14 @@ class DlResultGraph : ResultGraph<DlResultNode, DlResultEdge>() {
 
     fun getInitialNodes(individual: OWLNamedIndividual) : List<Node> {
         return this.nodes.filter {
-            it.individual == DlResultGraphIndividual(individual)
+            it.individual == individualFactory.fromOWLNamedIndividual(individual)
                     && it.isInitialState;
         };
     }
 
     fun getFinalNodes(individual: OWLNamedIndividual) : List<Node> {
         return this.nodes.filter {
-            it.individual == DlResultGraphIndividual(individual)
+            it.individual == individualFactory.fromOWLNamedIndividual(individual)
                     && it.isFinalState;
         };
     }
