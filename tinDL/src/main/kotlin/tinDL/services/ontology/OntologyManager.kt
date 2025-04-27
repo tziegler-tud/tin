@@ -70,6 +70,15 @@ class OntologyManager(val file: File) {
             if(it.isTopEntity) return@forEach
             roleNames.add(shortFormProvider.getShortForm(it))
         }
+
+        val ontologyInfo = getOntologyInfo();
+        println("Successfully loaded ontology: ${ontologyInfo.ontologyName}")
+        println("Class count: ${ontologyInfo.classCount}")
+        println("Role count: ${ontologyInfo.roleCount}")
+        println("Individual count: ${ontologyInfo.individualCount}")
+
+
+
     }
 
     fun getOntology(): OWLOntology {
