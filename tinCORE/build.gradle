@@ -46,21 +46,11 @@ dependencies {
 
 }
 
-
-
-tasks.withType(JavaCompile).configureEach {
-    options.encoding = 'UTF-8'
-}
-
 tasks.withType(Test).configureEach {
+    useJUnitPlatform()
     testLogging {
-        events "passed", "skipped", "failed"
+        events("passed", "skipped", "failed")
     }
-}
-
-tasks.withType(KotlinCompile).configureEach {
-    kotlinOptions {
-        jvmTarget = '17' // Use Java 17 instead of 15
-//        freeCompilerArgs = ['-Xjsr305=strict']
-    }
+    minHeapSize = "8000m"
+    maxHeapSize = "16000m"
 }
