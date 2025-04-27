@@ -33,8 +33,9 @@ class ELHIResultGraphBuilder(
                             );
                             val cost = spTable.get(entry);
                             if (cost != null) {
-                                val sourceNode = DlResultNode(queryNode, transducerNode, individual);
-                                val targetNode = DlResultNode(targetQueryNode, targetTransducerNode, individual);
+                                val dlIndividual = individualFactory.fromOWLNamedIndividual(individual);
+                                val sourceNode = DlResultNode(queryNode, transducerNode, dlIndividual);
+                                val targetNode = DlResultNode(targetQueryNode, targetTransducerNode, dlIndividual);
                                 val edge = DlResultEdge(sourceNode, targetNode, cost)
                                 resultGraph.addEdge(edge);
                             }

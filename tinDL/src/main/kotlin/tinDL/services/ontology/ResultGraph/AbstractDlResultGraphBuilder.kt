@@ -15,6 +15,8 @@ abstract class AbstractDlResultGraphBuilder(
 
     ) : AbstractResultGraphBuilder<DlResultNode, DlResultEdge>(queryGraph, transducerGraph) {
 
+    val individualFactory = DlResultGraphIndividualFactory(ec.shortFormProvider)
+
 
     fun getStats(resultGraph: DlResultGraph) : TaskProcessingResultBuilderStats {
         return TaskProcessingResultBuilderStats(
@@ -42,19 +44,20 @@ abstract class AbstractDlResultGraphBuilder(
     }
 
     override fun constructRestrictedGraph(): DlResultGraph {
-        val graph = DlResultGraph();
+        val graph = DlResultGraph(ec.shortFormProvider);
         //construct nodes
         queryGraph.nodes.forEach { queryNode ->
             transducerGraph.nodes.forEach { transducerNode: Node ->
 
                 ec.forEachIndividual { individual ->
-                    val node = DlResultNode(queryNode, transducerNode, individual);
+                    val dlIndividual = individualFactory.fromOWLNamedIndividual(individual)
+                    val node = DlResultNode(queryNode, transducerNode, dlIndividual)
                     graph.addNode(node)
 
                     queryGraph.nodes.forEach { targetQueryNode ->
                         transducerGraph.nodes.forEach transducerTarget@ { targetTransducerNode: Node ->
 
-                            var targetNodeSelf = DlResultNode(targetQueryNode, targetTransducerNode, individual);
+                            var targetNodeSelf = DlResultNode(targetQueryNode, targetTransducerNode, dlIndividual);
                             graph.addNode(targetNodeSelf)
 
                             //find edges where ind = ind and v = A?
@@ -104,7 +107,8 @@ abstract class AbstractDlResultGraphBuilder(
 
                                 for (individualNode in connectedIndividuals) {
                                     val targetIndividual = individualNode.representativeElement
-                                    val targetNode = DlResultNode(targetQueryNode, targetTransducerNode, targetIndividual);
+                                    val dlTargetIndividual = individualFactory.fromOWLNamedIndividual(targetIndividual)
+                                    val targetNode = DlResultNode(targetQueryNode, targetTransducerNode, dlTargetIndividual);
                                     graph.addNode(targetNode)
                                     graph.addEdge(node, targetNode, transducerEdge.label.cost);
                                 }

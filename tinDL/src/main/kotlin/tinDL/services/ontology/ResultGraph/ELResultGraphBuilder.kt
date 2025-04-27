@@ -59,8 +59,9 @@ class ELResultGraphBuilder(
                             }
 
                             if (minimumCost != null) {
-                                val sourceNode = DlResultNode(queryNode, transducerNode, individual );
-                                val targetNode = DlResultNode(targetQueryNode, targetTransducerNode, individual);
+                                val dlIndividual = individualFactory.fromOWLNamedIndividual(individual)
+                                val sourceNode = DlResultNode(queryNode, transducerNode, dlIndividual );
+                                val targetNode = DlResultNode(targetQueryNode, targetTransducerNode, dlIndividual);
                                 val edge = DlResultEdge(sourceNode, targetNode, minimumCost)
                                 resultGraph.addEdge(edge);
                             }
