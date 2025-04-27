@@ -19,7 +19,7 @@ import tinDL.model.v2.ResultGraph.DlResultNode
 import tinDL.services.ontology.ResultGraph.ELResultGraphBuilder
 import tinDL.services.ontology.ResultGraph.ELHIResultGraphBuilder
 
-import tinDL.model.v2.ResultGraph.DlResultGraphIndividual
+import tinDL.model.v2.ResultGraph.DlResultGraphIndividualFactory
 import tinDL.services.ontology.ResultGraph.TaskProcessingResultBuilderStats
 
 import tinLIB.model.v2.query.QueryGraph
@@ -140,6 +140,8 @@ class DlTaskProcessor(
             }
         }
 
+        val individualFactory = DlResultGraphIndividualFactory(ec.shortFormProvider);
+
         val dijkstraSolver = DijkstraSolver(resultGraph)
 
 
@@ -153,7 +155,7 @@ class DlTaskProcessor(
                 val n = compConfig.maxCost ?: throw Error("Invalid arguments given for computation mode 'Entailment': Maximum cost not given")
 
                 solverStartTime = timeSource.markNow()
-                val shortestPathResult = dijkstraSolver.getShortestPath(DlResultGraphIndividual(a),DlResultGraphIndividual(b));
+                val shortestPathResult = dijkstraSolver.getShortestPath(individualFactory.fromOWLNamedIndividual(a),individualFactory.fromOWLNamedIndividual(b));
                 solverEndTime = timeSource.markNow()
                 if(shortestPathResult == null) {
                     //no path exists
@@ -170,7 +172,7 @@ class DlTaskProcessor(
                 val b = getIndividual(compConfig.individualNameB)
 
                 solverStartTime = timeSource.markNow()
-                val shortestPathResult = dijkstraSolver.getShortestPath(DlResultGraphIndividual(a),DlResultGraphIndividual(b));
+                val shortestPathResult = dijkstraSolver.getShortestPath(individualFactory.fromOWLNamedIndividual(a),individualFactory.fromOWLNamedIndividual(b));
                 solverEndTime = timeSource.markNow()
 
                 if(shortestPathResult == null) {
