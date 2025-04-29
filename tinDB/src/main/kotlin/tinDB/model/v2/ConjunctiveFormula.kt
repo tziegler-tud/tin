@@ -1,4 +1,4 @@
-package tin.model
+package tinDB.model.v2
 
 class ConjunctiveFormula(
     val existentiallyQuantifiedVariables: MutableSet<String>,

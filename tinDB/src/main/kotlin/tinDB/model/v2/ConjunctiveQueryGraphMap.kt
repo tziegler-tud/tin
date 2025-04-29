@@ -1,6 +1,7 @@
-package tin.model
+package tinDB.model.v2
 
-import tin.model.query.QueryGraph
+import tinLIB.model.v2.query.QueryGraph
+
 
 class ConjunctiveQueryGraphMap(
     private var graphs: MutableMap<String, QueryGraph>
