@@ -1,13 +1,13 @@
 package tinLIB.model.v2.graph
 
-import tinLIB.model.v1.alphabet.Alphabet
+import tinLIB.model.v2.alphabet.Alphabet
 
-abstract class AbstractGraph : Graph {
+abstract class AbstractGraph<T: Node, E: Edge> : Graph<T,E> {
 
     companion object {
         fun isValidGraph(graphLikeObject: Any?): Boolean {
             //must be a Graph
-            if (graphLikeObject !is Graph){
+            if (graphLikeObject !is Graph<*,*>){
                 return false;
             }
             //at least one initial node and one final node
@@ -15,22 +15,22 @@ abstract class AbstractGraph : Graph {
         }
     }
 
-    abstract override val nodes: NodeSet;
-    abstract override val edges: EdgeSet<out Edge>
+    abstract override val nodes: NodeSet<T>;
+    abstract override val edges: EdgeSet<out E>
     abstract override var alphabet: Alphabet;
 
-    override fun addNode(node: Node) : Boolean {
+    override fun addNode(node: T) : Boolean {
         return nodes.add(node);
     }
 
-    override fun addNodes(vararg n: Node) : Boolean {
+    override fun addNodes(vararg n: T) : Boolean {
         val list = listOf(*n);
         var allInserted = true
         list.forEach { allInserted = allInserted && addNode(it) }
         return allInserted;
     }
 
-    override fun getNode(identifier: String) : Node? {
+    override fun getNode(identifier: String) : T? {
         return nodes.get(identifier)
     }
 
@@ -38,47 +38,49 @@ abstract class AbstractGraph : Graph {
         return nodes.find { it.identifier == identifier } != null
     }
 
-    override fun containsNode(node: Node) : Boolean {
+    override fun containsNode(node: T) : Boolean {
         return nodes.contains(node)
     }
 
-    override fun containsEdge(edge: Edge) : Boolean {
+    override fun containsEdge(edge: E) : Boolean {
         return edges.contains(edge)
     }
 
-    override fun getEdgesWithSource(source: Node): List<Edge> {
+    override fun getEdgesWithSource(source: T): List<E> {
         return edges.filterForSource(source);
     }
 
-    override fun getEdgesWithTarget(target: Node): List<Edge> {
+    override fun getEdgesWithTarget(target: T): List<E> {
         return edges.filterForTarget(target);
     }
 
-    override fun getEdgesWithSourceAndTarget(source: Node, target: Node): List<Edge> {
+    override fun getEdgesWithSourceAndTarget(source: T, target: T): List<E> {
         return edges.filterForSourceAndTarget(source, target);
     }
 
-    override fun getEdgesWithLabel(label: EdgeLabel): List<Edge> {
+    override fun getEdgesWithLabel(label: EdgeLabel): List<E> {
         return edges.filterForLabel(label);
     }
 
-    override fun getInitialNodes() : List<Node> {
+    override fun getInitialNodes() : List<T> {
         return this.nodes.filter { it.isInitialState };
     }
 
-    override fun getFinalNodes(): List<Node> {
+    override fun getFinalNodes(): List<T> {
         return this.nodes.filter { it.isFinalState };
     }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
-        if (other !is Graph) return false
+        if (other !is Graph<*,*>) return false
+
+        @Suppress("UNCHECKED_CAST")
+        other as Graph<T, E>
 
         return hasEqualNodes(other) && hasEqualEdges(other) && (alphabet == other.alphabet)
-
     }
 
-    fun hasEqualNodes(other: Graph) : Boolean {
+    fun hasEqualNodes(other: Graph<T,E>) : Boolean {
         if (nodes.count() != other.nodes.count()) return false
         nodes.forEach {
             val node = other.getNode(it.identifier);
@@ -89,7 +91,7 @@ abstract class AbstractGraph : Graph {
         return true;
     }
 
-    fun hasEqualEdges(other: Graph) : Boolean {
+    fun hasEqualEdges(other: Graph<T,E>) : Boolean {
         if (edges.count() != other.edges.count()) return false
         edges.forEach {
             if (!other.containsEdge(it)) {
@@ -126,5 +128,5 @@ abstract class AbstractGraph : Graph {
             edge.print();
         }
     }
-    abstract override fun addEdge(edge: Edge) : Boolean;
+    abstract override fun addEdge(edge: E) : Boolean;
 }

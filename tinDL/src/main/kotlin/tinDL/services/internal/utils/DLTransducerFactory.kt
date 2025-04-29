@@ -1,9 +1,9 @@
 package tinDL.services.internal.utils
 
-import tinDL.model.v1.alphabet.Alphabet
-import tinDL.model.v2.graph.Node
-import tinDL.model.v2.query.QueryGraph
-import tinDL.model.v2.transducer.TransducerGraph
+import tinLIB.model.v2.alphabet.Alphabet
+import tinLIB.model.v2.graph.Node
+import tinLIB.model.v2.query.QueryGraph
+import tinLIB.model.v2.transducer.TransducerGraph
 import tinDL.services.ontology.OntologyExecutionContext.ExecutionContext
 import kotlin.random.Random
 
@@ -64,17 +64,7 @@ class DLTransducerFactory {
             //as we assume some similarities between the alphabets, we cache our results locally and try to reuse them
             val simpleDist = 1
 
-            val queryAlphabet = Alphabet();
-
-            for (edge in queryGraph.edges) {
-                val edgeLabel = edge.label.label
-                val string = edgeLabel.getLabel();
-                if (edgeLabel.isConceptAssertion()) {
-                    queryAlphabet.addConceptName(string)
-                } else {
-                    queryAlphabet.addRoleName(string)
-                }
-            }
+            val queryAlphabet = queryGraph.generateAlphabet()
 
             val queryConcepts = queryAlphabet.getConceptNames();
             val queryRoles = queryAlphabet.getRoleNames();

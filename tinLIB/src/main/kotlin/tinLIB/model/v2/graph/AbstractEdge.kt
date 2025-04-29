@@ -2,7 +2,6 @@ package tinLIB.model.v2.graph
 
 import tinLIB.model.v2.genericGraph.GenericEdge
 import tinLIB.model.v2.query.QueryEdge
-import tinLIB.model.v2.query.QueryEdgeLabel
 import tinLIB.model.v2.transducer.TransducerEdge
 
 abstract class AbstractEdge(
@@ -27,10 +26,6 @@ abstract class AbstractEdge(
     override fun asTransducerEdge(): TransducerEdge? {
         return null;
     }
-
-//    override fun asResultEdge(): ResultEdge? {
-//        return null;
-//    }
 
     override fun toString(): String {
         return "(${source.identifier}) - [${label}] - (${target.identifier})";

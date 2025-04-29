@@ -23,6 +23,13 @@ open class Node(
             isFinalState == other.isFinalState;
     }
 
+    open fun equalsWithoutState(other: Any): Boolean {
+        if (this === other) return true
+        if (other !is Node) return false
+
+        return identifier == other.identifier
+    }
+
     override fun hashCode(): Int {
         var result = identifier.hashCode()
         result = 31 * result + isInitialState.hashCode()

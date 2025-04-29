@@ -1,10 +1,10 @@
 package tinLIB.model.v2.transducer
 
-import tinLIB.model.v1.alphabet.Alphabet
+import tinLIB.model.v2.alphabet.Alphabet
 import tinLIB.model.v2.graph.*
 
-class TransducerGraph() : AbstractGraph() {
-    override val nodes: NodeSet = NodeSet()
+class TransducerGraph() : AbstractGraph<Node, TransducerEdge>() {
+    override val nodes: NodeSet<Node> = NodeSet()
     override val edges: TransducerEdgeSet = TransducerEdgeSet()
 
     override var alphabet: Alphabet = Alphabet();
@@ -17,7 +17,7 @@ class TransducerGraph() : AbstractGraph() {
         return addEdge(TransducerEdge(source, target, incoming, outgoing, cost))
     }
 
-    override fun addEdge(edge: Edge) : Boolean {
+    override fun addEdge(edge: TransducerEdge) : Boolean {
         if (!nodes.contains(edge.source)) {
             nodes.add(edge.source)
         }
@@ -27,7 +27,7 @@ class TransducerGraph() : AbstractGraph() {
         return edges.add(edge.asTransducerEdge()!!);
     }
 
-    override fun containsEdge(edge: Edge) : Boolean {
+    override fun containsEdge(edge: TransducerEdge) : Boolean {
         val e = edge.asTransducerEdge() ?: return false;
         return edges.contains(e)
     }

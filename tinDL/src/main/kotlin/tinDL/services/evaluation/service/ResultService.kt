@@ -1,6 +1,5 @@
 package tinDL.services.evaluation.service
 
-import kotlinx.serialization.Serializable
 import tinDL.services.evaluation.data.RunResult
 import java.util.Date
 import kotlin.uuid.ExperimentalUuidApi

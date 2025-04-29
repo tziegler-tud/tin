@@ -15,7 +15,7 @@ import org.semanticweb.HermiT.ReasonerFactory as HermitReasonerFactory
 import org.semanticweb.owlapi.model.parameters.Imports
 import org.semanticweb.owlapi.util.ShortFormProvider
 import org.semanticweb.owlapi.util.SimpleShortFormProvider
-import tinDL.model.v1.alphabet.Alphabet
+import tinLIB.model.v2.alphabet.Alphabet
 import tinDL.services.ontology.Expressions.DLExpressionBuilder
 import tinDL.services.ontology.OntologyExecutionContext.EL.ELExecutionContext
 import tinDL.services.ontology.OntologyExecutionContext.ELHI.ELHIExecutionContext
@@ -70,6 +70,15 @@ class OntologyManager(val file: File) {
             if(it.isTopEntity) return@forEach
             roleNames.add(shortFormProvider.getShortForm(it))
         }
+
+        val ontologyInfo = getOntologyInfo();
+        println("Successfully loaded ontology: ${ontologyInfo.ontologyName}")
+        println("Class count: ${ontologyInfo.classCount}")
+        println("Role count: ${ontologyInfo.roleCount}")
+        println("Individual count: ${ontologyInfo.individualCount}")
+
+
+
     }
 
     fun getOntology(): OWLOntology {

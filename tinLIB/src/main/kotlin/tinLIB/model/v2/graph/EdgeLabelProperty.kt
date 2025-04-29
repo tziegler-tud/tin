@@ -1,6 +1,6 @@
 package tinLIB.model.v2.graph
 
-import tinLIB.model.v1.alphabet.Alphabet
+import tinLIB.model.v2.alphabet.Alphabet
 
 class EdgeLabelProperty(
     private var label: String,

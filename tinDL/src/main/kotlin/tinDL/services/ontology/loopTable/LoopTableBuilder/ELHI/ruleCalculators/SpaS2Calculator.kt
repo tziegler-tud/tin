@@ -1,10 +1,9 @@
 package tinDL.services.ontology.loopTable.LoopTableBuilder.ELHI.ruleCalculators
 
 import org.semanticweb.owlapi.model.OWLClass
-import tinDL.model.v2.query.QueryGraph
-import tinDL.model.v2.query.QueryEdgeLabel
-import tinDL.model.v2.transducer.TransducerEdge
-import tinDL.model.v2.transducer.TransducerGraph
+import tinLIB.model.v2.query.QueryGraph
+import tinLIB.model.v2.query.QueryEdgeLabel
+import tinLIB.model.v2.transducer.TransducerGraph
 import tinDL.services.ontology.OntologyExecutionContext.ELHI.ELHIExecutionContext
 import tinDL.services.ontology.OntologyManager
 import tinDL.services.ontology.Reasoner.SimpleDLReasoner
