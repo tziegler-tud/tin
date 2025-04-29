@@ -1,4 +1,4 @@
-package tin.services.internal.queryAnswering.conjunctiveUtils
+package tinDB.services.internal.queryAnswering.conjunctiveUtils
 
 data class VariableMappingContainer(
     var cost: Double,
