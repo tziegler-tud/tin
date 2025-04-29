@@ -7,6 +7,7 @@ import tinLIB.model.v2.transducer.TransducerGraph
 import tinDL.services.ontology.OntologyExecutionContext.ExecutionContext
 import tinLIB.model.v2.graph.Node
 import tinLIB.services.ontology.ResultGraph.AbstractResultGraphBuilder
+import tinLIB.services.ontology.ResultGraph.ResultGraphBuilderStats
 
 abstract class AbstractDlResultGraphBuilder(
     private val ec: ExecutionContext,
@@ -18,8 +19,8 @@ abstract class AbstractDlResultGraphBuilder(
     val individualFactory = DlResultGraphIndividualFactory(ec.shortFormProvider)
 
 
-    fun getStats(resultGraph: DlResultGraph) : TaskProcessingResultBuilderStats {
-        return TaskProcessingResultBuilderStats(
+    fun getStats(resultGraph: DlResultGraph) : ResultGraphBuilderStats {
+        return ResultGraphBuilderStats(
             resultGraph.nodes.size,
             resultGraph.edges.size,
             resultGraph.edges.maxOf { it.label.cost },

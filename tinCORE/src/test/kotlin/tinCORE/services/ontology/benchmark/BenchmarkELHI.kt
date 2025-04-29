@@ -20,10 +20,10 @@ import tinDL.services.internal.utils.RandomQueryFactory
 import tinDL.services.ontology.OntologyExecutionContext.ExecutionContextType
 import tinDL.services.ontology.OntologyManager
 import tinDL.services.ontology.ResultGraph.ELHIResultGraphBuilder
-import tinDL.services.ontology.ResultGraph.TaskProcessingResultBuilderStats
 import tinLIB.services.ResultGraph.FloydWarshallSolver
 import tinDL.services.ontology.loopTable.LoopTableBuilder.ELHI.ELHISPALoopTableBuilder
 import tinDL.services.ontology.loopTable.LoopTableBuilder.ELHI.ELHISPLoopTableBuilder
+import tinLIB.services.ontology.ResultGraph.ResultGraphBuilderStats
 
 import java.io.File
 import kotlin.time.Duration
@@ -151,7 +151,7 @@ class BenchmarkELHI {
             val reasonerStats = TaskProcessingReasonerStats(stats)
             val spa = TaskProcessingSpaBuilderStats(builder.statsTotalIterations, builder.getSize(), builder.statsMaxPossibleSize)
             val sp = TaskProcessingSpBuilderStats(spBuilder.statsTotalSize, spBuilder.getSize())
-            val resultStats = TaskProcessingResultBuilderStats(resultGraph.nodes.size, resultGraph.edges.size, resultGraphBuilder.maxEdgeCost, resultGraphBuilder.minEdgeCost, resultGraphBuilder.unreachableNodesAmount)
+            val resultStats = ResultGraphBuilderStats(resultGraph.nodes.size, resultGraph.edges.size, resultGraphBuilder.maxEdgeCost, resultGraphBuilder.minEdgeCost, resultGraphBuilder.unreachableNodesAmount)
             val benchmarkResult = TaskProcessingBenchmarkResult(times, reasonerStats, spa, sp, resultStats)
             results.add(benchmarkResult);
 

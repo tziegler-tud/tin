@@ -20,13 +20,13 @@ import tinDL.services.ontology.ResultGraph.ELResultGraphBuilder
 import tinDL.services.ontology.ResultGraph.ELHIResultGraphBuilder
 
 import tinDL.model.v2.ResultGraph.DlResultGraphIndividualFactory
-import tinDL.services.ontology.ResultGraph.TaskProcessingResultBuilderStats
 
 import tinLIB.model.v2.query.QueryGraph
 import tinLIB.model.v2.transducer.TransducerGraph
 import tinLIB.services.ResultGraph.DijkstraSolver
 import tinLIB.services.ResultGraph.FloydWarshallSolver
 import tinLIB.services.ResultGraph.ShortestPathResult
+import tinLIB.services.ontology.ResultGraph.ResultGraphBuilderStats
 
 import kotlin.time.TimeSource
 
@@ -77,7 +77,7 @@ class DlTaskProcessor(
 
         val spaBuilderStats: TaskProcessingSpaBuilderStats
         val spBuilderStats: TaskProcessingSpBuilderStats
-        val resultBuilderStats: TaskProcessingResultBuilderStats
+        val resultBuilderStats: ResultGraphBuilderStats
 
         var results: List<ShortestPathResult<DlResultNode>> = listOf()
 
@@ -106,7 +106,7 @@ class DlTaskProcessor(
 
                 spaBuilderStats = TaskProcessingSpaBuilderStats(spaBuilder.statsTotalIterations, spaBuilder.statsTotalSize, spaBuilder.statsMaxPossibleSize)
                 spBuilderStats = TaskProcessingSpBuilderStats(spBuilder.statsTotalSize, spBuilder.statsMaxPossibleSize)
-                resultBuilderStats = TaskProcessingResultBuilderStats(resultGraph.nodes.size, resultGraph.edges.size, 0, 0, 0)
+                resultBuilderStats = ResultGraphBuilderStats(resultGraph.nodes.size, resultGraph.edges.size, 0, 0, 0)
 
             }
             OntologyVariant.ELHI -> {
@@ -130,7 +130,7 @@ class DlTaskProcessor(
 
                 spaBuilderStats = TaskProcessingSpaBuilderStats(spaBuilder.statsTotalIterations, spaBuilder.statsTotalSize, spaBuilder.statsMaxPossibleSize)
                 spBuilderStats = TaskProcessingSpBuilderStats(spBuilder.statsTotalSize, spBuilder.statsMaxPossibleSize)
-                resultBuilderStats = TaskProcessingResultBuilderStats(resultGraph.nodes.size, resultGraph.edges.size, 0, 0, 0)
+                resultBuilderStats = ResultGraphBuilderStats(resultGraph.nodes.size, resultGraph.edges.size, 0, 0, 0)
 
 
             }
