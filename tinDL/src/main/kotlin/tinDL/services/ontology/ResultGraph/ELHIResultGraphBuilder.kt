@@ -7,6 +7,7 @@ import tinLIB.model.v2.transducer.TransducerGraph
 import tinDL.services.ontology.OntologyExecutionContext.ELHI.ELHIExecutionContext
 import tinDL.services.ontology.loopTable.LoopTable.ELHI.ELHISPLoopTable
 import tinDL.services.ontology.loopTable.loopTableEntry.IndividualLoopTableEntry
+import tinLIB.model.v2.ResultGraph.ResultGraph
 import tinLIB.model.v2.graph.Node
 import tinLIB.services.ontology.ResultGraph.AbstractResultGraphBuilder
 
