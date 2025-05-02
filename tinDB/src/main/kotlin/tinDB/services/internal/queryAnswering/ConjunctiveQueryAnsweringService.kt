@@ -4,8 +4,9 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import tinDB.data.internal.ConjunctiveComputationStatisticsData
-import tinDB.model.v1.dataProvider.ConjunctiveQueryDataProvider
-import tinDB.model.v1.dataProvider.RegularPathQueryDataProvider
+import tinDB.model.v2.dataProvider.ConjunctiveQueryDataProvider
+import tinDB.model.v2.dataProvider.RegularPathQueryDataProvider
+
 import tinDB.model.v1.productAutomaton.ProductAutomatonGraph
 import tinDB.model.v1.queryResult.computationStatistics.ConjunctiveComputationStatistics
 import tinDB.model.v1.queryResult.computationStatistics.RegularPathComputationStatistics
@@ -21,6 +22,7 @@ import tinDB.model.v1.utils.ProductAutomatonTuple
 import tinDB.model.v1.queryResult.QueryResultRepository
 import tinDB.model.v1.queryResult.QueryResultStatus
 import tinDB.model.v1.queryResult.RegularPathQueryResult
+
 import tinDB.services.internal.ProductAutomatonService
 import tinDB.services.internal.dijkstra.DijkstraQueryAnsweringUtils
 import tinDB.services.internal.dijkstra.algorithms.Dijkstra

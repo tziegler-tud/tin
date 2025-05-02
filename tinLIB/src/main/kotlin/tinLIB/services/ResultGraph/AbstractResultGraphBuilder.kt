@@ -24,7 +24,7 @@ abstract class AbstractResultGraphBuilder<T: ResultNode, E: ResultEdge>(
      * construct product graph restricted to nodes (s,t, a) a € Ind(A)
      *
      */
-    abstract fun constructRestrictedGraph(): ResultGraph<T,E>
+//    abstract fun constructResultGraph(): ResultGraph<T,E>
 
     fun getCandidateEdges(querySource: Node, queryTarget: Node, transducerSource: Node, transducerTarget: Node, requireConceptAssertion: Boolean): Pair<List<QueryEdge>, List<TransducerEdge>>? {
         var candidateQueryEdges = queryGraph.getEdgesWithSourceAndTarget(querySource, queryTarget);
