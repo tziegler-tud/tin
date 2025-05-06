@@ -1,8 +1,8 @@
 package tinDB.model.v1.dataProvider
 
-import tinDB.model.alphabet.Alphabet
-import tinDB.model.database.DatabaseGraph
+import tinDB.model.v1.database.DatabaseGraph
 import tinDB.model.v1.transducer.TransducerGraph
+import tinLIB.model.v2.alphabet.Alphabet
 
 abstract class DataProvider (
     var alphabet: Alphabet = Alphabet(),

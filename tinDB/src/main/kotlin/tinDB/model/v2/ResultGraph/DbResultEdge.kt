@@ -6,7 +6,7 @@ import tinLIB.model.v2.ResultGraph.ResultEdgeLabel
 class DbResultEdge(
     override val source: DbResultNode,
     override val target: DbResultNode,
-    override val label: ResultEdgeLabel
+    override val label: DbResultEdgeLabel
 ): ResultEdge(
     source,
     target,

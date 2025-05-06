@@ -61,6 +61,10 @@ class EdgeLabelProperty(
         return epsilon;
     }
 
+    fun isRole(): Boolean {
+        return !conceptAssertion && !empty && !epsilon;
+    }
+
     fun getInverseAsNewProperty(): EdgeLabelProperty {
         if(isConceptAssertion()) EdgeLabelProperty(label, inverse = false, conceptAssertion = true, empty = empty);
         return EdgeLabelProperty(label, !inverse, conceptAssertion, empty);

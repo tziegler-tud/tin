@@ -1138,10 +1138,10 @@ class ProductAutomatonService() {
         return "epsilon"
     }
 }
-
-data class InitialFinalStateWrapper(
-    val sourceInitialState: Boolean,
-    val sourceFinalState: Boolean,
-    val targetInitialState: Boolean,
-    val targetFinalState: Boolean
-)
+//
+//data class InitialFinalStateWrapper(
+//    val sourceInitialState: Boolean,
+//    val sourceFinalState: Boolean,
+//    val targetInitialState: Boolean,
+//    val targetFinalState: Boolean
+//)

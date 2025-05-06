@@ -10,6 +10,8 @@ class DbResultNode(
 ) : ResultNode(queryNode, transducerNode, individual)
 
 {
+    constructor(queryNode: Node, transducerNode: Node, databaseNode: Node ): this(queryNode, transducerNode, DbResultGraphIndividual(databaseNode))
+
     override var isInitialState: Boolean = queryNode.isInitialState && transducerNode.isInitialState
     override var isFinalState: Boolean = queryNode.isFinalState && transducerNode.isFinalState;
 

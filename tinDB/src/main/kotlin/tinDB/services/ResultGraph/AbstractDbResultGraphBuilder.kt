@@ -8,6 +8,8 @@ import tinDB.model.v2.ResultGraph.DbResultNode
 import tinLIB.model.v2.query.QueryGraph
 import tinLIB.model.v2.transducer.TransducerGraph
 import tinLIB.model.v2.graph.Node
+import tinLIB.model.v2.query.QueryEdge
+import tinLIB.model.v2.transducer.TransducerEdge
 import tinLIB.services.ontology.ResultGraph.AbstractResultGraphBuilder
 import tinLIB.services.ontology.ResultGraph.ResultGraphBuilderStats
 
