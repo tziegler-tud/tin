@@ -1,4 +1,4 @@
-package tinDB.model.v1.productAutomaton
+package tinDB.model.v2.productAutomaton
 
 enum class ProductAutomatonEdgeType {
     // type 1: incoming epsilon edges

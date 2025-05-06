@@ -3,8 +3,8 @@ package tinDB.model.v2.DatabaseGraph
 import tinLIB.model.v2.alphabet.Alphabet
 import tinLIB.model.v2.graph.*
 
-class DatabaseGraph : AbstractGraph<Node, DatabaseEdge>() {
-    override var nodes: NodeSet<Node> = NodeSet()
+class DatabaseGraph : AbstractGraph<DatabaseNode, DatabaseEdge>() {
+    override var nodes: NodeSet<DatabaseNode> = NodeSet()
     override var edges = DatabaseEdgeSet()
     override var alphabet: Alphabet = Alphabet();
 

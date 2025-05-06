@@ -9,12 +9,12 @@ import tinLIB.model.v2.transducer.TransducerEdge
 
 
 class DatabaseEdge (
-    override val source: Node,
-    override val target: Node,
+    override val source: DatabaseNode,
+    override val target: DatabaseNode,
     override val label: DatabaseEdgeLabel
 ) : AbstractEdge(source, target, label) {
 
-    constructor(source: Node, target: Node, stringLabel: String) : this(source, target, DatabaseEdgeLabel(EdgeLabelProperty.fromString(stringLabel)))
+    constructor(source: DatabaseNode, target: DatabaseNode, stringLabel: String) : this(source, target, DatabaseEdgeLabel(EdgeLabelProperty.fromString(stringLabel)))
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
