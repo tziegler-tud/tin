@@ -80,6 +80,9 @@ class EdgeLabelProperty(
 
     fun matches(other: EdgeLabelProperty): Boolean {
         if(other.empty)  return empty
+        /**
+         * TODO: Check how to handle epsilon labels in this situation
+         */
         if(other.isEpsilonLabel()) return epsilon
 
         //label must match,
