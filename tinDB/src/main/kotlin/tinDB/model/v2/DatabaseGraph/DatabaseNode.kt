@@ -17,4 +17,7 @@ class DatabaseNode(
     fun addProperty(prop: DatabaseProperty): Boolean {
         return properties.add(prop);
     }
+    fun addProperty(string: String): Boolean {
+        return properties.add(DatabaseProperty(string));
+    }
 }
