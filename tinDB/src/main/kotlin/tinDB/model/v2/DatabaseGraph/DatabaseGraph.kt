@@ -22,26 +22,38 @@ class DatabaseGraph : AbstractGraph<DatabaseNode, DatabaseEdge>() {
         return edges.add(edge);
     }
 
-    fun addEdge(source: Node, target: Node, label: DatabaseEdgeLabel) : Boolean {
+    fun addEdge(source: DatabaseNode, target: DatabaseNode, label: DatabaseEdgeLabel) : Boolean {
         return addEdge(DatabaseEdge(source, target, label));
     }
-    fun addEdge(source: Node, target: Node, stringLabel: String) : Boolean {
+    fun addEdge(source: DatabaseNode, target: DatabaseNode, stringLabel: String) : Boolean {
         return addEdge(DatabaseEdge(source, target, stringLabel));
+    }
+
+    fun addNodeProperty(node: DatabaseNode, property: DatabaseProperty): Boolean {
+        val n = getNode(node.identifier)
+        if(n != null) {
+            return node.addProperty(property)
+        }
+        else return false
+    }
+
+    fun addNodeProperty(node: DatabaseNode, property: String) : Boolean {
+        return addNodeProperty(node, DatabaseProperty(property))
     }
 
     override fun containsEdge(edge: DatabaseEdge) : Boolean {
         return edges.contains(edge)
     }
 
-    override fun getEdgesWithSource(source: Node): List<DatabaseEdge> {
+    override fun getEdgesWithSource(source: DatabaseNode): List<DatabaseEdge> {
         return edges.filterForSource(source);
     }
 
-    override fun getEdgesWithTarget(target: Node): List<DatabaseEdge> {
+    override fun getEdgesWithTarget(target: DatabaseNode): List<DatabaseEdge> {
         return edges.filterForTarget(target);
     }
 
-    override fun getEdgesWithSourceAndTarget(source: Node, target: Node): List<DatabaseEdge> {
+    override fun getEdgesWithSourceAndTarget(source: DatabaseNode, target: DatabaseNode): List<DatabaseEdge> {
         return edges.filterForSourceAndTarget(source, target);
     }
 
@@ -70,4 +82,5 @@ class DatabaseGraph : AbstractGraph<DatabaseNode, DatabaseEdge>() {
         alphabet = al;
         return al;
     }
+
 }
