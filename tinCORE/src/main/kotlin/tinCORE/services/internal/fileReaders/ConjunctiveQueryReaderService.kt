@@ -1,38 +1,40 @@
-package tinDB.services.internal.fileReaders
+package tinCORE.services.internal.fileReaders
 
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
-import tinDB.model.ConjunctTriplet
-import tinDB.model.ConjunctiveFormula
-import tinDB.model.alphabet.Alphabet
-import tinDB.model.v1.query.QueryGraph
-import tinDB.model.v1.query.QueryNode
-import tinDB.model.ConjunctiveQueryGraphMap
-import tinDB.services.internal.fileReaders.fileReaderResult.ConjunctiveQueryFileReaderResult
-import tinDB.services.technical.SystemConfigurationService
+import tinCORE.services.internal.fileReaders.fileReaderResult.ConjunctiveQueryFileReaderResult
+import tinDB.model.v2.ConjunctTriplet
+import tinDB.model.v2.ConjunctiveFormula
+
+import tinDB.model.v2.ConjunctiveQueryGraphMap
+import tinLIB.model.v2.alphabet.Alphabet
+import tinLIB.model.v2.graph.Node
+import tinLIB.model.v2.query.QueryGraph
 import java.io.BufferedReader
 import java.io.File
 import java.lang.Exception
 import java.util.HashMap
 
 @Service
-class ConjunctiveQueryReaderService(
-    systemConfigurationService: SystemConfigurationService,
-
-    ) : FileReaderService<ConjunctiveQueryFileReaderResult>(systemConfigurationService) {
+class ConjunctiveQueryReaderService @Autowired constructor(
+    systemConfigurationService: tinCORE.services.technical.SystemConfigurationService
+) : FileReaderService<ConjunctiveQueryFileReaderResult>(
+    systemConfigurationService
+) {
     override var filePath = systemConfigurationService.getConjunctiveQueryPath()
     override var inputFileMaxLines: Int = systemConfigurationService.getQuerySizeLimit()
 
     override fun processFile(file: File, breakOnError: Boolean): ConjunctiveQueryFileReaderResult {
         val conjunctiveQueryGraphMap = ConjunctiveQueryGraphMap(mutableMapOf())
         var queryGraph = QueryGraph()
-        val queryNodes = HashMap<String, QueryNode>() // map containing the QueryNodes
+        val queryNodes = HashMap<String, Node>() // map containing the QueryNodes
         var alphabet = Alphabet()
         var graphIdentifier: String? = null
         var formula: ConjunctiveFormula? = null
 
-        var source: QueryNode
-        var target: QueryNode
-        var node: QueryNode
+        var source: Node
+        var target: Node
+        var node: Node
         var edgeLabel: String
         var stringArray: Array<String>
 
@@ -109,12 +111,12 @@ class ConjunctiveQueryReaderService(
                         currentLine = currentLine.replace("\\s".toRegex(), "")
                         stringArray = currentLine.split(",").toTypedArray()
 
-                        node = QueryNode(stringArray[0], stringArray[1].toBoolean(), stringArray[2].toBoolean())
+                        node = Node(stringArray[0], stringArray[1].toBoolean(), stringArray[2].toBoolean())
 
                         val existingNode = queryNodes[stringArray[0]]
                         if (existingNode != null) {
                             //node identifier already taken. Check similarity.
-                            if (node.equalsWithoutEdges(existingNode)) {
+                            if (node.equalsWithoutState(existingNode)) {
                                 this.warn("Duplicated node identifier.", currentLineIndex, originalLine)
                                 continue
                             } else {

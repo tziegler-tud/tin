@@ -1,8 +1,8 @@
-package tinDB.services.internal.fileReaders.fileReaderResult
+package tinCORE.services.internal.fileReaders.fileReaderResult
 
-import tinDB.model.ConjunctiveFormula
-import tinDB.model.ConjunctiveQueryGraphMap
-import tinDB.services.internal.fileReaders.FileReaderWarning
+import tinCORE.services.internal.fileReaders.FileReaderWarning
+import tinDB.model.v2.ConjunctiveFormula
+import tinDB.model.v2.ConjunctiveQueryGraphMap
 
 class ConjunctiveQueryFileReaderResult(
     var graphMap: ConjunctiveQueryGraphMap,
