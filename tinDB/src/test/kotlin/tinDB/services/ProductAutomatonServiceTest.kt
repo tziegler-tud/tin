@@ -3,11 +3,11 @@ package tinDB.services
 import org.junit.jupiter.api.Test
 import tinDB.model.v2.DatabaseGraph.*
 import tinDB.model.v2.dataProvider.RegularPathQueryDataProvider
-import tinDB.model.v2.productAutomaton.ProductAutomatonEdgeType
+import tinDB.model.v2.productAutomaton.*
 
-import tinDB.model.v2.productAutomaton.ProductAutomatonGraph
 import tinDB.services.internal.ProductAutomatonServiceV2
 import tinLIB.model.v2.alphabet.Alphabet
+import tinLIB.model.v2.graph.EdgeLabelProperty
 import tinLIB.model.v2.query.QueryGraph
 import tinLIB.model.v2.transducer.TransducerGraph
 import tinLIB.model.v2.graph.Node
@@ -503,125 +503,125 @@ class ProductAutomatonServiceTest {
             ProductAutomatonEdgeType.EpsilonIncomingPositiveOutgoing -> {
                 graph.addNodes(Node("t0", isInitialState = true, isFinalState = true))
                 val t0 = graph.nodes.find { it.identifier == "t0" }!!
-                graph.addEdge(t0, t0, "epsilon", "l1", 0.0)
-                graph.addEdge(t0, t0, "epsilon", "l2", 3.0)
-                graph.addEdge(t0, t0, "epsilon", "l3", 5.0)
+                graph.addEdge(t0, t0, "epsilon", "l1", 0)
+                graph.addEdge(t0, t0, "epsilon", "l2", 3)
+                graph.addEdge(t0, t0, "epsilon", "l3", 5)
             }
 
             ProductAutomatonEdgeType.EpsilonIncomingNegativeOutgoing -> {
                 graph.addNodes(Node("t0", isInitialState = true, isFinalState = true))
                 val t0 = graph.nodes.find { it.identifier == "t0" }!!
-                graph.addEdge(t0, t0, "epsilon", "-l1", 0.0)
-                graph.addEdge(t0, t0, "epsilon", "-l2", 3.0)
-                graph.addEdge(t0, t0, "epsilon", "-l3", 5.0)
+                graph.addEdge(t0, t0, "epsilon", "-l1", 0)
+                graph.addEdge(t0, t0, "epsilon", "-l2", 3)
+                graph.addEdge(t0, t0, "epsilon", "-l3", 5)
             }
 
             ProductAutomatonEdgeType.EpsilonIncomingEpsilonOutgoing -> {
                 graph.addNodes(Node("t0", isInitialState = true, isFinalState = true))
                 val t0 = graph.nodes.find { it.identifier == "t0" }!!
-                graph.addEdge(t0, t0, "epsilon", "epsilon", 3.0)
+                graph.addEdge(t0, t0, "epsilon", "epsilon", 3)
             }
 
             ProductAutomatonEdgeType.EpsilonIncomingPropertyOutgoing -> {
                 graph.addNodes(Node("t0", isInitialState = true, isFinalState = true))
                 val t0 = graph.nodes.find { it.identifier == "t0" }!!
-                graph.addEdge(t0, t0, "epsilon", "prop1?", 0.0)
-                graph.addEdge(t0, t0, "epsilon", "prop2?", 3.0)
-                graph.addEdge(t0, t0, "epsilon", "prop3?", 5.0)
+                graph.addEdge(t0, t0, "epsilon", "prop1?", 0)
+                graph.addEdge(t0, t0, "epsilon", "prop2?", 3)
+                graph.addEdge(t0, t0, "epsilon", "prop3?", 5)
             }
 
             ProductAutomatonEdgeType.PositiveIncomingPositiveOutgoing -> {
                 graph.addNodes(Node("t0", isInitialState = true, isFinalState = true))
                 val t0 = graph.nodes.find { it.identifier == "t0" }!!
-                graph.addEdge(t0, t0, "l1", "l1", 0.0)
-                graph.addEdge(t0, t0, "l1", "l2", 3.0)
-                graph.addEdge(t0, t0, "l1", "l3", 5.0)
+                graph.addEdge(t0, t0, "l1", "l1", 0)
+                graph.addEdge(t0, t0, "l1", "l2", 3)
+                graph.addEdge(t0, t0, "l1", "l3", 5)
             }
 
             ProductAutomatonEdgeType.PositiveIncomingNegativeOutgoing -> {
                 graph.addNodes(Node("t0", isInitialState = true, isFinalState = true))
                 val t0 = graph.nodes.find { it.identifier == "t0" }!!
-                graph.addEdge(t0, t0, "l1", "-l1", 0.0)
-                graph.addEdge(t0, t0, "l1", "-l2", 3.0)
-                graph.addEdge(t0, t0, "l1", "-l3", 5.0)
+                graph.addEdge(t0, t0, "l1", "-l1", 0)
+                graph.addEdge(t0, t0, "l1", "-l2", 3)
+                graph.addEdge(t0, t0, "l1", "-l3", 5)
             }
 
             ProductAutomatonEdgeType.PositiveIncomingEpsilonOutgoing -> {
                 graph.addNodes(Node("t0", isInitialState = true, isFinalState = true))
                 val t0 = graph.nodes.find { it.identifier == "t0" }!!
-                graph.addEdge(t0, t0, "l1", "epsilon", 3.0)
+                graph.addEdge(t0, t0, "l1", "epsilon", 3)
             }
 
             ProductAutomatonEdgeType.PositiveIncomingPropertyOutgoing -> {
                 graph.addNodes(Node("t0", isInitialState = true, isFinalState = true))
                 val t0 = graph.nodes.find { it.identifier == "t0" }!!
-                graph.addEdge(t0, t0, "l1", "prop1?", 0.0)
-                graph.addEdge(t0, t0, "l1", "prop2?", 3.0)
-                graph.addEdge(t0, t0, "l2", "prop2?", 5.0)
+                graph.addEdge(t0, t0, "l1", "prop1?", 0)
+                graph.addEdge(t0, t0, "l1", "prop2?", 3)
+                graph.addEdge(t0, t0, "l2", "prop2?", 5)
             }
 
             ProductAutomatonEdgeType.NegativeIncomingPositiveOutgoing -> {
                 graph.addNodes(Node("t0", isInitialState = true, isFinalState = true))
                 val t0 = graph.nodes.find { it.identifier == "t0" }!!
-                graph.addEdge(t0, t0, "-l1", "l1", 0.0)
-                graph.addEdge(t0, t0, "-l1", "l2", 3.0)
-                graph.addEdge(t0, t0, "-l2", "l3", 5.0)
+                graph.addEdge(t0, t0, "-l1", "l1", 0)
+                graph.addEdge(t0, t0, "-l1", "l2", 3)
+                graph.addEdge(t0, t0, "-l2", "l3", 5)
             }
 
             ProductAutomatonEdgeType.NegativeIncomingNegativeOutgoing -> {
-                graph.addNodes(TransducerNode("t0", isInitialState = true, isFinalState = true))
+                graph.addNodes(Node("t0", isInitialState = true, isFinalState = true))
                 val t0 = graph.nodes.find { it.identifier == "t0" }!!
-                graph.addEdge(t0, t0, "-l1", "-l1", 0.0)
-                graph.addEdge(t0, t0, "-l1", "-l2", 3.0)
-                graph.addEdge(t0, t0, "-l2", "-l2", 5.0)
+                graph.addEdge(t0, t0, "-l1", "-l1", 0)
+                graph.addEdge(t0, t0, "-l1", "-l2", 3)
+                graph.addEdge(t0, t0, "-l2", "-l2", 5)
             }
 
             ProductAutomatonEdgeType.NegativeIncomingEpsilonOutgoing -> {
-                graph.addNodes(TransducerNode("t0", isInitialState = true, isFinalState = true))
+                graph.addNodes(Node("t0", isInitialState = true, isFinalState = true))
                 val t0 = graph.nodes.find { it.identifier == "t0" }!!
-                graph.addEdge(t0, t0, "-l1", "epsilon", 0.0)
-                graph.addEdge(t0, t0, "-l1", "epsilon", 3.0)
-                graph.addEdge(t0, t0, "-l2", "epsilon", 5.0)
+                graph.addEdge(t0, t0, "-l1", "epsilon", 0)
+                graph.addEdge(t0, t0, "-l1", "epsilon", 3)
+                graph.addEdge(t0, t0, "-l2", "epsilon", 5)
             }
 
             ProductAutomatonEdgeType.NegativeIncomingPropertyOutgoing -> {
-                graph.addNodes(TransducerNode("t0", isInitialState = true, isFinalState = true))
+                graph.addNodes(Node("t0", isInitialState = true, isFinalState = true))
                 val t0 = graph.nodes.find { it.identifier == "t0" }!!
-                graph.addEdge(t0, t0, "-l1", "prop1?", 0.0)
-                graph.addEdge(t0, t0, "-l1", "prop2?", 3.0)
-                graph.addEdge(t0, t0, "-l2", "prop2?", 5.0)
+                graph.addEdge(t0, t0, "-l1", "prop1?", 0)
+                graph.addEdge(t0, t0, "-l1", "prop2?", 3)
+                graph.addEdge(t0, t0, "-l2", "prop2?", 5)
             }
 
             ProductAutomatonEdgeType.PropertyIncomingEpsilonOutgoing -> {
-                graph.addNodes(TransducerNode("t0", isInitialState = true, isFinalState = true))
+                graph.addNodes(Node("t0", isInitialState = true, isFinalState = true))
                 val t0 = graph.nodes.find { it.identifier == "t0" }!!
-                graph.addEdge(t0, t0, "prop1?", "epsilon", 0.0)
-                graph.addEdge(t0, t0, "prop1?", "epsilon", 3.0)
-                graph.addEdge(t0, t0, "prop2?", "epsilon", 5.0)
+                graph.addEdge(t0, t0, "prop1?", "epsilon", 0)
+                graph.addEdge(t0, t0, "prop1?", "epsilon", 3)
+                graph.addEdge(t0, t0, "prop2?", "epsilon", 5)
             }
 
             ProductAutomatonEdgeType.PropertyIncomingPositiveOutgoing -> {
-                graph.addNodes(TransducerNode("t0", isInitialState = true, isFinalState = true))
+                graph.addNodes(Node("t0", isInitialState = true, isFinalState = true))
                 val t0 = graph.nodes.find { it.identifier == "t0" }!!
-                graph.addEdge(t0, t0, "prop1?", "l1", 0.0)
-                graph.addEdge(t0, t0, "prop1?", "l2", 3.0)
-                graph.addEdge(t0, t0, "prop2?", "l2", 5.0)
+                graph.addEdge(t0, t0, "prop1?", "l1", 0)
+                graph.addEdge(t0, t0, "prop1?", "l2", 3)
+                graph.addEdge(t0, t0, "prop2?", "l2", 5)
             }
 
             ProductAutomatonEdgeType.PropertyIncomingNegativeOutgoing -> {
-                graph.addNodes(TransducerNode("t0", isInitialState = true, isFinalState = true))
+                graph.addNodes(Node("t0", isInitialState = true, isFinalState = true))
                 val t0 = graph.nodes.find { it.identifier == "t0" }!!
-                graph.addEdge(t0, t0, "prop1?", "-l1", 0.0)
-                graph.addEdge(t0, t0, "prop1?", "-l2", 3.0)
-                graph.addEdge(t0, t0, "prop2?", "-l2", 5.0)
+                graph.addEdge(t0, t0, "prop1?", "-l1", 0)
+                graph.addEdge(t0, t0, "prop1?", "-l2", 3)
+                graph.addEdge(t0, t0, "prop2?", "-l2", 5)
             }
 
             ProductAutomatonEdgeType.PropertyIncomingPropertyOutgoing -> {
-                graph.addNodes(TransducerNode("t0", isInitialState = true, isFinalState = true))
+                graph.addNodes(Node("t0", isInitialState = true, isFinalState = true))
                 val t0 = graph.nodes.find { it.identifier == "t0" }!!
-                graph.addEdge(t0, t0, "prop1?", "prop1?", 0.0)
-                graph.addEdge(t0, t0, "prop1?", "prop2?", 3.0)
-                graph.addEdge(t0, t0, "prop2?", "prop2?", 5.0)
+                graph.addEdge(t0, t0, "prop1?", "prop1?", 0)
+                graph.addEdge(t0, t0, "prop1?", "prop2?", 3)
+                graph.addEdge(t0, t0, "prop2?", "prop2?", 5)
             }
         }
 
@@ -644,1282 +644,827 @@ class ProductAutomatonServiceTest {
         val d2 = databaseGraph.getNode("d2")!!
         val d3 = databaseGraph.getNode("d3")!!
 
+        val q0t0d0 = ProductAutomatonNode(
+            queryNode = q0,
+            transducerNode = t0,
+            databaseNode = d0,
+            initialState = true,
+            finalState = true,
+        )
+
+        val q0t0d1 = ProductAutomatonNode(
+            queryNode = q0,
+            transducerNode = t0,
+            databaseNode = d1,
+            initialState = true,
+            finalState = true,
+        )
+
+        val q0t0d2 = ProductAutomatonNode(
+            queryNode = q0,
+            transducerNode = t0,
+            databaseNode = d2,
+            initialState = true,
+            finalState = true,
+        )
+
+        val q0t0d3 = ProductAutomatonNode(
+            queryNode = q0,
+            transducerNode = t0,
+            databaseNode = d3,
+            initialState = true,
+            finalState = true,
+        )
+
+        val databaseNodes = arrayOf(d0, d1, d2, d3)
+        val productNodes = arrayOf(q0t0d0, q0t0d1, q0t0d2, q0t0d3)
+
+
         when (edgeType) {
             ProductAutomatonEdgeType.EpsilonIncomingPositiveOutgoing -> {
-
-                graph.addProductAutomatonEdge(
-                    source = ProductAutomatonNode(
-                        queryNode = q0,
-                        transducerNode = t0,
-                        databaseNode = d0,
-                        initialState = true,
-                        finalState = true,
-                    ),
-                    target = ProductAutomatonNode(
-                        queryNode = q0,
-                        transducerNode = t0,
-                        databaseNode = d1,
-                        initialState = true,
-                        finalState = true,
-                    ),
-                    incoming = "epsilon",
-                    outgoing = "l1",
-                    cost = 0.0,
+                graph.addEdge(
+                    ProductAutomatonEdge(
+                        source = q0t0d0,
+                        target = q0t0d1,
+                        ProductAutomatonEdgeLabel(
+                            incoming = EdgeLabelProperty.fromString("epsilon"),
+                            outgoing = EdgeLabelProperty.fromString("l1"),
+                            cost = 0,
+                        )
+                    )
                 )
 
-                graph.addProductAutomatonEdge(
-                    source = ProductAutomatonNode(
-                        queryNode = q0,
-                        transducerNode = t0,
-                        databaseNode = d1,
-                        initialState = true,
-                        finalState = true,
-                    ),
-                    target = ProductAutomatonNode(
-                        queryNode = q0,
-                        transducerNode = t0,
-                        databaseNode = d2,
-                        initialState = true,
-                        finalState = true,
-                    ),
-                    incoming = "epsilon",
-                    outgoing = "l2",
-                    cost = 3.0,
+                graph.addEdge(
+                    ProductAutomatonEdge(
+                        source = q0t0d1,
+                        target = q0t0d2,
+                        ProductAutomatonEdgeLabel(
+                            incoming = EdgeLabelProperty.fromString("epsilon"),
+                            outgoing = EdgeLabelProperty.fromString("l2"),
+                            cost = 3,
+                        )
+                    )
                 )
 
-                graph.addProductAutomatonEdge(
-                    source = ProductAutomatonNode(
-                        queryNode = q0,
-                        transducerNode = t0,
-                        databaseNode = d0,
-                        initialState = true,
-                        finalState = true,
-                    ),
-                    target = ProductAutomatonNode(
-                        queryNode = q0,
-                        transducerNode = t0,
-                        databaseNode = d3,
-                        initialState = true,
-                        finalState = true,
-                    ),
-                    incoming = "epsilon",
-                    outgoing = "l3",
-                    cost = 5.0,
+                graph.addEdge(
+                    ProductAutomatonEdge(
+                        source = q0t0d0,
+                        target = q0t0d3,
+                        ProductAutomatonEdgeLabel(
+                            incoming = EdgeLabelProperty.fromString("epsilon"),
+                            outgoing = EdgeLabelProperty.fromString("l3"),
+                            cost = 5,
+                        )
+                    )
                 )
             }
 
             ProductAutomatonEdgeType.EpsilonIncomingNegativeOutgoing -> {
-                graph.addProductAutomatonEdge(
-                    source = ProductAutomatonNode(
-                        queryNode = q0,
-                        transducerNode = t0,
-                        databaseNode = d1,
-                        initialState = true,
-                        finalState = true,
-                    ),
-                    target = ProductAutomatonNode(
-                        queryNode = q0,
-                        transducerNode = t0,
-                        databaseNode = d0,
-                        initialState = true,
-                        finalState = true,
-                    ),
-                    incoming = "epsilon",
-                    outgoing = "-l1",
-                    cost = 0.0,
+                graph.addEdge(
+                    ProductAutomatonEdge(
+                        source = q0t0d1,
+                        target = q0t0d0,
+                        ProductAutomatonEdgeLabel(
+                            incoming = EdgeLabelProperty.fromString("epsilon"),
+                            outgoing = EdgeLabelProperty.fromString("-l1"),
+                            cost = 0,
+                        )
+                    )
                 )
 
-                graph.addProductAutomatonEdge(
-                    source = ProductAutomatonNode(
-                        queryNode = q0,
-                        transducerNode = t0,
-                        databaseNode = d2,
-                        initialState = true,
-                        finalState = true,
-                    ),
-                    target = ProductAutomatonNode(
-                        queryNode = q0,
-                        transducerNode = t0,
-                        databaseNode = d1,
-                        initialState = true,
-                        finalState = true,
-                    ),
-                    incoming = "epsilon",
-                    outgoing = "-l2",
-                    cost = 3.0,
+                graph.addEdge(
+                    ProductAutomatonEdge(
+                        source = q0t0d2,
+                        target = q0t0d1,
+                        ProductAutomatonEdgeLabel(
+                            incoming = EdgeLabelProperty.fromString("epsilon"),
+                            outgoing = EdgeLabelProperty.fromString("-l2"),
+                            cost = 3,
+                        )
+                    )
                 )
 
-                graph.addProductAutomatonEdge(
-                    source = ProductAutomatonNode(
-                        queryNode = q0,
-                        transducerNode = t0,
-                        databaseNode = d3,
-                        initialState = true,
-                        finalState = true,
-                    ),
-                    target = ProductAutomatonNode(
-                        queryNode = q0,
-                        transducerNode = t0,
-                        databaseNode = d0,
-                        initialState = true,
-                        finalState = true,
-                    ),
-                    incoming = "epsilon",
-                    outgoing = "-l3",
-                    cost = 5.0,
+                graph.addEdge(
+                    ProductAutomatonEdge(
+                        source = q0t0d3,
+                        target = q0t0d0,
+                        ProductAutomatonEdgeLabel(
+                            incoming = EdgeLabelProperty.fromString("epsilon"),
+                            outgoing = EdgeLabelProperty.fromString("-l3"),
+                            cost = 5,
+                        )
+                    )
                 )
             }
 
             ProductAutomatonEdgeType.EpsilonIncomingEpsilonOutgoing -> {
-                graph.addProductAutomatonEdge(
-                    source = ProductAutomatonNode(
-                        queryNode = q0,
-                        transducerNode = t0,
-                        databaseNode = d0,
-                        initialState = true,
-                        finalState = true,
-                    ),
-                    target = ProductAutomatonNode(
-                        queryNode = q0,
-                        transducerNode = t0,
-                        databaseNode = d0,
-                        initialState = true,
-                        finalState = true,
-                    ),
-                    incoming = "epsilon",
-                    outgoing = "epsilon",
-                    cost = 3.0,
+                graph.addEdge(
+                    ProductAutomatonEdge(
+                        source = q0t0d0,
+                        target = q0t0d0,
+                        ProductAutomatonEdgeLabel(
+                            incoming = EdgeLabelProperty.fromString("epsilon"),
+                            outgoing = EdgeLabelProperty.fromString("epsilon"),
+                            cost = 3,
+                        )
+                    )
                 )
 
-                graph.addProductAutomatonEdge(
-                    source = ProductAutomatonNode(
-                        queryNode = q0,
-                        transducerNode = t0,
-                        databaseNode = d1,
-                        initialState = true,
-                        finalState = true,
-                    ),
-                    target = ProductAutomatonNode(
-                        queryNode = q0,
-                        transducerNode = t0,
-                        databaseNode = d1,
-                        initialState = true,
-                        finalState = true,
-                    ),
-                    incoming = "epsilon",
-                    outgoing = "epsilon",
-                    cost = 3.0,
+                graph.addEdge(
+                    ProductAutomatonEdge(
+                        source = q0t0d1,
+                        target = q0t0d1,
+                        ProductAutomatonEdgeLabel(
+                            incoming = EdgeLabelProperty.fromString("epsilon"),
+                            outgoing = EdgeLabelProperty.fromString("epsilon"),
+                            cost = 3,
+                        )
+                    )
                 )
 
-                graph.addProductAutomatonEdge(
-                    source = ProductAutomatonNode(
-                        queryNode = q0,
-                        transducerNode = t0,
-                        databaseNode = d2,
-                        initialState = true,
-                        finalState = true,
-                    ),
-                    target = ProductAutomatonNode(
-                        queryNode = q0,
-                        transducerNode = t0,
-                        databaseNode = d2,
-                        initialState = true,
-                        finalState = true,
-                    ),
-                    incoming = "epsilon",
-                    outgoing = "epsilon",
-                    cost = 3.0,
+                graph.addEdge(
+                    ProductAutomatonEdge(
+                        source = q0t0d2,
+                        target = q0t0d2,
+                        ProductAutomatonEdgeLabel(
+                            incoming = EdgeLabelProperty.fromString("epsilon"),
+                            outgoing = EdgeLabelProperty.fromString("epsilon"),
+                            cost = 3,
+                        )
+                    )
                 )
-                graph.addProductAutomatonEdge(
-                    source = ProductAutomatonNode(
-                        queryNode = q0,
-                        transducerNode = t0,
-                        databaseNode = d3,
-                        initialState = true,
-                        finalState = true,
-                    ),
-                    target = ProductAutomatonNode(
-                        queryNode = q0,
-                        transducerNode = t0,
-                        databaseNode = d3,
-                        initialState = true,
-                        finalState = true,
-                    ),
-                    incoming = "epsilon",
-                    outgoing = "epsilon",
-                    cost = 3.0,
+
+                graph.addEdge(
+                    ProductAutomatonEdge(
+                        source = q0t0d3,
+                        target = q0t0d3,
+                        ProductAutomatonEdgeLabel(
+                            incoming = EdgeLabelProperty.fromString("epsilon"),
+                            outgoing = EdgeLabelProperty.fromString("epsilon"),
+                            cost = 3,
+                        )
+                    )
                 )
             }
 
             ProductAutomatonEdgeType.EpsilonIncomingPropertyOutgoing -> {
-                graph.addProductAutomatonEdge(
-                    source = ProductAutomatonNode(
-                        queryNode = q0,
-                        transducerNode = t0,
-                        databaseNode = d0,
-                        initialState = true,
-                        finalState = true,
-                    ),
-                    target = ProductAutomatonNode(
-                        queryNode = q0,
-                        transducerNode = t0,
-                        databaseNode = d0,
-                        initialState = true,
-                        finalState = true,
-                    ),
-                    incoming = "epsilon",
-                    outgoing = "prop1?",
-                    cost = 0.0,
+                graph.addEdge(
+                    ProductAutomatonEdge(
+                        source = q0t0d0,
+                        target = q0t0d0,
+                        ProductAutomatonEdgeLabel(
+                            incoming = EdgeLabelProperty.fromString("epsilon"),
+                            outgoing = EdgeLabelProperty.fromString("prop1?"),
+                            cost = 0,
+                        )
+                    )
                 )
 
-                graph.addProductAutomatonEdge(
-                    source = ProductAutomatonNode(
-                        queryNode = q0,
-                        transducerNode = t0,
-                        databaseNode = d3,
-                        initialState = true,
-                        finalState = true,
-                    ),
-                    target = ProductAutomatonNode(
-                        queryNode = q0,
-                        transducerNode = t0,
-                        databaseNode = d3,
-                        initialState = true,
-                        finalState = true,
-                    ),
-                    incoming = "epsilon",
-                    outgoing = "prop1?",
-                    cost = 0.0,
+                graph.addEdge(
+                    ProductAutomatonEdge(
+                        source = q0t0d3,
+                        target = q0t0d3,
+                        ProductAutomatonEdgeLabel(
+                            incoming = EdgeLabelProperty.fromString("epsilon"),
+                            outgoing = EdgeLabelProperty.fromString("prop1?"),
+                            cost = 0,
+                        )
+                    )
                 )
 
-                graph.addProductAutomatonEdge(
-                    source = ProductAutomatonNode(
-                        queryNode = q0,
-                        transducerNode = t0,
-                        databaseNode = d1,
-                        initialState = true,
-                        finalState = true,
-                    ),
-                    target = ProductAutomatonNode(
-                        queryNode = q0,
-                        transducerNode = t0,
-                        databaseNode = d1,
-                        initialState = true,
-                        finalState = true,
-                    ),
-                    incoming = "epsilon",
-                    outgoing = "prop2?",
-                    cost = 3.0,
+                graph.addEdge(
+                    ProductAutomatonEdge(
+                        source = q0t0d1,
+                        target = q0t0d1,
+                        ProductAutomatonEdgeLabel(
+                            incoming = EdgeLabelProperty.fromString("epsilon"),
+                            outgoing = EdgeLabelProperty.fromString("prop2?"),
+                            cost = 3,
+                        )
+                    )
                 )
 
-                graph.addProductAutomatonEdge(
-                    source = ProductAutomatonNode(
-                        queryNode = q0,
-                        transducerNode = t0,
-                        databaseNode = d3,
-                        initialState = true,
-                        finalState = true,
-                    ),
-                    target = ProductAutomatonNode(
-                        queryNode = q0,
-                        transducerNode = t0,
-                        databaseNode = d3,
-                        initialState = true,
-                        finalState = true,
-                    ),
-                    incoming = "epsilon",
-                    outgoing = "prop2?",
-                    cost = 3.0,
+                graph.addEdge(
+                    ProductAutomatonEdge(
+                        source = q0t0d3,
+                        target = q0t0d3,
+                        ProductAutomatonEdgeLabel(
+                            incoming = EdgeLabelProperty.fromString("epsilon"),
+                            outgoing = EdgeLabelProperty.fromString("prop2?"),
+                            cost = 3,
+                        )
+                    )
                 )
 
-                graph.addProductAutomatonEdge(
-                    source = ProductAutomatonNode(
-                        queryNode = q0,
-                        transducerNode = t0,
-                        databaseNode = d2,
-                        initialState = true,
-                        finalState = true,
-                    ),
-                    target = ProductAutomatonNode(
-                        queryNode = q0,
-                        transducerNode = t0,
-                        databaseNode = d2,
-                        initialState = true,
-                        finalState = true,
-                    ),
-                    incoming = "epsilon",
-                    outgoing = "prop3?",
-                    cost = 5.0,
+                graph.addEdge(
+                    ProductAutomatonEdge(
+                        source = q0t0d2,
+                        target = q0t0d2,
+                        ProductAutomatonEdgeLabel(
+                            incoming = EdgeLabelProperty.fromString("epsilon"),
+                            outgoing = EdgeLabelProperty.fromString("prop3?"),
+                            cost = 5,
+                        )
+                    )
                 )
 
-                graph.addProductAutomatonEdge(
-                    source = ProductAutomatonNode(
-                        queryNode = q0,
-                        transducerNode = t0,
-                        databaseNode = d3,
-                        initialState = true,
-                        finalState = true,
-                    ),
-                    target = ProductAutomatonNode(
-                        queryNode = q0,
-                        transducerNode = t0,
-                        databaseNode = d3,
-                        initialState = true,
-                        finalState = true,
-                    ),
-                    incoming = "epsilon",
-                    outgoing = "prop3?",
-                    cost = 5.0,
+                graph.addEdge(
+                    ProductAutomatonEdge(
+                        source = q0t0d3,
+                        target = q0t0d3,
+                        ProductAutomatonEdgeLabel(
+                            incoming = EdgeLabelProperty.fromString("epsilon"),
+                            outgoing = EdgeLabelProperty.fromString("prop3?"),
+                            cost = 5,
+                        )
+                    )
                 )
             }
 
             ProductAutomatonEdgeType.PositiveIncomingPositiveOutgoing -> {
-                graph.addProductAutomatonEdge(
-                    source = ProductAutomatonNode(
-                        queryNode = q0,
-                        transducerNode = t0,
-                        databaseNode = d0,
-                        initialState = true,
-                        finalState = true,
-                    ),
-                    target = ProductAutomatonNode(
-                        queryNode = q0,
-                        transducerNode = t0,
-                        databaseNode = d1,
-                        initialState = true,
-                        finalState = true,
-                    ),
-                    incoming = "l1",
-                    outgoing = "l1",
-                    cost = 0.0,
+                graph.addEdge(
+                    ProductAutomatonEdge(
+                        source = q0t0d0,
+                        target = q0t0d1,
+                        ProductAutomatonEdgeLabel(
+                            incoming = EdgeLabelProperty.fromString("l1"),
+                            outgoing = EdgeLabelProperty.fromString("l1"),
+                            cost = 0,
+                        )
+                    )
                 )
 
-                graph.addProductAutomatonEdge(
-                    source = ProductAutomatonNode(
-                        queryNode = q0,
-                        transducerNode = t0,
-                        databaseNode = d1,
-                        initialState = true,
-                        finalState = true,
-                    ),
-                    target = ProductAutomatonNode(
-                        queryNode = q0,
-                        transducerNode = t0,
-                        databaseNode = d2,
-                        initialState = true,
-                        finalState = true,
-                    ),
-                    incoming = "l1",
-                    outgoing = "l2",
-                    cost = 3.0,
+                graph.addEdge(
+                    ProductAutomatonEdge(
+                        source = q0t0d1,
+                        target = q0t0d2,
+                        ProductAutomatonEdgeLabel(
+                            incoming = EdgeLabelProperty.fromString("l1"),
+                            outgoing = EdgeLabelProperty.fromString("l2"),
+                            cost = 3,
+                        )
+                    )
                 )
 
-                graph.addProductAutomatonEdge(
-                    source = ProductAutomatonNode(
-                        queryNode = q0,
-                        transducerNode = t0,
-                        databaseNode = d0,
-                        initialState = true,
-                        finalState = true,
-                    ),
-                    target = ProductAutomatonNode(
-                        queryNode = q0,
-                        transducerNode = t0,
-                        databaseNode = d3,
-                        initialState = true,
-                        finalState = true,
-                    ),
-                    incoming = "l1",
-                    outgoing = "l3",
-                    cost = 5.0,
+                graph.addEdge(
+                    ProductAutomatonEdge(
+                        source = q0t0d0,
+                        target = q0t0d3,
+                        ProductAutomatonEdgeLabel(
+                            incoming = EdgeLabelProperty.fromString("l1"),
+                            outgoing = EdgeLabelProperty.fromString("l3"),
+                            cost = 5,
+                        )
+                    )
                 )
             }
 
             ProductAutomatonEdgeType.PositiveIncomingNegativeOutgoing -> {
-                graph.addProductAutomatonEdge(
-                    source = ProductAutomatonNode(
-                        queryNode = q0,
-                        transducerNode = t0,
-                        databaseNode = d1,
-                        initialState = true,
-                        finalState = true,
-                    ),
-                    target = ProductAutomatonNode(
-                        queryNode = q0,
-                        transducerNode = t0,
-                        databaseNode = d0,
-                        initialState = true,
-                        finalState = true,
-                    ),
-                    incoming = "l1",
-                    outgoing = "-l1",
-                    cost = 0.0,
+
+                graph.addEdge(
+                    ProductAutomatonEdge(
+                        source = q0t0d1,
+                        target = q0t0d0,
+                        ProductAutomatonEdgeLabel(
+                            incoming = EdgeLabelProperty.fromString("l1"),
+                            outgoing = EdgeLabelProperty.fromString("-l1"),
+                            cost = 0,
+                        )
+                    )
                 )
 
-                graph.addProductAutomatonEdge(
-                    source = ProductAutomatonNode(
-                        queryNode = q0,
-                        transducerNode = t0,
-                        databaseNode = d2,
-                        initialState = true,
-                        finalState = true,
-                    ),
-                    target = ProductAutomatonNode(
-                        queryNode = q0,
-                        transducerNode = t0,
-                        databaseNode = d1,
-                        initialState = true,
-                        finalState = true,
-                    ),
-                    incoming = "l1",
-                    outgoing = "-l2",
-                    cost = 3.0,
+                graph.addEdge(
+                    ProductAutomatonEdge(
+                        source = q0t0d2,
+                        target = q0t0d1,
+                        ProductAutomatonEdgeLabel(
+                            incoming = EdgeLabelProperty.fromString("l1"),
+                            outgoing = EdgeLabelProperty.fromString("-l2"),
+                            cost = 3,
+                        )
+                    )
                 )
 
-                graph.addProductAutomatonEdge(
-                    source = ProductAutomatonNode(
-                        queryNode = q0,
-                        transducerNode = t0,
-                        databaseNode = d3,
-                        initialState = true,
-                        finalState = true,
-                    ),
-                    target = ProductAutomatonNode(
-                        queryNode = q0,
-                        transducerNode = t0,
-                        databaseNode = d0,
-                        initialState = true,
-                        finalState = true,
-                    ),
-                    incoming = "l1",
-                    outgoing = "-l3",
-                    cost = 5.0,
+                graph.addEdge(
+                    ProductAutomatonEdge(
+                        source = q0t0d3,
+                        target = q0t0d0,
+                        ProductAutomatonEdgeLabel(
+                            incoming = EdgeLabelProperty.fromString("l1"),
+                            outgoing = EdgeLabelProperty.fromString("-l3"),
+                            cost = 5,
+                        )
+                    )
                 )
             }
 
             ProductAutomatonEdgeType.PositiveIncomingEpsilonOutgoing -> {
-                graph.addProductAutomatonEdge(
-                    source = ProductAutomatonNode(
-                        queryNode = q0,
-                        transducerNode = t0,
-                        databaseNode = d0,
-                        initialState = true,
-                        finalState = true,
-                    ),
-                    target = ProductAutomatonNode(
-                        queryNode = q0,
-                        transducerNode = t0,
-                        databaseNode = d0,
-                        initialState = true,
-                        finalState = true,
-                    ),
-                    incoming = "l1",
-                    outgoing = "epsilon",
-                    cost = 3.0,
+
+                graph.addEdge(
+                    ProductAutomatonEdge(
+                        source = q0t0d0,
+                        target = q0t0d0,
+                        ProductAutomatonEdgeLabel(
+                            incoming = EdgeLabelProperty.fromString("l1"),
+                            outgoing = EdgeLabelProperty.fromString("epsilon"),
+                            cost = 3,
+                        )
+                    )
                 )
 
-                graph.addProductAutomatonEdge(
-                    source = ProductAutomatonNode(
-                        queryNode = q0,
-                        transducerNode = t0,
-                        databaseNode = d1,
-                        initialState = true,
-                        finalState = true,
-                    ),
-                    target = ProductAutomatonNode(
-                        queryNode = q0,
-                        transducerNode = t0,
-                        databaseNode = d1,
-                        initialState = true,
-                        finalState = true,
-                    ),
-                    incoming = "l1",
-                    outgoing = "epsilon",
-                    cost = 3.0,
+                graph.addEdge(
+                    ProductAutomatonEdge(
+                        source = q0t0d1,
+                        target = q0t0d1,
+                        ProductAutomatonEdgeLabel(
+                            incoming = EdgeLabelProperty.fromString("l1"),
+                            outgoing = EdgeLabelProperty.fromString("epsilon"),
+                            cost = 3,
+                        )
+                    )
                 )
 
-                graph.addProductAutomatonEdge(
-                    source = ProductAutomatonNode(
-                        queryNode = q0,
-                        transducerNode = t0,
-                        databaseNode = d2,
-                        initialState = true,
-                        finalState = true,
-                    ),
-                    target = ProductAutomatonNode(
-                        queryNode = q0,
-                        transducerNode = t0,
-                        databaseNode = d2,
-                        initialState = true,
-                        finalState = true,
-                    ),
-                    incoming = "l1",
-                    outgoing = "epsilon",
-                    cost = 3.0,
+                graph.addEdge(
+                    ProductAutomatonEdge(
+                        source = q0t0d2,
+                        target = q0t0d2,
+                        ProductAutomatonEdgeLabel(
+                            incoming = EdgeLabelProperty.fromString("l1"),
+                            outgoing = EdgeLabelProperty.fromString("epsilon"),
+                            cost = 3,
+                        )
+                    )
                 )
-                graph.addProductAutomatonEdge(
-                    source = ProductAutomatonNode(
-                        queryNode = q0,
-                        transducerNode = t0,
-                        databaseNode = d3,
-                        initialState = true,
-                        finalState = true,
-                    ),
-                    target = ProductAutomatonNode(
-                        queryNode = q0,
-                        transducerNode = t0,
-                        databaseNode = d3,
-                        initialState = true,
-                        finalState = true,
-                    ),
-                    incoming = "l1",
-                    outgoing = "epsilon",
-                    cost = 3.0,
+
+                graph.addEdge(
+                    ProductAutomatonEdge(
+                        source = q0t0d3,
+                        target = q0t0d3,
+                        ProductAutomatonEdgeLabel(
+                            incoming = EdgeLabelProperty.fromString("l1"),
+                            outgoing = EdgeLabelProperty.fromString("epsilon"),
+                            cost = 3,
+                        )
+                    )
                 )
             }
 
             ProductAutomatonEdgeType.PositiveIncomingPropertyOutgoing -> {
-                graph.addProductAutomatonEdge(
-                    source = ProductAutomatonNode(
-                        queryNode = q0,
-                        transducerNode = t0,
-                        databaseNode = d0,
-                        initialState = true,
-                        finalState = true,
-                    ),
-                    target = ProductAutomatonNode(
-                        queryNode = q0,
-                        transducerNode = t0,
-                        databaseNode = d0,
-                        initialState = true,
-                        finalState = true,
-                    ),
-                    incoming = "l1",
-                    outgoing = "prop1?",
-                    cost = 0.0,
+
+                graph.addEdge(
+                    ProductAutomatonEdge(
+                        source = q0t0d0,
+                        target = q0t0d0,
+                        ProductAutomatonEdgeLabel(
+                            incoming = EdgeLabelProperty.fromString("l1"),
+                            outgoing = EdgeLabelProperty.fromString("prop1?"),
+                            cost = 0,
+                        )
+                    )
                 )
 
-                graph.addProductAutomatonEdge(
-                    source = ProductAutomatonNode(
-                        queryNode = q0,
-                        transducerNode = t0,
-                        databaseNode = d3,
-                        initialState = true,
-                        finalState = true,
-                    ),
-                    target = ProductAutomatonNode(
-                        queryNode = q0,
-                        transducerNode = t0,
-                        databaseNode = d3,
-                        initialState = true,
-                        finalState = true,
-                    ),
-                    incoming = "l1",
-                    outgoing = "prop1?",
-                    cost = 0.0,
+                graph.addEdge(
+                    ProductAutomatonEdge(
+                        source = q0t0d3,
+                        target = q0t0d3,
+                        ProductAutomatonEdgeLabel(
+                            incoming = EdgeLabelProperty.fromString("l1"),
+                            outgoing = EdgeLabelProperty.fromString("prop1?"),
+                            cost = 0,
+                        )
+                    )
                 )
 
-                graph.addProductAutomatonEdge(
-                    source = ProductAutomatonNode(
-                        queryNode = q0,
-                        transducerNode = t0,
-                        databaseNode = d1,
-                        initialState = true,
-                        finalState = true,
-                    ),
-                    target = ProductAutomatonNode(
-                        queryNode = q0,
-                        transducerNode = t0,
-                        databaseNode = d1,
-                        initialState = true,
-                        finalState = true,
-                    ),
-                    incoming = "l1",
-                    outgoing = "prop2?",
-                    cost = 3.0,
+                graph.addEdge(
+                    ProductAutomatonEdge(
+                        source = q0t0d1,
+                        target = q0t0d1,
+                        ProductAutomatonEdgeLabel(
+                            incoming = EdgeLabelProperty.fromString("l1"),
+                            outgoing = EdgeLabelProperty.fromString("prop2?"),
+                            cost = 3,
+                        )
+                    )
                 )
 
-                graph.addProductAutomatonEdge(
-                    source = ProductAutomatonNode(
-                        queryNode = q0,
-                        transducerNode = t0,
-                        databaseNode = d3,
-                        initialState = true,
-                        finalState = true,
-                    ),
-                    target = ProductAutomatonNode(
-                        queryNode = q0,
-                        transducerNode = t0,
-                        databaseNode = d3,
-                        initialState = true,
-                        finalState = true,
-                    ),
-                    incoming = "l1",
-                    outgoing = "prop2?",
-                    cost = 3.0,
+                graph.addEdge(
+                    ProductAutomatonEdge(
+                        source = q0t0d3,
+                        target = q0t0d3,
+                        ProductAutomatonEdgeLabel(
+                            incoming = EdgeLabelProperty.fromString("l1"),
+                            outgoing = EdgeLabelProperty.fromString("prop2?"),
+                            cost = 3,
+                        )
+                    )
                 )
 
-                graph.addProductAutomatonEdge(
-                    source = ProductAutomatonNode(
-                        queryNode = q0,
-                        transducerNode = t0,
-                        databaseNode = d1,
-                        initialState = true,
-                        finalState = true,
-                    ),
-                    target = ProductAutomatonNode(
-                        queryNode = q0,
-                        transducerNode = t0,
-                        databaseNode = d1,
-                        initialState = true,
-                        finalState = true,
-                    ),
-                    incoming = "l2",
-                    outgoing = "prop2?",
-                    cost = 5.0,
+                graph.addEdge(
+                    ProductAutomatonEdge(
+                        source = q0t0d1,
+                        target = q0t0d1,
+                        ProductAutomatonEdgeLabel(
+                            incoming = EdgeLabelProperty.fromString("l2"),
+                            outgoing = EdgeLabelProperty.fromString("prop2?"),
+                            cost = 5,
+                        )
+                    )
                 )
 
-                graph.addProductAutomatonEdge(
-                    source = ProductAutomatonNode(
-                        queryNode = q0,
-                        transducerNode = t0,
-                        databaseNode = d3,
-                        initialState = true,
-                        finalState = true,
-                    ),
-                    target = ProductAutomatonNode(
-                        queryNode = q0,
-                        transducerNode = t0,
-                        databaseNode = d3,
-                        initialState = true,
-                        finalState = true,
-                    ),
-                    incoming = "l2",
-                    outgoing = "prop2?",
-                    cost = 5.0,
+                graph.addEdge(
+                    ProductAutomatonEdge(
+                        source = q0t0d3,
+                        target = q0t0d3,
+                        ProductAutomatonEdgeLabel(
+                            incoming = EdgeLabelProperty.fromString("l2"),
+                            outgoing = EdgeLabelProperty.fromString("prop2?"),
+                            cost = 5,
+                        )
+                    )
                 )
             }
 
             ProductAutomatonEdgeType.NegativeIncomingPositiveOutgoing -> {
-                graph.addProductAutomatonEdge(
-                    source = ProductAutomatonNode(
-                        queryNode = q0,
-                        transducerNode = t0,
-                        databaseNode = d0,
-                        initialState = true,
-                        finalState = true,
-                    ),
-                    target = ProductAutomatonNode(
-                        queryNode = q0,
-                        transducerNode = t0,
-                        databaseNode = d1,
-                        initialState = true,
-                        finalState = true,
-                    ),
-                    incoming = "-l1",
-                    outgoing = "l1",
-                    cost = 0.0,
+
+                graph.addEdge(
+                    ProductAutomatonEdge(
+                        source = q0t0d0,
+                        target = q0t0d1,
+                        ProductAutomatonEdgeLabel(
+                            incoming = EdgeLabelProperty.fromString("-l1"),
+                            outgoing = EdgeLabelProperty.fromString("l1"),
+                            cost = 0,
+                        )
+                    )
                 )
 
-                graph.addProductAutomatonEdge(
-                    source = ProductAutomatonNode(
-                        queryNode = q0,
-                        transducerNode = t0,
-                        databaseNode = d1,
-                        initialState = true,
-                        finalState = true,
-                    ),
-                    target = ProductAutomatonNode(
-                        queryNode = q0,
-                        transducerNode = t0,
-                        databaseNode = d2,
-                        initialState = true,
-                        finalState = true,
-                    ),
-                    incoming = "-l1",
-                    outgoing = "l2",
-                    cost = 3.0,
+                graph.addEdge(
+                    ProductAutomatonEdge(
+                        source = q0t0d1,
+                        target = q0t0d2,
+                        ProductAutomatonEdgeLabel(
+                            incoming = EdgeLabelProperty.fromString("-l1"),
+                            outgoing = EdgeLabelProperty.fromString("l2"),
+                            cost = 3,
+                        )
+                    )
                 )
 
-                graph.addProductAutomatonEdge(
-                    source = ProductAutomatonNode(
-                        queryNode = q0,
-                        transducerNode = t0,
-                        databaseNode = d0,
-                        initialState = true,
-                        finalState = true,
-                    ),
-                    target = ProductAutomatonNode(
-                        queryNode = q0,
-                        transducerNode = t0,
-                        databaseNode = d3,
-                        initialState = true,
-                        finalState = true,
-                    ),
-                    incoming = "-l2",
-                    outgoing = "l3",
-                    cost = 5.0,
+                graph.addEdge(
+                    ProductAutomatonEdge(
+                        source = q0t0d0,
+                        target = q0t0d3,
+                        ProductAutomatonEdgeLabel(
+                            incoming = EdgeLabelProperty.fromString("-l2"),
+                            outgoing = EdgeLabelProperty.fromString("l3"),
+                            cost = 5,
+                        )
+                    )
                 )
             }
 
             ProductAutomatonEdgeType.NegativeIncomingNegativeOutgoing -> {
-                graph.addProductAutomatonEdge(
-                    source = ProductAutomatonNode(
-                        queryNode = q0,
-                        transducerNode = t0,
-                        databaseNode = d1,
-                        initialState = true,
-                        finalState = true,
-                    ),
-                    target = ProductAutomatonNode(
-                        queryNode = q0,
-                        transducerNode = t0,
-                        databaseNode = d0,
-                        initialState = true,
-                        finalState = true,
-                    ),
-                    incoming = "-l1",
-                    outgoing = "-l1",
-                    cost = 0.0,
+                graph.addEdge(
+                    ProductAutomatonEdge(
+                        source = q0t0d1,
+                        target = q0t0d0,
+                        ProductAutomatonEdgeLabel(
+                            incoming = EdgeLabelProperty.fromString("-l1"),
+                            outgoing = EdgeLabelProperty.fromString("-l1"),
+                            cost = 0,
+                        )
+                    )
                 )
 
-                graph.addProductAutomatonEdge(
-                    source = ProductAutomatonNode(
-                        queryNode = q0,
-                        transducerNode = t0,
-                        databaseNode = d2,
-                        initialState = true,
-                        finalState = true,
-                    ),
-                    target = ProductAutomatonNode(
-                        queryNode = q0,
-                        transducerNode = t0,
-                        databaseNode = d1,
-                        initialState = true,
-                        finalState = true,
-                    ),
-                    incoming = "-l1",
-                    outgoing = "-l2",
-                    cost = 3.0,
+                graph.addEdge(
+                    ProductAutomatonEdge(
+                        source = q0t0d2,
+                        target = q0t0d1,
+                        ProductAutomatonEdgeLabel(
+                            incoming = EdgeLabelProperty.fromString("-l1"),
+                            outgoing = EdgeLabelProperty.fromString("-l2"),
+                            cost = 3,
+                        )
+                    )
                 )
 
-                graph.addProductAutomatonEdge(
-                    source = ProductAutomatonNode(
-                        queryNode = q0,
-                        transducerNode = t0,
-                        databaseNode = d2,
-                        initialState = true,
-                        finalState = true,
-                    ),
-                    target = ProductAutomatonNode(
-                        queryNode = q0,
-                        transducerNode = t0,
-                        databaseNode = d1,
-                        initialState = true,
-                        finalState = true,
-                    ),
-                    incoming = "-l2",
-                    outgoing = "-l2",
-                    cost = 5.0,
+                graph.addEdge(
+                    ProductAutomatonEdge(
+                        source = q0t0d2,
+                        target = q0t0d1,
+                        ProductAutomatonEdgeLabel(
+                            incoming = EdgeLabelProperty.fromString("-l2"),
+                            outgoing = EdgeLabelProperty.fromString("-l2"),
+                            cost = 5,
+                        )
+                    )
                 )
             }
 
             ProductAutomatonEdgeType.NegativeIncomingEpsilonOutgoing -> {
 
-                val databaseNodes = arrayOf(d0, d1, d2, d3)
-                databaseNodes.forEach {
-                    graph.addProductAutomatonEdge(
-                        source = ProductAutomatonNode(
-                            queryNode = q0,
-                            transducerNode = t0,
-                            databaseNode = it,
-                            initialState = true,
-                            finalState = true,
-                        ),
-                        target = ProductAutomatonNode(
-                            queryNode = q0,
-                            transducerNode = t0,
-                            databaseNode = it,
-                            initialState = true,
-                            finalState = true,
-                        ),
-                        incoming = "-l1",
-                        outgoing = "epsilon",
-                        cost = 0.0,
+                productNodes.forEach {
+
+                    graph.addEdge(
+                        ProductAutomatonEdge(
+                            source = it,
+                            target = it,
+                            ProductAutomatonEdgeLabel(
+                                incoming = EdgeLabelProperty.fromString("-l1"),
+                                outgoing = EdgeLabelProperty.fromString("epsilon"),
+                                cost = 0,
+                            )
+                        )
                     )
 
-                    graph.addProductAutomatonEdge(
-                        source = ProductAutomatonNode(
-                            queryNode = q0,
-                            transducerNode = t0,
-                            databaseNode = it,
-                            initialState = true,
-                            finalState = true,
-                        ),
-                        target = ProductAutomatonNode(
-                            queryNode = q0,
-                            transducerNode = t0,
-                            databaseNode = it,
-                            initialState = true,
-                            finalState = true,
-                        ),
-                        incoming = "-l1",
-                        outgoing = "epsilon",
-                        cost = 3.0,
+                    graph.addEdge(
+                        ProductAutomatonEdge(
+                            source = it,
+                            target = it,
+                            ProductAutomatonEdgeLabel(
+                                incoming = EdgeLabelProperty.fromString("-l1"),
+                                outgoing = EdgeLabelProperty.fromString("epsilon"),
+                                cost = 3,
+                            )
+                        )
                     )
 
-                    graph.addProductAutomatonEdge(
-                        source = ProductAutomatonNode(
-                            queryNode = q0,
-                            transducerNode = t0,
-                            databaseNode = it,
-                            initialState = true,
-                            finalState = true,
-                        ),
-                        target = ProductAutomatonNode(
-                            queryNode = q0,
-                            transducerNode = t0,
-                            databaseNode = it,
-                            initialState = true,
-                            finalState = true,
-                        ),
-                        incoming = "-l2",
-                        outgoing = "epsilon",
-                        cost = 5.0,
+                    graph.addEdge(
+                        ProductAutomatonEdge(
+                            source = it,
+                            target = it,
+                            ProductAutomatonEdgeLabel(
+                                incoming = EdgeLabelProperty.fromString("-l2"),
+                                outgoing = EdgeLabelProperty.fromString("epsilon"),
+                                cost = 5,
+                            )
+                        )
                     )
                 }
 
             }
 
             ProductAutomatonEdgeType.NegativeIncomingPropertyOutgoing -> {
-                graph.addProductAutomatonEdge(
-                    source = ProductAutomatonNode(
-                        queryNode = q0,
-                        transducerNode = t0,
-                        databaseNode = d0,
-                        initialState = true,
-                        finalState = true,
-                    ),
-                    target = ProductAutomatonNode(
-                        queryNode = q0,
-                        transducerNode = t0,
-                        databaseNode = d0,
-                        initialState = true,
-                        finalState = true,
-                    ),
-                    incoming = "-l1",
-                    outgoing = "prop1?",
-                    cost = 0.0,
+                graph.addEdge(
+                    ProductAutomatonEdge(
+                        source = q0t0d0,
+                        target = q0t0d0,
+                        ProductAutomatonEdgeLabel(
+                            incoming = EdgeLabelProperty.fromString("-l1"),
+                            outgoing = EdgeLabelProperty.fromString("prop1?"),
+                            cost = 0,
+                        )
+                    )
                 )
 
-                graph.addProductAutomatonEdge(
-                    source = ProductAutomatonNode(
-                        queryNode = q0,
-                        transducerNode = t0,
-                        databaseNode = d3,
-                        initialState = true,
-                        finalState = true,
-                    ),
-                    target = ProductAutomatonNode(
-                        queryNode = q0,
-                        transducerNode = t0,
-                        databaseNode = d3,
-                        initialState = true,
-                        finalState = true,
-                    ),
-                    incoming = "-l1",
-                    outgoing = "prop1?",
-                    cost = 0.0,
+                graph.addEdge(
+                    ProductAutomatonEdge(
+                        source = q0t0d3,
+                        target = q0t0d3,
+                        ProductAutomatonEdgeLabel(
+                            incoming = EdgeLabelProperty.fromString("-l1"),
+                            outgoing = EdgeLabelProperty.fromString("prop1?"),
+                            cost = 0,
+                        )
+                    )
                 )
 
-                graph.addProductAutomatonEdge(
-                    source = ProductAutomatonNode(
-                        queryNode = q0,
-                        transducerNode = t0,
-                        databaseNode = d1,
-                        initialState = true,
-                        finalState = true,
-                    ),
-                    target = ProductAutomatonNode(
-                        queryNode = q0,
-                        transducerNode = t0,
-                        databaseNode = d1,
-                        initialState = true,
-                        finalState = true,
-                    ),
-                    incoming = "-l1",
-                    outgoing = "prop2?",
-                    cost = 3.0,
+                graph.addEdge(
+                    ProductAutomatonEdge(
+                        source = q0t0d1,
+                        target = q0t0d1,
+                        ProductAutomatonEdgeLabel(
+                            incoming = EdgeLabelProperty.fromString("-l1"),
+                            outgoing = EdgeLabelProperty.fromString("prop2?"),
+                            cost = 3,
+                        )
+                    )
                 )
 
-                graph.addProductAutomatonEdge(
-                    source = ProductAutomatonNode(
-                        queryNode = q0,
-                        transducerNode = t0,
-                        databaseNode = d3,
-                        initialState = true,
-                        finalState = true,
-                    ),
-                    target = ProductAutomatonNode(
-                        queryNode = q0,
-                        transducerNode = t0,
-                        databaseNode = d3,
-                        initialState = true,
-                        finalState = true,
-                    ),
-                    incoming = "-l1",
-                    outgoing = "prop2?",
-                    cost = 3.0,
+                graph.addEdge(
+                    ProductAutomatonEdge(
+                        source = q0t0d3,
+                        target = q0t0d3,
+                        ProductAutomatonEdgeLabel(
+                            incoming = EdgeLabelProperty.fromString("-l1"),
+                            outgoing = EdgeLabelProperty.fromString("prop2?"),
+                            cost = 3,
+                        )
+                    )
                 )
 
-                graph.addProductAutomatonEdge(
-                    source = ProductAutomatonNode(
-                        queryNode = q0,
-                        transducerNode = t0,
-                        databaseNode = d1,
-                        initialState = true,
-                        finalState = true,
-                    ),
-                    target = ProductAutomatonNode(
-                        queryNode = q0,
-                        transducerNode = t0,
-                        databaseNode = d1,
-                        initialState = true,
-                        finalState = true,
-                    ),
-                    incoming = "-l2",
-                    outgoing = "prop2?",
-                    cost = 5.0,
+                graph.addEdge(
+                    ProductAutomatonEdge(
+                        source = q0t0d1,
+                        target = q0t0d1,
+                        ProductAutomatonEdgeLabel(
+                            incoming = EdgeLabelProperty.fromString("-l2"),
+                            outgoing = EdgeLabelProperty.fromString("prop2?"),
+                            cost = 5,
+                        )
+                    )
                 )
-                graph.addProductAutomatonEdge(
-                    source = ProductAutomatonNode(
-                        queryNode = q0,
-                        transducerNode = t0,
-                        databaseNode = d3,
-                        initialState = true,
-                        finalState = true,
-                    ),
-                    target = ProductAutomatonNode(
-                        queryNode = q0,
-                        transducerNode = t0,
-                        databaseNode = d3,
-                        initialState = true,
-                        finalState = true,
-                    ),
-                    incoming = "-l2",
-                    outgoing = "prop2?",
-                    cost = 5.0,
+
+                graph.addEdge(
+                    ProductAutomatonEdge(
+                        source = q0t0d3,
+                        target = q0t0d3,
+                        ProductAutomatonEdgeLabel(
+                            incoming = EdgeLabelProperty.fromString("-l2"),
+                            outgoing = EdgeLabelProperty.fromString("prop2?"),
+                            cost = 5,
+                        )
+                    )
                 )
             }
 
             ProductAutomatonEdgeType.PropertyIncomingEpsilonOutgoing -> {
 
-                val databaseNodes = arrayOf(d0, d1, d2, d3)
-                databaseNodes.forEach {
-                    graph.addProductAutomatonEdge(
-                        source = ProductAutomatonNode(
-                            queryNode = q0,
-                            transducerNode = t0,
-                            databaseNode = it,
-                            initialState = true,
-                            finalState = true,
-                        ),
-                        target = ProductAutomatonNode(
-                            queryNode = q0,
-                            transducerNode = t0,
-                            databaseNode = it,
-                            initialState = true,
-                            finalState = true,
-                        ),
-                        incoming = "prop1?",
-                        outgoing = "epsilon",
-                        cost = 0.0,
+                productNodes.forEach {
+                    graph.addEdge(
+                        ProductAutomatonEdge(
+                            source = it,
+                            target = it,
+                            ProductAutomatonEdgeLabel(
+                                incoming = EdgeLabelProperty.fromString("prop1?"),
+                                outgoing = EdgeLabelProperty.fromString("epsilon"),
+                                cost = 0,
+                            )
+                        )
                     )
-                    graph.addProductAutomatonEdge(
-                        source = ProductAutomatonNode(
-                            queryNode = q0,
-                            transducerNode = t0,
-                            databaseNode = it,
-                            initialState = true,
-                            finalState = true,
-                        ),
-                        target = ProductAutomatonNode(
-                            queryNode = q0,
-                            transducerNode = t0,
-                            databaseNode = it,
-                            initialState = true,
-                            finalState = true,
-                        ),
-                        incoming = "prop1?",
-                        outgoing = "epsilon",
-                        cost = 3.0,
+                    ProductAutomatonEdge(
+                        source = it,
+                        target = it,
+                        ProductAutomatonEdgeLabel(
+                            incoming = EdgeLabelProperty.fromString("prop1?"),
+                            outgoing = EdgeLabelProperty.fromString("epsilon"),
+                            cost = 3,
+                        )
                     )
-                    graph.addProductAutomatonEdge(
-                        source = ProductAutomatonNode(
-                            queryNode = q0,
-                            transducerNode = t0,
-                            databaseNode = it,
-                            initialState = true,
-                            finalState = true,
-                        ),
-                        target = ProductAutomatonNode(
-                            queryNode = q0,
-                            transducerNode = t0,
-                            databaseNode = it,
-                            initialState = true,
-                            finalState = true,
-                        ),
-                        incoming = "prop2?",
-                        outgoing = "epsilon",
-                        cost = 5.0,
+
+                    ProductAutomatonEdge(
+                        source = it,
+                        target = it,
+                        ProductAutomatonEdgeLabel(
+                            incoming = EdgeLabelProperty.fromString("prop2?"),
+                            outgoing = EdgeLabelProperty.fromString("epsilon"),
+                            cost = 5,
+                        )
                     )
                 }
 
             }
 
             ProductAutomatonEdgeType.PropertyIncomingPositiveOutgoing -> {
-                graph.addProductAutomatonEdge(
-                    source = ProductAutomatonNode(
-                        queryNode = q0,
-                        transducerNode = t0,
-                        databaseNode = d0,
-                        initialState = true,
-                        finalState = true,
-                    ),
-                    target = ProductAutomatonNode(
-                        queryNode = q0,
-                        transducerNode = t0,
-                        databaseNode = d1,
-                        initialState = true,
-                        finalState = true,
-                    ),
-                    incoming = "prop1?",
-                    outgoing = "l1",
-                    cost = 0.0,
+
+                graph.addEdge(
+                    ProductAutomatonEdge(
+                        source = q0t0d0,
+                        target = q0t0d1,
+                        ProductAutomatonEdgeLabel(
+                            incoming = EdgeLabelProperty.fromString("prop1?"),
+                            outgoing = EdgeLabelProperty.fromString("l1"),
+                            cost = 0,
+                        )
+                    )
                 )
 
-                graph.addProductAutomatonEdge(
-                    source = ProductAutomatonNode(
-                        queryNode = q0,
-                        transducerNode = t0,
-                        databaseNode = d1,
-                        initialState = true,
-                        finalState = true,
-                    ),
-                    target = ProductAutomatonNode(
-                        queryNode = q0,
-                        transducerNode = t0,
-                        databaseNode = d2,
-                        initialState = true,
-                        finalState = true,
-                    ),
-                    incoming = "prop1?",
-                    outgoing = "l2",
-                    cost = 3.0,
+                graph.addEdge(
+                    ProductAutomatonEdge(
+                        source = q0t0d1,
+                        target = q0t0d2,
+                        ProductAutomatonEdgeLabel(
+                            incoming = EdgeLabelProperty.fromString("prop1?"),
+                            outgoing = EdgeLabelProperty.fromString("l2"),
+                            cost = 3,
+                        )
+                    )
                 )
 
-                graph.addProductAutomatonEdge(
-                    source = ProductAutomatonNode(
-                        queryNode = q0,
-                        transducerNode = t0,
-                        databaseNode = d1,
-                        initialState = true,
-                        finalState = true,
-                    ),
-                    target = ProductAutomatonNode(
-                        queryNode = q0,
-                        transducerNode = t0,
-                        databaseNode = d2,
-                        initialState = true,
-                        finalState = true,
-                    ),
-                    incoming = "prop2?",
-                    outgoing = "l2",
-                    cost = 5.0,
+                graph.addEdge(
+                    ProductAutomatonEdge(
+                        source = q0t0d1,
+                        target = q0t0d2,
+                        ProductAutomatonEdgeLabel(
+                            incoming = EdgeLabelProperty.fromString("prop2?"),
+                            outgoing = EdgeLabelProperty.fromString("l2"),
+                            cost = 5,
+                        )
+                    )
                 )
             }
 
             ProductAutomatonEdgeType.PropertyIncomingNegativeOutgoing -> {
-                graph.addProductAutomatonEdge(
-                    source = ProductAutomatonNode(
-                        queryNode = q0,
-                        transducerNode = t0,
-                        databaseNode = d1,
-                        initialState = true,
-                        finalState = true,
-                    ),
-                    target = ProductAutomatonNode(
-                        queryNode = q0,
-                        transducerNode = t0,
-                        databaseNode = d0,
-                        initialState = true,
-                        finalState = true,
-                    ),
-                    incoming = "prop1?",
-                    outgoing = "-l1",
-                    cost = 0.0,
+
+                graph.addEdge(
+                    ProductAutomatonEdge(
+                        source = q0t0d1,
+                        target = q0t0d2,
+                        ProductAutomatonEdgeLabel(
+                            incoming = EdgeLabelProperty.fromString("prop1?"),
+                            outgoing = EdgeLabelProperty.fromString("-l1"),
+                            cost = 0,
+                        )
+                    )
                 )
 
-                graph.addProductAutomatonEdge(
-                    source = ProductAutomatonNode(
-                        queryNode = q0,
-                        transducerNode = t0,
-                        databaseNode = d2,
-                        initialState = true,
-                        finalState = true,
-                    ),
-                    target = ProductAutomatonNode(
-                        queryNode = q0,
-                        transducerNode = t0,
-                        databaseNode = d1,
-                        initialState = true,
-                        finalState = true,
-                    ),
-                    incoming = "prop1?",
-                    outgoing = "-l2",
-                    cost = 3.0,
+                graph.addEdge(
+                    ProductAutomatonEdge(
+                        source = q0t0d2,
+                        target = q0t0d1,
+                        ProductAutomatonEdgeLabel(
+                            incoming = EdgeLabelProperty.fromString("prop1?"),
+                            outgoing = EdgeLabelProperty.fromString("-l2"),
+                            cost = 3,
+                        )
+                    )
                 )
 
-                graph.addProductAutomatonEdge(
-                    source = ProductAutomatonNode(
-                        queryNode = q0,
-                        transducerNode = t0,
-                        databaseNode = d2,
-                        initialState = true,
-                        finalState = true,
-                    ),
-                    target = ProductAutomatonNode(
-                        queryNode = q0,
-                        transducerNode = t0,
-                        databaseNode = d1,
-                        initialState = true,
-                        finalState = true,
-                    ),
-                    incoming = "prop2?",
-                    outgoing = "-l2",
-                    cost = 5.0,
+                graph.addEdge(
+                    ProductAutomatonEdge(
+                        source = q0t0d2,
+                        target = q0t0d1,
+                        ProductAutomatonEdgeLabel(
+                            incoming = EdgeLabelProperty.fromString("prop2?"),
+                            outgoing = EdgeLabelProperty.fromString("-l2"),
+                            cost = 5,
+                        )
+                    )
                 )
             }
 
             ProductAutomatonEdgeType.PropertyIncomingPropertyOutgoing -> {
-                graph.addProductAutomatonEdge(
-                    source = ProductAutomatonNode(
-                        queryNode = q0,
-                        transducerNode = t0,
-                        databaseNode = d0,
-                        initialState = true,
-                        finalState = true,
-                    ),
-                    target = ProductAutomatonNode(
-                        queryNode = q0,
-                        transducerNode = t0,
-                        databaseNode = d0,
-                        initialState = true,
-                        finalState = true,
-                    ),
-                    incoming = "prop1?",
-                    outgoing = "prop1?",
-                    cost = 0.0,
+
+                graph.addEdge(
+                    ProductAutomatonEdge(
+                        source = q0t0d0,
+                        target = q0t0d0,
+                        ProductAutomatonEdgeLabel(
+                            incoming = EdgeLabelProperty.fromString("prop1?"),
+                            outgoing = EdgeLabelProperty.fromString("prop1?"),
+                            cost = 0,
+                        )
+                    )
                 )
 
-                graph.addProductAutomatonEdge(
-                    source = ProductAutomatonNode(
-                        queryNode = q0,
-                        transducerNode = t0,
-                        databaseNode = d3,
-                        initialState = true,
-                        finalState = true,
-                    ),
-                    target = ProductAutomatonNode(
-                        queryNode = q0,
-                        transducerNode = t0,
-                        databaseNode = d3,
-                        initialState = true,
-                        finalState = true,
-                    ),
-                    incoming = "prop1?",
-                    outgoing = "prop1?",
-                    cost = 0.0,
+                graph.addEdge(
+                    ProductAutomatonEdge(
+                        source = q0t0d3,
+                        target = q0t0d3,
+                        ProductAutomatonEdgeLabel(
+                            incoming = EdgeLabelProperty.fromString("prop1?"),
+                            outgoing = EdgeLabelProperty.fromString("prop1?"),
+                            cost = 0,
+                        )
+                    )
                 )
 
-                graph.addProductAutomatonEdge(
-                    source = ProductAutomatonNode(
-                        queryNode = q0,
-                        transducerNode = t0,
-                        databaseNode = d1,
-                        initialState = true,
-                        finalState = true,
-                    ),
-                    target = ProductAutomatonNode(
-                        queryNode = q0,
-                        transducerNode = t0,
-                        databaseNode = d1,
-                        initialState = true,
-                        finalState = true,
-                    ),
-                    incoming = "prop1?",
-                    outgoing = "prop2?",
-                    cost = 3.0,
+                graph.addEdge(
+                    ProductAutomatonEdge(
+                        source = q0t0d1,
+                        target = q0t0d1,
+                        ProductAutomatonEdgeLabel(
+                            incoming = EdgeLabelProperty.fromString("prop1?"),
+                            outgoing = EdgeLabelProperty.fromString("prop2?"),
+                            cost = 3,
+                        )
+                    )
                 )
 
-                graph.addProductAutomatonEdge(
-                    source = ProductAutomatonNode(
-                        queryNode = q0,
-                        transducerNode = t0,
-                        databaseNode = d3,
-                        initialState = true,
-                        finalState = true,
-                    ),
-                    target = ProductAutomatonNode(
-                        queryNode = q0,
-                        transducerNode = t0,
-                        databaseNode = d3,
-                        initialState = true,
-                        finalState = true,
-                    ),
-                    incoming = "prop1?",
-                    outgoing = "prop2?",
-                    cost = 3.0,
+                graph.addEdge(
+                    ProductAutomatonEdge(
+                        source = q0t0d3,
+                        target = q0t0d3,
+                        ProductAutomatonEdgeLabel(
+                            incoming = EdgeLabelProperty.fromString("prop1?"),
+                            outgoing = EdgeLabelProperty.fromString("prop2?"),
+                            cost = 3,
+                        )
+                    )
                 )
 
-                graph.addProductAutomatonEdge(
-                    source = ProductAutomatonNode(
-                        queryNode = q0,
-                        transducerNode = t0,
-                        databaseNode = d1,
-                        initialState = true,
-                        finalState = true,
-                    ),
-                    target = ProductAutomatonNode(
-                        queryNode = q0,
-                        transducerNode = t0,
-                        databaseNode = d1,
-                        initialState = true,
-                        finalState = true,
-                    ),
-                    incoming = "prop2?",
-                    outgoing = "prop2?",
-                    cost = 5.0,
+                graph.addEdge(
+                    ProductAutomatonEdge(
+                        source = q0t0d1,
+                        target = q0t0d1,
+                        ProductAutomatonEdgeLabel(
+                            incoming = EdgeLabelProperty.fromString("prop2?"),
+                            outgoing = EdgeLabelProperty.fromString("prop2?"),
+                            cost = 5,
+                        )
+                    )
                 )
 
-                graph.addProductAutomatonEdge(
-                    source = ProductAutomatonNode(
-                        queryNode = q0,
-                        transducerNode = t0,
-                        databaseNode = d3,
-                        initialState = true,
-                        finalState = true,
-                    ),
-                    target = ProductAutomatonNode(
-                        queryNode = q0,
-                        transducerNode = t0,
-                        databaseNode = d3,
-                        initialState = true,
-                        finalState = true,
-                    ),
-                    incoming = "prop2?",
-                    outgoing = "prop2?",
-                    cost = 5.0,
+                graph.addEdge(
+                    ProductAutomatonEdge(
+                        source = q0t0d3,
+                        target = q0t0d3,
+                        ProductAutomatonEdgeLabel(
+                            incoming = EdgeLabelProperty.fromString("prop2?"),
+                            outgoing = EdgeLabelProperty.fromString("prop2?"),
+                            cost = 5,
+                        )
+                    )
                 )
             }
         }
@@ -1944,87 +1489,88 @@ class ProductAutomatonServiceTest {
         val d2 = databaseGraph.getNode("d2")!!
         val d3 = databaseGraph.getNode("d3")!!
 
+        val q0t0d0 = ProductAutomatonNode(
+            queryNode = q0,
+            transducerNode = t0,
+            databaseNode = d0,
+            initialState = true,
+            finalState = true,
+        )
+
+        val q0t0d1 = ProductAutomatonNode(
+            queryNode = q0,
+            transducerNode = t0,
+            databaseNode = d1,
+            initialState = true,
+            finalState = true,
+        )
+
+        val q0t0d2 = ProductAutomatonNode(
+            queryNode = q0,
+            transducerNode = t0,
+            databaseNode = d2,
+            initialState = true,
+            finalState = true,
+        )
+
+        val q0t0d3 = ProductAutomatonNode(
+            queryNode = q0,
+            transducerNode = t0,
+            databaseNode = d3,
+            initialState = true,
+            finalState = true,
+        )
+
+
         when (edgeType) {
             ProductAutomatonEdgeType.EpsilonIncomingPositiveOutgoing -> {
 
-                graph.addProductAutomatonEdge(
-                    source = ProductAutomatonNode(
-                        queryNode = q0,
-                        transducerNode = t0,
-                        databaseNode = d0,
-                        initialState = true,
-                        finalState = true,
-                    ),
-                    target = ProductAutomatonNode(
-                        queryNode = q0,
-                        transducerNode = t0,
-                        databaseNode = d1,
-                        initialState = true,
-                        finalState = true,
-                    ),
-                    incoming = "epsilon",
-                    outgoing = "l1",
-                    cost = 0.0,
+                graph.addEdge(
+                    ProductAutomatonEdge(
+                        source = q0t0d0,
+                        target = q0t0d1,
+                        ProductAutomatonEdgeLabel(
+                            incoming = EdgeLabelProperty.fromString("epsilon"),
+                            outgoing = EdgeLabelProperty.fromString("l1"),
+                            cost = 0,
+                        )
+                    )
                 )
 
-                graph.addProductAutomatonEdge(
-                    source = ProductAutomatonNode(
-                        queryNode = q0,
-                        transducerNode = t0,
-                        databaseNode = d1,
-                        initialState = true,
-                        finalState = true,
-                    ),
-                    target = ProductAutomatonNode(
-                        queryNode = q0,
-                        transducerNode = t0,
-                        databaseNode = d2,
-                        initialState = true,
-                        finalState = true,
-                    ),
-                    incoming = "epsilon",
-                    outgoing = "l2",
-                    cost = 3.0,
+                graph.addEdge(
+                    ProductAutomatonEdge(
+                        source = q0t0d1,
+                        target = q0t0d2,
+                        ProductAutomatonEdgeLabel(
+                            incoming = EdgeLabelProperty.fromString("epsilon"),
+                            outgoing = EdgeLabelProperty.fromString("l2"),
+                            cost = 3,
+                        )
+                    )
                 )
 
-                graph.addProductAutomatonEdge(
-                    source = ProductAutomatonNode(
-                        queryNode = q0,
-                        transducerNode = t0,
-                        databaseNode = d0,
-                        initialState = true,
-                        finalState = true,
-                    ),
-                    target = ProductAutomatonNode(
-                        queryNode = q0,
-                        transducerNode = t0,
-                        databaseNode = d3,
-                        initialState = true,
-                        finalState = true,
-                    ),
-                    incoming = "epsilon",
-                    outgoing = "l3",
-                    cost = 5.0,
+                graph.addEdge(
+                    ProductAutomatonEdge(
+                        source = q0t0d0,
+                        target = q0t0d3,
+                        ProductAutomatonEdgeLabel(
+                            incoming = EdgeLabelProperty.fromString("epsilon"),
+                            outgoing = EdgeLabelProperty.fromString("l3"),
+                            cost = 5,
+                        )
+                    )
                 )
 
-                graph.addProductAutomatonEdge(
-                    source = ProductAutomatonNode(
-                        queryNode = q0,
-                        transducerNode = t0,
-                        databaseNode = d0,
-                        initialState = true,
-                        finalState = true,
-                    ),
-                    target = ProductAutomatonNode(
-                        queryNode = q0,
-                        transducerNode = t0,
-                        databaseNode = d3,
-                        initialState = true,
-                        finalState = true,
-                    ),
-                    incoming = "epsilon",
-                    outgoing = "l3",
-                    cost = 3.0,
+                graph.addEdge(
+                    ProductAutomatonEdge(
+                        source = q0t0d0,
+                        target = q0t0d3,
+                        ProductAutomatonEdgeLabel(
+                            incoming = EdgeLabelProperty.fromString("epsilon"),
+                            outgoing = EdgeLabelProperty.fromString("l3"),
+                            cost = 3,
+                        )
+                    )
                 )
             }
 
