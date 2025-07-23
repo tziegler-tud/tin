@@ -1,0 +1,1646 @@
+package tinDB.services
+
+import org.junit.jupiter.api.Test
+import tinDB.model.v2.DatabaseGraph.*
+import tinDB.model.v2.dataProvider.RegularPathQueryDataProvider
+import tinDB.model.v2.productAutomaton.*
+
+import tinDB.services.internal.ProductAutomatonServiceV2
+import tinLIB.model.v2.alphabet.Alphabet
+import tinLIB.model.v2.graph.EdgeLabelProperty
+import tinLIB.model.v2.query.QueryGraph
+import tinLIB.model.v2.transducer.TransducerGraph
+import tinLIB.model.v2.graph.Node
+
+
+class ProductAutomatonServiceTest {
+
+    private val databaseGraph = constructTestDatabaseGraph()
+    private val alphabet = Alphabet()
+
+    private fun printResult(productAutomatonGraph: ProductAutomatonGraph, comparisonGraph: ProductAutomatonGraph) {
+        println("comparing graphs: constructed / comparison graph:\n")
+        productAutomatonGraph.printGraph()
+        println("\n")
+        comparisonGraph.printGraph()
+    }
+
+
+    // goal: test all 9 edge types separately.
+    // therefore: create various small queries and transducers, database should be no problem
+    // we use the same db for all cases
+
+    //separate tests for each edge type, makes it easier to identify where the problem is
+
+    //how to test:
+    //1. create a matching query and transducer graph for the respective case
+    //2. Build the comparison graph manually
+    //3. Use ProductAutomatonService to construct productGraph
+    //4. Compare these two graphs.
+
+    @Test
+    fun epsilonIncomingPositiveOutgoing() {
+        val edgeType = ProductAutomatonEdgeType.EpsilonIncomingPositiveOutgoing
+        /** init query data */
+        println("Testing product automaton construction for: $edgeType")
+        val queryGraph = constructTestQueryGraph(edgeType)
+
+        /** init transducer data */
+        val transducerGraph = constructTestTransducerGraph(edgeType)
+
+        val dataProvider = buildDataProvider(queryGraph, transducerGraph, databaseGraph, alphabet)
+
+        val comparisonGraph = constructComparisonGraph(edgeType, queryGraph, transducerGraph, databaseGraph)
+
+        val productAutomatonService = ProductAutomatonServiceV2(dataProvider)
+        val productAutomatonGraph = productAutomatonService.constructProductAutomaton()
+
+        printResult(productAutomatonGraph, comparisonGraph)
+        assert(productAutomatonGraph == comparisonGraph)
+    }
+
+    @Test
+    fun epsilonIncomingNegativeOutgoing() {
+        val edgeType = ProductAutomatonEdgeType.EpsilonIncomingNegativeOutgoing
+        println("Testing product automaton construction for: $edgeType")
+
+        /** init query data */
+        val queryGraph = constructTestQueryGraph(edgeType)
+
+        /** init transducer data */
+        val transducerGraph = constructTestTransducerGraph(edgeType)
+
+        val dataProvider = buildDataProvider(queryGraph, transducerGraph, databaseGraph, alphabet)
+
+        val comparisonGraph = constructComparisonGraph(edgeType, queryGraph, transducerGraph, databaseGraph)
+
+        val productAutomatonService = ProductAutomatonServiceV2(dataProvider)
+        val productAutomatonGraph = productAutomatonService.constructProductAutomaton()
+
+        printResult(productAutomatonGraph, comparisonGraph)
+
+        assert(productAutomatonGraph == comparisonGraph)
+
+    }
+
+    @Test
+    fun epsilonIncomingEpsilonOutgoing() {
+        val edgeType = ProductAutomatonEdgeType.EpsilonIncomingEpsilonOutgoing
+        println("Testing product automaton construction for: $edgeType")
+
+        /** init query data */
+        val queryGraph = constructTestQueryGraph(edgeType)
+
+        /** init transducer data */
+        val transducerGraph = constructTestTransducerGraph(edgeType)
+
+        val dataProvider = buildDataProvider(queryGraph, transducerGraph, databaseGraph, alphabet)
+
+        val comparisonGraph = constructComparisonGraph(edgeType, queryGraph, transducerGraph, databaseGraph)
+
+        val productAutomatonService = ProductAutomatonServiceV2(dataProvider)
+        val productAutomatonGraph = productAutomatonService.constructProductAutomaton()
+
+        printResult(productAutomatonGraph, comparisonGraph)
+        assert(productAutomatonGraph == comparisonGraph)
+
+    }
+
+    @Test
+    fun epsilonIncomingPropertyOutgoing() {
+        val edgeType = ProductAutomatonEdgeType.EpsilonIncomingPropertyOutgoing
+        println("Testing product automaton construction for: $edgeType")
+
+        /** init query data */
+        val queryGraph = constructTestQueryGraph(edgeType)
+
+        /** init transducer data */
+        val transducerGraph = constructTestTransducerGraph(edgeType)
+
+        val dataProvider = buildDataProvider(queryGraph, transducerGraph, databaseGraph, alphabet)
+
+        val comparisonGraph = constructComparisonGraph(edgeType, queryGraph, transducerGraph, databaseGraph)
+
+        val productAutomatonService = ProductAutomatonServiceV2(dataProvider)
+        val productAutomatonGraph = productAutomatonService.constructProductAutomaton()
+
+        printResult(productAutomatonGraph, comparisonGraph)
+        assert(productAutomatonGraph == comparisonGraph)
+
+    }
+
+    @Test
+    fun PositiveIncomingPositiveOutgoing() {
+        val edgeType = ProductAutomatonEdgeType.PositiveIncomingPositiveOutgoing
+        println("Testing product automaton construction for: $edgeType")
+
+        /** init query data */
+        val queryGraph = constructTestQueryGraph(edgeType)
+
+        /** init transducer data */
+        val transducerGraph = constructTestTransducerGraph(edgeType)
+
+        val dataProvider = buildDataProvider(queryGraph, transducerGraph, databaseGraph, alphabet)
+
+        val comparisonGraph = constructComparisonGraph(edgeType, queryGraph, transducerGraph, databaseGraph)
+
+        val productAutomatonService = ProductAutomatonServiceV2(dataProvider)
+        val productAutomatonGraph = productAutomatonService.constructProductAutomaton()
+
+        printResult(productAutomatonGraph, comparisonGraph)
+        assert(productAutomatonGraph == comparisonGraph)
+
+    }
+
+    @Test
+    fun PositiveIncomingNegativeOutgoing() {
+        val edgeType = ProductAutomatonEdgeType.PositiveIncomingNegativeOutgoing
+        println("Testing product automaton construction for: $edgeType")
+
+        /** init query data */
+        val queryGraph = constructTestQueryGraph(edgeType)
+
+        /** init transducer data */
+        val transducerGraph = constructTestTransducerGraph(edgeType)
+
+        val dataProvider = buildDataProvider(queryGraph, transducerGraph, databaseGraph, alphabet)
+
+        val comparisonGraph = constructComparisonGraph(edgeType, queryGraph, transducerGraph, databaseGraph)
+
+        val productAutomatonService = ProductAutomatonServiceV2(dataProvider)
+        val productAutomatonGraph = productAutomatonService.constructProductAutomaton()
+
+
+        printResult(productAutomatonGraph, comparisonGraph)
+        assert(productAutomatonGraph == comparisonGraph)
+
+    }
+
+    @Test
+    fun PositiveIncomingEpsilonOutgoing() {
+        val edgeType = ProductAutomatonEdgeType.PositiveIncomingEpsilonOutgoing
+        println("Testing product automaton construction for: $edgeType")
+
+        /** init query data */
+        val queryGraph = constructTestQueryGraph(edgeType)
+
+        /** init transducer data */
+        val transducerGraph = constructTestTransducerGraph(edgeType)
+
+        val dataProvider = buildDataProvider(queryGraph, transducerGraph, databaseGraph, alphabet)
+
+        val comparisonGraph = constructComparisonGraph(edgeType, queryGraph, transducerGraph, databaseGraph)
+
+        val productAutomatonService = ProductAutomatonServiceV2(dataProvider)
+        val productAutomatonGraph = productAutomatonService.constructProductAutomaton()
+
+
+        printResult(productAutomatonGraph, comparisonGraph)
+        assert(productAutomatonGraph == comparisonGraph)
+
+    }
+
+    @Test
+    fun PositiveIncomingPropertyOutgoing() {
+        val edgeType = ProductAutomatonEdgeType.PositiveIncomingPropertyOutgoing
+
+        /** init query data */
+        val queryGraph = constructTestQueryGraph(edgeType)
+
+        /** init transducer data */
+        val transducerGraph = constructTestTransducerGraph(edgeType)
+
+        val dataProvider = buildDataProvider(queryGraph, transducerGraph, databaseGraph, alphabet)
+
+        val comparisonGraph = constructComparisonGraph(edgeType, queryGraph, transducerGraph, databaseGraph)
+
+        val productAutomatonService = ProductAutomatonServiceV2(dataProvider)
+        val productAutomatonGraph = productAutomatonService.constructProductAutomaton()
+
+
+        printResult(productAutomatonGraph, comparisonGraph)
+        assert(productAutomatonGraph == comparisonGraph)
+
+    }
+
+    @Test
+    fun NegativeIncomingPositiveOutgoing() {
+        val edgeType = ProductAutomatonEdgeType.NegativeIncomingPositiveOutgoing
+        println("Testing product automaton construction for: $edgeType")
+
+        /** init query data */
+        val queryGraph = constructTestQueryGraph(edgeType)
+
+        /** init transducer data */
+        val transducerGraph = constructTestTransducerGraph(edgeType)
+
+        val dataProvider = buildDataProvider(queryGraph, transducerGraph, databaseGraph, alphabet)
+
+        val comparisonGraph = constructComparisonGraph(edgeType, queryGraph, transducerGraph, databaseGraph)
+
+        val productAutomatonService = ProductAutomatonServiceV2(dataProvider)
+        val productAutomatonGraph = productAutomatonService.constructProductAutomaton()
+
+
+        printResult(productAutomatonGraph, comparisonGraph)
+        assert(productAutomatonGraph == comparisonGraph)
+
+    }
+
+    @Test
+    fun NegativeIncomingNegativeOutgoing() {
+        val edgeType = ProductAutomatonEdgeType.NegativeIncomingNegativeOutgoing
+        println("Testing product automaton construction for: $edgeType")
+
+        /** init query data */
+        val queryGraph = constructTestQueryGraph(edgeType)
+
+        /** init transducer data */
+        val transducerGraph = constructTestTransducerGraph(edgeType)
+
+        val dataProvider = buildDataProvider(queryGraph, transducerGraph, databaseGraph, alphabet)
+
+        val comparisonGraph = constructComparisonGraph(edgeType, queryGraph, transducerGraph, databaseGraph)
+
+        val productAutomatonService = ProductAutomatonServiceV2(dataProvider)
+        val productAutomatonGraph = productAutomatonService.constructProductAutomaton()
+
+
+        println("comparing graphs: constructed / comparison graph:\n")
+        productAutomatonGraph.printGraph()
+        comparisonGraph.printGraph()
+        assert(productAutomatonGraph == comparisonGraph)
+
+    }
+
+    @Test
+    fun NegativeIncomingEpsilonOutgoing() {
+        val edgeType = ProductAutomatonEdgeType.NegativeIncomingEpsilonOutgoing
+        println("Testing product automaton construction for: $edgeType")
+
+        /** init query data */
+        val queryGraph = constructTestQueryGraph(edgeType)
+
+        /** init transducer data */
+        val transducerGraph = constructTestTransducerGraph(edgeType)
+
+        val dataProvider = buildDataProvider(queryGraph, transducerGraph, databaseGraph, alphabet)
+
+        val comparisonGraph = constructComparisonGraph(edgeType, queryGraph, transducerGraph, databaseGraph)
+
+        val productAutomatonService = ProductAutomatonServiceV2(dataProvider)
+        val productAutomatonGraph = productAutomatonService.constructProductAutomaton()
+
+        printResult(productAutomatonGraph, comparisonGraph)
+        assert(productAutomatonGraph == comparisonGraph)
+
+    }
+
+    @Test
+    fun NegativeIncomingPropertyOutgoing() {
+        val edgeType = ProductAutomatonEdgeType.NegativeIncomingPropertyOutgoing
+        println("Testing product automaton construction for: $edgeType")
+
+        /** init query data */
+        val queryGraph = constructTestQueryGraph(edgeType)
+
+        /** init transducer data */
+        val transducerGraph = constructTestTransducerGraph(edgeType)
+
+        val dataProvider = buildDataProvider(queryGraph, transducerGraph, databaseGraph, alphabet)
+
+        val comparisonGraph = constructComparisonGraph(edgeType, queryGraph, transducerGraph, databaseGraph)
+
+        val productAutomatonService = ProductAutomatonServiceV2(dataProvider)
+        val productAutomatonGraph = productAutomatonService.constructProductAutomaton()
+
+        printResult(productAutomatonGraph, comparisonGraph)
+        assert(productAutomatonGraph == comparisonGraph)
+
+    }
+
+    @Test
+    fun PropertyIncomingEpsilonOutgoing() {
+        val edgeType = ProductAutomatonEdgeType.PropertyIncomingEpsilonOutgoing
+        println("Testing product automaton construction for: $edgeType")
+
+        /** init query data */
+        val queryGraph = constructTestQueryGraph(edgeType)
+
+        /** init transducer data */
+        val transducerGraph = constructTestTransducerGraph(edgeType)
+
+        val dataProvider = buildDataProvider(queryGraph, transducerGraph, databaseGraph, alphabet)
+
+        val comparisonGraph = constructComparisonGraph(edgeType, queryGraph, transducerGraph, databaseGraph)
+
+        val productAutomatonService = ProductAutomatonServiceV2(dataProvider)
+        val productAutomatonGraph = productAutomatonService.constructProductAutomaton()
+
+        printResult(productAutomatonGraph, comparisonGraph)
+
+        assert(productAutomatonGraph == comparisonGraph)
+
+    }
+
+    @Test
+    fun PropertyIncomingPositiveOutgoing() {
+        val edgeType = ProductAutomatonEdgeType.PropertyIncomingPositiveOutgoing
+        println("Testing product automaton construction for: $edgeType")
+
+        /** init query data */
+        val queryGraph = constructTestQueryGraph(edgeType)
+
+        /** init transducer data */
+        val transducerGraph = constructTestTransducerGraph(edgeType)
+
+        val dataProvider = buildDataProvider(queryGraph, transducerGraph, databaseGraph, alphabet)
+
+        val comparisonGraph = constructComparisonGraph(edgeType, queryGraph, transducerGraph, databaseGraph)
+
+        val productAutomatonService = ProductAutomatonServiceV2(dataProvider)
+        val productAutomatonGraph = productAutomatonService.constructProductAutomaton()
+
+        printResult(productAutomatonGraph, comparisonGraph)
+
+        assert(productAutomatonGraph == comparisonGraph)
+
+    }
+
+    @Test
+    fun PropertyIncomingNegativeOutgoing() {
+        val edgeType = ProductAutomatonEdgeType.PropertyIncomingNegativeOutgoing
+        println("Testing product automaton construction for: $edgeType")
+
+        /** init query data */
+        val queryGraph = constructTestQueryGraph(edgeType)
+
+        /** init transducer data */
+        val transducerGraph = constructTestTransducerGraph(edgeType)
+
+        val dataProvider = buildDataProvider(queryGraph, transducerGraph, databaseGraph, alphabet)
+
+        val comparisonGraph = constructComparisonGraph(edgeType, queryGraph, transducerGraph, databaseGraph)
+
+        val productAutomatonService = ProductAutomatonServiceV2(dataProvider)
+        val productAutomatonGraph = productAutomatonService.constructProductAutomaton()
+
+        printResult(productAutomatonGraph, comparisonGraph)
+
+        assert(productAutomatonGraph == comparisonGraph)
+
+    }
+
+    @Test
+    fun PropertyIncomingPropertyOutgoing() {
+        val edgeType = ProductAutomatonEdgeType.PropertyIncomingPropertyOutgoing
+        println("Testing product automaton construction for: $edgeType")
+
+        /** init query data */
+        val queryGraph = constructTestQueryGraph(edgeType)
+
+        /** init transducer data */
+        val transducerGraph = constructTestTransducerGraph(edgeType)
+
+        val dataProvider = buildDataProvider(queryGraph, transducerGraph, databaseGraph, alphabet)
+
+        val comparisonGraph = constructComparisonGraph(edgeType, queryGraph, transducerGraph, databaseGraph)
+
+        val productAutomatonService = ProductAutomatonServiceV2(dataProvider)
+        val productAutomatonGraph = productAutomatonService.constructProductAutomaton()
+
+        printResult(productAutomatonGraph, comparisonGraph)
+
+        assert(productAutomatonGraph == comparisonGraph)
+
+    }
+
+
+    @Test
+    fun epsilonIncomingPositiveOutgoingFailing() {
+        val edgeType = ProductAutomatonEdgeType.EpsilonIncomingPositiveOutgoing
+
+        /** init query data */
+        val queryGraph = constructTestQueryGraph(edgeType)
+
+        /** init transducer data */
+        val transducerGraph = constructTestTransducerGraph(edgeType)
+
+        val dataProvider = buildDataProvider(queryGraph, transducerGraph, databaseGraph, alphabet)
+
+        val comparisonGraph = constructComparisonGraphFailing(edgeType, queryGraph, transducerGraph, databaseGraph)
+
+        val productAutomatonService = ProductAutomatonServiceV2(dataProvider)
+        val productAutomatonGraph = productAutomatonService.constructProductAutomaton()
+
+
+        assert(productAutomatonGraph !== comparisonGraph)
+    }
+
+    private fun constructTestDatabaseGraph(): DatabaseGraph {
+        val databaseGraph = DatabaseGraph()
+        val d0 = DatabaseNode("d0")
+        val d1 = DatabaseNode("d1")
+        val d2 = DatabaseNode("d2")
+        val d3 = DatabaseNode("d3")
+
+        databaseGraph.addNodes(
+            d0, d1, d2, d3
+        )
+
+        d0.addProperty("prop1")
+        d1.addProperty("prop2")
+        d2.addProperty("prop3")
+        d3.addProperty("prop1")
+        d3.addProperty("prop2")
+        d3.addProperty("prop3")
+
+        databaseGraph.addEdge(source = d0, target = d1, label = DatabaseEdgeLabel("l1"))
+        databaseGraph.addEdge(source = d1, target = d2, label = DatabaseEdgeLabel("l2"))
+        databaseGraph.addEdge(source = d0, target = d3, label = DatabaseEdgeLabel("l3"))
+
+        return databaseGraph
+    }
+
+
+    private fun constructTestQueryGraph(edgeType: ProductAutomatonEdgeType): QueryGraph {
+        val graph: QueryGraph = QueryGraph()
+        when (edgeType) {
+            ProductAutomatonEdgeType.EpsilonIncomingPositiveOutgoing, ProductAutomatonEdgeType.EpsilonIncomingNegativeOutgoing, ProductAutomatonEdgeType.EpsilonIncomingEpsilonOutgoing, ProductAutomatonEdgeType.EpsilonIncomingPropertyOutgoing -> {
+                graph.addNodes(Node("q0", isInitialState = true, isFinalState = true))
+                val q0 = graph.nodes.find { it.identifier == "q0" }!!
+                graph.addEdge(q0, q0, "epsilon")
+            }
+
+            ProductAutomatonEdgeType.PositiveIncomingPositiveOutgoing, ProductAutomatonEdgeType.PositiveIncomingNegativeOutgoing, ProductAutomatonEdgeType.PositiveIncomingEpsilonOutgoing, ProductAutomatonEdgeType.PositiveIncomingPropertyOutgoing -> {
+                graph.addNode(Node("q0", isInitialState = true, isFinalState = true))
+                val q0 = graph.nodes.find { it.identifier == "q0" }!!
+                graph.addEdge(q0, q0, "l1")
+                graph.addEdge(q0, q0, "l2")
+            }
+
+            ProductAutomatonEdgeType.NegativeIncomingPositiveOutgoing, ProductAutomatonEdgeType.NegativeIncomingNegativeOutgoing, ProductAutomatonEdgeType.NegativeIncomingEpsilonOutgoing, ProductAutomatonEdgeType.NegativeIncomingPropertyOutgoing -> {
+                graph.addNodes(Node("q0", isInitialState = true, isFinalState = true))
+                val q0 = graph.nodes.find { it.identifier == "q0" }!!
+                graph.addEdge(q0, q0, "-l1")
+                graph.addEdge(q0, q0, "-l2")
+            }
+
+            ProductAutomatonEdgeType.PropertyIncomingEpsilonOutgoing, ProductAutomatonEdgeType.PropertyIncomingPositiveOutgoing, ProductAutomatonEdgeType.PropertyIncomingNegativeOutgoing, ProductAutomatonEdgeType.PropertyIncomingPropertyOutgoing -> {
+                graph.addNodes(Node("q0", isInitialState = true, isFinalState = true))
+                val q0 = graph.nodes.find { it.identifier == "q0" }!!
+                graph.addEdge(q0, q0, "prop1?")
+                graph.addEdge(q0, q0, "prop2?")
+            }
+        }
+
+        return graph
+    }
+
+    private fun constructTestTransducerGraph(edgeType: ProductAutomatonEdgeType): TransducerGraph {
+        val graph: TransducerGraph = TransducerGraph()
+        when (edgeType) {
+            ProductAutomatonEdgeType.EpsilonIncomingPositiveOutgoing -> {
+                graph.addNodes(Node("t0", isInitialState = true, isFinalState = true))
+                val t0 = graph.nodes.find { it.identifier == "t0" }!!
+                graph.addEdge(t0, t0, "epsilon", "l1", 0)
+                graph.addEdge(t0, t0, "epsilon", "l2", 3)
+                graph.addEdge(t0, t0, "epsilon", "l3", 5)
+            }
+
+            ProductAutomatonEdgeType.EpsilonIncomingNegativeOutgoing -> {
+                graph.addNodes(Node("t0", isInitialState = true, isFinalState = true))
+                val t0 = graph.nodes.find { it.identifier == "t0" }!!
+                graph.addEdge(t0, t0, "epsilon", "-l1", 0)
+                graph.addEdge(t0, t0, "epsilon", "-l2", 3)
+                graph.addEdge(t0, t0, "epsilon", "-l3", 5)
+            }
+
+            ProductAutomatonEdgeType.EpsilonIncomingEpsilonOutgoing -> {
+                graph.addNodes(Node("t0", isInitialState = true, isFinalState = true))
+                val t0 = graph.nodes.find { it.identifier == "t0" }!!
+                graph.addEdge(t0, t0, "epsilon", "epsilon", 3)
+            }
+
+            ProductAutomatonEdgeType.EpsilonIncomingPropertyOutgoing -> {
+                graph.addNodes(Node("t0", isInitialState = true, isFinalState = true))
+                val t0 = graph.nodes.find { it.identifier == "t0" }!!
+                graph.addEdge(t0, t0, "epsilon", "prop1?", 0)
+                graph.addEdge(t0, t0, "epsilon", "prop2?", 3)
+                graph.addEdge(t0, t0, "epsilon", "prop3?", 5)
+            }
+
+            ProductAutomatonEdgeType.PositiveIncomingPositiveOutgoing -> {
+                graph.addNodes(Node("t0", isInitialState = true, isFinalState = true))
+                val t0 = graph.nodes.find { it.identifier == "t0" }!!
+                graph.addEdge(t0, t0, "l1", "l1", 0)
+                graph.addEdge(t0, t0, "l1", "l2", 3)
+                graph.addEdge(t0, t0, "l1", "l3", 5)
+            }
+
+            ProductAutomatonEdgeType.PositiveIncomingNegativeOutgoing -> {
+                graph.addNodes(Node("t0", isInitialState = true, isFinalState = true))
+                val t0 = graph.nodes.find { it.identifier == "t0" }!!
+                graph.addEdge(t0, t0, "l1", "-l1", 0)
+                graph.addEdge(t0, t0, "l1", "-l2", 3)
+                graph.addEdge(t0, t0, "l1", "-l3", 5)
+            }
+
+            ProductAutomatonEdgeType.PositiveIncomingEpsilonOutgoing -> {
+                graph.addNodes(Node("t0", isInitialState = true, isFinalState = true))
+                val t0 = graph.nodes.find { it.identifier == "t0" }!!
+                graph.addEdge(t0, t0, "l1", "epsilon", 3)
+            }
+
+            ProductAutomatonEdgeType.PositiveIncomingPropertyOutgoing -> {
+                graph.addNodes(Node("t0", isInitialState = true, isFinalState = true))
+                val t0 = graph.nodes.find { it.identifier == "t0" }!!
+                graph.addEdge(t0, t0, "l1", "prop1?", 0)
+                graph.addEdge(t0, t0, "l1", "prop2?", 3)
+                graph.addEdge(t0, t0, "l2", "prop2?", 5)
+            }
+
+            ProductAutomatonEdgeType.NegativeIncomingPositiveOutgoing -> {
+                graph.addNodes(Node("t0", isInitialState = true, isFinalState = true))
+                val t0 = graph.nodes.find { it.identifier == "t0" }!!
+                graph.addEdge(t0, t0, "-l1", "l1", 0)
+                graph.addEdge(t0, t0, "-l1", "l2", 3)
+                graph.addEdge(t0, t0, "-l2", "l3", 5)
+            }
+
+            ProductAutomatonEdgeType.NegativeIncomingNegativeOutgoing -> {
+                graph.addNodes(Node("t0", isInitialState = true, isFinalState = true))
+                val t0 = graph.nodes.find { it.identifier == "t0" }!!
+                graph.addEdge(t0, t0, "-l1", "-l1", 0)
+                graph.addEdge(t0, t0, "-l1", "-l2", 3)
+                graph.addEdge(t0, t0, "-l2", "-l2", 5)
+            }
+
+            ProductAutomatonEdgeType.NegativeIncomingEpsilonOutgoing -> {
+                graph.addNodes(Node("t0", isInitialState = true, isFinalState = true))
+                val t0 = graph.nodes.find { it.identifier == "t0" }!!
+                graph.addEdge(t0, t0, "-l1", "epsilon", 0)
+                graph.addEdge(t0, t0, "-l1", "epsilon", 3)
+                graph.addEdge(t0, t0, "-l2", "epsilon", 5)
+            }
+
+            ProductAutomatonEdgeType.NegativeIncomingPropertyOutgoing -> {
+                graph.addNodes(Node("t0", isInitialState = true, isFinalState = true))
+                val t0 = graph.nodes.find { it.identifier == "t0" }!!
+                graph.addEdge(t0, t0, "-l1", "prop1?", 0)
+                graph.addEdge(t0, t0, "-l1", "prop2?", 3)
+                graph.addEdge(t0, t0, "-l2", "prop2?", 5)
+            }
+
+            ProductAutomatonEdgeType.PropertyIncomingEpsilonOutgoing -> {
+                graph.addNodes(Node("t0", isInitialState = true, isFinalState = true))
+                val t0 = graph.nodes.find { it.identifier == "t0" }!!
+                graph.addEdge(t0, t0, "prop1?", "epsilon", 0)
+                graph.addEdge(t0, t0, "prop1?", "epsilon", 3)
+                graph.addEdge(t0, t0, "prop2?", "epsilon", 5)
+            }
+
+            ProductAutomatonEdgeType.PropertyIncomingPositiveOutgoing -> {
+                graph.addNodes(Node("t0", isInitialState = true, isFinalState = true))
+                val t0 = graph.nodes.find { it.identifier == "t0" }!!
+                graph.addEdge(t0, t0, "prop1?", "l1", 0)
+                graph.addEdge(t0, t0, "prop1?", "l2", 3)
+                graph.addEdge(t0, t0, "prop2?", "l2", 5)
+            }
+
+            ProductAutomatonEdgeType.PropertyIncomingNegativeOutgoing -> {
+                graph.addNodes(Node("t0", isInitialState = true, isFinalState = true))
+                val t0 = graph.nodes.find { it.identifier == "t0" }!!
+                graph.addEdge(t0, t0, "prop1?", "-l1", 0)
+                graph.addEdge(t0, t0, "prop1?", "-l2", 3)
+                graph.addEdge(t0, t0, "prop2?", "-l2", 5)
+            }
+
+            ProductAutomatonEdgeType.PropertyIncomingPropertyOutgoing -> {
+                graph.addNodes(Node("t0", isInitialState = true, isFinalState = true))
+                val t0 = graph.nodes.find { it.identifier == "t0" }!!
+                graph.addEdge(t0, t0, "prop1?", "prop1?", 0)
+                graph.addEdge(t0, t0, "prop1?", "prop2?", 3)
+                graph.addEdge(t0, t0, "prop2?", "prop2?", 5)
+            }
+        }
+
+        return graph
+    }
+
+    private fun constructComparisonGraph(
+        edgeType: ProductAutomatonEdgeType,
+        queryGraph: QueryGraph,
+        transducerGraph: TransducerGraph,
+        databaseGraph: DatabaseGraph
+    ): ProductAutomatonGraph {
+        val graph = ProductAutomatonGraph()
+
+        val q0 = queryGraph.getNode("q0")!!
+        val t0 = transducerGraph.getNode("t0")!!
+
+        val d0 = databaseGraph.getNode("d0")!!
+        val d1 = databaseGraph.getNode("d1")!!
+        val d2 = databaseGraph.getNode("d2")!!
+        val d3 = databaseGraph.getNode("d3")!!
+
+        val q0t0d0 = ProductAutomatonNode(
+            queryNode = q0,
+            transducerNode = t0,
+            databaseNode = d0,
+            initialState = true,
+            finalState = true,
+        )
+
+        val q0t0d1 = ProductAutomatonNode(
+            queryNode = q0,
+            transducerNode = t0,
+            databaseNode = d1,
+            initialState = true,
+            finalState = true,
+        )
+
+        val q0t0d2 = ProductAutomatonNode(
+            queryNode = q0,
+            transducerNode = t0,
+            databaseNode = d2,
+            initialState = true,
+            finalState = true,
+        )
+
+        val q0t0d3 = ProductAutomatonNode(
+            queryNode = q0,
+            transducerNode = t0,
+            databaseNode = d3,
+            initialState = true,
+            finalState = true,
+        )
+
+        val databaseNodes = arrayOf(d0, d1, d2, d3)
+        val productNodes = arrayOf(q0t0d0, q0t0d1, q0t0d2, q0t0d3)
+
+
+        when (edgeType) {
+            ProductAutomatonEdgeType.EpsilonIncomingPositiveOutgoing -> {
+                graph.addEdge(
+                    ProductAutomatonEdge(
+                        source = q0t0d0,
+                        target = q0t0d1,
+                        ProductAutomatonEdgeLabel(
+                            incoming = EdgeLabelProperty.fromString("epsilon"),
+                            outgoing = EdgeLabelProperty.fromString("l1"),
+                            cost = 0,
+                        )
+                    )
+                )
+
+                graph.addEdge(
+                    ProductAutomatonEdge(
+                        source = q0t0d1,
+                        target = q0t0d2,
+                        ProductAutomatonEdgeLabel(
+                            incoming = EdgeLabelProperty.fromString("epsilon"),
+                            outgoing = EdgeLabelProperty.fromString("l2"),
+                            cost = 3,
+                        )
+                    )
+                )
+
+                graph.addEdge(
+                    ProductAutomatonEdge(
+                        source = q0t0d0,
+                        target = q0t0d3,
+                        ProductAutomatonEdgeLabel(
+                            incoming = EdgeLabelProperty.fromString("epsilon"),
+                            outgoing = EdgeLabelProperty.fromString("l3"),
+                            cost = 5,
+                        )
+                    )
+                )
+            }
+
+            ProductAutomatonEdgeType.EpsilonIncomingNegativeOutgoing -> {
+                graph.addEdge(
+                    ProductAutomatonEdge(
+                        source = q0t0d1,
+                        target = q0t0d0,
+                        ProductAutomatonEdgeLabel(
+                            incoming = EdgeLabelProperty.fromString("epsilon"),
+                            outgoing = EdgeLabelProperty.fromString("-l1"),
+                            cost = 0,
+                        )
+                    )
+                )
+
+                graph.addEdge(
+                    ProductAutomatonEdge(
+                        source = q0t0d2,
+                        target = q0t0d1,
+                        ProductAutomatonEdgeLabel(
+                            incoming = EdgeLabelProperty.fromString("epsilon"),
+                            outgoing = EdgeLabelProperty.fromString("-l2"),
+                            cost = 3,
+                        )
+                    )
+                )
+
+                graph.addEdge(
+                    ProductAutomatonEdge(
+                        source = q0t0d3,
+                        target = q0t0d0,
+                        ProductAutomatonEdgeLabel(
+                            incoming = EdgeLabelProperty.fromString("epsilon"),
+                            outgoing = EdgeLabelProperty.fromString("-l3"),
+                            cost = 5,
+                        )
+                    )
+                )
+            }
+
+            ProductAutomatonEdgeType.EpsilonIncomingEpsilonOutgoing -> {
+                graph.addEdge(
+                    ProductAutomatonEdge(
+                        source = q0t0d0,
+                        target = q0t0d0,
+                        ProductAutomatonEdgeLabel(
+                            incoming = EdgeLabelProperty.fromString("epsilon"),
+                            outgoing = EdgeLabelProperty.fromString("epsilon"),
+                            cost = 3,
+                        )
+                    )
+                )
+
+                graph.addEdge(
+                    ProductAutomatonEdge(
+                        source = q0t0d1,
+                        target = q0t0d1,
+                        ProductAutomatonEdgeLabel(
+                            incoming = EdgeLabelProperty.fromString("epsilon"),
+                            outgoing = EdgeLabelProperty.fromString("epsilon"),
+                            cost = 3,
+                        )
+                    )
+                )
+
+                graph.addEdge(
+                    ProductAutomatonEdge(
+                        source = q0t0d2,
+                        target = q0t0d2,
+                        ProductAutomatonEdgeLabel(
+                            incoming = EdgeLabelProperty.fromString("epsilon"),
+                            outgoing = EdgeLabelProperty.fromString("epsilon"),
+                            cost = 3,
+                        )
+                    )
+                )
+
+                graph.addEdge(
+                    ProductAutomatonEdge(
+                        source = q0t0d3,
+                        target = q0t0d3,
+                        ProductAutomatonEdgeLabel(
+                            incoming = EdgeLabelProperty.fromString("epsilon"),
+                            outgoing = EdgeLabelProperty.fromString("epsilon"),
+                            cost = 3,
+                        )
+                    )
+                )
+            }
+
+            ProductAutomatonEdgeType.EpsilonIncomingPropertyOutgoing -> {
+                graph.addEdge(
+                    ProductAutomatonEdge(
+                        source = q0t0d0,
+                        target = q0t0d0,
+                        ProductAutomatonEdgeLabel(
+                            incoming = EdgeLabelProperty.fromString("epsilon"),
+                            outgoing = EdgeLabelProperty.fromString("prop1?"),
+                            cost = 0,
+                        )
+                    )
+                )
+
+                graph.addEdge(
+                    ProductAutomatonEdge(
+                        source = q0t0d3,
+                        target = q0t0d3,
+                        ProductAutomatonEdgeLabel(
+                            incoming = EdgeLabelProperty.fromString("epsilon"),
+                            outgoing = EdgeLabelProperty.fromString("prop1?"),
+                            cost = 0,
+                        )
+                    )
+                )
+
+                graph.addEdge(
+                    ProductAutomatonEdge(
+                        source = q0t0d1,
+                        target = q0t0d1,
+                        ProductAutomatonEdgeLabel(
+                            incoming = EdgeLabelProperty.fromString("epsilon"),
+                            outgoing = EdgeLabelProperty.fromString("prop2?"),
+                            cost = 3,
+                        )
+                    )
+                )
+
+                graph.addEdge(
+                    ProductAutomatonEdge(
+                        source = q0t0d3,
+                        target = q0t0d3,
+                        ProductAutomatonEdgeLabel(
+                            incoming = EdgeLabelProperty.fromString("epsilon"),
+                            outgoing = EdgeLabelProperty.fromString("prop2?"),
+                            cost = 3,
+                        )
+                    )
+                )
+
+                graph.addEdge(
+                    ProductAutomatonEdge(
+                        source = q0t0d2,
+                        target = q0t0d2,
+                        ProductAutomatonEdgeLabel(
+                            incoming = EdgeLabelProperty.fromString("epsilon"),
+                            outgoing = EdgeLabelProperty.fromString("prop3?"),
+                            cost = 5,
+                        )
+                    )
+                )
+
+                graph.addEdge(
+                    ProductAutomatonEdge(
+                        source = q0t0d3,
+                        target = q0t0d3,
+                        ProductAutomatonEdgeLabel(
+                            incoming = EdgeLabelProperty.fromString("epsilon"),
+                            outgoing = EdgeLabelProperty.fromString("prop3?"),
+                            cost = 5,
+                        )
+                    )
+                )
+            }
+
+            ProductAutomatonEdgeType.PositiveIncomingPositiveOutgoing -> {
+                graph.addEdge(
+                    ProductAutomatonEdge(
+                        source = q0t0d0,
+                        target = q0t0d1,
+                        ProductAutomatonEdgeLabel(
+                            incoming = EdgeLabelProperty.fromString("l1"),
+                            outgoing = EdgeLabelProperty.fromString("l1"),
+                            cost = 0,
+                        )
+                    )
+                )
+
+                graph.addEdge(
+                    ProductAutomatonEdge(
+                        source = q0t0d1,
+                        target = q0t0d2,
+                        ProductAutomatonEdgeLabel(
+                            incoming = EdgeLabelProperty.fromString("l1"),
+                            outgoing = EdgeLabelProperty.fromString("l2"),
+                            cost = 3,
+                        )
+                    )
+                )
+
+                graph.addEdge(
+                    ProductAutomatonEdge(
+                        source = q0t0d0,
+                        target = q0t0d3,
+                        ProductAutomatonEdgeLabel(
+                            incoming = EdgeLabelProperty.fromString("l1"),
+                            outgoing = EdgeLabelProperty.fromString("l3"),
+                            cost = 5,
+                        )
+                    )
+                )
+            }
+
+            ProductAutomatonEdgeType.PositiveIncomingNegativeOutgoing -> {
+
+                graph.addEdge(
+                    ProductAutomatonEdge(
+                        source = q0t0d1,
+                        target = q0t0d0,
+                        ProductAutomatonEdgeLabel(
+                            incoming = EdgeLabelProperty.fromString("l1"),
+                            outgoing = EdgeLabelProperty.fromString("-l1"),
+                            cost = 0,
+                        )
+                    )
+                )
+
+                graph.addEdge(
+                    ProductAutomatonEdge(
+                        source = q0t0d2,
+                        target = q0t0d1,
+                        ProductAutomatonEdgeLabel(
+                            incoming = EdgeLabelProperty.fromString("l1"),
+                            outgoing = EdgeLabelProperty.fromString("-l2"),
+                            cost = 3,
+                        )
+                    )
+                )
+
+                graph.addEdge(
+                    ProductAutomatonEdge(
+                        source = q0t0d3,
+                        target = q0t0d0,
+                        ProductAutomatonEdgeLabel(
+                            incoming = EdgeLabelProperty.fromString("l1"),
+                            outgoing = EdgeLabelProperty.fromString("-l3"),
+                            cost = 5,
+                        )
+                    )
+                )
+            }
+
+            ProductAutomatonEdgeType.PositiveIncomingEpsilonOutgoing -> {
+
+                graph.addEdge(
+                    ProductAutomatonEdge(
+                        source = q0t0d0,
+                        target = q0t0d0,
+                        ProductAutomatonEdgeLabel(
+                            incoming = EdgeLabelProperty.fromString("l1"),
+                            outgoing = EdgeLabelProperty.fromString("epsilon"),
+                            cost = 3,
+                        )
+                    )
+                )
+
+                graph.addEdge(
+                    ProductAutomatonEdge(
+                        source = q0t0d1,
+                        target = q0t0d1,
+                        ProductAutomatonEdgeLabel(
+                            incoming = EdgeLabelProperty.fromString("l1"),
+                            outgoing = EdgeLabelProperty.fromString("epsilon"),
+                            cost = 3,
+                        )
+                    )
+                )
+
+                graph.addEdge(
+                    ProductAutomatonEdge(
+                        source = q0t0d2,
+                        target = q0t0d2,
+                        ProductAutomatonEdgeLabel(
+                            incoming = EdgeLabelProperty.fromString("l1"),
+                            outgoing = EdgeLabelProperty.fromString("epsilon"),
+                            cost = 3,
+                        )
+                    )
+                )
+
+                graph.addEdge(
+                    ProductAutomatonEdge(
+                        source = q0t0d3,
+                        target = q0t0d3,
+                        ProductAutomatonEdgeLabel(
+                            incoming = EdgeLabelProperty.fromString("l1"),
+                            outgoing = EdgeLabelProperty.fromString("epsilon"),
+                            cost = 3,
+                        )
+                    )
+                )
+            }
+
+            ProductAutomatonEdgeType.PositiveIncomingPropertyOutgoing -> {
+
+                graph.addEdge(
+                    ProductAutomatonEdge(
+                        source = q0t0d0,
+                        target = q0t0d0,
+                        ProductAutomatonEdgeLabel(
+                            incoming = EdgeLabelProperty.fromString("l1"),
+                            outgoing = EdgeLabelProperty.fromString("prop1?"),
+                            cost = 0,
+                        )
+                    )
+                )
+
+                graph.addEdge(
+                    ProductAutomatonEdge(
+                        source = q0t0d3,
+                        target = q0t0d3,
+                        ProductAutomatonEdgeLabel(
+                            incoming = EdgeLabelProperty.fromString("l1"),
+                            outgoing = EdgeLabelProperty.fromString("prop1?"),
+                            cost = 0,
+                        )
+                    )
+                )
+
+                graph.addEdge(
+                    ProductAutomatonEdge(
+                        source = q0t0d1,
+                        target = q0t0d1,
+                        ProductAutomatonEdgeLabel(
+                            incoming = EdgeLabelProperty.fromString("l1"),
+                            outgoing = EdgeLabelProperty.fromString("prop2?"),
+                            cost = 3,
+                        )
+                    )
+                )
+
+                graph.addEdge(
+                    ProductAutomatonEdge(
+                        source = q0t0d3,
+                        target = q0t0d3,
+                        ProductAutomatonEdgeLabel(
+                            incoming = EdgeLabelProperty.fromString("l1"),
+                            outgoing = EdgeLabelProperty.fromString("prop2?"),
+                            cost = 3,
+                        )
+                    )
+                )
+
+                graph.addEdge(
+                    ProductAutomatonEdge(
+                        source = q0t0d1,
+                        target = q0t0d1,
+                        ProductAutomatonEdgeLabel(
+                            incoming = EdgeLabelProperty.fromString("l2"),
+                            outgoing = EdgeLabelProperty.fromString("prop2?"),
+                            cost = 5,
+                        )
+                    )
+                )
+
+                graph.addEdge(
+                    ProductAutomatonEdge(
+                        source = q0t0d3,
+                        target = q0t0d3,
+                        ProductAutomatonEdgeLabel(
+                            incoming = EdgeLabelProperty.fromString("l2"),
+                            outgoing = EdgeLabelProperty.fromString("prop2?"),
+                            cost = 5,
+                        )
+                    )
+                )
+            }
+
+            ProductAutomatonEdgeType.NegativeIncomingPositiveOutgoing -> {
+
+                graph.addEdge(
+                    ProductAutomatonEdge(
+                        source = q0t0d0,
+                        target = q0t0d1,
+                        ProductAutomatonEdgeLabel(
+                            incoming = EdgeLabelProperty.fromString("-l1"),
+                            outgoing = EdgeLabelProperty.fromString("l1"),
+                            cost = 0,
+                        )
+                    )
+                )
+
+                graph.addEdge(
+                    ProductAutomatonEdge(
+                        source = q0t0d1,
+                        target = q0t0d2,
+                        ProductAutomatonEdgeLabel(
+                            incoming = EdgeLabelProperty.fromString("-l1"),
+                            outgoing = EdgeLabelProperty.fromString("l2"),
+                            cost = 3,
+                        )
+                    )
+                )
+
+                graph.addEdge(
+                    ProductAutomatonEdge(
+                        source = q0t0d0,
+                        target = q0t0d3,
+                        ProductAutomatonEdgeLabel(
+                            incoming = EdgeLabelProperty.fromString("-l2"),
+                            outgoing = EdgeLabelProperty.fromString("l3"),
+                            cost = 5,
+                        )
+                    )
+                )
+            }
+
+            ProductAutomatonEdgeType.NegativeIncomingNegativeOutgoing -> {
+                graph.addEdge(
+                    ProductAutomatonEdge(
+                        source = q0t0d1,
+                        target = q0t0d0,
+                        ProductAutomatonEdgeLabel(
+                            incoming = EdgeLabelProperty.fromString("-l1"),
+                            outgoing = EdgeLabelProperty.fromString("-l1"),
+                            cost = 0,
+                        )
+                    )
+                )
+
+                graph.addEdge(
+                    ProductAutomatonEdge(
+                        source = q0t0d2,
+                        target = q0t0d1,
+                        ProductAutomatonEdgeLabel(
+                            incoming = EdgeLabelProperty.fromString("-l1"),
+                            outgoing = EdgeLabelProperty.fromString("-l2"),
+                            cost = 3,
+                        )
+                    )
+                )
+
+                graph.addEdge(
+                    ProductAutomatonEdge(
+                        source = q0t0d2,
+                        target = q0t0d1,
+                        ProductAutomatonEdgeLabel(
+                            incoming = EdgeLabelProperty.fromString("-l2"),
+                            outgoing = EdgeLabelProperty.fromString("-l2"),
+                            cost = 5,
+                        )
+                    )
+                )
+            }
+
+            ProductAutomatonEdgeType.NegativeIncomingEpsilonOutgoing -> {
+
+                productNodes.forEach {
+
+                    graph.addEdge(
+                        ProductAutomatonEdge(
+                            source = it,
+                            target = it,
+                            ProductAutomatonEdgeLabel(
+                                incoming = EdgeLabelProperty.fromString("-l1"),
+                                outgoing = EdgeLabelProperty.fromString("epsilon"),
+                                cost = 0,
+                            )
+                        )
+                    )
+
+                    graph.addEdge(
+                        ProductAutomatonEdge(
+                            source = it,
+                            target = it,
+                            ProductAutomatonEdgeLabel(
+                                incoming = EdgeLabelProperty.fromString("-l1"),
+                                outgoing = EdgeLabelProperty.fromString("epsilon"),
+                                cost = 3,
+                            )
+                        )
+                    )
+
+                    graph.addEdge(
+                        ProductAutomatonEdge(
+                            source = it,
+                            target = it,
+                            ProductAutomatonEdgeLabel(
+                                incoming = EdgeLabelProperty.fromString("-l2"),
+                                outgoing = EdgeLabelProperty.fromString("epsilon"),
+                                cost = 5,
+                            )
+                        )
+                    )
+                }
+
+            }
+
+            ProductAutomatonEdgeType.NegativeIncomingPropertyOutgoing -> {
+                graph.addEdge(
+                    ProductAutomatonEdge(
+                        source = q0t0d0,
+                        target = q0t0d0,
+                        ProductAutomatonEdgeLabel(
+                            incoming = EdgeLabelProperty.fromString("-l1"),
+                            outgoing = EdgeLabelProperty.fromString("prop1?"),
+                            cost = 0,
+                        )
+                    )
+                )
+
+                graph.addEdge(
+                    ProductAutomatonEdge(
+                        source = q0t0d3,
+                        target = q0t0d3,
+                        ProductAutomatonEdgeLabel(
+                            incoming = EdgeLabelProperty.fromString("-l1"),
+                            outgoing = EdgeLabelProperty.fromString("prop1?"),
+                            cost = 0,
+                        )
+                    )
+                )
+
+                graph.addEdge(
+                    ProductAutomatonEdge(
+                        source = q0t0d1,
+                        target = q0t0d1,
+                        ProductAutomatonEdgeLabel(
+                            incoming = EdgeLabelProperty.fromString("-l1"),
+                            outgoing = EdgeLabelProperty.fromString("prop2?"),
+                            cost = 3,
+                        )
+                    )
+                )
+
+                graph.addEdge(
+                    ProductAutomatonEdge(
+                        source = q0t0d3,
+                        target = q0t0d3,
+                        ProductAutomatonEdgeLabel(
+                            incoming = EdgeLabelProperty.fromString("-l1"),
+                            outgoing = EdgeLabelProperty.fromString("prop2?"),
+                            cost = 3,
+                        )
+                    )
+                )
+
+                graph.addEdge(
+                    ProductAutomatonEdge(
+                        source = q0t0d1,
+                        target = q0t0d1,
+                        ProductAutomatonEdgeLabel(
+                            incoming = EdgeLabelProperty.fromString("-l2"),
+                            outgoing = EdgeLabelProperty.fromString("prop2?"),
+                            cost = 5,
+                        )
+                    )
+                )
+
+                graph.addEdge(
+                    ProductAutomatonEdge(
+                        source = q0t0d3,
+                        target = q0t0d3,
+                        ProductAutomatonEdgeLabel(
+                            incoming = EdgeLabelProperty.fromString("-l2"),
+                            outgoing = EdgeLabelProperty.fromString("prop2?"),
+                            cost = 5,
+                        )
+                    )
+                )
+            }
+
+            ProductAutomatonEdgeType.PropertyIncomingEpsilonOutgoing -> {
+
+                productNodes.forEach {
+                    graph.addEdge(
+                        ProductAutomatonEdge(
+                            source = it,
+                            target = it,
+                            ProductAutomatonEdgeLabel(
+                                incoming = EdgeLabelProperty.fromString("prop1?"),
+                                outgoing = EdgeLabelProperty.fromString("epsilon"),
+                                cost = 0,
+                            )
+                        )
+                    )
+                    ProductAutomatonEdge(
+                        source = it,
+                        target = it,
+                        ProductAutomatonEdgeLabel(
+                            incoming = EdgeLabelProperty.fromString("prop1?"),
+                            outgoing = EdgeLabelProperty.fromString("epsilon"),
+                            cost = 3,
+                        )
+                    )
+
+                    ProductAutomatonEdge(
+                        source = it,
+                        target = it,
+                        ProductAutomatonEdgeLabel(
+                            incoming = EdgeLabelProperty.fromString("prop2?"),
+                            outgoing = EdgeLabelProperty.fromString("epsilon"),
+                            cost = 5,
+                        )
+                    )
+                }
+
+            }
+
+            ProductAutomatonEdgeType.PropertyIncomingPositiveOutgoing -> {
+
+                graph.addEdge(
+                    ProductAutomatonEdge(
+                        source = q0t0d0,
+                        target = q0t0d1,
+                        ProductAutomatonEdgeLabel(
+                            incoming = EdgeLabelProperty.fromString("prop1?"),
+                            outgoing = EdgeLabelProperty.fromString("l1"),
+                            cost = 0,
+                        )
+                    )
+                )
+
+                graph.addEdge(
+                    ProductAutomatonEdge(
+                        source = q0t0d1,
+                        target = q0t0d2,
+                        ProductAutomatonEdgeLabel(
+                            incoming = EdgeLabelProperty.fromString("prop1?"),
+                            outgoing = EdgeLabelProperty.fromString("l2"),
+                            cost = 3,
+                        )
+                    )
+                )
+
+                graph.addEdge(
+                    ProductAutomatonEdge(
+                        source = q0t0d1,
+                        target = q0t0d2,
+                        ProductAutomatonEdgeLabel(
+                            incoming = EdgeLabelProperty.fromString("prop2?"),
+                            outgoing = EdgeLabelProperty.fromString("l2"),
+                            cost = 5,
+                        )
+                    )
+                )
+            }
+
+            ProductAutomatonEdgeType.PropertyIncomingNegativeOutgoing -> {
+
+                graph.addEdge(
+                    ProductAutomatonEdge(
+                        source = q0t0d1,
+                        target = q0t0d2,
+                        ProductAutomatonEdgeLabel(
+                            incoming = EdgeLabelProperty.fromString("prop1?"),
+                            outgoing = EdgeLabelProperty.fromString("-l1"),
+                            cost = 0,
+                        )
+                    )
+                )
+
+                graph.addEdge(
+                    ProductAutomatonEdge(
+                        source = q0t0d2,
+                        target = q0t0d1,
+                        ProductAutomatonEdgeLabel(
+                            incoming = EdgeLabelProperty.fromString("prop1?"),
+                            outgoing = EdgeLabelProperty.fromString("-l2"),
+                            cost = 3,
+                        )
+                    )
+                )
+
+                graph.addEdge(
+                    ProductAutomatonEdge(
+                        source = q0t0d2,
+                        target = q0t0d1,
+                        ProductAutomatonEdgeLabel(
+                            incoming = EdgeLabelProperty.fromString("prop2?"),
+                            outgoing = EdgeLabelProperty.fromString("-l2"),
+                            cost = 5,
+                        )
+                    )
+                )
+            }
+
+            ProductAutomatonEdgeType.PropertyIncomingPropertyOutgoing -> {
+
+                graph.addEdge(
+                    ProductAutomatonEdge(
+                        source = q0t0d0,
+                        target = q0t0d0,
+                        ProductAutomatonEdgeLabel(
+                            incoming = EdgeLabelProperty.fromString("prop1?"),
+                            outgoing = EdgeLabelProperty.fromString("prop1?"),
+                            cost = 0,
+                        )
+                    )
+                )
+
+                graph.addEdge(
+                    ProductAutomatonEdge(
+                        source = q0t0d3,
+                        target = q0t0d3,
+                        ProductAutomatonEdgeLabel(
+                            incoming = EdgeLabelProperty.fromString("prop1?"),
+                            outgoing = EdgeLabelProperty.fromString("prop1?"),
+                            cost = 0,
+                        )
+                    )
+                )
+
+                graph.addEdge(
+                    ProductAutomatonEdge(
+                        source = q0t0d1,
+                        target = q0t0d1,
+                        ProductAutomatonEdgeLabel(
+                            incoming = EdgeLabelProperty.fromString("prop1?"),
+                            outgoing = EdgeLabelProperty.fromString("prop2?"),
+                            cost = 3,
+                        )
+                    )
+                )
+
+                graph.addEdge(
+                    ProductAutomatonEdge(
+                        source = q0t0d3,
+                        target = q0t0d3,
+                        ProductAutomatonEdgeLabel(
+                            incoming = EdgeLabelProperty.fromString("prop1?"),
+                            outgoing = EdgeLabelProperty.fromString("prop2?"),
+                            cost = 3,
+                        )
+                    )
+                )
+
+                graph.addEdge(
+                    ProductAutomatonEdge(
+                        source = q0t0d1,
+                        target = q0t0d1,
+                        ProductAutomatonEdgeLabel(
+                            incoming = EdgeLabelProperty.fromString("prop2?"),
+                            outgoing = EdgeLabelProperty.fromString("prop2?"),
+                            cost = 5,
+                        )
+                    )
+                )
+
+                graph.addEdge(
+                    ProductAutomatonEdge(
+                        source = q0t0d3,
+                        target = q0t0d3,
+                        ProductAutomatonEdgeLabel(
+                            incoming = EdgeLabelProperty.fromString("prop2?"),
+                            outgoing = EdgeLabelProperty.fromString("prop2?"),
+                            cost = 5,
+                        )
+                    )
+                )
+            }
+        }
+
+        return graph
+
+    }
+
+    private fun constructComparisonGraphFailing(
+        edgeType: ProductAutomatonEdgeType,
+        queryGraph: QueryGraph,
+        transducerGraph: TransducerGraph,
+        databaseGraph: DatabaseGraph
+    ): ProductAutomatonGraph {
+        val graph = ProductAutomatonGraph()
+
+        val q0 = queryGraph.getNode("q0")!!
+        val t0 = transducerGraph.getNode("t0")!!
+
+        val d0 = databaseGraph.getNode("d0")!!
+        val d1 = databaseGraph.getNode("d1")!!
+        val d2 = databaseGraph.getNode("d2")!!
+        val d3 = databaseGraph.getNode("d3")!!
+
+        val q0t0d0 = ProductAutomatonNode(
+            queryNode = q0,
+            transducerNode = t0,
+            databaseNode = d0,
+            initialState = true,
+            finalState = true,
+        )
+
+        val q0t0d1 = ProductAutomatonNode(
+            queryNode = q0,
+            transducerNode = t0,
+            databaseNode = d1,
+            initialState = true,
+            finalState = true,
+        )
+
+        val q0t0d2 = ProductAutomatonNode(
+            queryNode = q0,
+            transducerNode = t0,
+            databaseNode = d2,
+            initialState = true,
+            finalState = true,
+        )
+
+        val q0t0d3 = ProductAutomatonNode(
+            queryNode = q0,
+            transducerNode = t0,
+            databaseNode = d3,
+            initialState = true,
+            finalState = true,
+        )
+
+
+        when (edgeType) {
+            ProductAutomatonEdgeType.EpsilonIncomingPositiveOutgoing -> {
+
+                graph.addEdge(
+                    ProductAutomatonEdge(
+                        source = q0t0d0,
+                        target = q0t0d1,
+                        ProductAutomatonEdgeLabel(
+                            incoming = EdgeLabelProperty.fromString("epsilon"),
+                            outgoing = EdgeLabelProperty.fromString("l1"),
+                            cost = 0,
+                        )
+                    )
+                )
+
+                graph.addEdge(
+                    ProductAutomatonEdge(
+                        source = q0t0d1,
+                        target = q0t0d2,
+                        ProductAutomatonEdgeLabel(
+                            incoming = EdgeLabelProperty.fromString("epsilon"),
+                            outgoing = EdgeLabelProperty.fromString("l2"),
+                            cost = 3,
+                        )
+                    )
+                )
+
+                graph.addEdge(
+                    ProductAutomatonEdge(
+                        source = q0t0d0,
+                        target = q0t0d3,
+                        ProductAutomatonEdgeLabel(
+                            incoming = EdgeLabelProperty.fromString("epsilon"),
+                            outgoing = EdgeLabelProperty.fromString("l3"),
+                            cost = 5,
+                        )
+                    )
+                )
+
+                graph.addEdge(
+                    ProductAutomatonEdge(
+                        source = q0t0d0,
+                        target = q0t0d3,
+                        ProductAutomatonEdgeLabel(
+                            incoming = EdgeLabelProperty.fromString("epsilon"),
+                            outgoing = EdgeLabelProperty.fromString("l3"),
+                            cost = 3,
+                        )
+                    )
+                )
+            }
+
+            else -> {
+                //Test cases not implemented
+            }
+        }
+
+        return graph
+
+    }
+
+//    private fun createDataProvider(edgeTestCase: ProductAutomatonEdgeType): DataProvider {
+//        //we build the graphs here manually, as we do not want to test the input file readers at this point
+//
+//        return when (edgeTestCase) {
+//            ProductAutomatonEdgeType.EpsilonIncomingPositiveOutgoing -> {
+//                buildDataProvider(ProductAutomatonEdgeType.EpsilonIncomingPositiveOutgoing)
+//            }
+//
+//            ProductAutomatonEdgeType.EpsilonIncomingNegativeOutgoing -> {
+//                buildDataProvider(ProductAutomatonEdgeType.EpsilonIncomingNegativeOutgoing)
+//            }
+//
+//            ProductAutomatonEdgeType.EpsilonIncomingEpsilonOutgoing -> {
+//                buildDataProvider(ProductAutomatonEdgeType.EpsilonIncomingEpsilonOutgoing)
+//            }
+//
+//            ProductAutomatonEdgeType.PositiveIncomingPositiveOutgoing -> {
+//                buildDataProvider(ProductAutomatonEdgeType.PositiveIncomingPositiveOutgoing)
+//            }
+//
+//            ProductAutomatonEdgeType.PositiveIncomingNegativeOutgoing -> {
+//                buildDataProvider(ProductAutomatonEdgeType.PositiveIncomingNegativeOutgoing)
+//            }
+//
+//            ProductAutomatonEdgeType.PositiveIncomingEpsilonOutgoing -> {
+//                buildDataProvider(ProductAutomatonEdgeType.PositiveIncomingEpsilonOutgoing)
+//            }
+//
+//            ProductAutomatonEdgeType.NegativeIncomingPositiveOutgoing -> {
+//                buildDataProvider(ProductAutomatonEdgeType.NegativeIncomingPositiveOutgoing)
+//            }
+//
+//            ProductAutomatonEdgeType.NegativeIncomingNegativeOutgoing -> {
+//                buildDataProvider(ProductAutomatonEdgeType.NegativeIncomingNegativeOutgoing)
+//            }
+//
+//            ProductAutomatonEdgeType.NegativeIncomingEpsilonOutgoing -> {
+//                buildDataProvider(ProductAutomatonEdgeType.NegativeIncomingEpsilonOutgoing)
+//            }
+//
+//            ProductAutomatonEdgeType.EpsilonIncomingPropertyOutgoing -> TODO()
+//            ProductAutomatonEdgeType.PositiveIncomingPropertyOutgoing -> TODO()
+//            ProductAutomatonEdgeType.NegativeIncomingPropertyOutgoing -> TODO()
+//            ProductAutomatonEdgeType.PropertyIncomingEpsilonOutgoing -> TODO()
+//            ProductAutomatonEdgeType.PropertyIncomingPositiveOutgoing -> TODO()
+//            ProductAutomatonEdgeType.PropertyIncomingNegativeOutgoing -> TODO()
+//            ProductAutomatonEdgeType.PropertyIncomingPropertyOutgoing -> TODO()
+//        }
+//    }
+
+    private fun buildDataProvider(
+        queryGraph: QueryGraph, transducerGraph: TransducerGraph, databaseGraph: DatabaseGraph, alphabet: Alphabet
+    ): RegularPathQueryDataProvider {
+        return RegularPathQueryDataProvider(
+            queryGraph = queryGraph,
+            transducerGraph = transducerGraph,
+            databaseGraph = databaseGraph,
+            alphabet = alphabet
+        )
+    }
+}

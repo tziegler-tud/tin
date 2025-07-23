@@ -44,7 +44,7 @@ abstract class AbstractDlResultGraphBuilder(
         return unreachableNodes;
     }
 
-    override fun constructRestrictedGraph(): DlResultGraph {
+    open fun constructRestrictedGraph(): DlResultGraph {
         val graph = DlResultGraph(ec.shortFormProvider);
         //construct nodes
         queryGraph.nodes.forEach { queryNode ->

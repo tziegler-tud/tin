@@ -6,7 +6,8 @@ class EdgeLabelProperty(
     private var label: String,
     private var inverse: Boolean = false,
     private var conceptAssertion: Boolean = false,
-    private var empty: Boolean = false
+    private var empty: Boolean = false,
+    private var epsilon: Boolean = false
 )
 {
     companion object {
@@ -15,6 +16,10 @@ class EdgeLabelProperty(
             var conceptAssertion = false;
             var inverse = false;
             var empty = true;
+
+            if(Alphabet.isEpsilonLabel(expression)) {
+                return EdgeLabelProperty(expression, false, false, false, true);
+            }
 
             if (Alphabet.isConceptAssertion(expression)){
                 conceptAssertion = true;
@@ -33,7 +38,7 @@ class EdgeLabelProperty(
                     }
                 }
             }
-            return EdgeLabelProperty(label, inverse, conceptAssertion, empty);
+            return EdgeLabelProperty(label, inverse, conceptAssertion, empty, false);
         }
     }
 
@@ -52,6 +57,14 @@ class EdgeLabelProperty(
         return label;
     }
 
+    fun isEpsilonLabel(): Boolean {
+        return epsilon;
+    }
+
+    fun isRole(): Boolean {
+        return !conceptAssertion && !empty && !epsilon;
+    }
+
     fun getInverseAsNewProperty(): EdgeLabelProperty {
         if(isConceptAssertion()) EdgeLabelProperty(label, inverse = false, conceptAssertion = true, empty = empty);
         return EdgeLabelProperty(label, !inverse, conceptAssertion, empty);
@@ -63,6 +76,19 @@ class EdgeLabelProperty(
         } else {
             label;
         }
+    }
+
+    fun matches(other: EdgeLabelProperty): Boolean {
+        if(other.empty)  return empty
+        /**
+         * TODO: Check how to handle epsilon labels in this situation
+         */
+        if(other.isEpsilonLabel()) return epsilon
+
+        //label must match,
+        return label == other.label &&
+                other.isConceptAssertion() == conceptAssertion &&
+                other.isInverse() == inverse
     }
 
     override fun equals(other: Any?): Boolean {

@@ -15,7 +15,7 @@ repositories {
 
 dependencies {
     implementation(project(":tinDL"))
-//    implementation(project(":tinDB"))
+    implementation(project(":tinDB"))
     implementation(project(":tinLIB"))
     // kotlin
     implementation 'com.fasterxml.jackson.module:jackson-module-kotlin'
