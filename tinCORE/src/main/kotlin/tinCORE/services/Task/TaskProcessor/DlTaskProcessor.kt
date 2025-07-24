@@ -3,6 +3,10 @@ package tinCORE.services.Task.TaskProcessor
 import org.semanticweb.owlapi.model.OWLNamedIndividual
 import tinCORE.data.Task.*
 import tinCORE.data.Task.DlTask.Benchmark.*
+import tinCORE.data.Task.DlTask.DlComputationMode
+import tinCORE.data.Task.DlTask.DlTask
+import tinCORE.data.Task.DlTask.DlTaskComputationConfiguration
+import tinCORE.data.Task.DlTask.OntologyVariant
 
 
 import tinDL.model.v2.ResultGraph.DlResultGraph
@@ -31,7 +35,7 @@ import tinLIB.services.ontology.ResultGraph.ResultGraphBuilderStats
 import kotlin.time.TimeSource
 
 class DlTaskProcessor(
-    override val task: Task,
+    override val task: DlTask,
     private val manager: OntologyManager,
     override val queryGraph: QueryGraph,
     override val transducerMode: TransducerMode,
@@ -45,14 +49,13 @@ class DlTaskProcessor(
     transducerGraphProvided,
 ) {
 
-    private val compConfig = task.getComputationConfiguration();
-    private val runConfig = task.getRuntimeConfiguration();
+    private val compConfig: DlTaskComputationConfiguration = task.getComputationConfiguration();
     private val fileConfig = task.getFileConfiguration();
 
     private var benchmarkResults: TaskProcessingBenchmarkResult? = null;
 
     constructor(
-        task: Task,
+        task: DlTask,
         manager: OntologyManager,
         queryGraph: QueryGraph,
         transducerGraph: TransducerGraph,
@@ -84,7 +87,7 @@ class DlTaskProcessor(
 
 
         //create ec based on configuration
-        when (runConfig.ontologyVariant) {
+        when (compConfig.ontologyVariant) {
             OntologyVariant.ELH -> {
                 ec = manager.createELExecutionContext(ExecutionContextType.ELH)
                 val transducerGraph = buildTransducerGraph(transducerMode, transducerGenerationMode, transducerGraphProvided, ec, queryGraph)
@@ -146,7 +149,7 @@ class DlTaskProcessor(
 
 
         when (compConfig.computationMode){
-            ComputationMode.entailment -> {
+            DlComputationMode.entailment -> {
                 //given a,b and n, is the cost of a->b lower than n?
 
                 val a = getIndividual(compConfig.individualNameA)
@@ -166,7 +169,7 @@ class DlTaskProcessor(
                 }
 
             }
-            ComputationMode.costComputation -> {
+            DlComputationMode.costComputation -> {
                 //given a,b, compute n
                 val a = getIndividual(compConfig.individualNameA)
                 val b = getIndividual(compConfig.individualNameB)
@@ -186,7 +189,7 @@ class DlTaskProcessor(
 
 
             }
-            ComputationMode.allIndividuals -> {
+            DlComputationMode.allIndividuals -> {
                 //return all pairs of individuals and their cost if <infty
                 val fwSolver = FloydWarshallSolver(resultGraph)
 
@@ -197,7 +200,7 @@ class DlTaskProcessor(
                 results = result;
             }
 
-            ComputationMode.allWithMaxCost -> {
+            DlComputationMode.allWithMaxCost -> {
                 //given n, return all pairs of individuals with cost lower n
                 val n = compConfig.maxCost ?: throw Error("Invalid arguments given for computation mode 'Entailment': Maximum cost not given")
                 val fwSolver = FloydWarshallSolver(resultGraph)
@@ -211,7 +214,7 @@ class DlTaskProcessor(
 
             }
 
-            ComputationMode.UNSET -> {
+            DlComputationMode.UNSET -> {
                 throw IllegalArgumentException("Failed to process task: Computation mode not set.")
 
             }
@@ -219,7 +222,7 @@ class DlTaskProcessor(
 
         val times = TaskProcessingResultTimes(spaStartTime, spaEndTime, spStartTime, spEndTime, resultGraphStartTime, resultGraphEndTime, solverStartTime, solverEndTime);
         val reasonerStats = TaskProcessingReasonerStats(ec.dlReasoner.getStats())
-        benchmarkResults = TaskProcessingBenchmarkResult(times, reasonerStats, spaBuilderStats, spBuilderStats, resultBuilderStats)
+        benchmarkResults = DlTaskProcessingBenchmarkResult(times, reasonerStats, spaBuilderStats, spBuilderStats, resultBuilderStats)
 
         return TaskProcessorExecutionResult(
             results,
