@@ -11,7 +11,7 @@ import tinCORE.services.technical.SystemConfigurationService
 import tinCORE.utils.findByIdentifier
 
 import tinCORE.data.File.*
-import tinCORE.data.Task.OntologyVariant
+import tinCORE.data.Task.DlTask.OntologyVariant
 
 import tinDL.services.ontology.OntologyInfoData
 import tinDL.services.ontology.OntologyManager
