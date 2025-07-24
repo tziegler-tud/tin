@@ -16,9 +16,6 @@ abstract class ResultGraph<T: ResultNode, E: ResultEdge> : AbstractGraph<T,E>() 
         throw Error("Unable to add Edge: source or target node are not present in the graph.")
     }
 
-    abstract fun addEdge(source: T, target: T, label: ResultEdgeLabel) : Boolean
-    abstract fun addEdge(source: T, target: T, cost: Int) : Boolean
-
     fun getInitialNodes(individual: ResultGraphIndividual) : List<T> {
         return this.nodes.filter {
             it.individual == individual
