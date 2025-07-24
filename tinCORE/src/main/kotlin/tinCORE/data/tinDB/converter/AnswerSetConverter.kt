@@ -1,10 +1,10 @@
-package tinDB.model.v1.converter
+package tinCORE.data.tinDB.converter
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import jakarta.persistence.AttributeConverter
 import jakarta.persistence.Converter
-import tinDB.model.v1.queryResult.RegularPathQueryResult
+import tinCORE.data.tinDB.queryResult.RegularPathQueryResult
 
 
 /**
