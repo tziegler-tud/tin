@@ -1,8 +1,8 @@
 package tinDB.services.internal.dijkstra.algorithms
 
-import tinDB.model.v1.utils.ProductAutomatonTuple
-import tinDB.model.v1.productAutomaton.ProductAutomatonGraph
-import tinDB.model.v1.productAutomaton.ProductAutomatonNode
+import tinDB.model.v2.utils.ProductAutomatonTuple
+import tinDB.model.v2.productAutomaton.ProductAutomatonGraph
+import tinDB.model.v2.productAutomaton.ProductAutomatonNode
 
 import java.util.*
 
@@ -53,7 +53,7 @@ class DijkstraTopK(val productAutomatonGraph: ProductAutomatonGraph, private val
             // line 6
             setOfNodes.add(p)
             // line 7
-            for (edge in p.edges) {
+            for (edge in productAutomatonGraph.getEdgesWithSource(p)) {
                 setOfNodes.add(edge.target)
 
                 // first check if we've found an answer (edge.target.finalState == true), then
@@ -76,7 +76,7 @@ class DijkstraTopK(val productAutomatonGraph: ProductAutomatonGraph, private val
     fun processDijkstraOverAllInitialNodes(): HashMap<ProductAutomatonTuple, Double> {
 
         // for all initial nodes...
-        for (initialNode in productAutomatonGraph.initialNodes) {
+        for (initialNode in productAutomatonGraph.getInitialNodes()) {
 
             // clean up from previous runs...
             predecessor.clear()

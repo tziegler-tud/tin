@@ -1,8 +1,8 @@
 package tinDB.services.internal.dijkstra.algorithms
 
-import tinDB.model.v1.utils.ProductAutomatonTuple
-import tinDB.model.v1.productAutomaton.ProductAutomatonGraph
-import tinDB.model.v1.productAutomaton.ProductAutomatonNode
+import tinDB.model.v2.utils.ProductAutomatonTuple
+import tinDB.model.v2.productAutomaton.ProductAutomatonGraph
+import tinDB.model.v2.productAutomaton.ProductAutomatonNode
 import java.util.*
 import kotlin.collections.HashSet
 
@@ -57,7 +57,7 @@ class Dijkstra(val productAutomatonGraph: ProductAutomatonGraph) {
             // line 6
             setOfNodes.add(p)
             // line 7
-            for (edge in p.edges) {
+            for (edge in productAutomatonGraph.getEdgesWithSource(p)) {
                 //setOfNodes.add(edge.target) // why this?
                 // line 8
                 DijkstraAlgorithmUtils.relax(p, edge.target, edge, predecessor)
@@ -69,7 +69,7 @@ class Dijkstra(val productAutomatonGraph: ProductAutomatonGraph) {
 
     fun processDijkstraOverAllInitialNodes(): HashMap<ProductAutomatonTuple, Double> {
         // for all initial nodes...
-        for ((initialNodeCounter, initialNode) in productAutomatonGraph.initialNodes.withIndex()) {
+        for ((initialNodeCounter, initialNode) in productAutomatonGraph.getInitialNodes().withIndex()) {
             //println("number of initial nodes: " + productAutomatonGraph.initialNodes.size + " already visited: " + initialNodeCounter)
             //System.out.print("dijkstra for initial node: " );
             //initialNode.print();
