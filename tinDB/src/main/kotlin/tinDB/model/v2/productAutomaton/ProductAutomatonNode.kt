@@ -25,6 +25,7 @@ class ProductAutomatonNode(
     isFinalState = finalState,
 ) {
 
+    var weight: Double = Double.POSITIVE_INFINITY
     private var internalIdentifier: Triple<Node, Node, Node> = Triple(queryNode, transducerNode, databaseNode)
 
     override fun equals(other: Any?): Boolean {

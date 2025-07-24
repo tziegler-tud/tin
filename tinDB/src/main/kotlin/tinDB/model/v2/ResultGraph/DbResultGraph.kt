@@ -1,5 +1,7 @@
 package tinDB.model.v2.ResultGraph
 
+import tinDB.model.v2.productAutomaton.ProductAutomatonEdge
+import tinDB.model.v2.productAutomaton.ProductAutomatonGraph
 import tinLIB.model.v2.alphabet.Alphabet
 import tinLIB.model.v2.ResultGraph.*
 import tinLIB.model.v2.graph.*
@@ -9,6 +11,19 @@ class DbResultGraph: ResultGraph<DbResultNode, DbResultEdge>() {
     override var edges: ResultEdgeSet<DbResultEdge> = DbResultEdgeSet()
     override var alphabet: Alphabet = Alphabet();
 
+    companion object {
+        fun fromProductAutomaton(productAutomatonGraph: ProductAutomatonGraph) : DbResultGraph {
+            val graph = DbResultGraph()
+            for(node in productAutomatonGraph.nodes) {
+                graph.nodes.add(DbResultNode(node))
+            }
+            for(edge in productAutomatonGraph.edges) {
+                graph.addEdge(edge)
+            }
+            return graph
+        }
+    }
+
     override fun addEdge(edge: DbResultEdge) : Boolean {
         if (nodes.containsWithoutState(edge.source) && nodes.containsWithoutState(edge.target) ) {
             return edges.add(edge);
@@ -16,12 +31,12 @@ class DbResultGraph: ResultGraph<DbResultNode, DbResultEdge>() {
         throw Error("Unable to add Edge: source or target node are not present in the graph.")
     }
 
-    override fun addEdge(source: DbResultNode, target: DbResultNode, cost: Int): Boolean {
-        return addEdge(DbResultEdge(source, target, cost))
+    fun addEdge(source: DbResultNode, target: DbResultNode, label: DbResultEdgeLabel): Boolean {
+        return addEdge(DbResultEdge(source, target, label))
     }
 
-    override fun addEdge(source: DbResultNode, target: DbResultNode, label: ResultEdgeLabel): Boolean {
-        return addEdge(DbResultEdge(source, target, label))
+    fun addEdge(productAutomatonEdge: ProductAutomatonEdge): Boolean {
+        return addEdge(DbResultEdge(productAutomatonEdge))
     }
 
     override fun containsEdge(edge: DbResultEdge) : Boolean {
