@@ -1,5 +1,6 @@
 package tinDB.model.v2.ResultGraph
 
+import tinDB.model.v2.productAutomaton.ProductAutomatonNode
 import tinLIB.model.v2.ResultGraph.ResultNode
 import tinLIB.model.v2.graph.Node
 
@@ -12,6 +13,11 @@ class DbResultNode(
 {
     constructor(queryNode: Node, transducerNode: Node, databaseNode: Node ): this(queryNode, transducerNode, DbResultGraphIndividual(databaseNode))
 
+    constructor(productAutomatonNode: ProductAutomatonNode): this(
+        productAutomatonNode.queryNode,
+        productAutomatonNode.transducerNode,
+        productAutomatonNode.databaseNode
+    )
     override var isInitialState: Boolean = queryNode.isInitialState && transducerNode.isInitialState
     override var isFinalState: Boolean = queryNode.isFinalState && transducerNode.isFinalState;
 

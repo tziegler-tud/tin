@@ -1,7 +1,7 @@
 package tinDB.model.v2.ResultGraph
 
+import tinDB.model.v2.productAutomaton.ProductAutomatonEdge
 import tinLIB.model.v2.ResultGraph.ResultEdge
-import tinLIB.model.v2.ResultGraph.ResultEdgeLabel
 
 class DbResultEdge(
     override val source: DbResultNode,
@@ -11,8 +11,10 @@ class DbResultEdge(
     source,
     target,
     label
-)
-{
-    constructor(source: DbResultNode, target: DbResultNode, cost: Int) : this(source, target, ResultEdgeLabel(cost))
-
+) {
+    constructor(productAutomatonEdge: ProductAutomatonEdge) : this(
+        source = DbResultNode(productAutomatonEdge.source),
+        target = DbResultNode(productAutomatonEdge.target),
+        label = DbResultEdgeLabel(productAutomatonEdge.label)
+    )
 }
