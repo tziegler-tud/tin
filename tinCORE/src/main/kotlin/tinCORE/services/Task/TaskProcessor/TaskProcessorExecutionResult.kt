@@ -1,6 +1,6 @@
 package tinCORE.services.Task.TaskProcessor
 
-import tinCORE.data.Task.DlTask.Benchmark.TaskProcessingBenchmarkResult
+import tinCORE.data.Task.TaskProcessingBenchmarkResult
 import tinLIB.model.v2.ResultGraph.ResultNode
 import tinLIB.services.ResultGraph.ShortestPathResult
 
