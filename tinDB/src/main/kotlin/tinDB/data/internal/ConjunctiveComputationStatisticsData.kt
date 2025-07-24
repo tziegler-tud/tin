@@ -13,14 +13,14 @@ package tinDB.data.internal
  * @param reassemblyTimeInMs reassembling all RPQ results into the C2RPQ result
  */
 data class ConjunctiveComputationStatisticsData(
-    var preProcessingTimeInMs: Long,
-    var mainProcessingTimeInMs: Long,
-    var postProcessingTimeInMs: Long,
-    var combinedTimeInMs: Long,
-    var combinedRPQPreProcessingTimeInMs: Long,
-    var combinedRPQMainProcessingTimeInMs: Long,
-    var combinedRPQPostProcessingTimeInMs: Long,
-    var combinedRPQInternalPostProcessingTimeInMs: Long,
-    var combinedRPQTimeInMs: Long,
-    var reassemblyTimeInMs: Long
+    var preProcessingTimeInMs: Long = 0,
+    var mainProcessingTimeInMs: Long = 0,
+    var postProcessingTimeInMs: Long = 0,
+    var combinedTimeInMs: Long = 0,
+    var combinedRPQPreProcessingTimeInMs: Long = 0,
+    var combinedRPQMainProcessingTimeInMs: Long = 0,
+    var combinedRPQPostProcessingTimeInMs: Long = 0,
+    var combinedRPQInternalPostProcessingTimeInMs: Long = 0,
+    var combinedRPQTimeInMs: Long = 0,
+    var reassemblyTimeInMs: Long = 0
 )
