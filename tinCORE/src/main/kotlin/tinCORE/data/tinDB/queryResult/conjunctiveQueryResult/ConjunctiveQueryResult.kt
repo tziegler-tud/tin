@@ -1,16 +1,17 @@
-package tinDB.model.v1.queryResult.conjunctiveQueryResult
+package tinCORE.data.tinDB.queryResult.conjunctiveQueryResult
 
-import tinDB.model.v1.queryResult.QueryResult
-import tinDB.model.v1.queryResult.QueryResultStatus
-import tinDB.model.v1.queryResult.RegularPathQueryResult
-import tinDB.model.v1.queryResult.computationStatistics.ConjunctiveComputationStatistics
-import tinDB.model.v1.queryTask.QueryTask
 import jakarta.persistence.*
+import tinCORE.data.Task.DbTask.DbTask
+import tinCORE.data.tinDB.queryResult.QueryResult
+import tinCORE.data.tinDB.queryResult.QueryResultStatus
+import tinCORE.data.tinDB.queryResult.RegularPathQueryResult
+import tinCORE.data.tinDB.queryResult.computationStatistics.ConjunctiveComputationStatistics
+import tinDB.model.v1.queryResult.conjunctiveQueryResult.ConjunctiveQueryAnswerMapping
 
 
 @Entity
 class ConjunctiveQueryResult(
-    queryTask: QueryTask,
+    queryTask: DbTask,
     computationStatistics: ConjunctiveComputationStatistics?,
     queryResultStatus: QueryResultStatus,
 

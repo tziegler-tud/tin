@@ -2,7 +2,7 @@ package tinCORE.data.tintheweb.DLqueryTask
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import tinCORE.data.Task.ComputationMode
-import tinCORE.data.Task.OntologyVariant
+import tinCORE.data.Task.DlTask.OntologyVariant
 import tinCORE.data.Task.TransducerGenerationMode
 import tinCORE.data.Task.TransducerMode
 

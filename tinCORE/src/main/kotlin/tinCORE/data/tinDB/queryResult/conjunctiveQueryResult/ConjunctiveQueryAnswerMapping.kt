@@ -1,8 +1,9 @@
 package tinDB.model.v1.queryResult.conjunctiveQueryResult
 
 import org.springframework.data.jpa.repository.JpaRepository
-import tinDB.model.v1.converter.VariableMappingConverter
+import tinCORE.data.tinDB.converter.VariableMappingConverter
 import jakarta.persistence.*
+import tinCORE.data.tinDB.queryResult.conjunctiveQueryResult.ConjunctiveQueryResult
 
 @Entity
 class ConjunctiveQueryAnswerMapping(

@@ -1,4 +1,4 @@
-package tinDB.model.v1.queryResult.computationStatistics
+package tinCORE.data.tinDB.queryResult.computationStatistics
 
 import jakarta.persistence.Entity
 
@@ -15,15 +15,15 @@ import jakarta.persistence.Entity
  */
 @Entity
 class ConjunctiveComputationStatistics(
-    preProcessingTimeInMs: Long,
-    mainProcessingTimeInMs: Long,
-    postProcessingTimeInMs: Long,
-    combinedTimeInMs: Long,
-    val combinedRPQPreProcessingTimeInMs: Long,
-    val combinedRPQMainProcessingTimeInMs: Long,
-    val combinedRPQPostProcessingTimeInMs: Long,
-    val combinedRPQTimeInMs: Long,
-    val reassemblyTimeInMs: Long
+    preProcessingTimeInMs: Long = 0,
+    mainProcessingTimeInMs: Long = 0,
+    postProcessingTimeInMs: Long = 0,
+    combinedTimeInMs: Long = 0,
+    val combinedRPQPreProcessingTimeInMs: Long = 0,
+    val combinedRPQMainProcessingTimeInMs: Long = 0,
+    val combinedRPQPostProcessingTimeInMs: Long = 0,
+    val combinedRPQTimeInMs: Long = 0,
+    val reassemblyTimeInMs: Long = 0
 
 ) : ComputationStatistics(
     preProcessingTimeInMs = preProcessingTimeInMs,

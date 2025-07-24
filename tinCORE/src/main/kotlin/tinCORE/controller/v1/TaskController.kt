@@ -63,7 +63,7 @@ class TaskController(
     @PostMapping("/add")
     fun addTask(@RequestBody data: TaskConfigurationData): Task {
         val fileConfiguration = TaskFileConfiguration(data.queryFileIdentifier, data.ontologyFileIdentifier, data.transducerMode, data.transducerGenerationMode, data.transducerFileIdentifier );
-        val runtimeConfiguration = TaskRuntimeConfiguration(data.ontologyVariant)
+        val runtimeConfiguration = TaskComputationConfiguration(data.ontologyVariant)
         val computationConfiguration = TaskComputationConfiguration(data.computationMode, data.sourceIndividual, data.targetIndividual, data.maxCost)
         val task = taskService.createTask(fileConfiguration, runtimeConfiguration, computationConfiguration)
         taskService.addTask(task);

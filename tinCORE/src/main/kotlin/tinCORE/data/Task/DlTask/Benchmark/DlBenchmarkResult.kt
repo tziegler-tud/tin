@@ -3,13 +3,13 @@ package tinCORE.data.Task.DlTask.Benchmark
 import org.springframework.data.jpa.repository.JpaRepository
 
 import jakarta.persistence.*
-import tinCORE.data.Task.Task
-import kotlin.time.Duration
+import tinCORE.data.Task.BenchmarkResult
+import tinCORE.data.Task.DlTask.DlTask
 
 @Entity
-class BenchmarkResult(
+class DlBenchmarkResult(
     @OneToOne(cascade = [CascadeType.ALL])
-    val task: Task? = null,
+    override val task: DlTask? = null,
 
     val superClassCacheSize: Int? = null,
     val equivalentClassCacheSize: Int? = null,
@@ -40,12 +40,12 @@ class BenchmarkResult(
     val rg_minEdgeCost: Int? = null,
     val rg_maxEdgeCost: Int? = null,
     val rg_unreachableNodesAmount: Int? = null,
-) {
+) : BenchmarkResult {
     @GeneratedValue
     @Id
     val id: Long = 0
 
-    constructor(task: Task, benchmarkResult: TaskProcessingBenchmarkResult) : this(
+    constructor(task: DlTask, benchmarkResult: DlTaskProcessingBenchmarkResult) : this(
         task,
         benchmarkResult.reasonerStats.superClassCacheSize,
         benchmarkResult.reasonerStats.equivalentClassCacheSize,
@@ -80,4 +80,4 @@ class BenchmarkResult(
 
 }
 
-interface BenchmarkResultsRepository : JpaRepository<BenchmarkResult, Long>
+interface DlBenchmarkResultsRepository : JpaRepository<DlBenchmarkResult, Long>
