@@ -1,6 +1,7 @@
 package tinDB.model.v1.graph
 
-import tinDB.model.alphabet.Alphabet
+import tinLIB.model.v2.alphabet.Alphabet
+
 
 abstract class Graph {
 
