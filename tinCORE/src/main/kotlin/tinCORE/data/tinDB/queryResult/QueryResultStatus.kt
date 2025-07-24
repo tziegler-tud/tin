@@ -1,4 +1,4 @@
-package tinDB.model.v1.queryResult
+package tinCORE.data.tinDB.queryResult
 
 enum class QueryResultStatus {
     NoError,

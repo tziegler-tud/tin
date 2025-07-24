@@ -1,4 +1,4 @@
-package tinDB.model.v1.queryResult.computationStatistics
+package tinCORE.data.tinDB.queryResult.computationStatistics
 
 import jakarta.persistence.Entity
 import jakarta.persistence.GeneratedValue
@@ -8,10 +8,10 @@ import org.springframework.data.jpa.repository.JpaRepository
 
 @Entity
 abstract class ComputationStatistics(
-    open val preProcessingTimeInMs: Long,
-    open val mainProcessingTimeInMs: Long,
-    open val postProcessingTimeInMs: Long,
-    open val combinedTimeInMs: Long,
+    open val preProcessingTimeInMs: Long = 0,
+    open val mainProcessingTimeInMs: Long = 0,
+    open val postProcessingTimeInMs: Long = 0,
+    open val combinedTimeInMs: Long = 0,
 ) {
 
     @GeneratedValue
