@@ -1,4 +1,4 @@
-package tinDB.controller.tintheweb
+package tinCORE.controller.tinDB
 
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.GetMapping
@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RestController
 import tinDB.data.tintheweb.queryTask.RegularPathQueryTaskCompleteData
 import tinDB.data.tintheweb.queryTask.QueryTaskCreateData
-import tinDB.services.tintheweb.QueryTaskService
 
 @RestController
 class QueryTaskController(

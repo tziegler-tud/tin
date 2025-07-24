@@ -1,4 +1,4 @@
-package tinDB.model.v1.converter
+package tinCORE.data.tinDB.converter
 
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
