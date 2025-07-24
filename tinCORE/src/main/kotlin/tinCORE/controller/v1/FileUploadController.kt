@@ -12,7 +12,7 @@ import tinCORE.services.File.FileService
 import tinCORE.services.technical.SystemConfigurationService
 import tinCORE.data.File.TinFile
 import tinCORE.data.File.TinFileType
-import tinCORE.data.Task.OntologyVariant
+import tinCORE.data.Task.DlTask.OntologyVariant
 import tinCORE.services.File.StorageFileNotFoundException
 
 import java.nio.file.Path
