@@ -1,15 +1,15 @@
 package tinDB.services.internal.dijkstra.algorithms
 
-import tinDB.model.v1.utils.ProductAutomatonTuple
-import tinDB.model.v1.productAutomaton.ProductAutomatonGraph
-import tinDB.model.v1.productAutomaton.ProductAutomatonNode
+import tinDB.model.v2.utils.ProductAutomatonTuple
+import tinDB.model.v2.productAutomaton.ProductAutomatonGraph
+import tinDB.model.v2.productAutomaton.ProductAutomatonNode
 
 import java.util.*
 
 
 class DijkstraThreshold(
     val productAutomatonGraph: ProductAutomatonGraph,
-    private val threshold: Double
+    private val threshold: Int
 ) {
 
     // π[V] - predecessor of V: <V, predecessorOfV>
@@ -53,9 +53,9 @@ class DijkstraThreshold(
             // line 6
             setOfNodes.add(p)
             // line 7
-            for (edge in p.edges) {
+            for (edge in productAutomatonGraph.getEdgesWithSource(p)) {
                 // will only continue if the threshold won't be reached.
-                if (!(p.weight + edge.cost >= threshold)) {
+                if (!(p.weight + edge.label.cost >= threshold)) {
                     setOfNodes.add(edge.target)
                     // line 8
                     DijkstraAlgorithmUtils.relax(p, edge.target, edge, predecessor)
@@ -68,7 +68,7 @@ class DijkstraThreshold(
     fun processDijkstraOverAllInitialNodes(): HashMap<ProductAutomatonTuple, Double> {
 
         // for all initial nodes...
-        for (initialNode in productAutomatonGraph.initialNodes) {
+        for (initialNode in productAutomatonGraph.getInitialNodes()) {
 
             // clean up from previous runs...
             predecessor.clear()

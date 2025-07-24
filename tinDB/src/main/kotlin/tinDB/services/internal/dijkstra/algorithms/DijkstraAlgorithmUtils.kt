@@ -1,9 +1,9 @@
 package tinDB.services.internal.dijkstra.algorithms
 
-import tinDB.model.v1.utils.ProductAutomatonTuple
-import tinDB.model.v1.productAutomaton.ProductAutomatonEdge
-import tinDB.model.v1.productAutomaton.ProductAutomatonGraph
-import tinDB.model.v1.productAutomaton.ProductAutomatonNode
+import tinDB.model.v2.utils.ProductAutomatonTuple
+import tinDB.model.v2.productAutomaton.ProductAutomatonEdge
+import tinDB.model.v2.productAutomaton.ProductAutomatonGraph
+import tinDB.model.v2.productAutomaton.ProductAutomatonNode
 
 
 object DijkstraAlgorithmUtils {
@@ -31,7 +31,7 @@ object DijkstraAlgorithmUtils {
         edge: ProductAutomatonEdge,
         predecessor: HashSet<ProductAutomatonTuple>
     ) {
-        val newCost = u.weight + edge.cost
+        val newCost = u.weight + edge.label.cost
 
         // line 8.1
         if (v.weight >= newCost && !newCost.isInfinite()) {
