@@ -13,7 +13,7 @@ import tinDB.model.v2.dataProvider.RegularPathQueryDataProvider
 import tinDB.model.v2.productAutomaton.ProductAutomatonGraph
 import tinDB.model.v2.utils.ProductAutomatonTuple
 import tinDB.model.v2.ResultGraph.DbResultNode
-import tinDB.services.internal.ProductAutomatonServiceV2
+import tinDB.services.internal.ProductAutomatonService
 import tinDB.services.internal.dijkstra.algorithms.Dijkstra
 import tinDB.services.internal.dijkstra.algorithms.DijkstraThreshold
 import tinDB.services.internal.dijkstra.algorithms.DijkstraTopK
@@ -22,9 +22,6 @@ import tinLIB.model.v2.query.QueryGraph
 import tinLIB.model.v2.transducer.TransducerGraph
 import tinLIB.services.ResultGraph.ShortestPathResult
 import kotlin.system.measureNanoTime
-import kotlin.time.Duration
-
-import kotlin.time.TimeSource
 
 class DbTaskProcessor(
     override val task: DbTask,
@@ -72,7 +69,7 @@ class DbTaskProcessor(
             null
         )
 
-        val productAutomatonService = ProductAutomatonServiceV2(dataProvider)
+        val productAutomatonService = ProductAutomatonService(dataProvider)
         val productAutomatonGraph: ProductAutomatonGraph
 
         preprocessingTime = measureNanoTime {

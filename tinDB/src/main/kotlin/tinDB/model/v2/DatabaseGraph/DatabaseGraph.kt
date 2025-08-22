@@ -41,6 +41,10 @@ class DatabaseGraph : AbstractGraph<DatabaseNode, DatabaseEdge>() {
         return addNodeProperty(node, DatabaseProperty(property))
     }
 
+    fun getNodesWithProperty(property: DatabaseProperty): List<DatabaseNode> {
+        return nodes.filter {it.properties.contains(property)}
+    }
+
     override fun containsEdge(edge: DatabaseEdge) : Boolean {
         return edges.contains(edge)
     }

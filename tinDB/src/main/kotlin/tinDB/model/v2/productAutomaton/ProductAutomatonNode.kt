@@ -17,12 +17,12 @@ class ProductAutomatonNode(
     val queryNode: Node,
     val transducerNode: Node,
     val databaseNode: Node,
-    val initialState: Boolean,
-    val finalState: Boolean,
+    val initialState: Boolean? = null,
+    val finalState: Boolean? = null,
 ): Node(
     identifier="(${queryNode.identifier}, ${transducerNode.identifier}, ${databaseNode.identifier})",
-    isInitialState = initialState,
-    isFinalState = finalState,
+    isInitialState = initialState?: queryNode.isInitialState && transducerNode.isInitialState && databaseNode.isInitialState,
+    isFinalState = finalState?: queryNode.isFinalState && transducerNode.isFinalState && databaseNode.isFinalState,
 ) {
 
     var weight: Double = Double.POSITIVE_INFINITY

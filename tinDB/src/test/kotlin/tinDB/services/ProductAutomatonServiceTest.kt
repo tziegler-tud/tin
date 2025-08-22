@@ -5,7 +5,7 @@ import tinDB.model.v2.DatabaseGraph.*
 import tinDB.model.v2.dataProvider.RegularPathQueryDataProvider
 import tinDB.model.v2.productAutomaton.*
 
-import tinDB.services.internal.ProductAutomatonServiceV2
+import tinDB.services.internal.ProductAutomatonService
 import tinLIB.model.v2.alphabet.Alphabet
 import tinLIB.model.v2.graph.EdgeLabelProperty
 import tinLIB.model.v2.query.QueryGraph
@@ -52,7 +52,7 @@ class ProductAutomatonServiceTest {
 
         val comparisonGraph = constructComparisonGraph(edgeType, queryGraph, transducerGraph, databaseGraph)
 
-        val productAutomatonService = ProductAutomatonServiceV2(dataProvider)
+        val productAutomatonService = ProductAutomatonService(dataProvider)
         val productAutomatonGraph = productAutomatonService.constructProductAutomaton()
 
         printResult(productAutomatonGraph, comparisonGraph)
@@ -74,7 +74,7 @@ class ProductAutomatonServiceTest {
 
         val comparisonGraph = constructComparisonGraph(edgeType, queryGraph, transducerGraph, databaseGraph)
 
-        val productAutomatonService = ProductAutomatonServiceV2(dataProvider)
+        val productAutomatonService = ProductAutomatonService(dataProvider)
         val productAutomatonGraph = productAutomatonService.constructProductAutomaton()
 
         printResult(productAutomatonGraph, comparisonGraph)
@@ -98,7 +98,7 @@ class ProductAutomatonServiceTest {
 
         val comparisonGraph = constructComparisonGraph(edgeType, queryGraph, transducerGraph, databaseGraph)
 
-        val productAutomatonService = ProductAutomatonServiceV2(dataProvider)
+        val productAutomatonService = ProductAutomatonService(dataProvider)
         val productAutomatonGraph = productAutomatonService.constructProductAutomaton()
 
         printResult(productAutomatonGraph, comparisonGraph)
@@ -121,7 +121,7 @@ class ProductAutomatonServiceTest {
 
         val comparisonGraph = constructComparisonGraph(edgeType, queryGraph, transducerGraph, databaseGraph)
 
-        val productAutomatonService = ProductAutomatonServiceV2(dataProvider)
+        val productAutomatonService = ProductAutomatonService(dataProvider)
         val productAutomatonGraph = productAutomatonService.constructProductAutomaton()
 
         printResult(productAutomatonGraph, comparisonGraph)
@@ -144,7 +144,7 @@ class ProductAutomatonServiceTest {
 
         val comparisonGraph = constructComparisonGraph(edgeType, queryGraph, transducerGraph, databaseGraph)
 
-        val productAutomatonService = ProductAutomatonServiceV2(dataProvider)
+        val productAutomatonService = ProductAutomatonService(dataProvider)
         val productAutomatonGraph = productAutomatonService.constructProductAutomaton()
 
         printResult(productAutomatonGraph, comparisonGraph)
@@ -167,7 +167,7 @@ class ProductAutomatonServiceTest {
 
         val comparisonGraph = constructComparisonGraph(edgeType, queryGraph, transducerGraph, databaseGraph)
 
-        val productAutomatonService = ProductAutomatonServiceV2(dataProvider)
+        val productAutomatonService = ProductAutomatonService(dataProvider)
         val productAutomatonGraph = productAutomatonService.constructProductAutomaton()
 
 
@@ -191,7 +191,7 @@ class ProductAutomatonServiceTest {
 
         val comparisonGraph = constructComparisonGraph(edgeType, queryGraph, transducerGraph, databaseGraph)
 
-        val productAutomatonService = ProductAutomatonServiceV2(dataProvider)
+        val productAutomatonService = ProductAutomatonService(dataProvider)
         val productAutomatonGraph = productAutomatonService.constructProductAutomaton()
 
 
@@ -214,7 +214,7 @@ class ProductAutomatonServiceTest {
 
         val comparisonGraph = constructComparisonGraph(edgeType, queryGraph, transducerGraph, databaseGraph)
 
-        val productAutomatonService = ProductAutomatonServiceV2(dataProvider)
+        val productAutomatonService = ProductAutomatonService(dataProvider)
         val productAutomatonGraph = productAutomatonService.constructProductAutomaton()
 
 
@@ -238,7 +238,7 @@ class ProductAutomatonServiceTest {
 
         val comparisonGraph = constructComparisonGraph(edgeType, queryGraph, transducerGraph, databaseGraph)
 
-        val productAutomatonService = ProductAutomatonServiceV2(dataProvider)
+        val productAutomatonService = ProductAutomatonService(dataProvider)
         val productAutomatonGraph = productAutomatonService.constructProductAutomaton()
 
 
@@ -262,7 +262,7 @@ class ProductAutomatonServiceTest {
 
         val comparisonGraph = constructComparisonGraph(edgeType, queryGraph, transducerGraph, databaseGraph)
 
-        val productAutomatonService = ProductAutomatonServiceV2(dataProvider)
+        val productAutomatonService = ProductAutomatonService(dataProvider)
         val productAutomatonGraph = productAutomatonService.constructProductAutomaton()
 
 
@@ -288,7 +288,7 @@ class ProductAutomatonServiceTest {
 
         val comparisonGraph = constructComparisonGraph(edgeType, queryGraph, transducerGraph, databaseGraph)
 
-        val productAutomatonService = ProductAutomatonServiceV2(dataProvider)
+        val productAutomatonService = ProductAutomatonService(dataProvider)
         val productAutomatonGraph = productAutomatonService.constructProductAutomaton()
 
         printResult(productAutomatonGraph, comparisonGraph)
@@ -311,7 +311,7 @@ class ProductAutomatonServiceTest {
 
         val comparisonGraph = constructComparisonGraph(edgeType, queryGraph, transducerGraph, databaseGraph)
 
-        val productAutomatonService = ProductAutomatonServiceV2(dataProvider)
+        val productAutomatonService = ProductAutomatonService(dataProvider)
         val productAutomatonGraph = productAutomatonService.constructProductAutomaton()
 
         printResult(productAutomatonGraph, comparisonGraph)
@@ -334,7 +334,7 @@ class ProductAutomatonServiceTest {
 
         val comparisonGraph = constructComparisonGraph(edgeType, queryGraph, transducerGraph, databaseGraph)
 
-        val productAutomatonService = ProductAutomatonServiceV2(dataProvider)
+        val productAutomatonService = ProductAutomatonService(dataProvider)
         val productAutomatonGraph = productAutomatonService.constructProductAutomaton()
 
         printResult(productAutomatonGraph, comparisonGraph)
@@ -358,7 +358,7 @@ class ProductAutomatonServiceTest {
 
         val comparisonGraph = constructComparisonGraph(edgeType, queryGraph, transducerGraph, databaseGraph)
 
-        val productAutomatonService = ProductAutomatonServiceV2(dataProvider)
+        val productAutomatonService = ProductAutomatonService(dataProvider)
         val productAutomatonGraph = productAutomatonService.constructProductAutomaton()
 
         printResult(productAutomatonGraph, comparisonGraph)
@@ -382,7 +382,7 @@ class ProductAutomatonServiceTest {
 
         val comparisonGraph = constructComparisonGraph(edgeType, queryGraph, transducerGraph, databaseGraph)
 
-        val productAutomatonService = ProductAutomatonServiceV2(dataProvider)
+        val productAutomatonService = ProductAutomatonService(dataProvider)
         val productAutomatonGraph = productAutomatonService.constructProductAutomaton()
 
         printResult(productAutomatonGraph, comparisonGraph)
@@ -406,7 +406,7 @@ class ProductAutomatonServiceTest {
 
         val comparisonGraph = constructComparisonGraph(edgeType, queryGraph, transducerGraph, databaseGraph)
 
-        val productAutomatonService = ProductAutomatonServiceV2(dataProvider)
+        val productAutomatonService = ProductAutomatonService(dataProvider)
         val productAutomatonGraph = productAutomatonService.constructProductAutomaton()
 
         printResult(productAutomatonGraph, comparisonGraph)
@@ -430,7 +430,7 @@ class ProductAutomatonServiceTest {
 
         val comparisonGraph = constructComparisonGraphFailing(edgeType, queryGraph, transducerGraph, databaseGraph)
 
-        val productAutomatonService = ProductAutomatonServiceV2(dataProvider)
+        val productAutomatonService = ProductAutomatonService(dataProvider)
         val productAutomatonGraph = productAutomatonService.constructProductAutomaton()
 
 
