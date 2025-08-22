@@ -20,7 +20,7 @@ import tinDB.model.v2.productAutomaton.ProductAutomatonGraph
 import tinDB.model.v2.utils.ProductAutomatonTuple
 import tinDB.model.v2.ResultGraph.DbResultNode
 import tinDB.model.v2.dataProvider.ConjunctiveQueryDataProvider
-import tinDB.services.internal.ProductAutomatonServiceV2
+import tinDB.services.internal.ProductAutomatonService
 import tinDB.services.internal.dijkstra.algorithms.Dijkstra
 import tinDB.services.internal.dijkstra.algorithms.DijkstraThreshold
 import tinDB.services.internal.dijkstra.algorithms.DijkstraTopK
@@ -33,8 +33,6 @@ import tinLIB.model.v2.transducer.TransducerGraph
 import tinLIB.services.ResultGraph.ShortestPathResult
 import kotlin.system.measureNanoTime
 import kotlin.system.measureTimeMillis
-
-import kotlin.time.TimeSource
 
 class ConjunctiveDbTaskProcessor(
     override val task: DbTask,
@@ -141,7 +139,7 @@ class ConjunctiveDbTaskProcessor(
         dataProvider: ConjunctiveQueryDataProvider,
     ) : ConjunctiveCalculationResult {
 
-        var productAutomatonService: ProductAutomatonServiceV2
+        var productAutomatonService: ProductAutomatonService
         var productAutomatonGraph: ProductAutomatonGraph
         val answerMap: HashMap<ProductAutomatonTuple, Double>
 
@@ -170,7 +168,7 @@ class ConjunctiveDbTaskProcessor(
             workingAlphabet.addAlphabet(dataProvider.databaseGraph.alphabet)
 
             localPreprocessingTime = measureTimeMillis {
-                productAutomatonService = ProductAutomatonServiceV2(
+                productAutomatonService = ProductAutomatonService(
                     RegularPathQueryDataProvider(
                         queryGraph = it.value,
                         transducerGraph = dataProvider.transducerGraph,
@@ -299,7 +297,7 @@ class ConjunctiveDbTaskProcessor(
         regularPathQueryDataProvider: RegularPathQueryDataProvider, threshold: Int
     ): ConjunctiveCalculationResult {
 
-        val productAutomatonService = ProductAutomatonServiceV2(regularPathQueryDataProvider)
+        val productAutomatonService = ProductAutomatonService(regularPathQueryDataProvider)
         val productAutomatonGraph: ProductAutomatonGraph
         var answerMap: HashMap<ProductAutomatonTuple, Double>
 
@@ -338,7 +336,7 @@ class ConjunctiveDbTaskProcessor(
         kValue: Int
     ): ConjunctiveCalculationResult {
 
-        val productAutomatonService = ProductAutomatonServiceV2(regularPathQueryDataProvider)
+        val productAutomatonService = ProductAutomatonService(regularPathQueryDataProvider)
         val productAutomatonGraph: ProductAutomatonGraph
         var answerMap: HashMap<ProductAutomatonTuple, Double>
 

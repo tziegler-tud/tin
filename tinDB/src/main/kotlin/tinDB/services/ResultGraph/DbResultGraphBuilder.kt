@@ -4,7 +4,7 @@ import tinDB.model.v2.DatabaseGraph.DatabaseGraph
 import tinDB.model.v2.ResultGraph.DbResultGraph
 import tinDB.model.v2.dataProvider.RegularPathQueryDataProvider
 import tinDB.services.ResultGraph.AbstractDbResultGraphBuilder
-import tinDB.services.internal.ProductAutomatonServiceV2
+import tinDB.services.internal.ProductAutomatonService
 import tinLIB.model.v2.query.QueryGraph
 import tinLIB.model.v2.transducer.TransducerGraph
 
@@ -25,7 +25,7 @@ class DbResultGraphBuilder(
                 null
             )
 
-            val productAutomatonService = ProductAutomatonServiceV2(dataProvider)
+            val productAutomatonService = ProductAutomatonService(dataProvider)
             val productAutomatonGraph = productAutomatonService.constructProductAutomaton();
 
             val resultGraph: DbResultGraph = DbResultGraph.fromProductAutomaton(productAutomatonGraph);
