@@ -9,4 +9,4 @@ class DlTaskComputationConfiguration  (
     override val individualNameA: String? = null,
     override val individualNameB: String? = null,
     override val maxCost: Int?  = null,
-) : TaskComputationConfiguration<DlComputationMode>
+) : TaskComputationConfiguration

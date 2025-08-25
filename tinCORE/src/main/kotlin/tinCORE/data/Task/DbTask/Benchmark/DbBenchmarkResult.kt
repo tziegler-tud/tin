@@ -21,4 +21,4 @@ class DbBenchmarkResult(
 
 }
 
-interface DlBenchmarkResultsRepository : JpaRepository<DbBenchmarkResult, Long>
+interface DbBenchmarkResultsRepository : JpaRepository<DbBenchmarkResult, Long>

@@ -5,7 +5,7 @@ import tinLIB.model.v2.ResultGraph.ResultNode
 import tinLIB.services.ResultGraph.ShortestPathResult
 
 
-class TaskProcessorExecutionResult<T: ResultNode>(
+class TaskProcessorExecutionResult<T: ResultNode, S: TaskProcessingBenchmarkResult>(
     val results: List<ShortestPathResult<T>>,
-    val benchmarkResult: TaskProcessingBenchmarkResult
+    val benchmarkResult: S
 )

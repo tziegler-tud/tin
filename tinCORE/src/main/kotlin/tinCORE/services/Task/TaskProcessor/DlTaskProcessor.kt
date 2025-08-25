@@ -41,7 +41,7 @@ class DlTaskProcessor(
     override val transducerMode: TransducerMode,
     override val transducerGenerationMode: TransducerGenerationMode? = null,
     override val transducerGraphProvided: TransducerGraph? = null,
-) : AbstractTaskProcessor<DlResultNode>(
+) : AbstractTaskProcessor<DlResultNode, DlTaskProcessingBenchmarkResult>(
     task,
     queryGraph,
     transducerMode,
@@ -52,7 +52,7 @@ class DlTaskProcessor(
     private val compConfig: DlTaskComputationConfiguration = task.getComputationConfiguration();
     private val fileConfig = task.getFileConfiguration();
 
-    private var benchmarkResults: TaskProcessingBenchmarkResult? = null;
+    private var benchmarkResults: DlTaskProcessingBenchmarkResult? = null;
 
     constructor(
         task: DlTask,
@@ -63,7 +63,7 @@ class DlTaskProcessor(
 
 
 
-    override fun execute(): TaskProcessorExecutionResult<DlResultNode> {
+    override fun execute(): TaskProcessorExecutionResult<DlResultNode, DlTaskProcessingBenchmarkResult> {
         //execute task
         val ec: ExecutionContext
         val resultGraph: DlResultGraph

@@ -30,6 +30,6 @@ class DlTaskResult(
     )
 }
 
-interface DlTaskResultRepository : JpaRepository<TaskResult, Long> {
+interface DlTaskResultRepository : JpaRepository<DlTaskResult, Long> {
 
 }

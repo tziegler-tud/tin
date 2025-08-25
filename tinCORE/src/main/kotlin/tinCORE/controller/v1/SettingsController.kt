@@ -8,17 +8,16 @@ import tinCORE.services.Task.TaskService
 @RestController
 @RequestMapping("/api/v1/settings")
 class SettingsController(
-    private val taskService: TaskService
 ) {
 
     @GetMapping("/all")
-    fun getTasks(): SettingsInfoData {
+    fun getSettings(): SettingsInfoData {
 
         return SettingsInfoData();
     }
 
     @PostMapping("/set")
-    fun addTask(@RequestBody data: ApiSettingsData): SettingsInfoData {
+    fun setSettings(@RequestBody data: ApiSettingsData): SettingsInfoData {
         return SettingsInfoData();
     }
 }

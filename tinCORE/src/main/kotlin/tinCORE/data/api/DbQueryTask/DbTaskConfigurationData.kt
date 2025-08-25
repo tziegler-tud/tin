@@ -1,19 +1,19 @@
-package tinCORE.data.tintheweb.DLqueryTask
+package tinCORE.data.tintheweb.DlQueryTask
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import tinCORE.data.Task.ComputationMode
+import tinCORE.data.Task.DbTask.DbComputationMode
 import tinCORE.data.Task.DlTask.OntologyVariant
 import tinCORE.data.Task.TransducerGenerationMode
 import tinCORE.data.Task.TransducerMode
 
-class TaskConfigurationData(
+class DbTaskConfigurationData(
     @JsonProperty("query") val queryFileIdentifier: Long,
-    @JsonProperty("ontology") val ontologyFileIdentifier: Long,
+    @JsonProperty("database") val databaseFileIdentifier: Long,
     @JsonProperty("transducerMode") val transducerMode: TransducerMode,
     @JsonProperty("transducerGenerationMode") val transducerGenerationMode: TransducerGenerationMode?,
     @JsonProperty("transducerFile") val transducerFileIdentifier: Long?,
-    @JsonProperty("variant") val ontologyVariant: OntologyVariant,
-    @JsonProperty("computationMode") val computationMode: ComputationMode,
+    @JsonProperty("computationMode") val computationMode: DbComputationMode,
     @JsonProperty("sourceIndividual") val sourceIndividual: String?,
     @JsonProperty("targetIndividual") val targetIndividual: String?,
     @JsonProperty("maxCost") val maxCost: Int?,

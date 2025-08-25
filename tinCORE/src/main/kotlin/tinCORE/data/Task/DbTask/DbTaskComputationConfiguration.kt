@@ -8,5 +8,5 @@ class DbTaskComputationConfiguration(
     override val individualNameB: String? = null,
     override val maxCost: Int?  = null,
     val topKValue: Int? = null,
-) : TaskComputationConfiguration<DbComputationMode>{
+) : TaskComputationConfiguration{
 }

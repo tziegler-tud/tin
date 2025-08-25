@@ -1,4 +1,4 @@
-package tinDB.model.v1.queryResult.conjunctiveQueryResult
+package tinCORE.data.tinDB.queryResult.conjunctiveQueryResult
 
 import org.springframework.data.jpa.repository.JpaRepository
 import tinCORE.data.tinDB.converter.VariableMappingConverter

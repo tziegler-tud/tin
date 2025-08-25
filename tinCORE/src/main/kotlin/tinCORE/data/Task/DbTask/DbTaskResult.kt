@@ -7,7 +7,7 @@ import tinLIB.model.v2.ResultGraph.ResultNode
 import tinLIB.services.ResultGraph.ShortestPathResult
 
 @Entity
-class DlTaskResult(
+class DbTaskResult(
     @ManyToOne(cascade = [CascadeType.ALL])
     override val task: DbTask = DbTask(),
 
@@ -30,6 +30,6 @@ class DlTaskResult(
     )
 }
 
-interface DbTaskResultRepository : JpaRepository<TaskResult, Long> {
+interface DbTaskResultRepository : JpaRepository<DbTaskResult, Long> {
 
 }

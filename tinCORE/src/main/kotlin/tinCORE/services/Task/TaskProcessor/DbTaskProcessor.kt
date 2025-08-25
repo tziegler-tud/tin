@@ -30,7 +30,7 @@ class DbTaskProcessor(
     override val transducerGenerationMode: TransducerGenerationMode? = null,
     override val transducerGraphProvided: TransducerGraph? = null,
     val databaseGraph: DatabaseGraph
-) : AbstractTaskProcessor<DbResultNode>(
+) : AbstractTaskProcessor<DbResultNode, DbTaskProcessingBenchmarkResult>(
     task,
     queryGraph,
     transducerMode,
@@ -43,7 +43,7 @@ class DbTaskProcessor(
     private var preprocessingTime: Long = 0
 
 
-    private var benchmarkResults: TaskProcessingBenchmarkResult? = null;
+    private var benchmarkResults: DbTaskProcessingBenchmarkResult? = null;
 
     constructor(
         task: DbTask,
@@ -52,7 +52,7 @@ class DbTaskProcessor(
         databaseGraph: DatabaseGraph,
     ): this(task, queryGraph, TransducerMode.provided, null, transducerGraph, databaseGraph)
 
-    override fun execute(): TaskProcessorExecutionResult<DbResultNode> {
+    override fun execute(): TaskProcessorExecutionResult<DbResultNode, DbTaskProcessingBenchmarkResult> {
         //execute task
 
         var results: MutableList<ShortestPathResult<DbResultNode>> = mutableListOf();

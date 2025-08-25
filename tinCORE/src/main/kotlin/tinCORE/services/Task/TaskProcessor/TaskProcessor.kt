@@ -3,6 +3,7 @@ package tinCORE.services.Task.TaskProcessor
 
 import tinLIB.model.v2.alphabet.Alphabet
 import tinCORE.data.Task.Task
+import tinCORE.data.Task.TaskProcessingBenchmarkResult
 import tinCORE.data.Task.TransducerGenerationMode
 import tinCORE.data.Task.TransducerMode
 import tinCORE.services.Task.ProcessingResult
@@ -11,7 +12,7 @@ import tinLIB.model.v2.query.QueryGraph
 import tinLIB.model.v2.transducer.TransducerGraph
 
 
-interface TaskProcessor<T: ResultNode> {
+interface TaskProcessor<T: ResultNode, S: TaskProcessingBenchmarkResult> {
 
     val task: Task
     val queryGraph: QueryGraph
@@ -19,6 +20,6 @@ interface TaskProcessor<T: ResultNode> {
     val transducerGenerationMode: TransducerGenerationMode?
     val transducerGraphProvided: TransducerGraph?
 
-    fun execute() : TaskProcessorExecutionResult<T>
+    fun execute() : TaskProcessorExecutionResult<T, S>
     fun buildTransducerGraph(transducerMode: TransducerMode, transducerGenerationMode: TransducerGenerationMode?, queryAlphabet: Alphabet, dataAlphabet: Alphabet) : TransducerGraph
 }

@@ -1,6 +1,7 @@
 package tinCORE.services.Task.TaskProcessor
 
 import tinCORE.data.Task.Task
+import tinCORE.data.Task.TaskProcessingBenchmarkResult
 import tinCORE.data.Task.TransducerGenerationMode
 import tinCORE.data.Task.TransducerMode
 import tinCORE.services.Task.ProcessingResult
@@ -13,13 +14,13 @@ import tinLIB.model.v2.transducer.TransducerGraph
 import tinLIB.services.internal.utils.TransducerFactory
 
 
-abstract class AbstractTaskProcessor<T: ResultNode>(
+abstract class AbstractTaskProcessor<T: ResultNode, S: TaskProcessingBenchmarkResult>(
     override val task: Task,
     override val queryGraph: QueryGraph,
     override val transducerMode: TransducerMode,
     override val transducerGenerationMode: TransducerGenerationMode? = null,
     override val transducerGraphProvided: TransducerGraph? = null,
-): TaskProcessor<T> {
+): TaskProcessor<T, S> {
 
     constructor(
         task: Task,
@@ -27,7 +28,7 @@ abstract class AbstractTaskProcessor<T: ResultNode>(
         transducerGraph: TransducerGraph,
     ): this(task, queryGraph, TransducerMode.provided, null, transducerGraph)
 
-    abstract override fun execute() : TaskProcessorExecutionResult<T>
+    abstract override fun execute() : TaskProcessorExecutionResult<T, S>
 
     override fun buildTransducerGraph(transducerMode: TransducerMode, transducerGenerationMode: TransducerGenerationMode?, queryAlphabet: Alphabet, dataAlphabet: Alphabet) : TransducerGraph {
         if(transducerMode == TransducerMode.provided) {

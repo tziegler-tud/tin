@@ -10,5 +10,4 @@ class DlTaskProcessingBenchmarkResult(
     val spaBuilderStats: TaskProcessingSpaBuilderStats,
     val spBuilderStats: TaskProcessingSpBuilderStats,
     val resultBuilderStats: ResultGraphBuilderStats,
-) : TaskProcessingBenchmarkResult {
-}
+) : TaskProcessingBenchmarkResult

@@ -6,7 +6,6 @@ import tinCORE.data.tinDB.queryResult.QueryResult
 import tinCORE.data.tinDB.queryResult.QueryResultStatus
 import tinCORE.data.tinDB.queryResult.RegularPathQueryResult
 import tinCORE.data.tinDB.queryResult.computationStatistics.ConjunctiveComputationStatistics
-import tinDB.model.v1.queryResult.conjunctiveQueryResult.ConjunctiveQueryAnswerMapping
 
 
 @Entity
