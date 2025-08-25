@@ -1,7 +1,5 @@
 package tinDB.services.internal.queryAnswering.conjunctiveUtils
 
-import org.springframework.stereotype.Service
-import org.springframework.transaction.annotation.Transactional
 import tinDB.model.v2.ConjunctiveFormula
 import tinDB.model.v2.dataProvider.ConjunctiveQueryDataProvider
 import tinDB.model.v2.ResultGraph.DbResultNode
@@ -13,7 +11,6 @@ import java.util.HashSet
  * this class will handle the reassembly of the single conjunct query results in order to answer the conjunctive query
  *
  */
-@Service
 class QueryConjunctReassemblerV2() {
 
     fun reassemble(
