@@ -65,6 +65,10 @@ abstract class AbstractReasoner(
         return reasoner.isEntailed(axiom)
     }
 
+    /**
+     * Returns a set of named individual that are connected to the given individual by the given property expression,
+     * i.e. it holds that Property(individual, j) is entailed for all named individuals j in the returned set
+     */
     override fun getConnectedIndividuals(property: OWLObjectPropertyExpression, individual: OWLNamedIndividual): NodeSet<OWLNamedIndividual> {
         return reasoner.getObjectPropertyValues(individual, property);
     }
