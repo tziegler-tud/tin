@@ -5,7 +5,7 @@ class DatabaseProperty(val label: String) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other !is DatabaseProperty) return false
-        return other.label === label;
+        return other.label == label;
     }
 
     override fun hashCode(): Int {

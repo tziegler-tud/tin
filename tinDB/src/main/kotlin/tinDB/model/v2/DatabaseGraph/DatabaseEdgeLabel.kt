@@ -18,7 +18,7 @@ class DatabaseEdgeLabel(val label: EdgeLabelProperty) : EdgeLabel {
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
-        if (other !is QueryEdgeLabel) return false
+        if (other !is DatabaseEdgeLabel) return false
         return label == other.label;
     }
 }

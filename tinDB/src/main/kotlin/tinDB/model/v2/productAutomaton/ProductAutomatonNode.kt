@@ -17,12 +17,12 @@ class ProductAutomatonNode(
     val queryNode: Node,
     val transducerNode: Node,
     val databaseNode: Node,
-    val initialState: Boolean? = null,
-    val finalState: Boolean? = null,
+    initialState: Boolean? = null,
+    finalState: Boolean? = null,
 ): Node(
     identifier="(${queryNode.identifier}, ${transducerNode.identifier}, ${databaseNode.identifier})",
-    isInitialState = initialState?: queryNode.isInitialState && transducerNode.isInitialState && databaseNode.isInitialState,
-    isFinalState = finalState?: queryNode.isFinalState && transducerNode.isFinalState && databaseNode.isFinalState,
+    isInitialState = initialState?: queryNode.isInitialState && transducerNode.isInitialState,
+    isFinalState = finalState?: queryNode.isFinalState && transducerNode.isFinalState,
 ) {
 
     var weight: Double = Double.POSITIVE_INFINITY
@@ -35,8 +35,8 @@ class ProductAutomatonNode(
         return queryNode == other.queryNode &&
                 transducerNode == other.transducerNode &&
                 databaseNode == other.databaseNode &&
-                initialState == other.initialState &&
-                finalState == other.finalState
+                isInitialState == other.isInitialState &&
+                isFinalState == other.isFinalState
     }
 
     override fun equalsWithoutState(other: Any): Boolean {
@@ -52,8 +52,8 @@ class ProductAutomatonNode(
         var result = queryNode.hashCode()
         result = 31 * result + transducerNode.hashCode()
         result = 31 * result + databaseNode.hashCode()
-        result = 31 * result + initialState.hashCode()
-        result = 31 * result + finalState.hashCode()
+        result = 31 * result + isInitialState.hashCode()
+        result = 31 * result + isFinalState.hashCode()
         return result
     }
 

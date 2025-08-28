@@ -2,7 +2,6 @@ package tinDB.model.v2.productAutomaton
 
 import tinLIB.model.v2.alphabet.Alphabet
 import tinLIB.model.v2.graph.AbstractGraph
-import tinLIB.model.v2.graph.EdgeSet
 import tinLIB.model.v2.graph.NodeSet
 
 class ProductAutomatonGraph (
@@ -18,10 +17,13 @@ class ProductAutomatonGraph (
     }
 
     override fun addEdge(edge: ProductAutomatonEdge) : Boolean {
-        if (nodes.containsWithoutState(edge.source) && nodes.containsWithoutState(edge.target) ) {
-            return edges.add(edge);
+        if (!nodes.containsWithoutState(edge.source)) {
+            addNode(edge.source)
         }
-        throw Error("Unable to add Edge: source or target node are not present in the graph.")
+        if (!nodes.containsWithoutState(edge.target)) {
+            addNode(edge.target)
+        }
+        return edges.add(edge);
     }
 
 }
