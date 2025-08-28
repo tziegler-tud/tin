@@ -19,9 +19,9 @@ class ProductAutomatonServiceTest {
     private val alphabet = Alphabet()
 
     private fun printResult(productAutomatonGraph: ProductAutomatonGraph, comparisonGraph: ProductAutomatonGraph) {
-        println("comparing graphs: constructed / comparison graph:\n")
+        println("comparing graphs: constructed\n")
         productAutomatonGraph.printGraph()
-        println("\n")
+        println("comparison graph:\n")
         comparisonGraph.printGraph()
     }
 
@@ -266,8 +266,9 @@ class ProductAutomatonServiceTest {
         val productAutomatonGraph = productAutomatonService.constructProductAutomaton()
 
 
-        println("comparing graphs: constructed / comparison graph:\n")
+        println("comparing graphs: constructed\n")
         productAutomatonGraph.printGraph()
+        println("comparison graph:\n")
         comparisonGraph.printGraph()
         assert(productAutomatonGraph == comparisonGraph)
 
@@ -482,8 +483,8 @@ class ProductAutomatonServiceTest {
             ProductAutomatonEdgeType.NegativeIncomingPositiveOutgoing, ProductAutomatonEdgeType.NegativeIncomingNegativeOutgoing, ProductAutomatonEdgeType.NegativeIncomingEpsilonOutgoing, ProductAutomatonEdgeType.NegativeIncomingPropertyOutgoing -> {
                 graph.addNodes(Node("q0", isInitialState = true, isFinalState = true))
                 val q0 = graph.nodes.find { it.identifier == "q0" }!!
-                graph.addEdge(q0, q0, "-l1")
-                graph.addEdge(q0, q0, "-l2")
+                graph.addEdge(q0, q0, "inverse(l1)")
+                graph.addEdge(q0, q0, "inverse(l2)")
             }
 
             ProductAutomatonEdgeType.PropertyIncomingEpsilonOutgoing, ProductAutomatonEdgeType.PropertyIncomingPositiveOutgoing, ProductAutomatonEdgeType.PropertyIncomingNegativeOutgoing, ProductAutomatonEdgeType.PropertyIncomingPropertyOutgoing -> {
@@ -511,9 +512,9 @@ class ProductAutomatonServiceTest {
             ProductAutomatonEdgeType.EpsilonIncomingNegativeOutgoing -> {
                 graph.addNodes(Node("t0", isInitialState = true, isFinalState = true))
                 val t0 = graph.nodes.find { it.identifier == "t0" }!!
-                graph.addEdge(t0, t0, "epsilon", "-l1", 0)
-                graph.addEdge(t0, t0, "epsilon", "-l2", 3)
-                graph.addEdge(t0, t0, "epsilon", "-l3", 5)
+                graph.addEdge(t0, t0, "epsilon", "inverse(l1)", 0)
+                graph.addEdge(t0, t0, "epsilon", "inverse(l2)", 3)
+                graph.addEdge(t0, t0, "epsilon", "inverse(l3)", 5)
             }
 
             ProductAutomatonEdgeType.EpsilonIncomingEpsilonOutgoing -> {
@@ -541,9 +542,9 @@ class ProductAutomatonServiceTest {
             ProductAutomatonEdgeType.PositiveIncomingNegativeOutgoing -> {
                 graph.addNodes(Node("t0", isInitialState = true, isFinalState = true))
                 val t0 = graph.nodes.find { it.identifier == "t0" }!!
-                graph.addEdge(t0, t0, "l1", "-l1", 0)
-                graph.addEdge(t0, t0, "l1", "-l2", 3)
-                graph.addEdge(t0, t0, "l1", "-l3", 5)
+                graph.addEdge(t0, t0, "l1", "inverse(l1)", 0)
+                graph.addEdge(t0, t0, "l1", "inverse(l2)", 3)
+                graph.addEdge(t0, t0, "l1", "inverse(l3)", 5)
             }
 
             ProductAutomatonEdgeType.PositiveIncomingEpsilonOutgoing -> {
@@ -563,33 +564,33 @@ class ProductAutomatonServiceTest {
             ProductAutomatonEdgeType.NegativeIncomingPositiveOutgoing -> {
                 graph.addNodes(Node("t0", isInitialState = true, isFinalState = true))
                 val t0 = graph.nodes.find { it.identifier == "t0" }!!
-                graph.addEdge(t0, t0, "-l1", "l1", 0)
-                graph.addEdge(t0, t0, "-l1", "l2", 3)
-                graph.addEdge(t0, t0, "-l2", "l3", 5)
+                graph.addEdge(t0, t0, "inverse(l1)", "l1", 0)
+                graph.addEdge(t0, t0, "inverse(l1)", "l2", 3)
+                graph.addEdge(t0, t0, "inverse(l2)", "l3", 5)
             }
 
             ProductAutomatonEdgeType.NegativeIncomingNegativeOutgoing -> {
                 graph.addNodes(Node("t0", isInitialState = true, isFinalState = true))
                 val t0 = graph.nodes.find { it.identifier == "t0" }!!
-                graph.addEdge(t0, t0, "-l1", "-l1", 0)
-                graph.addEdge(t0, t0, "-l1", "-l2", 3)
-                graph.addEdge(t0, t0, "-l2", "-l2", 5)
+                graph.addEdge(t0, t0, "inverse(l1)", "inverse(l1)", 0)
+                graph.addEdge(t0, t0, "inverse(l1)", "inverse(l2)", 3)
+                graph.addEdge(t0, t0, "inverse(l2)", "inverse(l2)", 5)
             }
 
             ProductAutomatonEdgeType.NegativeIncomingEpsilonOutgoing -> {
                 graph.addNodes(Node("t0", isInitialState = true, isFinalState = true))
                 val t0 = graph.nodes.find { it.identifier == "t0" }!!
-                graph.addEdge(t0, t0, "-l1", "epsilon", 0)
-                graph.addEdge(t0, t0, "-l1", "epsilon", 3)
-                graph.addEdge(t0, t0, "-l2", "epsilon", 5)
+                graph.addEdge(t0, t0, "inverse(l1)", "epsilon", 0)
+                graph.addEdge(t0, t0, "inverse(l1)", "epsilon", 3)
+                graph.addEdge(t0, t0, "inverse(l2)", "epsilon", 5)
             }
 
             ProductAutomatonEdgeType.NegativeIncomingPropertyOutgoing -> {
                 graph.addNodes(Node("t0", isInitialState = true, isFinalState = true))
                 val t0 = graph.nodes.find { it.identifier == "t0" }!!
-                graph.addEdge(t0, t0, "-l1", "prop1?", 0)
-                graph.addEdge(t0, t0, "-l1", "prop2?", 3)
-                graph.addEdge(t0, t0, "-l2", "prop2?", 5)
+                graph.addEdge(t0, t0, "inverse(l1)", "prop1?", 0)
+                graph.addEdge(t0, t0, "inverse(l1)", "prop2?", 3)
+                graph.addEdge(t0, t0, "inverse(l2)", "prop2?", 5)
             }
 
             ProductAutomatonEdgeType.PropertyIncomingEpsilonOutgoing -> {
@@ -611,9 +612,9 @@ class ProductAutomatonServiceTest {
             ProductAutomatonEdgeType.PropertyIncomingNegativeOutgoing -> {
                 graph.addNodes(Node("t0", isInitialState = true, isFinalState = true))
                 val t0 = graph.nodes.find { it.identifier == "t0" }!!
-                graph.addEdge(t0, t0, "prop1?", "-l1", 0)
-                graph.addEdge(t0, t0, "prop1?", "-l2", 3)
-                graph.addEdge(t0, t0, "prop2?", "-l2", 5)
+                graph.addEdge(t0, t0, "prop1?", "inverse(l1)", 0)
+                graph.addEdge(t0, t0, "prop1?", "inverse(l2)", 3)
+                graph.addEdge(t0, t0, "prop2?", "inverse(l2)", 5)
             }
 
             ProductAutomatonEdgeType.PropertyIncomingPropertyOutgoing -> {
@@ -679,6 +680,8 @@ class ProductAutomatonServiceTest {
         val databaseNodes = arrayOf(d0, d1, d2, d3)
         val productNodes = arrayOf(q0t0d0, q0t0d1, q0t0d2, q0t0d3)
 
+        graph.addNodes(q0t0d0, q0t0d1, q0t0d2, q0t0d3)
+
 
         when (edgeType) {
             ProductAutomatonEdgeType.EpsilonIncomingPositiveOutgoing -> {
@@ -726,7 +729,7 @@ class ProductAutomatonServiceTest {
                         target = q0t0d0,
                         ProductAutomatonEdgeLabel(
                             incoming = EdgeLabelProperty.fromString("epsilon"),
-                            outgoing = EdgeLabelProperty.fromString("-l1"),
+                            outgoing = EdgeLabelProperty.fromString("inverse(l1)"),
                             cost = 0,
                         )
                     )
@@ -738,7 +741,7 @@ class ProductAutomatonServiceTest {
                         target = q0t0d1,
                         ProductAutomatonEdgeLabel(
                             incoming = EdgeLabelProperty.fromString("epsilon"),
-                            outgoing = EdgeLabelProperty.fromString("-l2"),
+                            outgoing = EdgeLabelProperty.fromString("inverse(l2)"),
                             cost = 3,
                         )
                     )
@@ -750,7 +753,7 @@ class ProductAutomatonServiceTest {
                         target = q0t0d0,
                         ProductAutomatonEdgeLabel(
                             incoming = EdgeLabelProperty.fromString("epsilon"),
-                            outgoing = EdgeLabelProperty.fromString("-l3"),
+                            outgoing = EdgeLabelProperty.fromString("inverse(l3)"),
                             cost = 5,
                         )
                     )
@@ -927,7 +930,7 @@ class ProductAutomatonServiceTest {
                         target = q0t0d0,
                         ProductAutomatonEdgeLabel(
                             incoming = EdgeLabelProperty.fromString("l1"),
-                            outgoing = EdgeLabelProperty.fromString("-l1"),
+                            outgoing = EdgeLabelProperty.fromString("inverse(l1)"),
                             cost = 0,
                         )
                     )
@@ -939,7 +942,7 @@ class ProductAutomatonServiceTest {
                         target = q0t0d1,
                         ProductAutomatonEdgeLabel(
                             incoming = EdgeLabelProperty.fromString("l1"),
-                            outgoing = EdgeLabelProperty.fromString("-l2"),
+                            outgoing = EdgeLabelProperty.fromString("inverse(l2)"),
                             cost = 3,
                         )
                     )
@@ -951,7 +954,7 @@ class ProductAutomatonServiceTest {
                         target = q0t0d0,
                         ProductAutomatonEdgeLabel(
                             incoming = EdgeLabelProperty.fromString("l1"),
-                            outgoing = EdgeLabelProperty.fromString("-l3"),
+                            outgoing = EdgeLabelProperty.fromString("inverse(l3)"),
                             cost = 5,
                         )
                     )
@@ -1091,7 +1094,7 @@ class ProductAutomatonServiceTest {
                         source = q0t0d0,
                         target = q0t0d1,
                         ProductAutomatonEdgeLabel(
-                            incoming = EdgeLabelProperty.fromString("-l1"),
+                            incoming = EdgeLabelProperty.fromString("inverse(l1)"),
                             outgoing = EdgeLabelProperty.fromString("l1"),
                             cost = 0,
                         )
@@ -1103,7 +1106,7 @@ class ProductAutomatonServiceTest {
                         source = q0t0d1,
                         target = q0t0d2,
                         ProductAutomatonEdgeLabel(
-                            incoming = EdgeLabelProperty.fromString("-l1"),
+                            incoming = EdgeLabelProperty.fromString("inverse(l1)"),
                             outgoing = EdgeLabelProperty.fromString("l2"),
                             cost = 3,
                         )
@@ -1115,7 +1118,7 @@ class ProductAutomatonServiceTest {
                         source = q0t0d0,
                         target = q0t0d3,
                         ProductAutomatonEdgeLabel(
-                            incoming = EdgeLabelProperty.fromString("-l2"),
+                            incoming = EdgeLabelProperty.fromString("inverse(l2)"),
                             outgoing = EdgeLabelProperty.fromString("l3"),
                             cost = 5,
                         )
@@ -1129,8 +1132,8 @@ class ProductAutomatonServiceTest {
                         source = q0t0d1,
                         target = q0t0d0,
                         ProductAutomatonEdgeLabel(
-                            incoming = EdgeLabelProperty.fromString("-l1"),
-                            outgoing = EdgeLabelProperty.fromString("-l1"),
+                            incoming = EdgeLabelProperty.fromString("inverse(l1)"),
+                            outgoing = EdgeLabelProperty.fromString("inverse(l1)"),
                             cost = 0,
                         )
                     )
@@ -1141,8 +1144,8 @@ class ProductAutomatonServiceTest {
                         source = q0t0d2,
                         target = q0t0d1,
                         ProductAutomatonEdgeLabel(
-                            incoming = EdgeLabelProperty.fromString("-l1"),
-                            outgoing = EdgeLabelProperty.fromString("-l2"),
+                            incoming = EdgeLabelProperty.fromString("inverse(l1)"),
+                            outgoing = EdgeLabelProperty.fromString("inverse(l2)"),
                             cost = 3,
                         )
                     )
@@ -1153,8 +1156,8 @@ class ProductAutomatonServiceTest {
                         source = q0t0d2,
                         target = q0t0d1,
                         ProductAutomatonEdgeLabel(
-                            incoming = EdgeLabelProperty.fromString("-l2"),
-                            outgoing = EdgeLabelProperty.fromString("-l2"),
+                            incoming = EdgeLabelProperty.fromString("inverse(l2)"),
+                            outgoing = EdgeLabelProperty.fromString("inverse(l2)"),
                             cost = 5,
                         )
                     )
@@ -1170,7 +1173,7 @@ class ProductAutomatonServiceTest {
                             source = it,
                             target = it,
                             ProductAutomatonEdgeLabel(
-                                incoming = EdgeLabelProperty.fromString("-l1"),
+                                incoming = EdgeLabelProperty.fromString("inverse(l1)"),
                                 outgoing = EdgeLabelProperty.fromString("epsilon"),
                                 cost = 0,
                             )
@@ -1182,7 +1185,7 @@ class ProductAutomatonServiceTest {
                             source = it,
                             target = it,
                             ProductAutomatonEdgeLabel(
-                                incoming = EdgeLabelProperty.fromString("-l1"),
+                                incoming = EdgeLabelProperty.fromString("inverse(l1)"),
                                 outgoing = EdgeLabelProperty.fromString("epsilon"),
                                 cost = 3,
                             )
@@ -1194,7 +1197,7 @@ class ProductAutomatonServiceTest {
                             source = it,
                             target = it,
                             ProductAutomatonEdgeLabel(
-                                incoming = EdgeLabelProperty.fromString("-l2"),
+                                incoming = EdgeLabelProperty.fromString("inverse(l2)"),
                                 outgoing = EdgeLabelProperty.fromString("epsilon"),
                                 cost = 5,
                             )
@@ -1210,7 +1213,7 @@ class ProductAutomatonServiceTest {
                         source = q0t0d0,
                         target = q0t0d0,
                         ProductAutomatonEdgeLabel(
-                            incoming = EdgeLabelProperty.fromString("-l1"),
+                            incoming = EdgeLabelProperty.fromString("inverse(l1)"),
                             outgoing = EdgeLabelProperty.fromString("prop1?"),
                             cost = 0,
                         )
@@ -1222,7 +1225,7 @@ class ProductAutomatonServiceTest {
                         source = q0t0d3,
                         target = q0t0d3,
                         ProductAutomatonEdgeLabel(
-                            incoming = EdgeLabelProperty.fromString("-l1"),
+                            incoming = EdgeLabelProperty.fromString("inverse(l1)"),
                             outgoing = EdgeLabelProperty.fromString("prop1?"),
                             cost = 0,
                         )
@@ -1234,7 +1237,7 @@ class ProductAutomatonServiceTest {
                         source = q0t0d1,
                         target = q0t0d1,
                         ProductAutomatonEdgeLabel(
-                            incoming = EdgeLabelProperty.fromString("-l1"),
+                            incoming = EdgeLabelProperty.fromString("inverse(l1)"),
                             outgoing = EdgeLabelProperty.fromString("prop2?"),
                             cost = 3,
                         )
@@ -1246,7 +1249,7 @@ class ProductAutomatonServiceTest {
                         source = q0t0d3,
                         target = q0t0d3,
                         ProductAutomatonEdgeLabel(
-                            incoming = EdgeLabelProperty.fromString("-l1"),
+                            incoming = EdgeLabelProperty.fromString("inverse(l1)"),
                             outgoing = EdgeLabelProperty.fromString("prop2?"),
                             cost = 3,
                         )
@@ -1258,7 +1261,7 @@ class ProductAutomatonServiceTest {
                         source = q0t0d1,
                         target = q0t0d1,
                         ProductAutomatonEdgeLabel(
-                            incoming = EdgeLabelProperty.fromString("-l2"),
+                            incoming = EdgeLabelProperty.fromString("inverse(l2)"),
                             outgoing = EdgeLabelProperty.fromString("prop2?"),
                             cost = 5,
                         )
@@ -1270,7 +1273,7 @@ class ProductAutomatonServiceTest {
                         source = q0t0d3,
                         target = q0t0d3,
                         ProductAutomatonEdgeLabel(
-                            incoming = EdgeLabelProperty.fromString("-l2"),
+                            incoming = EdgeLabelProperty.fromString("inverse(l2)"),
                             outgoing = EdgeLabelProperty.fromString("prop2?"),
                             cost = 5,
                         )
@@ -1292,23 +1295,27 @@ class ProductAutomatonServiceTest {
                             )
                         )
                     )
-                    ProductAutomatonEdge(
-                        source = it,
-                        target = it,
-                        ProductAutomatonEdgeLabel(
-                            incoming = EdgeLabelProperty.fromString("prop1?"),
-                            outgoing = EdgeLabelProperty.fromString("epsilon"),
-                            cost = 3,
+                    graph.addEdge(
+                        ProductAutomatonEdge(
+                            source = it,
+                            target = it,
+                            ProductAutomatonEdgeLabel(
+                                incoming = EdgeLabelProperty.fromString("prop1?"),
+                                outgoing = EdgeLabelProperty.fromString("epsilon"),
+                                cost = 3,
+                            )
                         )
                     )
 
-                    ProductAutomatonEdge(
-                        source = it,
-                        target = it,
-                        ProductAutomatonEdgeLabel(
-                            incoming = EdgeLabelProperty.fromString("prop2?"),
-                            outgoing = EdgeLabelProperty.fromString("epsilon"),
-                            cost = 5,
+                    graph.addEdge(
+                        ProductAutomatonEdge(
+                            source = it,
+                            target = it,
+                            ProductAutomatonEdgeLabel(
+                                incoming = EdgeLabelProperty.fromString("prop2?"),
+                                outgoing = EdgeLabelProperty.fromString("epsilon"),
+                                cost = 5,
+                            )
                         )
                     )
                 }
@@ -1359,10 +1366,10 @@ class ProductAutomatonServiceTest {
                 graph.addEdge(
                     ProductAutomatonEdge(
                         source = q0t0d1,
-                        target = q0t0d2,
+                        target = q0t0d0,
                         ProductAutomatonEdgeLabel(
                             incoming = EdgeLabelProperty.fromString("prop1?"),
-                            outgoing = EdgeLabelProperty.fromString("-l1"),
+                            outgoing = EdgeLabelProperty.fromString("inverse(l1)"),
                             cost = 0,
                         )
                     )
@@ -1374,7 +1381,7 @@ class ProductAutomatonServiceTest {
                         target = q0t0d1,
                         ProductAutomatonEdgeLabel(
                             incoming = EdgeLabelProperty.fromString("prop1?"),
-                            outgoing = EdgeLabelProperty.fromString("-l2"),
+                            outgoing = EdgeLabelProperty.fromString("inverse(l2)"),
                             cost = 3,
                         )
                     )
@@ -1386,7 +1393,7 @@ class ProductAutomatonServiceTest {
                         target = q0t0d1,
                         ProductAutomatonEdgeLabel(
                             incoming = EdgeLabelProperty.fromString("prop2?"),
-                            outgoing = EdgeLabelProperty.fromString("-l2"),
+                            outgoing = EdgeLabelProperty.fromString("inverse(l2)"),
                             cost = 5,
                         )
                     )
