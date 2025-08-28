@@ -27,6 +27,15 @@ class ProductAutomatonService(
     fun constructProductAutomaton(): ProductAutomatonGraph {
         val paGraph = ProductAutomatonGraph()
 
+        //construct nodes
+        for(queryNode in queryGraph.nodes) {
+            for(transducerNode in transducerGraph.nodes) {
+                for(databaseNode in databaseGraph.nodes) {
+                    paGraph.addNode(ProductAutomatonNode(queryNode, transducerNode, databaseNode))
+                }
+            }
+        }
+
         for(transducerEdge in transducerGraph.edges) {
             val incomingLabel = transducerEdge.label.incoming
             val outgoingLabel = transducerEdge.label.outgoing
@@ -165,7 +174,7 @@ class ProductAutomatonService(
                 }
             }
         }
-        return productAutomatonGraph
+        return paGraph
     }
 
 
