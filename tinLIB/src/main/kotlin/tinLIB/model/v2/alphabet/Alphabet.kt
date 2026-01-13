@@ -8,6 +8,8 @@ package tinLIB.model.v2.alphabet
 class Alphabet {
 
     companion object {
+        val listOfEpsilonEquivalents = arrayListOf("ε", "epsilon")
+
         /**
          * transforms a concept name into the target representation. Ususally, this will be "<conceptName>?"
          * needs to run in O(1)!
@@ -45,6 +47,10 @@ class Alphabet {
         fun isInverseRoleName(roleName: String): Boolean {
             val reg = Regex("inverse\\(\\w(\\w|-\\w)*\\)\$");
             return reg.matchEntire(roleName) !== null
+        }
+
+        fun isEpsilonLabel(label: String): Boolean {
+            return listOfEpsilonEquivalents.contains(label)
         }
 
         fun transformToPositiveRoleName(inverseRoleName: String): String {

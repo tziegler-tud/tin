@@ -22,11 +22,11 @@ class DlResultGraph(
         throw Error("Unable to add Edge: source or target node are not present in the graph.")
     }
 
-    override fun addEdge(source: DlResultNode, target: DlResultNode, cost: Int): Boolean {
+    fun addEdge(source: DlResultNode, target: DlResultNode, cost: Int): Boolean {
         return addEdge(DlResultEdge(source, target, cost))
     }
 
-    override fun addEdge(source: DlResultNode, target: DlResultNode, label: ResultEdgeLabel): Boolean {
+    fun addEdge(source: DlResultNode, target: DlResultNode, label: ResultEdgeLabel): Boolean {
         return addEdge(DlResultEdge(source, target, label))
     }
 

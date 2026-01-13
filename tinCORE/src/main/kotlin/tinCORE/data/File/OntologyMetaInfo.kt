@@ -2,7 +2,7 @@ package tinCORE.data.File
 
 import jakarta.persistence.*
 import org.springframework.data.jpa.repository.JpaRepository
-import tinCORE.data.Task.OntologyVariant
+import tinCORE.data.Task.DlTask.OntologyVariant
 import tinDL.services.ontology.OntologyInfoData
 import java.util.*
 

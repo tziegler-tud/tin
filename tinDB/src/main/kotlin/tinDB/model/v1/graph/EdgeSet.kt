@@ -1,0 +1,5 @@
+package tinDB.model.v1.graph
+
+open class EdgeSet<T> : HashSet<T>() {
+
+}

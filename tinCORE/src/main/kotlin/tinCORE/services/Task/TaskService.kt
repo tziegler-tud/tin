@@ -4,10 +4,9 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import tinCORE.data.Task.*
-import tinCORE.data.Task.DlTask.Benchmark.BenchmarkResult
-import tinCORE.data.Task.DlTask.Benchmark.BenchmarkResultsRepository
+import tinCORE.data.Task.DlTask.Benchmark.DlBenchmarkResultsRepository
+import tinCORE.data.Task.DlTask.DlTaskResultRepository
 import tinCORE.services.Task.TaskProcessor.DlTaskProcessor
-import tinCORE.services.Task.TaskProcessor.TaskProcessor
 import tinCORE.services.Task.TaskProcessor.TaskProcessorExecutionResult
 import tinCORE.services.File.FileService
 import tinCORE.services.technical.SystemConfigurationService
@@ -18,17 +17,14 @@ import tinDL.model.v2.ResultGraph.DlResultNode
 
 import tinDL.services.ontology.OntologyManager
 import tinLIB.model.v2.transducer.TransducerGraph
-import tinLIB.services.ResultGraph.ShortestPathResult
 
 @Service
 class TaskService @Autowired constructor(
     private val fileService: FileService,
     private val taskRepository: TaskRepository,
-    private val benchmarkResultRepository: BenchmarkResultsRepository,
-    private val taskResultRepository: TaskResultRepository,
     private val systemConfigurationService: SystemConfigurationService,
 ) {
-    private val taskQueue: TaskQueue = TaskQueue();
+    private val TaskQueue: TaskQueue = TaskQueue();
     private var isProcessing: Boolean = false;
 
     private val queryFileReader = QueryReaderServiceV2(systemConfigurationService);
@@ -36,7 +32,7 @@ class TaskService @Autowired constructor(
     private val ontologyReader = OntologyReaderService(systemConfigurationService);
 
 
-    fun createTask(taskFileConfiguration: TaskFileConfiguration, taskRuntimeConfiguration: TaskRuntimeConfiguration, taskComputationConfiguration: TaskComputationConfiguration): Task {
+    fun createTask(taskFileConfiguration: TaskFileConfiguration, taskRuntimeConfiguration: TaskComputationConfiguration, taskComputationConfiguration: TaskComputationConfiguration): Task {
         val task = Task(taskFileConfiguration, taskRuntimeConfiguration, taskComputationConfiguration);
         taskRepository.save(task)
         return task;
